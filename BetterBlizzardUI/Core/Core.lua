@@ -39,41 +39,6 @@ local defaults = {
 		core = {
 			enableDevelopmentMode = false,
 			relativeScale = 1
-		},
-		actionbars = {
-			enableBarFading = true,
-			enableBar1 = true, numButtonsBar1 = 12, -- accepts 7-12
-			enableBar2 = false, numButtonsBar2 = 12, -- accepts 1-12
-			enablePetBar = true,
-			enableStanceBar = true
-		},
-		chat = {
-			storedFrames = {}
-		},
-		chatbubbles = {
-			enableChatBubbles = true,
-			visibility = {
-				world = true,
-				worldcombat = true,
-				instance = true,
-				instancecombat = false
-			}
-		},
-		minimap = {
-			useServerTime = false,
-			useHalfClock = true
-		},
-		unitframes = {
-			storedFrames = {},
-			enablePlayer = true,
-			enablePlayerHUD = true,
-			enableTarget = true,
-			enableToT = true,
-			enableFocus = true,
-			enablePet = true,
-			enableBoss = true,
-			enableParty = true,
-			enableRaid = true
 		}
 	}
 }
