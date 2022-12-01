@@ -1,0 +1,31 @@
+package-as: DiabolicUI2
+enable-nolib-creation: no
+
+embedded-libraries:
+    - ace3
+    - libactionbutton-1-0
+    - libkeybound-1-0
+
+optional-dependencies:
+    - ace3
+    - clique
+    - libkeybound-1-0
+
+tools-used:
+    - ouf
+
+move-folders:
+    DiabolicUI2/DiabolicUI2: DiabolicUI2
+
+manual-changelog:
+    filename: CHANGELOG.md
+    markup-type: markdown
+
+license-output: LICENSE.txt
+
+ignore:
+    - Documentation
+    - CHANGELOG.md
+    - CODE_OF_CONDUCT.md
+    - LICENSE.md
+    - README.md

@@ -1,0 +1,43 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+	<!-- Protect the environment -->
+	<Script file="Private.lua"/>
+
+	<!-- Data -->
+	<Script file="Common\Compatibility.lua"/>
+	<Script file="Common\Constants.lua"/>
+	<Script file="Common\Colors.lua"/>
+
+	<!--
+		API
+		* Can rely on anything in the data folder.
+		* Should not cross-reference API files.
+	-->
+	<Script file="API\Abbreviations.lua"/>
+	<Script file="API\Addons.lua"/>
+	<Script file="API\Assets.lua"/>
+	<Script file="API\Colors.lua"/>
+	<Script file="API\Positions.lua"/>
+	<Script file="API\Scale.lua"/>
+	<Script file="API\Time.lua"/>
+
+	<!--
+		Widgets
+		* Can rely on assets, data and global API.
+		* Must support Widget cross-referencing,
+		  so don't define Widget upvalues at loading!
+	-->
+	<Script file="Widgets\Cooldowns.lua"/>
+	<Script file="Widgets\MovableFrames.lua"/>
+
+	<!-- Core -->
+	<Script file="Core.lua"/>
+	<Script file="HideBlizzard.lua"/>
+	<Script file="Development.lua"/>
+	<Script file="Debugging.lua"/>
+	<Script file="Experimental.lua"/>
+
+	<!-- Finalize the environment -->
+	<Script file="Finalize.lua"/>
+
+</Ui>
