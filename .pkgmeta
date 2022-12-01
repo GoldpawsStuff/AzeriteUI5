@@ -1,21 +1,14 @@
-package-as: DiabolicUI2
+package-as: BetterBlizzardUI
 enable-nolib-creation: no
 
 embedded-libraries:
     - ace3
-    - libactionbutton-1-0
-    - libkeybound-1-0
 
 optional-dependencies:
     - ace3
-    - clique
-    - libkeybound-1-0
-
-tools-used:
-    - ouf
 
 move-folders:
-    DiabolicUI2/DiabolicUI2: DiabolicUI2
+    BetterBlizzardUI/BetterBlizzardUI: BetterBlizzardUI
 
 manual-changelog:
     filename: CHANGELOG.md
