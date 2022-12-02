@@ -25,7 +25,7 @@
 --]]
 local Addon, ns = ...
 ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "AceConsole-3.0", "LibMoreEvents-1.0")
-ns.L = LibStub("AceLocale-3.0"):GetLocale(Addon) -- Addon localization
+--ns.L = LibStub("AceLocale-3.0"):GetLocale(Addon) -- Addon localization
 ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false) -- Addon callback handler
 ns.Hider = CreateFrame("Frame"); ns.Hider:Hide()
 ns.Noop = function() end
@@ -135,40 +135,7 @@ ns.SetScale = function(self, input)
 	end
 end
 
-ns.SwitchUI = function(self, input)
-	if (not self._ui_list) then
-		-- Create a list of currently installed UIs.
-		self._ui_list = {}
-		for ui,cmds in next,{
-			["AzeriteUI"] 	= { "azerite", "azui" },
-			["DiabolicUI2"] = { "diabolic", "diablo", "dui" },
-			["GoldpawUI"] 	= { "goldpaw", "gui" },
-			["JourneyUI"] 	= { "journey", "jui" }
-		} do
-			-- Only include existing UIs that can be switched to.
-			if (ui ~= Addon) and (IsAddOnAvailable(ui)) then
-				for _,cmd in next,cmds do
-					self._ui_list[cmd] = ui
-				end
-			end
-		end
-	end
-	local arg = self:GetArgs(string_lower(input))
-	local target = arg and self._ui_list[arg]
-	if (target) then
-		EnableAddOn(target) -- Enable the desired UI
-		for cmd,ui in next,self._ui_list do
-			if (ui and ui ~= target) then -- Don't disable target UI
-				DisableAddOn(ui) -- Disable all other UIs
-			end
-		end
-		DisableAddOn(Addon) -- Disable the current UI
-		ReloadUI() -- Reload interface to the selected UI
-	end
-end
-
 ns.UpdateSettings = function(self, event, ...)
-	print(event, ...)
 
 	-- Fire callbacks to submodules.
 	ns.callbacks:Fire("Saved_Settings_Updated")
@@ -197,10 +164,6 @@ ns.OnInitialize = function(self)
 			end
 		end
 	end)
-
-	-- Our UI switcher. Because I have many. And use them all.
-	self:RegisterChatCommand("go", "SwitchUI")
-	self:RegisterChatCommand("switchto", "SwitchUI")
 
 	-- Fully experimental
 	self:RegisterChatCommand("setscale", "SetScale")

@@ -38,39 +38,42 @@ end
 
 Development.OnInitialize = function(self)
 
-	local showVersion = ns.db.global.core.enableDevelopmentMode or ns.IsDevelopment or ns.IsAlpha or ns.IsBeta or ns.IsRC
-	if (showVersion) then
-		local versionLabel = UIParent:CreateFontString()
-		versionLabel:SetIgnoreParentScale(true)
-		versionLabel:SetScale(GetScale())
-		versionLabel:SetDrawLayer("OVERLAY", 1)
-		versionLabel:SetFontObject(GetFont(12,true))
-		versionLabel:SetTextColor(unpack(Colors.offwhite))
-		versionLabel:SetAlpha(.85)
-		versionLabel:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 20, 10)
-		if (ns.IsDevelopment) then
-			versionLabel:SetText("Git Version")
-		else
-			versionLabel:SetText(ns.Version)
-		end
-		self.VersionLabel = versionLabel
-	end
-
-	if (ns.db.global.core.enableDevelopmentMode) then
-		local devLabel = UIParent:CreateFontString()
-		devLabel:SetIgnoreParentScale(true)
-		devLabel:SetScale(GetScale())
-		devLabel:SetDrawLayer("OVERLAY", 1)
-		devLabel:SetFontObject(GetFont(12,true))
-		devLabel:SetTextColor(unpack(Colors.gray))
-		devLabel:SetAlpha(.85)
-		devLabel:SetText("Dev Mode")
+	-- We don't want this clutter right now.
+	if (false) then
+		local showVersion = ns.db.global.core.enableDevelopmentMode or ns.IsDevelopment or ns.IsAlpha or ns.IsBeta or ns.IsRC
 		if (showVersion) then
-			devLabel:SetPoint("BOTTOMLEFT", self.VersionLabel, "TOPLEFT", 0, 4)
-		else
-			devLabel:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 20, 10)
+			local versionLabel = UIParent:CreateFontString()
+			versionLabel:SetIgnoreParentScale(true)
+			versionLabel:SetScale(GetScale())
+			versionLabel:SetDrawLayer("OVERLAY", 1)
+			versionLabel:SetFontObject(GetFont(12,true))
+			versionLabel:SetTextColor(unpack(Colors.offwhite))
+			versionLabel:SetAlpha(.85)
+			versionLabel:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 20, 10)
+			if (ns.IsDevelopment) then
+				versionLabel:SetText("Git Version")
+			else
+				versionLabel:SetText(ns.Version)
+			end
+			self.VersionLabel = versionLabel
 		end
-		self.DevLabel = devLabel
+
+		if (ns.db.global.core.enableDevelopmentMode) then
+			local devLabel = UIParent:CreateFontString()
+			devLabel:SetIgnoreParentScale(true)
+			devLabel:SetScale(GetScale())
+			devLabel:SetDrawLayer("OVERLAY", 1)
+			devLabel:SetFontObject(GetFont(12,true))
+			devLabel:SetTextColor(unpack(Colors.gray))
+			devLabel:SetAlpha(.85)
+			devLabel:SetText("Dev Mode")
+			if (showVersion) then
+				devLabel:SetPoint("BOTTOMLEFT", self.VersionLabel, "TOPLEFT", 0, 4)
+			else
+				devLabel:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 20, 10)
+			end
+			self.DevLabel = devLabel
+		end
 	end
 
 	self:RegisterChatCommand("devmode", "ToggleDevMode")
