@@ -21,7 +21,6 @@ manual-changelog:
 license-output: LICENSE.txt
 
 ignore:
-    - Documentation
     - CHANGELOG.md
     - CODE_OF_CONDUCT.md
     - LICENSE.md
