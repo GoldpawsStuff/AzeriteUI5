@@ -24,3 +24,90 @@
 
 --]]
 local Addon, ns = ...
+local Blizzard = ns:NewModule("Blizzard", "LibMoreEvents-1.0")
+
+local purgeKey = function(t, k)
+	t[k] = nil
+	local c = 42
+	repeat
+		if t[c] == nil then
+			t[c] = nil
+		end
+		c = c + 1
+	until issecurevariable(t, k)
+end
+
+local hideActionBarFrame = function(frame, clearEvents)
+	if (frame) then
+		if (clearEvents) then
+			frame:UnregisterAllEvents()
+		end
+
+		-- Remove some EditMode hooks
+		if (frame.system) then
+			-- Purge the show state to avoid any taint concerns
+			purgeKey(frame, "isShownExternal")
+		end
+
+		-- EditMode overrides the Hide function, avoid calling it as it can taint
+		if (frame.HideBase) then
+			frame:HideBase()
+		else
+			frame:Hide()
+		end
+		frame:SetParent(ns.Hider)
+	end
+end
+
+local hideActionButton = function(button)
+	if (not button) then return end
+
+	button:Hide()
+	button:UnregisterAllEvents()
+	button:SetAttribute("statehidden", true)
+end
+
+Blizzard.HideBlizzard = function(self)
+
+	hideActionBarFrame(MainMenuBar, false)
+	hideActionBarFrame(MultiBarBottomLeft, true)
+	hideActionBarFrame(MultiBarBottomRight, true)
+	hideActionBarFrame(MultiBarLeft, true)
+	hideActionBarFrame(MultiBarRight, true)
+	hideActionBarFrame(MultiBar5, true)
+	hideActionBarFrame(MultiBar6, true)
+	hideActionBarFrame(MultiBar7, true)
+
+	-- Hide MultiBar Buttons, but keep the bars alive
+	for i=1,12 do
+		hideActionButton(_G["ActionButton" .. i])
+		hideActionButton(_G["MultiBarBottomLeftButton" .. i])
+		hideActionButton(_G["MultiBarBottomRightButton" .. i])
+		hideActionButton(_G["MultiBarRightButton" .. i])
+		hideActionButton(_G["MultiBarLeftButton" .. i])
+		hideActionButton(_G["MultiBar5Button" .. i])
+		hideActionButton(_G["MultiBar6Button" .. i])
+		hideActionButton(_G["MultiBar7Button" .. i])
+	end
+
+	hideActionBarFrame(MicroButtonAndBagsBar, false)
+	hideActionBarFrame(StanceBar, true)
+	hideActionBarFrame(PossessActionBar, true)
+	hideActionBarFrame(MultiCastActionBarFrame, false)
+	hideActionBarFrame(PetActionBar, true)
+	hideActionBarFrame(StatusTrackingBarManager, false)
+
+	-- these events drive visibility, we want the MainMenuBar to remain invisible
+	MainMenuBar:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	MainMenuBar:UnregisterEvent("PLAYER_REGEN_DISABLED")
+	MainMenuBar:UnregisterEvent("ACTIONBAR_SHOWGRID")
+	MainMenuBar:UnregisterEvent("ACTIONBAR_HIDEGRID")
+
+end
+
+Blizzard.OnInitialize = function(self)
+end
+
+Blizzard.OnEnable = function(self)
+	self:HideBlizzard()
+end
