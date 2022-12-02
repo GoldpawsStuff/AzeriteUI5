@@ -1,4 +1,4 @@
-package-as: BetterBlizzardUI
+package-as: AzeriteUI5
 enable-nolib-creation: no
 
 embedded-libraries:
@@ -6,9 +6,13 @@ embedded-libraries:
 
 optional-dependencies:
     - ace3
+    - clique
+
+tools-used:
+    - ouf
 
 move-folders:
-    BetterBlizzardUI/BetterBlizzardUI: BetterBlizzardUI
+    AzeriteUI5/AzeriteUI5: AzeriteUI5
 
 manual-changelog:
     filename: CHANGELOG.md
