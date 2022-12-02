@@ -152,7 +152,7 @@ end
 
 ns.OnInitialize = function(self)
 
-	self.db = SanitizeSettings(LibStub("AceDB-3.0"):New("AzeriteUI4_DB", defaults, true))
+	self.db = SanitizeSettings(LibStub("AceDB-3.0"):New("AzeriteUI5_DB", defaults, true))
 	self.db.RegisterCallback(self, "OnProfileChanged", "UpdateSettings")
 	self.db.RegisterCallback(self, "OnProfileCopied", "UpdateSettings")
 	self.db.RegisterCallback(self, "OnProfileReset", "UpdateSettings")
@@ -175,18 +175,20 @@ ns.OnInitialize = function(self)
 	end)
 
 	-- Fully experimental
-	self:RegisterChatCommand("setscale", "SetScale")
-	self:RegisterChatCommand("resetscale", "ResetScale")
-	self:RegisterChatCommand("lock", "LockMovableFrames")
-	self:RegisterChatCommand("unlock", "UnlockMovableFrames")
-	self:RegisterChatCommand("togglelock", "ToggleMovableFrames")
+	--self:RegisterChatCommand("setscale", "SetScale")
+	--self:RegisterChatCommand("resetscale", "ResetScale")
+	--self:RegisterChatCommand("lock", "LockMovableFrames")
+	--self:RegisterChatCommand("unlock", "UnlockMovableFrames")
+	--self:RegisterChatCommand("togglelock", "ToggleMovableFrames")
 
 	-- In case some other jokers have disabled these, we add them back to avoid a World of Bugs.
 	-- RothUI used to remove the two first, and a lot of people missed his documentation on how to get them back.
 	-- I personally removed the objective's tracker for a while in DiabolicUI, which led to pain. Lots of pain.
 	for _,v in ipairs({ "Blizzard_CUFProfiles", "Blizzard_CompactRaidFrames", "Blizzard_ObjectiveTracker" }) do
-		EnableAddOn(v)
-		LoadAddOn(v)
+		if (not IsAddOnEnabled(v)) then
+			EnableAddOn(v)
+			LoadAddOn(v)
+		end
 	end
 
 end
