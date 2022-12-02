@@ -23,13 +23,14 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
-ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "AceConsole-3.0", "LibMoreEvents-1.0")
---ns.L = LibStub("AceLocale-3.0"):GetLocale(Addon) -- Addon localization
-ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false) -- Addon callback handler
-ns.Hider = CreateFrame("Frame"); ns.Hider:Hide()
-ns.Noop = function() end
-_G[Addon] = ns
+local Addon, AzeriteUI5 = ...
+AzeriteUI5 = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "AceConsole-3.0")
+AzeriteUI5.L = LibStub("AceLocale-3.0"):GetLocale(Addon, true) -- Addon localization
+AzeriteUI5.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false) -- Addon callback handler
+AzeriteUI5.Hider = CreateFrame("Frame"); AzeriteUI5.Hider:Hide()
+AzeriteUI5.Noop = function() end
+
+_G[Addon] = AzeriteUI5
 
 -- Default settings
 local defaults = {
@@ -67,14 +68,6 @@ local InCombatLockdown = InCombatLockdown
 local LoadAddOn = LoadAddOn
 local ReloadUI = ReloadUI
 
--- Private API
-local IsAddOnAvailable = ns.API.IsAddOnAvailable
-local SetRelativeScale = ns.API.SetRelativeScale
-local UpdateObjectScales = ns.API.UpdateObjectScales
-local ShowMovableFrameAnchors = ns.Widgets.ShowMovableFrameAnchors
-local HideMovableFrameAnchors = ns.Widgets.HideMovableFrameAnchors
-local ToggleMovableFrameAnchors = ns.Widgets.ToggleMovableFrameAnchors
-
 -- Purge deprecated settings,
 -- translate to new where applicable,
 -- make sure important ones are within bounds.
@@ -91,23 +84,11 @@ local SanitizeSettings = function(db)
 end
 
 -- Proxy method to avoid modules using the callback object directly
-ns.Fire = function(self, name, ...)
-	ns.callbacks:Fire(name, ...)
+AzeriteUI5.Fire = function(self, name, ...)
+	self.callbacks:Fire(name, ...)
 end
 
-ns.LockMovableFrames = function(self)
-	HideMovableFrameAnchors()
-end
-
-ns.UnlockMovableFrames = function(self)
-	ShowMovableFrameAnchors()
-end
-
-ns.ToggleMovableFrames = function(self)
-	ToggleMovableFrameAnchors()
-end
-
-ns.ResetScale = function(self)
+AzeriteUI5.ResetScale = function(self)
 	if (InCombatLockdown()) then
 		return
 	end
@@ -116,14 +97,14 @@ ns.ResetScale = function(self)
 	local defaultScale = defaults.global.core.relativeScale
 	if (scale and scale ~= defaultScale) then
 		db.global.core.relativeScale = defaultScale -- Store the saved setting
-		SetRelativeScale(defaultScale) -- Store it in the addon namespace
-		UpdateObjectScales() -- Apply it to existing objects
+		self.API.SetRelativeScale(defaultScale) -- Store it in the addon namespace
+		self.API.UpdateObjectScales() -- Apply it to existing objects
 		-- Fire callbacks to submodules.
-		ns.callbacks:Fire("Relative_Scale_Updated", db.global.core.relativeScale)
+		self.callbacks:Fire("Relative_Scale_Updated", db.global.core.relativeScale)
 	end
 end
 
-ns.SetScale = function(self, input)
+AzeriteUI5.SetScale = function(self, input)
 	if (InCombatLockdown()) then
 		return
 	end
@@ -136,21 +117,20 @@ ns.SetScale = function(self, input)
 		if (oldScale ~= scale) then
 			-- Store and apply new relative user scale
 			db.global.core.relativeScale = scale -- Store the saved setting
-			SetRelativeScale(scale) -- Store it in the addon namespace
-			UpdateObjectScales() -- Apply it to existing objects
+			self.API.SetRelativeScale(scale) -- Store it in the addon namespace
+			self.API.UpdateObjectScales() -- Apply it to existing objects
 			-- Fire callbacks to submodules.
-			ns.callbacks:Fire("Relative_Scale_Updated", db.global.core.relativeScale)
+			self.callbacks:Fire("Relative_Scale_Updated", db.global.core.relativeScale)
 		end
 	end
 end
 
-ns.UpdateSettings = function(self, event, ...)
-
+AzeriteUI5.UpdateSettings = function(self, event, ...)
 	-- Fire callbacks to submodules.
-	ns.callbacks:Fire("Saved_Settings_Updated")
+	self.callbacks:Fire("Saved_Settings_Updated")
 end
 
-ns.OnInitialize = function(self)
+AzeriteUI5.OnInitialize = function(self)
 
 	self.db = SanitizeSettings(LibStub("AceDB-3.0"):New("AzeriteUI5_DB", defaults, true))
 	self.db.RegisterCallback(self, "OnProfileChanged", "UpdateSettings")
@@ -159,7 +139,7 @@ ns.OnInitialize = function(self)
 
 	-- Apply user scale to all elements
 	if (self.db.global.core.relativeScale) then
-		SetRelativeScale(self.db.global.core.relativeScale)
+		self.API.SetRelativeScale(self.db.global.core.relativeScale)
 	end
 
 	-- Add a command to clear all chat frames.
@@ -177,15 +157,15 @@ ns.OnInitialize = function(self)
 	-- Fully experimental
 	--self:RegisterChatCommand("setscale", "SetScale")
 	--self:RegisterChatCommand("resetscale", "ResetScale")
-	--self:RegisterChatCommand("lock", "LockMovableFrames")
-	--self:RegisterChatCommand("unlock", "UnlockMovableFrames")
-	--self:RegisterChatCommand("togglelock", "ToggleMovableFrames")
+	--self:RegisterChatCommand("lock", self.Widgets.HideMovableFrameAnchors)
+	--self:RegisterChatCommand("unlock", self.Widgets.ShowMovableFrameAnchors)
+	--self:RegisterChatCommand("togglelock", self.Widgets.ToggleMovableFrameAnchors)
 
 	-- In case some other jokers have disabled these, we add them back to avoid a World of Bugs.
 	-- RothUI used to remove the two first, and a lot of people missed his documentation on how to get them back.
 	-- I personally removed the objective's tracker for a while in DiabolicUI, which led to pain. Lots of pain.
 	for _,v in ipairs({ "Blizzard_CUFProfiles", "Blizzard_CompactRaidFrames", "Blizzard_ObjectiveTracker" }) do
-		if (not ns.API.IsAddOnEnabled(v)) then
+		if (not self.API.IsAddOnEnabled(v)) then
 			EnableAddOn(v)
 			LoadAddOn(v)
 		end
