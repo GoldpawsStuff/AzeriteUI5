@@ -24,4 +24,6 @@
 	<Script file="LibSmoothBar-1.0\LibSmoothBar-1.0.lua"/>
 	<Script file="LibSpinBar-1.0\LibSpinBar-1.0.lua"/>
 
+	<Include file="oUF\oUF.xml"/>
+
 </Ui>
