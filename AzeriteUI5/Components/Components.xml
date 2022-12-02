@@ -1,0 +1,6 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+	<Script file="ChatBubbles.lua"/>
+	<Script file="Tracker.lua"/>
+
+</Ui>
