@@ -185,7 +185,7 @@ ns.OnInitialize = function(self)
 	-- RothUI used to remove the two first, and a lot of people missed his documentation on how to get them back.
 	-- I personally removed the objective's tracker for a while in DiabolicUI, which led to pain. Lots of pain.
 	for _,v in ipairs({ "Blizzard_CUFProfiles", "Blizzard_CompactRaidFrames", "Blizzard_ObjectiveTracker" }) do
-		if (not IsAddOnEnabled(v)) then
+		if (not ns.API.IsAddOnEnabled(v)) then
 			EnableAddOn(v)
 			LoadAddOn(v)
 		end
