@@ -23,9 +23,9 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
-local Widgets = ns.Private.Widgets or {}
-ns.Private.Widgets = Widgets
+local Addon, AzeriteUI5 = ...
+local Widgets = AzeriteUI5.Private.Widgets or {}
+AzeriteUI5.Private.Widgets = Widgets
 
 -- Lua API
 local pairs = pairs
@@ -36,7 +36,7 @@ local GetTime = GetTime
 local hooksecurefunc = hooksecurefunc
 
 -- Addon API
-local AbbreviateTime = ns.API.AbbreviateTime
+local AbbreviateTime = AzeriteUI5.API.AbbreviateTime
 
 -- Local Caches
 local Cooldowns, Active = {}, {}

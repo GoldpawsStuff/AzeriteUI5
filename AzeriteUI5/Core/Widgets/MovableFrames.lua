@@ -23,9 +23,9 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
-local Widgets = ns.Private.Widgets or {}
-ns.Private.Widgets = Widgets
+local Addon, AzeriteUI5 = ...
+local Widgets = AzeriteUI5.Private.Widgets or {}
+AzeriteUI5.Private.Widgets = Widgets
 
 -- Lua API
 local math_abs = math.abs
@@ -39,10 +39,10 @@ local CreateFrame = CreateFrame
 local InCombatLockdown = InCombatLockdown
 
 -- Addon API
-local Colors = ns.Colors
-local GetFont = ns.API.GetFont
-local GetPosition = ns.API.GetPosition
-local GetScale = ns.API.GetScale
+local Colors = AzeriteUI5.Colors
+local GetFont = AzeriteUI5.API.GetFont
+local GetPosition = AzeriteUI5.API.GetPosition
+local GetScale = AzeriteUI5.API.GetScale
 
 -- Private event frame
 local Frame = CreateFrame("Frame")

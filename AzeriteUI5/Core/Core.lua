@@ -24,9 +24,9 @@
 
 --]]
 local Addon, AzeriteUI5 = ...
-AzeriteUI5 = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "AceConsole-3.0")
+AzeriteUI5 = LibStub("AceAddon-3.0"):NewAddon(AzeriteUI5, Addon, "AceConsole-3.0")
 AzeriteUI5.L = LibStub("AceLocale-3.0"):GetLocale(Addon, true) -- Addon localization
-AzeriteUI5.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false) -- Addon callback handler
+AzeriteUI5.callbacks = LibStub("CallbackHandler-1.0"):New(AzeriteUI5, nil, nil, false) -- Addon callback handler
 AzeriteUI5.Hider = CreateFrame("Frame"); AzeriteUI5.Hider:Hide()
 AzeriteUI5.Noop = function() end
 

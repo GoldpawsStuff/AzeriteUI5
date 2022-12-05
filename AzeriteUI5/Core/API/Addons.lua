@@ -23,15 +23,15 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
-local API = ns.API or {}
-ns.API = API
+local Addon, AzeriteUI5 = ...
+local API = AzeriteUI5.API or {}
+AzeriteUI5.API = API
 
 local PLAYER_NAME = UnitName("player")
 
 local GetAddOnInfo = function(index)
 	local name, title, notes, loadable, reason, security, newVersion = _G.GetAddOnInfo(index)
-	local enabled = not(_G.GetAddOnEnableState(PLAYER_NAME, index) == 0) 
+	local enabled = not(_G.GetAddOnEnableState(PLAYER_NAME, index) == 0)
 	return name, title, notes, enabled, loadable, reason, security
 end
 

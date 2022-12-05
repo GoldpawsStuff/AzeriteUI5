@@ -23,9 +23,9 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
-local API = ns.API or {}
-ns.API = API
+local Addon, AzeriteUI5 = ...
+local API = AzeriteUI5.API or {}
+AzeriteUI5.API = API
 
 -- WoW API
 local CreateFont = CreateFont
@@ -49,7 +49,7 @@ font_mt = {
 		-- Create a new font object
 		elseif (type(k) == "number") then
 			count = count + 1
-			local new = CreateFont(string_format(ns.Prefix.."Font%d", count))
+			local new = CreateFont(string_format(AzeriteUI5.Prefix.."Font%d", count))
 			new:SetJustifyH("LEFT") -- new fonts appear to be centered after 9.1.5
 			rawset(t,k,new)
 			return new
@@ -77,8 +77,8 @@ local GetFont = function(size, outline, type)
 		ChatFonts[fontObject] = type == "Chat"
 		NumberFonts[fontObject] = type == "Number"
 		NormalFonts[fontObject] = type ~= "Chat" and type ~= "Number"
-		if (ns.callbacks) then
-			ns.callbacks:Fire("FontObject_Created", fontObject, type or "Normal")
+		if (AzeriteUI5.callbacks) then
+			AzeriteUI5.callbacks:Fire("FontObject_Created", fontObject, type or "Normal")
 		end
 	end
 	return fontObject
@@ -106,8 +106,8 @@ local alias = {
 }
 
 -- Retrieve an asset from the media asset folder.
-local GetMedia = function(name, type) 
-	return alias[name] or string_format([[Interface\AddOns\%s\Assets\%s.%s]], Addon, name, type or "tga") 
+local GetMedia = function(name, type)
+	return alias[name] or string_format([[Interface\AddOns\%s\Assets\%s.%s]], Addon, name, type or "tga")
 end
 
 -- Global API

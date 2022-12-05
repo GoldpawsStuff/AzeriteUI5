@@ -23,9 +23,9 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
-local API = ns.API or {}
-ns.API = API
+local Addon, AzeriteUI5 = ...
+local API = AzeriteUI5.API or {}
+AzeriteUI5.API = API
 
 -- Lua API
 local math_ceil = math.ceil
@@ -68,7 +68,7 @@ local AbbreviateNumber = function(value)
 	elseif (value >= 1e3) or (value <= -1e3) then 	return ("%.1fk"):format(value / 1e3):gsub("%.?0+([kmb])$", "%1")
 	elseif (value > 0) then							return ""..math_floor(value)
 	else 											return ""
-	end	
+	end
 end
 
 -- Aim at filling 3-5 digits or letters.
@@ -76,17 +76,17 @@ local AbbreviateNumberBalanced = function(value)
 	value = tonumber(value)
 	if (not value) then return "" end
 	if (value >= 1e8) then 		return string_format("%.0fm", value/1e6) 	-- 100m, 1000m, 2300m, etc
-	elseif (value >= 1e6) then 	return string_format("%.1fm", value/1e6) 	-- 1.0m - 99.9m 
+	elseif (value >= 1e6) then 	return string_format("%.1fm", value/1e6) 	-- 1.0m - 99.9m
 	elseif (value >= 1e5) then 	return string_format("%.0fk", value/1e3) 	-- 100k - 999k
 	elseif (value >= 1e3) then 	return string_format("%.1fk", value/1e3) 	-- 1.0k - 99.9k
 	elseif (value > 0) then 	return ""..math_floor(value)				-- 1 - 999
 	else 						return ""
-	end 
-end 
+	end
+end
 
 -- Time Abbreviations
 -----------------------------------------------
--- Returns a format string and input values 
+-- Returns a format string and input values
 local AbbreviateTime = function(secs)
 	if (secs > DAY) then -- more than a day
 		return "%.0f%s", math_ceil(secs / DAY), "d"
@@ -94,15 +94,15 @@ local AbbreviateTime = function(secs)
 		return "%.0f%s", math_ceil(secs / HOUR), "h"
 	elseif (secs > MINUTE) then -- more than a minute
 		return "%.0f%s", math_ceil(secs / MINUTE), "m"
-	elseif (secs > 5) then 
+	elseif (secs > 5) then
 		return "%.0f", math_ceil(secs)
-	elseif (secs > .9) then 
+	elseif (secs > .9) then
 		return "|cffff8800%.0f|r", math_ceil(secs)
 	elseif (secs > .05) then
 		return "|cffff0000%.0f|r", secs*10 - secs*10%1
 	else
 		return ""
-	end	
+	end
 end
 
 -- zhCN Exceptions
@@ -115,7 +115,7 @@ if (GetLocale() == "zhCN") then
 		elseif (value >= 1e4) or (value <= -1e3) then	return ("%.2f万"):format(value / 1e4):gsub("%.?0+([km])$", "%1")
 		elseif (value > 0) then 						return ""..math_floor(value)
 		else 											return ""
-		end 
+		end
 	end
 
 	AbbreviateNumberBalanced = function(value)
@@ -125,9 +125,9 @@ if (GetLocale() == "zhCN") then
 		elseif (value >= 1e4) then 						return string_format("%.2f万", value/1e4)
 		elseif (value > 0) then 						return ""..math_floor(value)
 		else 											return ""
-		end 
+		end
 	end
-end 
+end
 
 -- Global API
 ---------------------------------------------------------

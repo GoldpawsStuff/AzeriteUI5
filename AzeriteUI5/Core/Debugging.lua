@@ -23,8 +23,8 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
-local Debugging = ns:NewModule("Debugging", "AceConsole-3.0")
+local Addon, AzeriteUI5 = ...
+local Debugging = AzeriteUI5:NewModule("Debugging", "AceConsole-3.0")
 
 -- Lua API
 local ipairs = ipairs
@@ -36,7 +36,7 @@ local string_format = string.format
 local EnableAddOn = EnableAddOn
 local GetAddOnInfo = GetAddOnInfo
 
-local ADDONS = (ns.IsRetail) and {
+local ADDONS = (AzeriteUI5.IsRetail) and {
 
 	"Blizzard_AchievementUI",
 	"Blizzard_AdventureMap",
@@ -157,7 +157,7 @@ local ADDONS = (ns.IsRetail) and {
 	"Blizzard_WorldMap",
 	"Blizzard_WowTokenUI"
 
-} or (ns.IsWrath) and {
+} or (AzeriteUI5.IsWrath) and {
 
 	"Blizzard_AchievementUI",
 	"Blizzard_APIDocumentation",

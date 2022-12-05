@@ -23,12 +23,12 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local Addon, AzeriteUI5 = ...
 
 -- Kill off the non-stop voice chat error 17 on retail.
 -- This only occurs in linux, but with IsLinuxClient() broken
 -- I don't know of any way to specifically check for linux.
-if (ns.IsRetail) then
+if (AzeriteUI5.IsRetail) then
 	if (ChannelFrame) then
 		ChannelFrame:UnregisterEvent("VOICE_CHAT_ERROR")
 	else

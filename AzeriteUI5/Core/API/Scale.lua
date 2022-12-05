@@ -23,9 +23,9 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
-local API = ns.API or {}
-ns.API = API
+local Addon, AzeriteUI5 = ...
+local API = AzeriteUI5.API or {}
+AzeriteUI5.API = API
 
 -- Lua API
 local next = next
@@ -42,12 +42,12 @@ local ScaledToUIParent = {}
 ---------------------------------------------------------
 -- Get the scale to set when ignoring parent scale
 API.GetScale = function()
-	return ns.UIScale
+	return AzeriteUI5.UIScale
 end
 
 -- Return the default scale
 API.GetDefaultScale = function()
-	return ns.UIDefaultScale
+	return AzeriteUI5.UIDefaultScale
 end
 
 -- Get the scale to use when slaved to UIParent
@@ -57,12 +57,12 @@ end
 
 -- Set the scale
 API.SetScale = function(scale)
-	ns.UIScale = tonumber(scale) or API.GetDefaultScale()
+	AzeriteUI5.UIScale = tonumber(scale) or API.GetDefaultScale()
 end
 
 -- Set the scale as a factor of the default scale
 API.SetRelativeScale = function(scale)
-	ns.UIScale = (tonumber(scale) or 1) * API.GetDefaultScale()
+	AzeriteUI5.UIScale = (tonumber(scale) or 1) * API.GetDefaultScale()
 end
 
 -- Register an object to follow the main UIScale

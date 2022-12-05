@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local Addon, AzeriteUI5 = ...
 
 -- Backdrop template for Lua and XML
 -- Allows us to always set these templates, even in Classic.
@@ -31,5 +31,5 @@ local MixinGlobal = Addon.."BackdropTemplateMixin"
 _G[MixinGlobal] = {}
 if (BackdropTemplateMixin) then
 	_G[MixinGlobal] = CreateFromMixins(BackdropTemplateMixin) -- Usable in XML
-	ns.Private.BackdropTemplate = "BackdropTemplate" -- Usable in Lua
+	AzeriteUI5.Private.BackdropTemplate = "BackdropTemplate" -- Usable in Lua
 end

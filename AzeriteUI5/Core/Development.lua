@@ -23,16 +23,16 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
-local Development = ns:NewModule("Development", "AceConsole-3.0", "LibMoreEvents-1.0")
+local Addon, AzeriteUI5 = ...
+local Development = AzeriteUI5:NewModule("Development", "AceConsole-3.0", "LibMoreEvents-1.0")
 
 -- Addon API
-local Colors = ns.Colors
-local GetFont = ns.API.GetFont
-local GetScale = ns.API.GetScale
+local Colors = AzeriteUI5.Colors
+local GetFont = AzeriteUI5.API.GetFont
+local GetScale = AzeriteUI5.API.GetScale
 
 Development.ToggleDevMode = function(self)
-	ns.db.global.core.enableDevelopmentMode = not ns.db.global.core.enableDevelopmentMode
+	AzeriteUI5.db.global.core.enableDevelopmentMode = not AzeriteUI5.db.global.core.enableDevelopmentMode
 	ReloadUI()
 end
 
@@ -40,7 +40,7 @@ Development.OnInitialize = function(self)
 
 	-- We don't want this clutter right now.
 	if (false) then
-		local showVersion = ns.db.global.core.enableDevelopmentMode or ns.IsDevelopment or ns.IsAlpha or ns.IsBeta or ns.IsRC
+		local showVersion = AzeriteUI5.db.global.core.enableDevelopmentMode or AzeriteUI5.IsDevelopment or AzeriteUI5.IsAlpha or AzeriteUI5.IsBeta or AzeriteUI5.IsRC
 		if (showVersion) then
 			local versionLabel = UIParent:CreateFontString()
 			versionLabel:SetIgnoreParentScale(true)
@@ -50,15 +50,15 @@ Development.OnInitialize = function(self)
 			versionLabel:SetTextColor(unpack(Colors.offwhite))
 			versionLabel:SetAlpha(.85)
 			versionLabel:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 20, 10)
-			if (ns.IsDevelopment) then
+			if (AzeriteUI5.IsDevelopment) then
 				versionLabel:SetText("Git Version")
 			else
-				versionLabel:SetText(ns.Version)
+				versionLabel:SetText(AzeriteUI5.Version)
 			end
 			self.VersionLabel = versionLabel
 		end
 
-		if (ns.db.global.core.enableDevelopmentMode) then
+		if (AzeriteUI5.db.global.core.enableDevelopmentMode) then
 			local devLabel = UIParent:CreateFontString()
 			devLabel:SetIgnoreParentScale(true)
 			devLabel:SetScale(GetScale())
