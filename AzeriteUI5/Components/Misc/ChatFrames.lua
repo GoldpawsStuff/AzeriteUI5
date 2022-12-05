@@ -23,8 +23,8 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
-local ChatFrames = ns:NewModule("ChatFrames", "LibMoreEvents-1.0", "AceHook-3.0")
+local Addon, AzeriteUI5 = ...
+local ChatFrames = AzeriteUI5:NewModule("ChatFrames", "LibMoreEvents-1.0", "AceHook-3.0")
 
 ChatFrames.StyleFrame = function(self, frame)
 	if (frame.isSkinned) then return end
@@ -85,7 +85,7 @@ ChatFrames.OnEvent = function(self, event, ...)
 end
 
 ChatFrames.OnInitialize = function(self)
-	if (not ns.db.global.chatframes.enableChat) then
+	if (not AzeriteUI5.db.global.chatframes.enableChat) then
 		return self:Disable()
 	end
 

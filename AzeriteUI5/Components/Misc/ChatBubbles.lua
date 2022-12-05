@@ -23,8 +23,8 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
-local ChatBubbles = ns:NewModule("ChatBubbles", "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
+local Addon, AzeriteUI5 = ...
+local ChatBubbles = AzeriteUI5:NewModule("ChatBubbles", "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
 
 -- Lua API
 local math_floor = math.floor
@@ -40,14 +40,14 @@ local IsInInstance = IsInInstance
 local UnitAffectingCombat = UnitAffectingCombat
 
 -- Addon API
-local GetFont = ns.API.GetFont
-local SetObjectScale = ns.API.SetObjectScale
+local GetFont = AzeriteUI5.API.GetFont
+local SetObjectScale = AzeriteUI5.API.SetObjectScale
 
 -- Create a custom bubble.
 ChatBubbles.CreateCustomBubble = function(self, blizzBubble)
 	self.numBubbles = self.numBubbles + 1
 
-	local customBubble = CreateFrame("Frame", nil, bubbleParent, ns.BackdropTemplate)
+	local customBubble = CreateFrame("Frame", nil, bubbleParent, AzeriteUI5.BackdropTemplate)
 	customBubble:Hide()
 	customBubble:SetFrameStrata("BACKGROUND")
 	customBubble:SetPoint("BOTTOM", blizzBubble, "BOTTOM", 0, 0)
@@ -138,7 +138,7 @@ ChatBubbles.HideBlizzardBubble = function(self, bubble)
 	customBubble.blizzardText:SetAlpha(0)
 
 	for region,texture in next,customBubble.blizzardRegions do
-		if (not ns.IsRetail) then
+		if (not AzeriteUI5.IsRetail) then
 			region:SetTexture(nil)
 		end
 		region:SetAlpha(0)
@@ -294,7 +294,7 @@ end
 ChatBubbles.UpdateSettings = function(self)
 	if (InCombatLockdown()) then return end
 
-	local db = ns.db.global.chatbubbles
+	local db = AzeriteUI5.db.global.chatbubbles
 
 	self.showInWorld = db.visibility.world
 	self.showInWorldInCombat = db.visibility.worldcombat
@@ -376,12 +376,12 @@ ChatBubbles.DisableBubbleStyling = function(self)
 end
 
 ChatBubbles.EnableBubbles = function(self)
-	ns.db.global.chatbubbles.enableChatBubbles = true
+	AzeriteUI5.db.global.chatbubbles.enableChatBubbles = true
 	self:UpdateSettings()
 end
 
 ChatBubbles.DisableBubbles = function(self)
-	ns.db.global.chatbubbles.enableChatBubbles = false
+	AzeriteUI5.db.global.chatbubbles.enableChatBubbles = false
 	self:UpdateSettings()
 end
 

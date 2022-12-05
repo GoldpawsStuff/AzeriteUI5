@@ -23,8 +23,8 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
-local ActionBars = ns:GetModule("ActionBars", true)
+local Addon, AzeriteUI5 = ...
+local ActionBars = AzeriteUI5:GetModule("ActionBars", true)
 if (not ActionBars) then return end
 
 local Blizzard = ActionBars:NewModule("Blizzard", "LibMoreEvents-1.0")
@@ -58,7 +58,7 @@ local hideActionBarFrame = function(frame, clearEvents)
 		else
 			frame:Hide()
 		end
-		frame:SetParent(ns.Hider)
+		frame:SetParent(AzeriteUI5.Hider)
 	end
 end
 
