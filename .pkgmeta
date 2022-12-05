@@ -14,6 +14,10 @@ externals:
   Libs/AceLocale-3.0: https://repos.wowace.com/wow/ace3/trunk/AceLocale-3.0
   Libs/AceGUI-3.0: https://repos.wowace.com/wow/ace3/trunk/AceGUI-3.0
   Libs/AceConfig-3.0: https://repos.wowace.com/wow/ace3/trunk/AceConfig-3.0
+  Libs/LibActionButton-1.0: https://repos.wowace.com/wow/libactionbutton-1-0
+  Libs/LibButtonGlow-1.0: https://repos.wowace.com/wow/libbuttonglow-1-0
+  Libs/LibKeyBound-1.0: https://repos.wowace.com/wow/libkeybound-1-0/trunk/LibKeyBound-1.0
+  Libs/LibClassicSpellActionCount-1.0: https://github.com/Ennea/LibClassicSpellActionCount-1.0.git
   Libs/LibDropDown:
     url: https://github.com/p3lim-wow/LibDropDown
     tag: latest
