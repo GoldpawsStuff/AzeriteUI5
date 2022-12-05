@@ -41,6 +41,9 @@ local defaults = {
 			enableDevelopmentMode = false,
 			relativeScale = 1
 		},
+		chatframes = {
+			enableChat = true
+		},
 		chatbubbles = {
 			enableChatBubbles = true,
 			visibility = {
