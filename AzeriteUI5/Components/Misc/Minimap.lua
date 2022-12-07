@@ -26,6 +26,10 @@
 local Addon, AzeriteUI5 = ...
 local MinimapMod = AzeriteUI5:NewModule("Minimap", "LibMoreEvents-1.0", "AceHook-3.0")
 
+MinimapMod.StyleMap = function(self)
+
+end
+
 MinimapMod.OnInitialize = function(self)
 end
 

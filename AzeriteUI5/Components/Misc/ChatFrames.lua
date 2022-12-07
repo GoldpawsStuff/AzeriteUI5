@@ -27,8 +27,8 @@ local Addon, AzeriteUI5 = ...
 local ChatFrames = AzeriteUI5:NewModule("ChatFrames", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0")
 
 -- Addon API
-local GetFont = ns.API.GetFont
-local UIHider = ns.Hider
+local GetFont = AzeriteUI5.API.GetFont
+local UIHider = AzeriteUI5.Hider
 
 -- Global buttons not unique to any frame
 local GLOBAL_BUTTONS = {
@@ -276,8 +276,8 @@ ChatFrames.StyleFrame = function(self, frame)
 
 	-- Take control of the tab's alpha changes
 	-- and disable blizzard's own fading.
-	buttonFrame:SetAlpha(1)
-	buttonFrame.SetAlpha = UIFrameFadeRemoveFrame
+	--buttonFrame:SetAlpha(1)
+	--buttonFrame.SetAlpha = UIFrameFadeRemoveFrame
 
 	-- Kill the button frame textures.
 	for tex in frame:GetButtonFrameTextures() do
@@ -286,13 +286,13 @@ ChatFrames.StyleFrame = function(self, frame)
 	end
 
 	local tab = frame:GetTab()
-	local fontObject = GetFont(13,true,"Chat")
+	local fontObject = GetFont(15,true,"Chat")
 
 	-- Take control of the tab's alpha changes
 	-- and disable blizzard's own fading.
 	tab:SetNormalFontObject(fontObject)
-	tab:SetAlpha(1)
-	tab.SetAlpha = UIFrameFadeRemoveFrame
+	--tab:SetAlpha(1)
+	--tab.SetAlpha = UIFrameFadeRemoveFrame
 
 	for tex in frame:GetTabTextures() do
 		tex:SetTexture(nil)
@@ -347,7 +347,7 @@ end
 --end
 
 ChatFrames.UpdateTabAlpha = function(self, frame)
-	local tab = _G[frame .. "Tab"]
+	local tab = frame:GetTab()
 	if (tab.noMouseAlpha == .4 or tab.noMouseAlpha == .2) then
 		tab:SetAlpha(0)
 		tab.noMouseAlpha = 0
@@ -356,17 +356,17 @@ end
 
 ChatFrames.UpdateChatFont = function(self, frame)
 	if (not frame) then return end
-	local font,_,style = GetFont(14,true,"Chat")
-	local currentFont, currentSize, currentStyle = self:GetFont()
+	local font,_,style = GetFont(14,true,"Chat"):GetFont()
+	local currentFont, currentSize, currentStyle = frame:GetFont()
 	if (font == currentFont and style == currentStyle) then
 		return
 	end
-	self:SetFont(font, currentSize, style)
+	frame:SetFont(font, currentSize, style)
 end
 
 ChatFrames.UpdateDockedChatTabs = function(self)
 	local frame = ChatFrame1
-	if (self.frame:IsMouseOver(30,0,-30,30)) then
+	if (frame:IsMouseOver(30,0,-30,30)) then
 		for _,frameName in pairs(_G.CHAT_FRAMES) do
 			local frame = _G[frameName]
 			if (frame) then
@@ -509,7 +509,7 @@ ChatFrames.OnEvent = function(self, event, ...)
 					local buttonframe = CombatLogQuickButtonFrame_Custom
 					for i = 1, buttonframe:GetNumRegions() do
 						local region = select(i, buttonframe:GetRegions())
-						if (region and Region:GetObjectType() == "Texture") then
+						if (region and region:GetObjectType() == "Texture") then
 							region:SetTexture(nil)
 						end
 					end
@@ -521,7 +521,7 @@ ChatFrames.OnEvent = function(self, event, ...)
 			self:SecureHook("FCF_RestorePositionAndDimensions", "SetChatFramePosition")
 			self:SecureHook("FCF_SavePositionAndDimensions", "SaveChatFramePositionAndDimensions")
 			self:SecureHook("FCFTab_UpdateAlpha", "UpdateTabAlpha")
-			self:SecureHook("FCF_DockUpdate","UpdateClutter")
+			--self:SecureHook("FCF_DockUpdate","UpdateClutter")
 
 			self:ScheduleRepeatingTimer("UpdateClutter", 1/10)
 

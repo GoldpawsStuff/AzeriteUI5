@@ -3,7 +3,7 @@
 	<Script file="ChatBubbles.lua"/>
 	<Script file="ChatFrames.lua"/>
 	<Script file="Minimap.lua"/>
-	<Script file="Tracker.lua"/>
+	<!--<Script file="Tracker.lua"/>-->
 	<Script file="UIErrorsFrame.lua"/>
 
 </Ui>
