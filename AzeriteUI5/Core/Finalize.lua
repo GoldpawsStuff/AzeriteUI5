@@ -23,8 +23,8 @@
 	SOFTWARE.
 
 --]]
-local Addon, AzeriteUI5 = ...
+local Addon, ns = ...
 
-AzeriteUI5.Private = nil
+ns.Private = nil
 
-getmetatable(AzeriteUI5).____metatable = false
+getmetatable(ns).____metatable = false

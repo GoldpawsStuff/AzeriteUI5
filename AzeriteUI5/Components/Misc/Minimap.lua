@@ -23,8 +23,8 @@
 	SOFTWARE.
 
 --]]
-local Addon, AzeriteUI5 = ...
-local MinimapMod = AzeriteUI5:NewModule("Minimap", "LibMoreEvents-1.0", "AceHook-3.0")
+local Addon, ns = ...
+local MinimapMod = ns:NewModule("Minimap", "LibMoreEvents-1.0", "AceHook-3.0")
 
 MinimapMod.StyleMap = function(self)
 

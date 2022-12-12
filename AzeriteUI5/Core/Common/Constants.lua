@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, AzeriteUI5 = ...
+local Addon, ns = ...
 
 -- Addon version
 ------------------------------------------------------
@@ -33,44 +33,44 @@ local version = "@project-version@"
 if (version:find("project%-version")) then
 	version = "Development"
 end
-AzeriteUI5.Private.Version = version
-AzeriteUI5.Private.IsDevelopment = version == "Development"
-AzeriteUI5.Private.IsAlpha = string.find(version, "%-Alpha$")
-AzeriteUI5.Private.IsBeta = string.find(version, "%-Beta$")
-AzeriteUI5.Private.IsRC = string.find(version, "%-RC$")
-AzeriteUI5.Private.IsRelease = string.find(version, "%-Release$")
+ns.Private.Version = version
+ns.Private.IsDevelopment = version == "Development"
+ns.Private.IsAlpha = string.find(version, "%-Alpha$")
+ns.Private.IsBeta = string.find(version, "%-Beta$")
+ns.Private.IsRC = string.find(version, "%-RC$")
+ns.Private.IsRelease = string.find(version, "%-Release$")
 
 -- WoW client version
 ------------------------------------------------------
 local patch, build, date, version = GetBuildInfo()
 local major, minor = string.split(".", patch)
 
-AzeriteUI5.Private.ClientVersion = version
-AzeriteUI5.Private.ClientDate = date
-AzeriteUI5.Private.ClientPatch = patch
-AzeriteUI5.Private.ClientMajor = tonumber(major)
-AzeriteUI5.Private.ClientMinor = tonumber(minor)
-AzeriteUI5.Private.ClientBuild = tonumber(build)
+ns.Private.ClientVersion = version
+ns.Private.ClientDate = date
+ns.Private.ClientPatch = patch
+ns.Private.ClientMajor = tonumber(major)
+ns.Private.ClientMinor = tonumber(minor)
+ns.Private.ClientBuild = tonumber(build)
 
 -- Simple flags for client version checks
-AzeriteUI5.Private.IsRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
-AzeriteUI5.Private.IsClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
-AzeriteUI5.Private.IsTBC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
-AzeriteUI5.Private.IsWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
-AzeriteUI5.Private.WoW10 = version >= 100000
+ns.Private.IsRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
+ns.Private.IsClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
+ns.Private.IsTBC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
+ns.Private.IsWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
+ns.Private.WoW10 = version >= 100000
 
 -- Prefix for frame names
 ------------------------------------------------------
-AzeriteUI5.Private.Prefix = string.gsub(Addon, "UI(%d*)", "")
+ns.Private.Prefix = string.gsub(Addon, "UI(%d*)", "")
 
 -- Player constants
 ------------------------------------------------------
 local _,playerClass = UnitClass("player")
-AzeriteUI5.Private.PlayerClass = playerClass
-AzeriteUI5.Private.PlayerRealm = GetRealmName()
-AzeriteUI5.Private.PlayerName = UnitNameUnmodified("player")
+ns.Private.PlayerClass = playerClass
+ns.Private.PlayerRealm = GetRealmName()
+ns.Private.PlayerName = UnitNameUnmodified("player")
 
 -- Scaling Constants
 ------------------------------------------------------
-AzeriteUI5.UIScale = 768/1080
-AzeriteUI5.Private.UIDefaultScale = 768/1080
+ns.UIScale = 768/1080
+ns.Private.UIDefaultScale = 768/1080

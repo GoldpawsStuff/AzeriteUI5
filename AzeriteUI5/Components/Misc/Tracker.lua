@@ -23,8 +23,8 @@
 	SOFTWARE.
 
 --]]
-local Addon, AzeriteUI5 = ...
-local Tracker = AzeriteUI5:NewModule("Tracker", "LibMoreEvents-1.0", "AceHook-3.0")
+local Addon, ns = ...
+local Tracker = ns:NewModule("Tracker", "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- WoW API
 local hooksecurefunc = hooksecurefunc
@@ -32,13 +32,13 @@ local IsAddOnLoaded = IsAddOnLoaded
 local SetOverrideBindingClick = SetOverrideBindingClick
 
 -- Addon API
-local Colors = AzeriteUI5.Colors
-local GetFont = AzeriteUI5.API.GetFont
-local GetMedia = AzeriteUI5.API.GetMedia
-local SetObjectScale = AzeriteUI5.API.SetObjectScale
-local IsAddOnEnabled = AzeriteUI5.API.IsAddOnEnabled
-local UIHider = AzeriteUI5.Hider
-local noop = AzeriteUI5.Noop
+local Colors = ns.Colors
+local GetFont = ns.API.GetFont
+local GetMedia = ns.API.GetMedia
+local SetObjectScale = ns.API.SetObjectScale
+local IsAddOnEnabled = ns.API.IsAddOnEnabled
+local UIHider = ns.Hider
+local noop = ns.Noop
 
 -- Cache of handled elements
 local Handled = {}
@@ -57,7 +57,7 @@ local UpdateObjectiveTracker = function()
 
 				local msg = header.Text
 				msg:SetFontObject(GetFont(16,true))
-				msg:SetTextColor(unpack(AzeriteUI5.Colors.title))
+				msg:SetTextColor(unpack(ns.Colors.title))
 				msg:SetShadowColor(0,0,0,0)
 				msg:SetDrawLayer("OVERLAY", 7)
 				msg:SetParent(header)

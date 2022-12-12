@@ -23,10 +23,10 @@
 	SOFTWARE.
 
 --]]
-local Addon, AzeriteUI5 = ...
+local Addon, ns = ...
 
 -- Addon API
-local GetScale = AzeriteUI5.API.GetScale
+local GetScale = ns.API.GetScale
 
 -- Little trick to show the layout and dimensions
 -- of the Minimap blip icons on-screen in-game,

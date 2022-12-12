@@ -23,9 +23,9 @@
 	SOFTWARE.
 
 --]]
-local Addon, AzeriteUI5 = ...
-local API = AzeriteUI5.API or {}
-AzeriteUI5.API = API
+local Addon, ns = ...
+local API = ns.API or {}
+ns.API = API
 
 -- Convert a coordinate within a frame to a usable position
 API.GetParsedPosition = function(parentWidth, parentHeight, x, y, bottomOffset, leftOffset, topOffset, rightOffset)

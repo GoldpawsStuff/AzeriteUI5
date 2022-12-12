@@ -23,9 +23,9 @@
 	SOFTWARE.
 
 --]]
-local Addon, AzeriteUI5 = ...
-local API = AzeriteUI5.API or {}
-AzeriteUI5.API = API
+local Addon, ns = ...
+local API = ns.API or {}
+ns.API = API
 
 -- Lua API
 local _G = _G
@@ -108,7 +108,7 @@ local GetTime = function(useStandardTime, useServerTime)
 end
 
 local IsWinterVeil = function()
-	if (AzeriteUI5.IsRetail and dateInRange(16,12,2022,2,1,2023)) then
+	if (ns.IsRetail and dateInRange(16,12,2022,2,1,2023)) then
 		return true
 	else
 		local year = tonumber(date("%Y"))
@@ -117,7 +117,7 @@ local IsWinterVeil = function()
 end
 
 local IsLoveFestival = function()
-	if (AzeriteUI5.IsRetail and dateInRange(7,2,2022,21,2,2022)) then
+	if (ns.IsRetail and dateInRange(7,2,2022,21,2,2022)) then
 		return true
 	else
 		local year = tonumber(date("%Y"))

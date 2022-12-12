@@ -23,9 +23,9 @@
 	SOFTWARE.
 
 --]]
-local Addon, AzeriteUI5 = ...
-local API = AzeriteUI5.API or {}
-AzeriteUI5.API = API
+local Addon, ns = ...
+local API = ns.API or {}
+ns.API = API
 
 local PLAYER_NAME = UnitName("player")
 

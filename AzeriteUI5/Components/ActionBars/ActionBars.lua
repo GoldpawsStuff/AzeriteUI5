@@ -23,5 +23,5 @@
 	SOFTWARE.
 
 --]]
-local Addon, AzeriteUI5 = ...
-local ActionBars = AzeriteUI5:NewModule("ActionBars", "LibMoreEvents-1.0")
+local Addon, ns = ...
+local ActionBars = ns:NewModule("ActionBars", "LibMoreEvents-1.0")

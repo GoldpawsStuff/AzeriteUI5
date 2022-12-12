@@ -23,11 +23,11 @@
 	SOFTWARE.
 
 --]]
-local Addon, AzeriteUI5 = ...
-local API = AzeriteUI5.API or {}
-AzeriteUI5.API = API
+local Addon, ns = ...
+local API = ns.API or {}
+ns.API = API
 
-local Colors = AzeriteUI5.Colors
+local Colors = ns.Colors
 
 -- WoW API
 local GetQuestGreenRange = GetQuestGreenRange
@@ -74,7 +74,7 @@ local GetUnitColor = function(unit)
 end
 
 -- Unit difficulty coloring.
-local GetDifficultyColor = (AzeriteUI5.IsClassic or AzeriteUI5.IsTBC or AzeriteUI5.IsWrath) and function(level, isScaling)
+local GetDifficultyColor = (ns.IsClassic or ns.IsTBC or ns.IsWrath) and function(level, isScaling)
 	local colors = Colors.quest
 	local levelDiff = level - UnitLevel("player")
 	if (isScaling) then

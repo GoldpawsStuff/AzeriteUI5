@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, AzeriteUI5 = ...
+local Addon, ns = ...
 local Colors = {}
 
 -- Lua API
@@ -342,4 +342,4 @@ Colors.zone.hostile = createColor(175/255, 76/255, 56/255)
 Colors.zone.sanctuary = createColor(104/255, 204/255, 239/255)
 Colors.zone.unknown = createColor(255/255, 234/255, 137/255) -- instances, bgs, contested zones on pve realms
 
-AzeriteUI5.Private.Colors = Colors
+ns.Private.Colors = Colors

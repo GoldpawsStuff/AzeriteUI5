@@ -23,8 +23,8 @@
 	SOFTWARE.
 
 --]]
-local Addon, AzeriteUI5 = ...
-local ErrorsFrame = AzeriteUI5:NewModule("ErrorsFrame", "LibMoreEvents-1.0", "AceHook-3.0")
+local Addon, ns = ...
+local ErrorsFrame = ns:NewModule("ErrorsFrame", "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- WoW API
 local GetCVarBool = GetCVarBool

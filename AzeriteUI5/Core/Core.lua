@@ -23,14 +23,14 @@
 	SOFTWARE.
 
 --]]
-local Addon, AzeriteUI5 = ...
-AzeriteUI5 = LibStub("AceAddon-3.0"):NewAddon(AzeriteUI5, Addon, "AceConsole-3.0")
-AzeriteUI5.L = LibStub("AceLocale-3.0"):GetLocale(Addon, true) -- Addon localization
-AzeriteUI5.callbacks = LibStub("CallbackHandler-1.0"):New(AzeriteUI5, nil, nil, false) -- Addon callback handler
-AzeriteUI5.Hider = CreateFrame("Frame"); AzeriteUI5.Hider:Hide()
-AzeriteUI5.Noop = function() end
+local Addon, ns = ...
+ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "AceConsole-3.0")
+ns.L = LibStub("AceLocale-3.0"):GetLocale(Addon, true) -- Addon localization
+ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false) -- Addon callback handler
+ns.Hider = CreateFrame("Frame"); ns.Hider:Hide()
+ns.Noop = function() end
 
-_G[Addon] = AzeriteUI5
+_G[Addon] = ns
 
 -- Default settings
 local defaults = {
@@ -87,11 +87,11 @@ local SanitizeSettings = function(db)
 end
 
 -- Proxy method to avoid modules using the callback object directly
-AzeriteUI5.Fire = function(self, name, ...)
+ns.Fire = function(self, name, ...)
 	self.callbacks:Fire(name, ...)
 end
 
-AzeriteUI5.ResetScale = function(self)
+ns.ResetScale = function(self)
 	if (InCombatLockdown()) then
 		return
 	end
@@ -107,7 +107,7 @@ AzeriteUI5.ResetScale = function(self)
 	end
 end
 
-AzeriteUI5.SetScale = function(self, input)
+ns.SetScale = function(self, input)
 	if (InCombatLockdown()) then
 		return
 	end
@@ -128,12 +128,12 @@ AzeriteUI5.SetScale = function(self, input)
 	end
 end
 
-AzeriteUI5.UpdateSettings = function(self, event, ...)
+ns.UpdateSettings = function(self, event, ...)
 	-- Fire callbacks to submodules.
 	self.callbacks:Fire("Saved_Settings_Updated")
 end
 
-AzeriteUI5.OnInitialize = function(self)
+ns.OnInitialize = function(self)
 
 	self.db = SanitizeSettings(LibStub("AceDB-3.0"):New("AzeriteUI5_DB", defaults, true))
 	self.db.RegisterCallback(self, "OnProfileChanged", "UpdateSettings")

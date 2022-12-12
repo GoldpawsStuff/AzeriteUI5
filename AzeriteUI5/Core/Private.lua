@@ -23,14 +23,14 @@
 	SOFTWARE.
 
 --]]
-local Addon, AzeriteUI5 = ...
+local Addon, ns = ...
 
-local mt = getmetatable(AzeriteUI5) or {}
+local mt = getmetatable(ns) or {}
 local private = {}
 
 mt.__newindex = function(t,k,v)
 	if (private[k] ~= nil) then
-		error(string.format("['%s']: Can't replace the protected %s '%s'.", tostring(AzeriteUI5), type(private[k]), tostring(k)), 2)
+		error(string.format("['%s']: Can't replace the protected %s '%s'.", tostring(ns), type(private[k]), tostring(k)), 2)
 	else
 		rawset(t,k,v)
 	end
@@ -40,6 +40,6 @@ mt.__index = function(t,k)
 	return private[k]
 end
 
-setmetatable(AzeriteUI5, mt)
+setmetatable(ns, mt)
 
-AzeriteUI5.Private = private
+ns.Private = private

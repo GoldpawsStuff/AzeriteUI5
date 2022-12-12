@@ -23,12 +23,12 @@
 	SOFTWARE.
 
 --]]
-local Addon, AzeriteUI5 = ...
-local ChatFrames = AzeriteUI5:NewModule("ChatFrames", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0")
+local Addon, ns = ...
+local ChatFrames = ns:NewModule("ChatFrames", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0")
 
 -- Addon API
-local GetFont = AzeriteUI5.API.GetFont
-local UIHider = AzeriteUI5.Hider
+local GetFont = ns.API.GetFont
+local UIHider = ns.Hider
 
 -- Global buttons not unique to any frame
 local GLOBAL_BUTTONS = {
@@ -535,7 +535,7 @@ ChatFrames.OnEvent = function(self, event, ...)
 end
 
 ChatFrames.OnInitialize = function(self)
-	if (not AzeriteUI5.db.global.chatframes.enableChat) then
+	if (not ns.db.global.chatframes.enableChat) then
 		return self:Disable()
 	end
 end
