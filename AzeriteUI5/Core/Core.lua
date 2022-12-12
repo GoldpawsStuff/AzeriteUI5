@@ -71,6 +71,14 @@ local InCombatLockdown = InCombatLockdown
 local LoadAddOn = LoadAddOn
 local ReloadUI = ReloadUI
 
+-- Addon API
+local IsAddOnAvailable = ns.API.IsAddOnAvailable
+local SetRelativeScale = ns.API.SetRelativeScale
+local UpdateObjectScales = ns.API.UpdateObjectScales
+local ShowMovableFrameAnchors = ns.Widgets.ShowMovableFrameAnchors
+local HideMovableFrameAnchors = ns.Widgets.HideMovableFrameAnchors
+local ToggleMovableFrameAnchors = ns.Widgets.ToggleMovableFrameAnchors
+
 local LimitScale = function(scale)
 	return math_min(1.5, math_max(.5, scale))
 end
@@ -93,6 +101,18 @@ end
 -- Proxy method to avoid modules using the callback object directly
 ns.Fire = function(self, name, ...)
 	self.callbacks:Fire(name, ...)
+end
+
+ns.LockMovableFrames = function(self)
+	HideMovableFrameAnchors()
+end
+
+ns.UnlockMovableFrames = function(self)
+	ShowMovableFrameAnchors()
+end
+
+ns.ToggleMovableFrames = function(self)
+	ToggleMovableFrameAnchors()
 end
 
 ns.ResetScale = function(self)
@@ -161,11 +181,11 @@ ns.OnInitialize = function(self)
 		end
 	end)
 
-	self:RegisterChatCommand("setscale", "SetScale")
-	self:RegisterChatCommand("resetscale", "ResetScale")
-	self:RegisterChatCommand("lock", "LockMovableFrames")
-	self:RegisterChatCommand("unlock", "UnlockMovableFrames")
-	self:RegisterChatCommand("togglelock", "ToggleMovableFrames")
+	--self:RegisterChatCommand("setscale", "SetScale")
+	--self:RegisterChatCommand("resetscale", "ResetScale")
+	--self:RegisterChatCommand("lock", "LockMovableFrames")
+	--self:RegisterChatCommand("unlock", "UnlockMovableFrames")
+	--self:RegisterChatCommand("togglelock", "ToggleMovableFrames")
 
 	if (EditModeManagerFrame) then
 		hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() self:UnlockMovableFrames() end)
