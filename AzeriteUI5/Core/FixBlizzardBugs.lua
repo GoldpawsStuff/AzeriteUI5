@@ -25,18 +25,12 @@
 --]]
 local Addon, ns = ...
 
+-- Load Blizzard addons so we don't have to listen for them.
+LoadAddOn("Blizzard_Channels")
+LoadAddOn("Blizzard_CUFProfiles")
+LoadAddOn("Blizzard_CompactRaidFrames")
+LoadAddOn("Blizzard_ObjectiveTracker")
+
 -- Kill off the non-stop voice chat error 17 on retail.
 -- This only occurs in linux, but we can't check for that.
-if (ns.IsRetail) then
-	if (ChannelFrame) then
-		ChannelFrame:UnregisterEvent("VOICE_CHAT_ERROR")
-	else
-		local frame = CreateFrame("Frame")
-		frame:RegisterEvent("ADDON_LOADED")
-		frame:SetScript("OnEvent", function(self, event, addon)
-			if (addon ~= "Blizzard_Channels") then return end
-			self:UnregisterEvent("ADDON_LOADED")
-			ChannelFrame:UnregisterEvent("VOICE_CHAT_ERROR")
-		end)
-	end
-end
+ChannelFrame:UnregisterEvent("VOICE_CHAT_ERROR")

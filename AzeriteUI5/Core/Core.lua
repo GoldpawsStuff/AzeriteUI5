@@ -65,20 +65,16 @@ local string_lower = string.lower
 local tonumber = tonumber
 
 -- WoW API
-local EnableAddOn = EnableAddOn
-local DisableAddOn = DisableAddOn
 local InCombatLockdown = InCombatLockdown
-local LoadAddOn = LoadAddOn
-local ReloadUI = ReloadUI
 
 -- Addon API
-local IsAddOnAvailable = ns.API.IsAddOnAvailable
 local SetRelativeScale = ns.API.SetRelativeScale
 local UpdateObjectScales = ns.API.UpdateObjectScales
 local ShowMovableFrameAnchors = ns.Widgets.ShowMovableFrameAnchors
 local HideMovableFrameAnchors = ns.Widgets.HideMovableFrameAnchors
 local ToggleMovableFrameAnchors = ns.Widgets.ToggleMovableFrameAnchors
 
+-- Keep custom scales within limits.
 local LimitScale = function(scale)
 	return math_min(1.5, math_max(.5, scale))
 end
@@ -92,8 +88,7 @@ local SanitizeSettings = function(db)
 	end
 	local scale = db.global.core.relativeScale
 	if (scale) then
-		scale = math_min(1.25, math_max(.75, scale))
-		db.global.core.relativeScale = scale
+		db.global.core.relativeScale = LimitScale(scale)
 	end
 	return db
 end
@@ -190,16 +185,6 @@ ns.OnInitialize = function(self)
 	if (EditModeManagerFrame) then
 		hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() self:UnlockMovableFrames() end)
 		hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function() self:LockMovableFrames() end)
-	end
-
-	-- In case some other jokers have disabled these, we add them back to avoid a World of Bugs.
-	-- RothUI used to remove the two first, and a lot of people missed his documentation on how to get them back.
-	-- I personally removed the objective's tracker for a while in DiabolicUI, which led to pain. Lots of pain.
-	for _,v in ipairs({ "Blizzard_CUFProfiles", "Blizzard_CompactRaidFrames", "Blizzard_ObjectiveTracker" }) do
-		if (not self.API.IsAddOnEnabled(v)) then
-			EnableAddOn(v)
-			LoadAddOn(v)
-		end
 	end
 
 end

@@ -342,5 +342,3 @@ end
 Tracker.OnInitialize = function(self)
 	self:HookTracker()
 end
-
-LoadAddOn("Blizzard_ObjectiveTracker")
