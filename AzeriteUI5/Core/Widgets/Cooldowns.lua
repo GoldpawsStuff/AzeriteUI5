@@ -33,7 +33,6 @@ local select = select
 
 -- WoW API
 local GetTime = GetTime
-local hooksecurefunc = hooksecurefunc
 
 -- Addon API
 local AbbreviateTime = ns.API.AbbreviateTime
