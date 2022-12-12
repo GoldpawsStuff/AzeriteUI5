@@ -2,6 +2,5 @@
 
 	<Script file="ActionBars.lua"/>
 	<Script file="HideBlizzard.lua"/>
-	<Script file="HideBlizzardClassic.lua"/>
 
 </Ui>
