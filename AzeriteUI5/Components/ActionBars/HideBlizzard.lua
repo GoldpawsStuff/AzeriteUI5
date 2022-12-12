@@ -24,10 +24,6 @@
 
 --]]
 local Addon, ns = ...
-if (not ns.IsRetail) then
-	return
-end
-
 local ActionBars = ns:GetModule("ActionBars", true)
 if (not ActionBars) then return end
 
