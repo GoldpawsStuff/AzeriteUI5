@@ -270,6 +270,18 @@ local AutoHider_OnShow = function()
 	end
 end
 
+local Immersion_OnShow = function()
+	if (ObjectiveTrackerFrame) then
+		ObjectiveTrackerFrame:SetAlpha(0)
+	end
+end
+
+local Immersion_OnHide = function()
+	if (ObjectiveTrackerFrame) then
+		ObjectiveTrackerFrame:SetAlpha(.9)
+	end
+end
+
 Tracker.HookTracker = function(self)
 
 	ObjectiveTrackerUIWidgetContainer:SetFrameStrata("BACKGROUND")
