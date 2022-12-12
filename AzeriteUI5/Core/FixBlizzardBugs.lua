@@ -26,8 +26,7 @@
 local Addon, ns = ...
 
 -- Kill off the non-stop voice chat error 17 on retail.
--- This only occurs in linux, but with IsLinuxClient() broken
--- I don't know of any way to specifically check for linux.
+-- This only occurs in linux, but we can't check for that.
 if (ns.IsRetail) then
 	if (ChannelFrame) then
 		ChannelFrame:UnregisterEvent("VOICE_CHAT_ERROR")

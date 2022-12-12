@@ -71,6 +71,10 @@ local InCombatLockdown = InCombatLockdown
 local LoadAddOn = LoadAddOn
 local ReloadUI = ReloadUI
 
+local LimitScale = function(scale)
+	return math_min(1.5, math_max(.5, scale))
+end
+
 -- Purge deprecated settings,
 -- translate to new where applicable,
 -- make sure important ones are within bounds.
@@ -100,10 +104,10 @@ ns.ResetScale = function(self)
 	local defaultScale = defaults.global.core.relativeScale
 	if (scale and scale ~= defaultScale) then
 		db.global.core.relativeScale = defaultScale -- Store the saved setting
-		self.API.SetRelativeScale(defaultScale) -- Store it in the addon namespace
-		self.API.UpdateObjectScales() -- Apply it to existing objects
+		SetRelativeScale(defaultScale) -- Store it in the addon namespace
+		UpdateObjectScales() -- Apply it to existing objects
 		-- Fire callbacks to submodules.
-		self.callbacks:Fire("Relative_Scale_Updated", db.global.core.relativeScale)
+		ns.callbacks:Fire("Relative_Scale_Updated", db.global.core.relativeScale)
 	end
 end
 
@@ -116,14 +120,14 @@ ns.SetScale = function(self, input)
 		local db = self.db
 		local oldScale = db.global.core.relativeScale
 		-- Sanitize it, don't want crazy values
-		scale = math_min(1.25, math_max(.75, scale))
+		scale = LimitScale(scale)
 		if (oldScale ~= scale) then
 			-- Store and apply new relative user scale
 			db.global.core.relativeScale = scale -- Store the saved setting
-			self.API.SetRelativeScale(scale) -- Store it in the addon namespace
-			self.API.UpdateObjectScales() -- Apply it to existing objects
+			SetRelativeScale(scale) -- Store it in the addon namespace
+			UpdateObjectScales() -- Apply it to existing objects
 			-- Fire callbacks to submodules.
-			self.callbacks:Fire("Relative_Scale_Updated", db.global.core.relativeScale)
+			ns.callbacks:Fire("Relative_Scale_Updated", db.global.core.relativeScale)
 		end
 	end
 end
@@ -157,12 +161,16 @@ ns.OnInitialize = function(self)
 		end
 	end)
 
-	-- Fully experimental
-	--self:RegisterChatCommand("setscale", "SetScale")
-	--self:RegisterChatCommand("resetscale", "ResetScale")
-	--self:RegisterChatCommand("lock", self.Widgets.HideMovableFrameAnchors)
-	--self:RegisterChatCommand("unlock", self.Widgets.ShowMovableFrameAnchors)
-	--self:RegisterChatCommand("togglelock", self.Widgets.ToggleMovableFrameAnchors)
+	self:RegisterChatCommand("setscale", "SetScale")
+	self:RegisterChatCommand("resetscale", "ResetScale")
+	self:RegisterChatCommand("lock", "LockMovableFrames")
+	self:RegisterChatCommand("unlock", "UnlockMovableFrames")
+	self:RegisterChatCommand("togglelock", "ToggleMovableFrames")
+
+	if (EditModeManagerFrame) then
+		hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() self:UnlockMovableFrames() end)
+		hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function() self:LockMovableFrames() end)
+	end
 
 	-- In case some other jokers have disabled these, we add them back to avoid a World of Bugs.
 	-- RothUI used to remove the two first, and a lot of people missed his documentation on how to get them back.

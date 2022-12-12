@@ -73,8 +73,18 @@ Anchor.Create = function(self, frame, savedPosition, ...)
 	anchor.frame = frame
 	anchor.savedPosition = savedPosition or {}
 
+	-- Populate the saved position table if it's empty,
+	-- to avoid bugs if the calling module tries to
+	-- manually position the element using it.
+	if (savedPosition and not next(savedPosition)) then
+		local parsed = { GetPosition(frame) }
+		for i,j in ipairs(parsed) do
+			savedPosition[i] = j
+		end
+	end
+
 	-- Apply custom/static sizing to the anchor frame
-	local anchorWidth, anchorHeight = ...
+	local anchorWidth, anchorHeight, displayName = ...
 	if (anchorWidth and anchorHeight) then
 		anchor.anchorWidth = anchorWidth
 		anchor.anchorHeight = anchorHeight
@@ -96,6 +106,17 @@ Anchor.Create = function(self, frame, savedPosition, ...)
 	positionText:SetScale(GetScale())
 	positionText:SetPoint("CENTER")
 	anchor.Text = positionText
+
+	if (displayName) then
+		local titleText = anchor:CreateFontString(nil, "OVERLAY", nil, 1)
+		titleText:SetFontObject(GetFont(15,true))
+		titleText:SetTextColor(unpack(Colors.normal))
+		titleText:SetIgnoreParentScale(true)
+		titleText:SetScale(GetScale())
+		titleText:SetPoint("BOTTOM", positionText, "TOP", 0, 1)
+		titleText:SetText(displayName)
+		anchor.TitleText = positionText
+	end
 
 	anchor:SetHitRectInsets(-20,-20,-20,-20)
 	anchor:RegisterForClicks("AnyUp")
