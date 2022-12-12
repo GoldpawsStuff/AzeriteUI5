@@ -337,15 +337,6 @@ ChatFrames.StyleTempFrame = function(self)
 	self:StyleFrame(frame)
 end
 
-ChatFrames.SetChatFramePosition = function(self)
-end
-
-ChatFrames.SaveChatFramePositionAndDimensions = function(self)
-end
-
---ChatFrames.UpdateEditBoxColor = function(self)
---end
-
 ChatFrames.UpdateTabAlpha = function(self, frame)
 	local tab = frame:GetTab()
 	if (tab.noMouseAlpha == .4 or tab.noMouseAlpha == .2) then
@@ -502,6 +493,7 @@ ChatFrames.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		local isInitialLogin, isReloadingUi = ...
 		if (isInitialLogin or isReloadingUi) then
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 
 			for i = 1, NUM_CHAT_WINDOWS do
 				local frame = _G["ChatFrame"..i]
@@ -518,10 +510,8 @@ ChatFrames.OnEvent = function(self, event, ...)
 			end
 
 			self:SecureHook("FCF_OpenTemporaryWindow", "StyleTempFrame")
-			self:SecureHook("FCF_RestorePositionAndDimensions", "SetChatFramePosition")
-			self:SecureHook("FCF_SavePositionAndDimensions", "SaveChatFramePositionAndDimensions")
 			self:SecureHook("FCFTab_UpdateAlpha", "UpdateTabAlpha")
-			--self:SecureHook("FCF_DockUpdate","UpdateClutter")
+			self:SecureHook("FCF_DockUpdate","UpdateClutter")
 
 			self:ScheduleRepeatingTimer("UpdateClutter", 1/10)
 
