@@ -24,6 +24,7 @@
 
 --]]
 local Addon, ns = ...
+local oUF = ns.oUF
 
 local UnitFrames = ns:GetModule("UnitFrames", true)
 if (not UnitFrames) then return end
@@ -58,6 +59,25 @@ Blizzard.DisableClassNamePlatePowerBar = function(self)
 end
 
 Blizzard.OnEnable = function(self)
+
 	self:DisablePlayerPowerBarAlt()
 	self:DisableClassNamePlatePowerBar()
+
+	oUF:DisableBlizzard("player")
+	oUF:DisableBlizzard("pet")
+	oUF:DisableBlizzard("target")
+	oUF:DisableBlizzard("focus")
+
+	for i = 1, MAX_BOSS_FRAMES do
+		oUF:DisableBlizzard("boss"..i)
+	end
+
+	for i = 1, MEMBERS_PER_RAID_GROUP do
+		oUF:DisableBlizzard("party"..i)
+	end
+
+	for i = 1, MAX_ARENA_ENEMIES do
+		oUF:DisableBlizzard("arena"..i)
+	end
+
 end
