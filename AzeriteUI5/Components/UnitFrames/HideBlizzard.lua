@@ -41,25 +41,30 @@ Blizzard.DisableBlizzard = function(self)
 	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_HIDE")
 	PlayerPowerBarAlt:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
-	-- Disable NamePlate ClassBars
-	if (NamePlateDriverFrame.classNamePlatePowerBar) then
-		NamePlateDriverFrame.classNamePlatePowerBar:Hide()
-		NamePlateDriverFrame.classNamePlatePowerBar:UnregisterAllEvents()
+	-- Disable NamePlate Class Mechanics
+	local classNameplateManaBar = NamePlateDriverFrame.classNamePlatePowerBar
+	if (classNameplateManaBar) then
+		classNameplateManaBar:Hide()
+		classNameplateManaBar:UnregisterAllEvents()
 	end
-	if (NamePlateDriverFrame.SetupClassNameplateBars) then
-		hooksecurefunc(NamePlateDriverFrame, "SetupClassNameplateBars", function(frame)
-			if (not frame or frame:IsForbidden()) then
-				return
-			end
-			if (frame.classNamePlateMechanicFrame) then
-				frame.classNamePlateMechanicFrame:Hide()
-			end
-			if (frame.classNamePlatePowerBar) then
-				frame.classNamePlatePowerBar:Hide()
-				frame.classNamePlatePowerBar:UnregisterAllEvents()
-			end
-		end)
+
+	local classNamePlateMechanicFrame = NamePlateDriverFrame.classNamePlateMechanicFrame
+	if (classNamePlateMechanicFrame) then
+		classNamePlateMechanicFrame:Hide()
 	end
+
+	hooksecurefunc(NamePlateDriverFrame, "SetupClassNameplateBars", function(frame)
+		if (not frame or frame:IsForbidden()) then
+			return
+		end
+		if (frame.classNamePlateMechanicFrame) then
+			frame.classNamePlateMechanicFrame:Hide()
+		end
+		if (frame.classNamePlatePowerBar) then
+			frame.classNamePlatePowerBar:Hide()
+			frame.classNamePlatePowerBar:UnregisterAllEvents()
+		end
+	end)
 
 	-- Disable UnitFrames
 	oUF:DisableBlizzard("player")
