@@ -123,8 +123,8 @@ Blizzard.HideBlizzard = function(self)
 	--MainMenuBar:UnregisterEvent("ACTIONBAR_HIDEGRID")
 
 	ActionBarController:UnregisterAllEvents()
-	ActionBarController:RegisterEvent("SETTINGS_LOADED")
-	ActionBarController:RegisterEvent("UPDATE_EXTRA_ACTIONBAR")
+	ActionBarController:RegisterEvent("SETTINGS_LOADED") -- needed to update paging
+	ActionBarController:RegisterEvent("UPDATE_EXTRA_ACTIONBAR") -- needed to update extrabuttons
 
 	if IsAddOnLoaded("Blizzard_NewPlayerExperience") then
 		self:NPE_LoadUI()
