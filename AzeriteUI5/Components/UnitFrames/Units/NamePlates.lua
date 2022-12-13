@@ -66,8 +66,6 @@ local OnHide = function(self, ...)
 	end
 end
 
--- NamePlates
------------------------------------------------------
 local Cvars = {
 	-- If these are enabled the GameTooltip will become protected,
 	-- and all sort of taints and bugs will occur.
@@ -128,6 +126,18 @@ local Cvars = {
 	["nameplateTargetBehindMaxDistance"] = 15 -- 15
 }
 
+local Callback = function(self, event, unit)
+	if (event == "PLAYER_TARGET_CHANGED") then
+	elseif (event == "NAME_PLATE_UNIT_ADDED") then
+		self.isPRD = UnitIsUnit(unit, "player")
+		ns.NamePlates[self] = true
+		ns.ActiveNamePlates[self] = true
+	elseif (event == "NAME_PLATE_UNIT_REMOVED") then
+		self.isPRD = nil
+		ns.ActiveNamePlates[self] = nil
+	end
+end
+
 local CheckMouseOver = function()
 	local hasMouseOver = UnitExists("mouseover")
 	if (hasMouseOver) then
@@ -149,18 +159,6 @@ local CheckMouseOver = function()
 	elseif (MOUSEOVER) then
 		OnLeave(MOUSEOVER)
 		MOUSEOVER = nil
-	end
-end
-
-local Callback = function(self, event, unit)
-	if (event == "PLAYER_TARGET_CHANGED") then
-	elseif (event == "NAME_PLATE_UNIT_ADDED") then
-		self.isPRD = UnitIsUnit(unit, "player")
-		ns.NamePlates[self] = true
-		ns.ActiveNamePlates[self] = true
-	elseif (event == "NAME_PLATE_UNIT_REMOVED") then
-		self.isPRD = nil
-		ns.ActiveNamePlates[self] = nil
 	end
 end
 
