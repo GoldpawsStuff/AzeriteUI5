@@ -31,13 +31,17 @@ if (not UnitFrames) then return end
 
 local Blizzard = UnitFrames:NewModule("Blizzard", "LibMoreEvents-1.0")
 
-Blizzard.DisablePlayerPowerBarAlt = function(self)
+-- Addon API
+local UIHider = ns.Hider
+
+Blizzard.DisableBlizzard = function(self)
+
+	-- Disable Player Alternate Power Bar
 	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_SHOW")
 	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_HIDE")
 	PlayerPowerBarAlt:UnregisterEvent("PLAYER_ENTERING_WORLD")
-end
 
-Blizzard.DisableClassNamePlatePowerBar = function(self)
+	-- Disable NamePlate ClassBars
 	if (NamePlateDriverFrame.classNamePlatePowerBar) then
 		NamePlateDriverFrame.classNamePlatePowerBar:Hide()
 		NamePlateDriverFrame.classNamePlatePowerBar:UnregisterAllEvents()
@@ -56,28 +60,39 @@ Blizzard.DisableClassNamePlatePowerBar = function(self)
 			end
 		end)
 	end
-end
 
-Blizzard.OnEnable = function(self)
-
-	self:DisablePlayerPowerBarAlt()
-	self:DisableClassNamePlatePowerBar()
-
+	-- Disable UnitFrames
 	oUF:DisableBlizzard("player")
 	oUF:DisableBlizzard("pet")
 	oUF:DisableBlizzard("target")
 	oUF:DisableBlizzard("focus")
 
+	-- Disable Boss Frames
 	for i = 1, MAX_BOSS_FRAMES do
 		oUF:DisableBlizzard("boss"..i)
 	end
+
+	-- Disable Arena Enemy Frames
+	for i = 1, MAX_ARENA_ENEMIES do
+		oUF:DisableBlizzard("arena"..i)
+	end
+
+	-- Disable Paryt & Raid Frames
+	LoadAddOn("Blizzard_CUFProfiles")
+	LoadAddOn("Blizzard_CompactRaidFrames")
 
 	for i = 1, MEMBERS_PER_RAID_GROUP do
 		oUF:DisableBlizzard("party"..i)
 	end
 
-	for i = 1, MAX_ARENA_ENEMIES do
-		oUF:DisableBlizzard("arena"..i)
-	end
+	UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
+	CompactRaidFrameContainer:UnregisterAllEvents()
+	CompactRaidFrameManager_SetSetting("IsShown", "0")
+	CompactRaidFrameManager:UnregisterAllEvents()
+	CompactRaidFrameManager:SetParent(UIHider)
 
+end
+
+Blizzard.OnEnable = function(self)
+	self:DisableBlizzard()
 end
