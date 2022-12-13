@@ -55,16 +55,6 @@ Blizzard.DisableClassNamePlatePowerBar = function(self)
 			end
 		end)
 	end
-	-- This is about sizes, should be set by styling, not this.
-	--if (NamePlateDriverFrame.UpdateNamePlateOptions) then
-	--	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", function()
-	--		if (InCombatLockdown()) then return end
-	--		local w,h = unpack(ns.Config.NamePlates.Size)
-	--		C_NamePlate.SetNamePlateFriendlySize(w,h)
-	--		C_NamePlate.SetNamePlateEnemySize(w,h)
-	--		C_NamePlate.SetNamePlateSelfSize(w,h)
-	--	end)
-	--end
 end
 
 Blizzard.OnEnable = function(self)

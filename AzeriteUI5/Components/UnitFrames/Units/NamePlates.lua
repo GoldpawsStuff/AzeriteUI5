@@ -198,6 +198,16 @@ NamePlates.SpawnNamePlates = function(self)
 
 		self:ScheduleRepeatingTimer(CheckMouseOver, 1/20)
 
+		--if (NamePlateDriverFrame.UpdateNamePlateOptions) then
+		--	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", function()
+		--		if (InCombatLockdown()) then return end
+		--		local w,h = unpack(ns.Config.NamePlates.Size)
+		--		C_NamePlate.SetNamePlateFriendlySize(w,h)
+		--		C_NamePlate.SetNamePlateEnemySize(w,h)
+		--		C_NamePlate.SetNamePlateSelfSize(w,h)
+		--	end)
+		--end
+
 	end)
 end
 
