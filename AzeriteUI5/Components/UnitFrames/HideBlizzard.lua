@@ -78,16 +78,18 @@ Blizzard.DisableBlizzard = function(self)
 	end
 
 	-- Disable Paryt & Raid Frames
-	LoadAddOn("Blizzard_CUFProfiles")
-	LoadAddOn("Blizzard_CompactRaidFrames")
-
 	for i = 1, MEMBERS_PER_RAID_GROUP do
 		oUF:DisableBlizzard("party"..i)
 	end
 
 	UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
-	CompactRaidFrameContainer:UnregisterAllEvents()
+
+	LoadAddOn("Blizzard_CUFProfiles")
+	LoadAddOn("Blizzard_CompactRaidFrames")
+
 	CompactRaidFrameManager_SetSetting("IsShown", "0")
+
+	CompactRaidFrameContainer:UnregisterAllEvents()
 	CompactRaidFrameManager:UnregisterAllEvents()
 	CompactRaidFrameManager:SetParent(UIHider)
 
