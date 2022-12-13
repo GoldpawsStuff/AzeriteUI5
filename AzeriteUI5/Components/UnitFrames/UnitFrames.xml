@@ -1,4 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
+	<Script file="UnitFrames.lua"/>
+
+	<Script file="HideBlizzard.lua"/>
+
+	<Include file="Units\Units.xml"/>
+
 
 </Ui>
