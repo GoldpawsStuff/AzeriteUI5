@@ -30,6 +30,7 @@ LoadAddOn("Blizzard_Channels")
 LoadAddOn("Blizzard_CUFProfiles")
 LoadAddOn("Blizzard_CompactRaidFrames")
 LoadAddOn("Blizzard_ObjectiveTracker")
+LoadAddOn("Blizzard_TimeManager")
 
 -- Kill off the non-stop voice chat error 17 on retail.
 -- This only occurs in linux, but we can't check for that.
