@@ -65,6 +65,7 @@ end
 
 local defaults = {
 	profile = {
+		enabled = true,
 		bars = {
 			["**"] = {
 				enabled = false,
@@ -120,7 +121,11 @@ local defaults = {
 
 BarMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ActionBars", defaults)
+	self:SetEnabledState(self.db.profile.enabled)
 end
 
 BarMod.OnEnable = function(self)
+end
+
+BarMod.OnDisable = function(self)
 end
