@@ -81,7 +81,7 @@ end
 API.SetEffectiveObjectScale = function(object, factor)
 	if (object and object.SetScale) then
 		ScaledToUIParent[object] = factor or 1
-		object:SetIgnoreParentScale(true)
+		object:SetIgnoreParentScale(false)
 		object:SetScale(API.GetEffectiveScale() * (factor or 1))
 	end
 	return object

@@ -92,47 +92,19 @@ end
 
 ns.ResetBlizzardScale = function(self)
 	if (InCombatLockdown()) then return end
-	SetCVar("uiScale", ns.API.GetDefaultScale())
-	ReloadUI()
+	SetCVar("uiScale", self:GetBlizzardScale())
+	ReloadUI() -- need a reset as the above can taint
 end
 
-ns.ResetScale = function(self)
-	if (InCombatLockdown()) then return end
-
-	local scale = self.db.profile.relativeScale
-	local defaultScale = defaults.profile.relativeScale
-
-	if (scale ~= defaultScale) then
-		self.db.profile.relativeScale = defaultScale -- Store the saved setting
-
-		SetRelativeScale(defaultScale) -- Store it in the addon namespace
-		UpdateObjectScales() -- Apply it to existing objects
-
-		-- Fire callbacks to submodules.
-		ns.callbacks:Fire("Relative_Scale_Updated", self.db.profile.relativeScale)
-	end
+-- Returns the ideal scale for blizzard elements.
+ns.GetBlizzardScale = function(self)
+	return 768/960
 end
 
-ns.SetScale = function(self, input)
-	if (InCombatLockdown()) then return end
-
-	local scale = tonumber((self:GetArgs(string_lower(input))))
-	if (scale) then
-		local oldScale = self.db.profile.relativeScale
-
-		-- Sanitize it, don't want crazy values
-		scale = math_min(1.5, math_max(.5, scale))
-		if (oldScale ~= scale) then
-
-			-- Store and apply new relative user scale
-			self.db.profile.relativeScale = scale -- Store the saved setting
-			SetRelativeScale(scale) -- Store it in the addon namespace
-			UpdateObjectScales() -- Apply it to existing objects
-
-			-- Fire callbacks to submodules.
-			ns.callbacks:Fire("Relative_Scale_Updated", self.db.profile.relativeScale)
-		end
-	end
+-- Returns the ideal scale for our elements
+-- when they are parented to UIParent and its scale.
+ns.GetRelativeScale = function(self)
+	return ns.API.GetDefaultScale()/self:GetBlizzardScale()
 end
 
 ns.UpdateSettings = function(self, event, ...)
@@ -153,11 +125,6 @@ ns.OnInitialize = function(self)
 	self.db.RegisterCallback(self, "OnProfileChanged", "UpdateSettings")
 	self.db.RegisterCallback(self, "OnProfileCopied", "UpdateSettings")
 	self.db.RegisterCallback(self, "OnProfileReset", "UpdateSettings")
-
-	-- Apply user scale to all elements
-	if (self.db.profile.relativeScale) then
-		self.API.SetRelativeScale(self.db.profile.relativeScale)
-	end
 
 	self:RegisterChatCommand("resetscale", "ResetBlizzardScale")
 
