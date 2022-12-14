@@ -25,3 +25,9 @@
 --]]
 local Addon, ns = ...
 local ActionBars = ns:NewModule("ActionBars", "LibMoreEvents-1.0")
+
+ActionBars.OnInitialize = function(self)
+end
+
+ActionBars.OnEnable = function(self)
+end

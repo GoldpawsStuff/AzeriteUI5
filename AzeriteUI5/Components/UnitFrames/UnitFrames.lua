@@ -42,6 +42,25 @@ local UnitFrame_OnLeave = UnitFrame_OnLeave
 -- Addon API
 local IsAddOnEnabled = ns.API.IsAddOnEnabled
 
+local defaults = {
+	profile = {
+		units = {
+			["**"] = {
+				enabled = true
+			},
+			player = {},
+			pet = {},
+			focus = {},
+			target = {},
+			tot = {},
+			boss = {},
+			party = {},
+			raid = {},
+			arena = {}
+		}
+	}
+}
+
 -- Utility
 -----------------------------------------------------
 local Spawn = function(unit, name)
@@ -178,7 +197,7 @@ end
 ---end
 
 UnitFrames.OnInitialize = function(self)
-
+	self.db = ns.db:RegisterNamespace("UnitFrames", defaults)
 end
 
 UnitFrames.OnEnable = function(self)

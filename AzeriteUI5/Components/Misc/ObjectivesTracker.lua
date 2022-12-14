@@ -255,18 +255,14 @@ local UpdateQuestItem = function(_, block)
 end
 
 local AutoHider_OnHide = function()
-	if (ns.IsRetail) then
-		if (not ObjectiveTrackerFrame.collapsed) then
-			ObjectiveTracker_Collapse()
-		end
+	if (not ObjectiveTrackerFrame.collapsed) then
+		ObjectiveTracker_Collapse()
 	end
 end
 
 local AutoHider_OnShow = function()
-	if (ns.IsRetail) then
-		if (ObjectiveTrackerFrame.collapsed) then
-			ObjectiveTracker_Expand()
-		end
+	if (ObjectiveTrackerFrame.collapsed) then
+		ObjectiveTracker_Expand()
 	end
 end
 

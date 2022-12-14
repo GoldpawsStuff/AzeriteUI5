@@ -24,7 +24,7 @@
 
 --]]
 local Addon, ns = ...
-local ChatFrames = ns:NewModule("ChatFrames", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0")
+local ChatFrames = ns:NewModule("ChatFrames", "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
 
 -- Addon API
 local GetFont = ns.API.GetFont
@@ -258,6 +258,8 @@ ChatFrame.GetTabTextures = function(self)
 	end
 end
 
+-- Module API
+-------------------------------------------------------
 ChatFrames.StyleFrame = function(self, frame)
 	if (frame.isSkinned) then return end
 
@@ -528,6 +530,18 @@ ChatFrames.OnInitialize = function(self)
 	if (not ns.db.global.chatframes.enableChat) then
 		return self:Disable()
 	end
+
+	-- Add a command to clear all chat frames.
+	-- I mainly use this to remove clutter before taking screenshots.
+	-- You could theoretically put this in a macro and clear chat then screenshot.
+	self:RegisterChatCommand("clear", function()
+		for _,frameName in pairs(_G.CHAT_FRAMES) do
+			local frame = _G[frameName]
+			if (frame and frame:IsShown()) then
+				frame:Clear()
+			end
+		end
+	end)
 end
 
 ChatFrames.OnEnable = function(self)

@@ -25,34 +25,19 @@
 --]]
 local Addon, ns = ...
 ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "AceConsole-3.0")
-ns.L = LibStub("AceLocale-3.0"):GetLocale(Addon, true) -- Addon localization
-ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false) -- Addon callback handler
+ns.L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
+ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false)
 ns.Hider = CreateFrame("Frame"); ns.Hider:Hide()
 ns.Noop = function() end
 
 _G[Addon] = ns
 
+-- Version flag to force full setting resets.
+local SETTINGS_VERSION = 1
+
 -- Default settings
 local defaults = {
-	char = {
-	},
-	global = {
-		core = {
-			enableDevelopmentMode = false,
-			relativeScale = 1
-		},
-		chatframes = {
-			enableChat = true
-		},
-		chatbubbles = {
-			enableChatBubbles = true,
-			visibility = {
-				world = true,
-				worldcombat = true,
-				instance = true,
-				instancecombat = false
-			}
-		}
+	profile = {
 	}
 }
 
@@ -155,32 +140,29 @@ end
 ns.OnInitialize = function(self)
 
 	self.db = SanitizeSettings(LibStub("AceDB-3.0"):New("AzeriteUI5_DB", defaults, true))
+
+	-- Forcereset settings on version changes.
+	local settings_version = self.db.global.version
+	if (settings_version ~= SETTINGS_VERSION) then
+		self.db:ResetDB()
+
+		self.db.global.version = SETTINGS_VERSION
+	end
+
 	self.db.RegisterCallback(self, "OnProfileChanged", "UpdateSettings")
 	self.db.RegisterCallback(self, "OnProfileCopied", "UpdateSettings")
 	self.db.RegisterCallback(self, "OnProfileReset", "UpdateSettings")
 
 	-- Apply user scale to all elements
-	if (self.db.global.core.relativeScale) then
-		self.API.SetRelativeScale(self.db.global.core.relativeScale)
-	end
-
-	-- Add a command to clear all chat frames.
-	-- I mainly use this to remove clutter before taking screenshots.
-	-- You could theoretically put this in a macro and clear chat then screenshot.
-	self:RegisterChatCommand("clear", function()
-		for _,frameName in pairs(_G.CHAT_FRAMES) do
-			local frame = _G[frameName]
-			if (frame and frame:IsShown()) then
-				frame:Clear()
-			end
-		end
-	end)
+	--if (self.db.global.core.relativeScale) then
+	--	self.API.SetRelativeScale(self.db.global.core.relativeScale)
+	--end
 
 	--self:RegisterChatCommand("setscale", "SetScale")
 	--self:RegisterChatCommand("resetscale", "ResetScale")
-	--self:RegisterChatCommand("lock", "LockMovableFrames")
-	--self:RegisterChatCommand("unlock", "UnlockMovableFrames")
-	--self:RegisterChatCommand("togglelock", "ToggleMovableFrames")
+	self:RegisterChatCommand("lock", "LockMovableFrames")
+	self:RegisterChatCommand("unlock", "UnlockMovableFrames")
+	self:RegisterChatCommand("togglelock", "ToggleMovableFrames")
 
 	if (EditModeManagerFrame) then
 		hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() self:UnlockMovableFrames() end)
