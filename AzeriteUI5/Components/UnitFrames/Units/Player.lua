@@ -40,7 +40,14 @@ PlayerMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PlayerFrame", defaults)
 	self:SetEnabledState(self.db.profile.enabled)
 
+	oUF:DisableBlizzard("player")
 	oUF:RegisterStyle(ns.Prefix.."Player", style)
+
+	-- Disable Player Alternate Power Bar
+	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_SHOW")
+	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_HIDE")
+	PlayerPowerBarAlt:UnregisterEvent("PLAYER_ENTERING_WORLD")
+
 end
 
 PlayerMod.OnEnable = function(self)

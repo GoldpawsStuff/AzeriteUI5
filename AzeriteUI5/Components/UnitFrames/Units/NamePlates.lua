@@ -152,6 +152,31 @@ NamePlates.OnInitialize = function(self)
 	self:SetEnabledState(self.db.profile.enabled)
 
 	oUF:RegisterStyle(ns.Prefix.."NamePlates", style)
+
+	local classNameplateManaBar = NamePlateDriverFrame.classNamePlatePowerBar
+	if (classNameplateManaBar) then
+		classNameplateManaBar:Hide()
+		classNameplateManaBar:UnregisterAllEvents()
+	end
+
+	local classNamePlateMechanicFrame = NamePlateDriverFrame.classNamePlateMechanicFrame
+	if (classNamePlateMechanicFrame) then
+		classNamePlateMechanicFrame:Hide()
+	end
+
+	hooksecurefunc(NamePlateDriverFrame, "SetupClassNameplateBars", function(frame)
+		if (not frame or frame:IsForbidden()) then
+			return
+		end
+		if (frame.classNamePlateMechanicFrame) then
+			frame.classNamePlateMechanicFrame:Hide()
+		end
+		if (frame.classNamePlatePowerBar) then
+			frame.classNamePlatePowerBar:Hide()
+			frame.classNamePlatePowerBar:UnregisterAllEvents()
+		end
+	end)
+
 end
 
 NamePlates.OnEnable = function(self)

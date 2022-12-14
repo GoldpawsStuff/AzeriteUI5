@@ -30,38 +30,7 @@ local BlizzardUFDisabler = ns:NewModule("BlizzardUFDisabler")
 
 BlizzardUFDisabler.OnEnable = function(self)
 
-	-- Disable Player Alternate Power Bar
-	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_SHOW")
-	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_HIDE")
-	PlayerPowerBarAlt:UnregisterEvent("PLAYER_ENTERING_WORLD")
-
-	-- Disable NamePlate Class Mechanics
-	local classNameplateManaBar = NamePlateDriverFrame.classNamePlatePowerBar
-	if (classNameplateManaBar) then
-		classNameplateManaBar:Hide()
-		classNameplateManaBar:UnregisterAllEvents()
-	end
-
-	local classNamePlateMechanicFrame = NamePlateDriverFrame.classNamePlateMechanicFrame
-	if (classNamePlateMechanicFrame) then
-		classNamePlateMechanicFrame:Hide()
-	end
-
-	hooksecurefunc(NamePlateDriverFrame, "SetupClassNameplateBars", function(frame)
-		if (not frame or frame:IsForbidden()) then
-			return
-		end
-		if (frame.classNamePlateMechanicFrame) then
-			frame.classNamePlateMechanicFrame:Hide()
-		end
-		if (frame.classNamePlatePowerBar) then
-			frame.classNamePlatePowerBar:Hide()
-			frame.classNamePlatePowerBar:UnregisterAllEvents()
-		end
-	end)
-
 	-- Disable UnitFrames
-	oUF:DisableBlizzard("player")
 	oUF:DisableBlizzard("pet")
 	oUF:DisableBlizzard("target")
 	oUF:DisableBlizzard("focus")
