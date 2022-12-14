@@ -1,8 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
-	<Script file="ActionBars.lua"/>
 	<Script file="HideBlizzard.lua"/>
+	<Script file="HandleBartender.lua"/>
 
-	<Script file="Elements\Bars.lua"/>
+	<Script file="ActionBars.lua"/>
+	<Script file="MicroMenu.lua"/>
 
 </Ui>

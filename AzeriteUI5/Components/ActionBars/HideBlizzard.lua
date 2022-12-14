@@ -24,11 +24,8 @@
 
 --]]
 local Addon, ns = ...
-local ActionBars = ns:GetModule("ActionBars", true)
-if (not ActionBars) then return end
 
-local Blizzard = ActionBars:NewModule("Blizzard", "LibMoreEvents-1.0", "AceHook-3.0")
-local UIHider = ns.Hider
+local BlizzardABDisabler = ns:NewModule("BlizzardABDisabler", "LibMoreEvents-1.0", "AceHook-3.0")
 
 local purgeKey = function(t, k)
 	t[k] = nil
@@ -59,7 +56,7 @@ local hideActionBarFrame = function(frame, clearEvents)
 		else
 			frame:Hide()
 		end
-		frame:SetParent(UIHider)
+		frame:SetParent(ns.Hider)
 	end
 end
 
@@ -71,7 +68,7 @@ local hideActionButton = function(button)
 	button:SetAttribute("statehidden", true)
 end
 
-Blizzard.NPE_LoadUI = function(self)
+BlizzardABDisabler.NPE_LoadUI = function(self)
 	if not (Tutorials and Tutorials.AddSpellToActionBar) then return end
 
 	-- Action Bar drag tutorials
@@ -85,7 +82,7 @@ Blizzard.NPE_LoadUI = function(self)
 	Tutorials.AutoPushSpellWatcher:Complete()
 end
 
-Blizzard.HideBlizzard = function(self)
+BlizzardABDisabler.HideBlizzard = function(self)
 
 	hideActionBarFrame(MainMenuBar, true)
 	hideActionBarFrame(MultiBarBottomLeft, true)
@@ -141,6 +138,6 @@ Blizzard.HideBlizzard = function(self)
 
 end
 
-Blizzard.OnEnable = function(self)
+BlizzardABDisabler.OnEnable = function(self)
 	self:HideBlizzard()
 end

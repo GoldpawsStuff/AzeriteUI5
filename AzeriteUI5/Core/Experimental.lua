@@ -55,3 +55,101 @@ LibStub("AceConsole-3.0"):RegisterChatCommand("toggleblips", function()
 	g:SetShown(show)
 end)
 
+--do return end
+
+local MyButtonDB
+
+local button = CreateFrame("Button", ns.Prefix.."PlayerFrame", UIParent)
+button:SetScale(ns:GetRelativeScale())
+button:SetSize(439, 93)
+
+local updateFrameSettings = function(unitFrame)
+	if (InCombatLockdown()) then return end
+	unitFrame:ClearAllPoints()
+	unitFrame:SetPoint(MyButtonDB[layoutName].point, MyButtonDB[layoutName].x, MyButtonDB[layoutName].y)
+	unitFrame:SetScale(MyButtonDB[layoutName].scale * ns:GetRelativeScale())
+end
+
+local onPositionChanged = function(frame, layoutName, point, x, y)
+
+	-- From here you can save the position into a savedvariable
+	MyButtonDB[layoutName].point = point
+	MyButtonDB[layoutName].x = x
+	MyButtonDB[layoutName].y = y
+
+	-- Here we need to move the actual frame,
+	-- and register for combat end if needed.
+	local unitFrame = frame.unitFrame
+	if (unitFrame) then
+		if (InCombatLockdown()) then
+			return self:RegisterEvent("PLAYER_REGEN_ENABLED", updateFrameSettings)
+		end
+		updateFrameSettings(unitFrame)
+	end
+end
+
+local defaultPosition = {
+	enabled = true,
+	scale = 1,
+	point = "BOTTOMLEFT",
+	x = 167,
+	y = 100
+}
+
+local LEM = LibStub("LibEditMode")
+
+LEM:AddFrame(button, onPositionChanged, defaultPosition)
+
+LEM:RegisterCallback("enter", function()
+	-- From here you can show your button if it was hidden.
+end)
+
+LEM:RegisterCallback("exit", function()
+	-- From here you can hide your button if it's supposed to be hidden.
+end)
+
+LEM:RegisterCallback("layout", function(layoutName)
+	-- This will be called every time the Edit Mode layout is changed (which also happens at login),
+	-- use it to load the saved button position from savedvariables and position it.
+	if (not MyButtonDB) then
+		MyButtonDB = {}
+	end
+	if (not MyButtonDB[layoutName]) then
+		MyButtonDB[layoutName] = CopyTable(defaultPosition)
+	end
+
+	button:ClearAllPoints()
+	button:SetPoint(MyButtonDB[layoutName].point, MyButtonDB[layoutName].x, MyButtonDB[layoutName].y)
+end)
+
+LEM:AddFrameSettings(button, {
+	{
+		name = "Enable",
+		kind = LEM.SettingType.Checkbox,
+		default = true,
+		get = function(layoutName)
+			return MyButtonDB[layoutName].enabled
+		end,
+		set = function(layoutName, value)
+			MyButtonDB[layoutName].enabled = value
+		end
+	},
+	{
+		name = "Scale",
+		kind = LEM.SettingType.Slider,
+		default = 1,
+		get = function(layoutName)
+			return MyButtonDB[layoutName].scale
+		end,
+		set = function(layoutName, value)
+			MyButtonDB[layoutName].scale = value
+			button:SetScale(value * ns:GetRelativeScale())
+		end,
+		minValue = 0.75,
+		maxValue = 1.25,
+		valueStep = 0.05,
+		formatter = function(value)
+			return string.format("%.2f", value)
+		end,
+	}
+})
