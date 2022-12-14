@@ -90,6 +90,12 @@ ns.ToggleMovableFrames = function(self)
 	ToggleMovableFrameAnchors()
 end
 
+ns.ResetBlizzardScale = function(self)
+	if (InCombatLockdown()) then return end
+	SetCVar("uiScale", ns.API.GetDefaultScale())
+	ReloadUI()
+end
+
 ns.ResetScale = function(self)
 	if (InCombatLockdown()) then return end
 
@@ -153,11 +159,11 @@ ns.OnInitialize = function(self)
 		self.API.SetRelativeScale(self.db.profile.relativeScale)
 	end
 
-	self:RegisterChatCommand("setscale", "SetScale")
-	self:RegisterChatCommand("resetscale", "ResetScale")
-	self:RegisterChatCommand("lock", "LockMovableFrames")
-	self:RegisterChatCommand("unlock", "UnlockMovableFrames")
-	self:RegisterChatCommand("togglelock", "ToggleMovableFrames")
+	self:RegisterChatCommand("resetscale", "ResetBlizzardScale")
+
+	--self:RegisterChatCommand("lock", "LockMovableFrames")
+	--self:RegisterChatCommand("unlock", "UnlockMovableFrames")
+	--self:RegisterChatCommand("togglelock", "ToggleMovableFrames")
 
 	if (EditModeManagerFrame) then
 		hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() self:UnlockMovableFrames() end)
