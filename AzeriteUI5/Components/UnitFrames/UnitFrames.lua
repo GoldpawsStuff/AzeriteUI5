@@ -33,20 +33,19 @@ ns.UnitFrames = {}
 ns.UnitFramesByName = {}
 
 -- Lua API
+local next = next
 local string_match = string.match
 
 -- WoW API
 local UnitFrame_OnEnter = UnitFrame_OnEnter
 local UnitFrame_OnLeave = UnitFrame_OnLeave
 
--- Addon API
-local IsAddOnEnabled = ns.API.IsAddOnEnabled
-
 local defaults = {
 	profile = {
 		units = {
 			["**"] = {
-				enabled = true
+				enabled = true,
+				scale = 1
 			},
 			player = {},
 			pet = {},
@@ -82,6 +81,7 @@ local UnitSpecific = function(self, unit)
 	if (unit == "player") then
 		style = self:GetName():find("HUD") and "PlayerHUD" or "Player"
 
+		-- Just for development
 		if (self:GetName():find("Boss")) then
 			style = "Boss"
 		end
@@ -154,7 +154,6 @@ local OnHide = function(self, ...)
 end
 
 UnitFrames.RegisterStyles = function(self)
-
 	oUF:RegisterStyle(ns.Prefix, function(self, unit)
 
 		self.isUnitFrame = true
@@ -167,7 +166,6 @@ UnitFrames.RegisterStyles = function(self)
 
 		return UnitSpecific(self, unit)
 	end)
-
 end
 
 UnitFrames.RegisterMetaFunctions = function(self)
@@ -198,13 +196,28 @@ end
 
 UnitFrames.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("UnitFrames", defaults)
+	self:SetEnabledState(self.db.profile.enabled)
 end
 
 UnitFrames.OnEnable = function(self)
-	self:RegisterMetaFunctions()
-	self:RegisterStyles()
-	self:SpawnUnitFrames()
-	--self:SpawnGroupFrames()
+	if (next(ns.UnitFrames)) then
+		for name,frame in next,ns.UnitFramesByName do
+			frame:Enable()
+		end
+	else
+		self:RegisterMetaFunctions()
+		self:RegisterStyles()
+		self:SpawnUnitFrames()
+		--self:SpawnGroupFrames()
+	end
+end
+
+UnitFrames.OnDisable = function(self)
+	if (next(ns.UnitFrames)) then
+		for name,frame in next,ns.UnitFramesByName do
+			frame:Disable()
+		end
+	end
 end
 
 LoadAddOn("Blizzard_CUFProfiles")
