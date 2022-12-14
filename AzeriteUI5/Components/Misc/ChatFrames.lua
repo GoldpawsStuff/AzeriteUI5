@@ -545,6 +545,14 @@ ChatFrames.OnInitialize = function(self)
 			end
 		end
 	end)
+
+	-- Add more font sizes.
+	for i = #CHAT_FONT_HEIGHTS, 1, -1 do
+		CHAT_FONT_HEIGHTS[i] = nil
+	end
+	for i,v in ipairs({ 12, 14, 16, 18, 20, 22, 24, 28, 32 }) do
+		CHAT_FONT_HEIGHTS[i] = v
+	end
 end
 
 ChatFrames.OnEnable = function(self)
