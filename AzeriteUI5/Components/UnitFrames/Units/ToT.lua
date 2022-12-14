@@ -24,7 +24,3 @@
 
 --]]
 local Addon, ns = ...
-
-local UnitFrames = ns:GetModule("UnitFrames", true)
-if (not UnitFrames) then return end
-

@@ -41,6 +41,10 @@ local IsAddOnEnabled = ns.API.IsAddOnEnabled
 local UIHider = ns.Hider
 local noop = ns.Noop
 
+local defaults = { profile = ns:Merge({
+	enabled = true
+}, ns.moduleDefaults) }
+
 -- Cache of handled elements
 local Handled = {}
 
@@ -336,6 +340,9 @@ Tracker.OnEvent = function(self, event, ...)
 end
 
 Tracker.OnInitialize = function(self)
+	self.db = ns.db:RegisterNamespace("ObjectivesTracker", defaults)
+	self:SetEnabledState(self.db.profile.enabled)
+
 	self:HookTracker()
 end
 

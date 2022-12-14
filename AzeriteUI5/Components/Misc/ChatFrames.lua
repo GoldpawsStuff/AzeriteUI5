@@ -30,6 +30,10 @@ local ChatFrames = ns:NewModule("ChatFrames", "LibMoreEvents-1.0", "AceHook-3.0"
 local GetFont = ns.API.GetFont
 local UIHider = ns.Hider
 
+local defaults = { profile = ns:Merge({
+	enabled = true
+}, ns.moduleDefaults) }
+
 -- Global buttons not unique to any frame
 local GLOBAL_BUTTONS = {
 	"ChatFrameMenuButton",
@@ -527,9 +531,8 @@ ChatFrames.OnEvent = function(self, event, ...)
 end
 
 ChatFrames.OnInitialize = function(self)
-	if (not ns.db.global.chatframes.enableChat) then
-		return self:Disable()
-	end
+	self.db = ns.db:RegisterNamespace("ChatFrames", defaults)
+	self:SetEnabledState(self.db.profile.enabled)
 
 	-- Add a command to clear all chat frames.
 	-- I mainly use this to remove clutter before taking screenshots.

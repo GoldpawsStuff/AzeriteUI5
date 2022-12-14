@@ -24,49 +24,18 @@
 
 --]]
 local Addon, ns = ...
-
-local UnitFrames = ns:GetModule("UnitFrames", true)
-if (not UnitFrames) then return end
-
-local NamePlates = UnitFrames:NewModule("NamePlates", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0")
 local oUF = ns.oUF
 
-local MOUSEOVER
+local NamePlates = ns:NewModule("NamePlates", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0")
 
-ns.NamePlates = {}
-ns.ActiveNamePlates = {}
+local defaults = { profile = ns:Merge({
+	enabled = true
+}, ns.NamePlate.defaults) }
 
--- WoW API
-local UnitExists = UnitExists
-local UnitIsUnit = UnitIsUnit
-
--- Addon API
-local IsAddOnEnabled = ns.API.IsAddOnEnabled
-
--- NamePlate Callbacks
------------------------------------------------------
-local OnEnter = function(self, ...)
-	self.isMouseOver = true
-	if (self.OnEnter) then
-		self:OnEnter(...)
-	end
+local style = function(self, unit)
 end
 
-local OnLeave = function(self, ...)
-	self.isMouseOver = nil
-	if (self.OnLeave) then
-		self:OnLeave(...)
-	end
-end
-
-local OnHide = function(self, ...)
-	self.isMouseOver = nil
-	if (self.OnHide) then
-		self:OnHide(...)
-	end
-end
-
-local Cvars = {
+local cvars = {
 	-- If these are enabled the GameTooltip will become protected,
 	-- and all sort of taints and bugs will occur.
 	-- This happens on specs that can dispel when hovering over nameplate auras.
@@ -126,26 +95,32 @@ local Cvars = {
 	["nameplateTargetBehindMaxDistance"] = 15 -- 15
 }
 
-local Callback = function(self, event, unit)
+local callback = function(self, event, unit)
 	if (event == "PLAYER_TARGET_CHANGED") then
 	elseif (event == "NAME_PLATE_UNIT_ADDED") then
+
 		self.isPRD = UnitIsUnit(unit, "player")
-		ns.NamePlates[self] = true
-		ns.ActiveNamePlates[self] = true
+
+		ns.NamePlates[self] = nameplate
+		ns.ActiveNamePlates[self] = nameplate
+
 	elseif (event == "NAME_PLATE_UNIT_REMOVED") then
+
 		self.isPRD = nil
+
 		ns.ActiveNamePlates[self] = nil
 	end
 end
 
-local CheckMouseOver = function()
+local MOUSEOVER
+local checkMouseOver = function()
 	local hasMouseOver = UnitExists("mouseover")
 	if (hasMouseOver) then
 		if (MOUSEOVER) then
 			if (UnitIsUnit(MOUSEOVER.unit, "mouseover")) then
 				return
 			end
-			OnLeave(MOUSEOVER)
+			ns.NamePlate.OnLeave(MOUSEOVER)
 			MOUSEOVER = nil
 		end
 		local isMouseOver
@@ -153,76 +128,37 @@ local CheckMouseOver = function()
 			isMouseOver = UnitIsUnit(frame.unit, "mouseover")
 			if (isMouseOver) then
 				MOUSEOVER = frame
-				return OnEnter(frame)
+				return ns.NamePlate.OnEnter(frame)
 			end
 		end
 	elseif (MOUSEOVER) then
-		OnLeave(MOUSEOVER)
+		ns.NamePlate.OnLeave(MOUSEOVER)
 		MOUSEOVER = nil
 	end
 end
 
-NamePlates.RegisterStyles = function(self)
-
-	oUF:RegisterStyle(ns.Prefix.."NamePlates", function(self, unit)
-
-		self.isNamePlate = true
-		self.colors = ns.Colors
-
-		self:SetPoint("CENTER",0,0)
-		self:SetScript("OnHide", OnHide)
-
-		return UnitSpecific(self, unit)
-	end)
-
-end
-
-NamePlates.RegisterMetaFunctions = function(self)
-	oUF:RegisterMetaFunction("CreateBar", function(self, name, parent, ...)
-		return LibStub("LibSmoothBar-1.0"):CreateSmoothBar(name, parent or self, ...)
-	end)
-	oUF:RegisterMetaFunction("CreateRing", function(self, name, parent, ...)
-		return LibStub("LibSpinBar-1.0"):CreateSpinBar(name, parent or self, ...)
-	end)
-	oUF:RegisterMetaFunction("CreateOrb", function(self, name, parent, ...)
-		return LibStub("LibOrb-1.0"):CreateOrb(name, parent or self, ...)
-	end)
-end
-
-NamePlates.SpawnNamePlates = function(self)
-
-	oUF:Factory(function(oUF)
-
-		oUF:SetActiveStyle(ns.Prefix.."NamePlates")
-		oUF:SpawnNamePlates(ns.Prefix, Callback--[[, Cvars]])
-
-		self:ScheduleRepeatingTimer(CheckMouseOver, 1/20)
-
-		--if (NamePlateDriverFrame.UpdateNamePlateOptions) then
-		--	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", function()
-		--		if (InCombatLockdown()) then return end
-		--		local w,h = unpack(ns.Config.NamePlates.Size)
-		--		C_NamePlate.SetNamePlateFriendlySize(w,h)
-		--		C_NamePlate.SetNamePlateEnemySize(w,h)
-		--		C_NamePlate.SetNamePlateSelfSize(w,h)
-		--	end)
-		--end
-
-	end)
-end
-
-NamePlates.OnInitialize = function(self)
+NamePlates.CheckForConflicts = function(self)
 	for i,addon in next,{ Kui_Nameplates, NamePlateKAI, NeatPlates, Plater, SimplePlates, TidyPlates, TidyPlates_ThreatPlates, TidyPlatesContinued } do
-		if (IsAddOnEnabled(addon)) then
-			return self:Disable()
+		if (ns.API.IsAddOnEnabled(addon)) then
+			return true
 		end
 	end
 end
 
+NamePlates.OnInitialize = function(self)
+	if (self:CheckForConflicts()) then return self:Disable() end
+
+	self.db = ns.db:RegisterNamespace("NamePlates", defaults)
+	self:SetEnabledState(self.db.profile.enabled)
+
+	oUF:RegisterStyle(ns.Prefix.."NamePlates", style)
+end
+
 NamePlates.OnEnable = function(self)
-	self:RegisterMetaFunctions()
-	self:RegisterStyles()
-	self:SpawnNamePlates()
+	oUF:SetActiveStyle(ns.Prefix.."NamePlates")
+	oUF:SpawnNamePlates(ns.Prefix, callback--[[, cvars]])
+
+	self.mouseTimer = self:ScheduleRepeatingTimer(checkMouseOver, 1/20)
 end
 
 LoadAddOn("Blizzard_NamePlates")

@@ -38,6 +38,9 @@ local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 local UIHider = ns.Hider
 
+local defaults = { profile = ns:Merge({
+	enabled = true
+}, ns.moduleDefaults) }
 
 local DEFAULT_THEME = "Blizzard"
 local CURRENT_THEME = DEFAULT_THEME
@@ -218,6 +221,8 @@ MinimapMod.Embed = function(self)
 end
 
 MinimapMod.OnInitialize = function(self)
+	self.db = ns.db:RegisterNamespace("Minimap", defaults)
+	self:SetEnabledState(self.db.profile.enabled)
 	self:Embed()
 	self:RegisterChatCommand("setminimaptheme", "SetTheme")
 end

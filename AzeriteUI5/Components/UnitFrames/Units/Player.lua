@@ -24,6 +24,36 @@
 
 --]]
 local Addon, ns = ...
+local oUF = ns.oUF
 
-local UnitFrames = ns:GetModule("UnitFrames", true)
-if (not UnitFrames) then return end
+local PlayerMod = ns:NewModule("PlayerFrame", "LibMoreEvents-1.0")
+
+local defaults = { profile = ns:Merge({
+	enabled = true
+}, ns.UnitFrame.defaults) }
+
+local style = function(self, unit)
+
+end
+
+PlayerMod.OnInitialize = function(self)
+	self.db = ns.db:RegisterNamespace("PlayerFrame", defaults)
+	self:SetEnabledState(self.db.profile.enabled)
+
+	oUF:RegisterStyle(ns.Prefix.."Player", style)
+end
+
+PlayerMod.OnEnable = function(self)
+	if (ns.UnitFrames.Player) then
+		ns.UnitFrames.Player:Enable()
+	else
+		oUF:SetActiveStyle(ns.Prefix.."Player")
+		ns.UnitFrames.Player = oUF:Spawn("player", ns.Prefix.."UnitFramePlayer")
+	end
+end
+
+PlayerMod.OnDisable = function(self)
+	if (ns.UnitFrames.Player) then
+		ns.UnitFrames.Player:Disable()
+	end
+end

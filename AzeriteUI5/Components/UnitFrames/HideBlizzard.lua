@@ -26,15 +26,9 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local UnitFrames = ns:GetModule("UnitFrames", true)
-if (not UnitFrames) then return end
+local BlizzardUFDisabler = ns:NewModule("BlizzardUFDisabler")
 
-local Blizzard = UnitFrames:NewModule("Blizzard", "LibMoreEvents-1.0")
-
--- Addon API
-local UIHider = ns.Hider
-
-Blizzard.DisableBlizzard = function(self)
+BlizzardUFDisabler.OnEnable = function(self)
 
 	-- Disable Player Alternate Power Bar
 	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_SHOW")
@@ -96,10 +90,6 @@ Blizzard.DisableBlizzard = function(self)
 
 	CompactRaidFrameContainer:UnregisterAllEvents()
 	CompactRaidFrameManager:UnregisterAllEvents()
-	CompactRaidFrameManager:SetParent(UIHider)
+	CompactRaidFrameManager:SetParent(ns.Hider)
 
-end
-
-Blizzard.OnEnable = function(self)
-	self:DisableBlizzard()
 end

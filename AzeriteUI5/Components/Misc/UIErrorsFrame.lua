@@ -32,6 +32,10 @@ local GetGameMessageInfo = GetGameMessageInfo
 local PlayVocalErrorSoundID = PlayVocalErrorSoundID
 local PlaySoundKitID = PlaySoundKitID
 
+local defaults = { profile = ns:Merge({
+	enabled = true
+}, ns.moduleDefaults) }
+
 local blackList = {
 	msgTypes = {
 		[LE_GAME_ERR_ABILITY_COOLDOWN] = true,
@@ -134,6 +138,9 @@ ErrorsFrame.OnUnregisterEvent = function(self, event)
 end
 
 ErrorsFrame.OnInitialize = function(self)
+	self.db = ns.db:RegisterNamespace("ErrorsFrame", defaults)
+	self:SetEnabledState(self.db.profile.enabled)
+
 	UIErrorsFrame:UnregisterAllEvents()
 
 	self:RegisterEvent("SYSMSG", "OnEvent")

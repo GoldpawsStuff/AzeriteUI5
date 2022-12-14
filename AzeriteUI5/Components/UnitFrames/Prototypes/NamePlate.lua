@@ -24,13 +24,55 @@
 
 --]]
 local Addon, ns = ...
-local ActionBars = ns:NewModule("ActionBars", "LibMoreEvents-1.0")
+local oUF = ns.oUF
 
-ActionBars.OnInitialize = function(self)
-end
+local defaults = {
+	enabled = true,
+	scale = 1
+}
 
-ActionBars.OnEnable = function(self)
-end
+ns.ActiveNamePlates = {}
+ns.NamePlates = {}
+ns.NamePlate = {
+	defaults = defaults,
 
-ActionBars.OnDisable = function(self)
-end
+	OnEnter = function(self, ...)
+		self.isMouseOver = true
+		if (self.OnEnter) then
+			self:OnEnter(...)
+		end
+	end,
+
+	OnLeave = function(self, ...)
+		self.isMouseOver = nil
+		if (self.OnLeave) then
+			self:OnLeave(...)
+		end
+	end,
+
+	OnHide = function(self, ...)
+		self.isMouseOver = nil
+		if (self.OnHide) then
+			self:OnHide(...)
+		end
+	end,
+
+	Initialize = function(self)
+		--self.isNamePlate = true (oUF does this)
+		self.colors = ns.Colors
+		self:SetPoint("CENTER",0,0)
+		self:SetScript("OnHide", OnHide)
+	end
+}
+
+oUF:RegisterMetaFunction("CreateBar", function(self, name, parent, ...)
+	return LibStub("LibSmoothBar-1.0"):CreateSmoothBar(name, parent or self, ...)
+end)
+
+oUF:RegisterMetaFunction("CreateRing", function(self, name, parent, ...)
+	return LibStub("LibSpinBar-1.0"):CreateSpinBar(name, parent or self, ...)
+end)
+
+oUF:RegisterMetaFunction("CreateOrb", function(self, name, parent, ...)
+	return LibStub("LibOrb-1.0"):CreateOrb(name, parent or self, ...)
+end)

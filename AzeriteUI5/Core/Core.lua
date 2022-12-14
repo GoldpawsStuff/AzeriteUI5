@@ -30,10 +30,8 @@ ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false)
 ns.Hider = CreateFrame("Frame"); ns.Hider:Hide()
 ns.Noop = function() end
 
--- Changes will force a full db reset.
-ns.SETTINGS_VERSION = 1
+ns.SETTINGS_VERSION = -9999
 
--- Add to global namespace for other addons.
 _G[Addon] = ns
 
 local defaults = {
@@ -41,6 +39,11 @@ local defaults = {
 		relativeScale = 1
 	}
 }
+
+local moduleDefaults = {
+	enabled = true
+}
+ns.moduleDefaults = moduleDefaults
 
 -- Lua API
 local ipairs = ipairs
@@ -60,6 +63,19 @@ local ToggleMovableFrameAnchors = ns.Widgets.ToggleMovableFrameAnchors
 -- Proxy method to avoid modules using the callback object directly
 ns.Fire = function(self, name, ...)
 	self.callbacks:Fire(name, ...)
+end
+
+-- Hard table merging without metatables.
+ns.Merge = function(self, target, source)
+	if (type(target) ~= "table") then target = {} end
+	for k,v in pairs(source) do
+		if (type(v) == "table") then
+			target[k] = self:Merge(target[k], v)
+		elseif (target[k] == nil) then
+			target[k] = v
+		end
+	end
+	return target
 end
 
 ns.LockMovableFrames = function(self)

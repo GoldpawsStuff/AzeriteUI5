@@ -115,7 +115,6 @@ local defaults = {
 				enabled = false,
 			}
 		}
-
 	}
 }
 
