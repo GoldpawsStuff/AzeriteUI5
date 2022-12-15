@@ -28,231 +28,403 @@ local Widgets = ns.Private.Widgets or {}
 ns.Private.Widgets = Widgets
 
 -- Lua API
+local error = error
+local getmetatable = getmetatable
 local math_abs = math.abs
 local next = next
+local rawget = rawget
 local setmetatable = setmetatable
 local string_format = string.format
 local unpack = unpack
 
--- WoW API
-local CreateFrame = CreateFrame
-local InCombatLockdown = InCombatLockdown
-
 -- Addon API
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
-local GetPosition = ns.API.GetPosition
-local GetScale = ns.API.GetScale
 
--- Private event frame
-local Frame = CreateFrame("Frame")
-Frame:SetScript("OnEvent", function(self, event, ...)
-	if (event == "PLAYER_REGEN_DISABLED") then
-		Widgets:HideMovableFrameAnchors()
-	end
-end)
-
--- Anchor cache
-local Anchors = {}
-
--- Anchor Template
-local Anchor = CreateFrame("Button")
-local Anchor_MT = { __index = Anchor }
-
--- Anchor API
---------------------------------------
--- Constructor
-Anchor.Create = function(self, frame, savedPosition, ...)
-
-	local anchor = setmetatable(CreateFrame("Button", nil, UIParent), Anchor_MT)
-	anchor:Hide()
-	anchor:SetFrameStrata("DIALOG")
-	anchor:SetIgnoreParentAlpha(true)
-	anchor:SetIgnoreParentScale(true)
-	anchor:SetMovable(true)
-	anchor.frame = frame
-	anchor.savedPosition = savedPosition or {}
-
-	-- Populate the saved position table if it's empty,
-	-- to avoid bugs if the calling module tries to
-	-- manually position the element using it.
-	if (savedPosition and not next(savedPosition)) then
-		local parsed = { GetPosition(frame) }
-		for i,j in ipairs(parsed) do
-			savedPosition[i] = j
+local LAYOUT
+local layoutNames = setmetatable({"Modern", "Classic"}, {
+	__index = function(t, key)
+		if (key > 2) then
+			-- The first 2 indices are reserved for 'Modern' and 'Classic' layouts, and anything
+			-- else are custom ones, although GetLayouts() doesn't return data for the 'Modern'
+			-- and 'Classic' layouts, so we'll have to substract and check
+			local layouts = C_EditMode.GetLayouts().layouts
+			if ((key - 2) > #layouts) then
+				error("index is out of bounds")
+			else
+				return layouts[key - 2].layoutName
+			end
+		else
+			-- Also work for 'Modern' and 'Classic'
+			rawget(t, key)
 		end
 	end
+})
 
-	-- Apply custom/static sizing to the anchor frame
-	local anchorWidth, anchorHeight, displayName = ...
-	if (anchorWidth and anchorHeight) then
-		anchor.anchorWidth = anchorWidth
-		anchor.anchorHeight = anchorHeight
-		anchor:SetSize(anchor.anchorWidth, anchor.anchorHeight)
+-- Anchor cache
+local AnchorData = {}
+
+-- Utility
+--------------------------------------
+-- Compare two anchor points or two scales.
+local compare = function(...)
+	local numArgs = select("#", ...)
+	if (numArgs == 2) then
+		local s, s2 = ...
+		return (math_abs(s - s2) < 0.01)
+	else
+		local point, x, y, point2, x2, y2 = ...
+		return (point == point2) and (math_abs(x - x2) < 0.01) and (math_abs(y - y2) < 0.01)
+	end
+end
+
+-- Get a properly parsed position of a frame,
+-- relative to UIParent and the frame's scale.
+local getPosition = function(frame)
+
+	-- Retrieve UI coordinates, convert to unscaled screen coordinates
+	local worldHeight = 768 -- WorldFrame:GetHeight()
+	local worldWidth = WorldFrame:GetWidth()
+	local uiScale = UIParent:GetEffectiveScale()
+	local uiWidth = UIParent:GetWidth() * uiScale
+	local uiHeight = UIParent:GetHeight() * uiScale
+	local uiBottom = UIParent:GetBottom() * uiScale
+	local uiLeft = UIParent:GetLeft() * uiScale
+	local uiTop = UIParent:GetTop() * uiScale - worldHeight -- use values relative to edges, not origin
+	local uiRight = UIParent:GetRight() * uiScale - worldWidth -- use values relative to edges, not origin
+
+	-- Retrieve frame coordinates, convert to unscaled screen coordinates
+	local frameScale = frame:GetEffectiveScale()
+	local x, y = frame:GetCenter(); x = x * frameScale; y = y * frameScale
+	local bottom = frame:GetBottom() * frameScale
+	local left = frame:GetLeft() * frameScale
+	local top = frame:GetTop() * frameScale - worldHeight -- use values relative to edges, not origin
+	local right = frame:GetRight() * frameScale - worldWidth -- use values relative to edges, not origin
+
+	-- Figure out the frame position relative to UIParent
+	left = left - uiLeft
+	bottom = bottom - uiBottom
+	right = right - uiRight
+	top = top - uiTop
+
+	-- Figure out the point within the given coordinate space,
+	-- return values converted to the frame's own scale.
+	if (y < uiHeight * 1/3) then
+		if (x < uiWidth * 1/3) then
+			return "BOTTOMLEFT", left / frameScale, bottom / frameScale
+		elseif (x > uiWidth * 2/3) then
+			return "BOTTOMRIGHT", right / frameScale, bottom / frameScale
+		else
+			return "BOTTOM", (x - uiWidth/2) / frameScale, bottom / frameScale
+		end
+	elseif (y > uiHeight * 2/3) then
+		if (x < uiWidth * 1/3) then
+			return "TOPLEFT", left / frameScale, top / frameScale
+		elseif x > uiWidth * 2/3 then
+			return "TOPRIGHT", right / frameScale, top / frameScale
+		else
+			return "TOP", (x - uiWidth/2) / frameScale, top / frameScale
+		end
+	else
+		if (x < uiWidth * 1/3) then
+			return "LEFT", left / frameScale, (y - uiHeight/2) / frameScale
+		elseif (x > uiWidth * 2/3) then
+			return "RIGHT", right / frameScale, (y - uiHeight/2) / frameScale
+		else
+			return "CENTER", (x - uiWidth/2) / frameScale, (y - uiHeight/2) / frameScale
+		end
+	end
+end
+
+-- Anchor Template
+--------------------------------------
+local mt = getmetatable(CreateFrame("Button")).__index
+local Anchor = { SetPointBase = mt.SetPoint, SetSizeBase = mt.SetSize, SetWidthBase = mt.SetWidth, SetHeightBase = mt.SetHeight }
+
+-- Constructor
+Anchor.Create = function(self)
+
+	local anchor = CreateFrame("Button", nil, UIParent)
+	for method,func in next,Anchor do
+		anchor[method] = func
 	end
 
-	-- Store the parsed default position.
-	anchor.defaultPosition = { GetPosition(frame) }
-
-	local overlay = anchor:CreateTexture(nil, "ARTWORK", nil, 1)
-	overlay:SetAllPoints()
-	overlay:SetColorTexture(.25, .5, 1, .75)
-	anchor.Overlay = overlay
-
-	local positionText = anchor:CreateFontString(nil, "OVERLAY", nil, 1)
-	positionText:SetFontObject(GetFont(15,true))
-	positionText:SetTextColor(unpack(Colors.highlight))
-	positionText:SetIgnoreParentScale(true)
-	positionText:SetScale(GetScale())
-	positionText:SetPoint("CENTER")
-	anchor.Text = positionText
-
-	if (displayName) then
-		local titleText = anchor:CreateFontString(nil, "OVERLAY", nil, 1)
-		titleText:SetFontObject(GetFont(15,true))
-		titleText:SetTextColor(unpack(Colors.normal))
-		titleText:SetIgnoreParentScale(true)
-		titleText:SetScale(GetScale())
-		titleText:SetPoint("BOTTOM", positionText, "TOP", 0, 1)
-		titleText:SetText(displayName)
-		anchor.TitleText = positionText
-	end
-
+	anchor:Hide()
+	anchor:SetFrameStrata("DIALOG")
+	anchor:SetMovable(true)
 	anchor:SetHitRectInsets(-20,-20,-20,-20)
-	anchor:RegisterForClicks("AnyUp")
 	anchor:RegisterForDrag("LeftButton")
+	anchor:RegisterForClicks("AnyUp")
 	anchor:SetScript("OnDragStart", Anchor.OnDragStart)
 	anchor:SetScript("OnDragStop", Anchor.OnDragStop)
+	anchor:SetScript("OnMouseWheel", Anchor.OnMouseWheel)
 	anchor:SetScript("OnClick", Anchor.OnClick)
 	anchor:SetScript("OnShow", Anchor.OnShow)
 	anchor:SetScript("OnHide", Anchor.OnHide)
 	anchor:SetScript("OnEnter", Anchor.OnEnter)
 	anchor:SetScript("OnLeave", Anchor.OnLeave)
 
-	if (savedPosition and next(savedPosition)) then
-		anchor:ResetToSaved()
-	end
+	local overlay = anchor:CreateTexture(nil, "ARTWORK", nil, 1)
+	overlay:SetAllPoints()
+	overlay:SetColorTexture(1, 1, 1, .75)
+	overlay:SetVertexColor(.25, .5, 1)
+	anchor.Overlay = overlay
 
-	if (not next(Anchors)) then
-		Frame:RegisterEvent("PLAYER_REGEN_DISABLED")
-	end
+	local text = anchor:CreateFontString(nil, "OVERLAY", nil, 1)
+	text:SetFontObject(GetFont(13, true))
+	text:SetTextColor(unpack(Colors.highlight))
+	text:SetIgnoreParentScale(true)
+	text:SetIgnoreParentAlpha(true)
+	text:SetPoint("CENTER")
+	anchor.Text = text
 
-	Anchors[#Anchors + 1] = anchor
+	local title = anchor:CreateFontString(nil, "OVERLAY", nil, 1)
+	title:SetFontObject(GetFont(15, true))
+	title:SetTextColor(unpack(Colors.highlight))
+	title:SetIgnoreParentScale(true)
+	title:SetIgnoreParentAlpha(true)
+	title:SetPoint("CENTER")
+	--title:SetPoint("BOTTOM", text, "TOP", 0, 1)
+	anchor.Title = title
+
+	AnchorData[anchor] = {
+		anchor = anchor,
+		--width = nil,
+		--height = nil,
+		--lastScale = nil,
+		--lastPosition = nil,
+		--currentPosition = nil,
+		scale = 1,
+		minScale = .5,
+		maxScale = 1.5,
+		isScalable = false,
+		defaultScale = 1,
+		--defaultPosition = nil,
+	}
 
 	return anchor
 end
 
--- Compare two anchor points.
-local compare = function(point, x, y, point2, x2, y2)
-	return (point == point2) and (math_abs(x - x2) < 0.01) and (math_abs(y - y2) < 0.01)
-end
-
--- 'true' if the frame has moved since last showing the anchor.
-Anchor.HasMoved = function(self)
-	local point, x, y = unpack(self.currentPosition)
-	local point2, x2, y2 = unpack(self.lastPosition)
-	return not compare(point, x, y, point2, x2, y2)
-end
-
--- 'true' if the frame is in its default position.
-Anchor.IsInDefaultPosition = function(self)
-	local point, x, y = GetPosition(self)
-	local point2, x2, y2 = unpack(self.defaultPosition)
-	return compare(point, x, y, point2, x2, y2)
-end
-
 -- Reset to initial position after last showing the anchor.
 Anchor.ResetLastChange = function(self)
-	local point, x, y = unpack(self.lastPosition)
+	local anchorData = AnchorData[self]
+	if (not anchorData.lastPosition) then return end
 
-	-- Always reuse saved table, or it stops saving.
-	self.savedPosition[1] = point
-	self.savedPosition[2] = x
-	self.savedPosition[3] = y
+	local point, x, y = unpack(anchorData.lastPosition)
 
-	self.currentPosition = { point, x, y }
+	anchorData.currentPosition = { point, x, y }
 
-	self.frame:ClearAllPoints()
-	self.frame:SetPoint(point, UIParent, point, x, y)
+	self:SetScale(anchorData.scale)
 
-	local width, height = self.frame:GetSize()
-
-	self:ClearAllPoints()
-	self:SetPoint(point, UIParent, point, x, y)
-	self:SetSize(self.anchorWidth or width, self.anchorHeight or height)
+	self:UpdateScale(LAYOUT, anchorData.lastScale or anchorData.scale or anchorData.defaultScale)
+	self:UpdatePosition(LAYOUT, point, x, y)
 	self:UpdateText()
 
-	if (self.frame.PostUpdateAnchoring) then
-		self.frame:PostUpdateAnchoring(self.anchorWidth or width, self.anchorHeight or height, point, UIParent, point, x, y)
-	end
-end
-
--- Reset to saved position.
-Anchor.ResetToSaved = function(self)
-	local point, x, y = unpack(self.savedPosition)
-
-	self.currentPosition = { point, x, y }
-	self.lastPosition = { point, x, y }
-
-	self.frame:ClearAllPoints()
-	self.frame:SetPoint(point, UIParent, point, x, y)
-
-	local width, height = self.frame:GetSize()
-
-	self:ClearAllPoints()
-	self:SetPoint(point, UIParent, point, x, y)
-	self:SetSize(self.anchorWidth or width, self.anchorHeight or height)
-	self:UpdateText()
-
-	if (self.frame.PostUpdateAnchoring) then
-		self.frame:PostUpdateAnchoring(self.anchorWidth or width, self.anchorHeight or height, point, UIParent, point, x, y)
+	if (self.PostUpdate) then
+		self:PostUpdate("PositionUpdated", LAYOUT, point, x, y)
 	end
 end
 
 -- Reset to default position.
 Anchor.ResetToDefault = function(self)
-	local point, x, y = unpack(self.defaultPosition)
+	local anchorData = AnchorData[self]
+	if (not anchorData.defaultPosition) then return end
 
-	-- Always reuse saved table, or it stops saving.
-	self.savedPosition[1] = point
-	self.savedPosition[2] = x
-	self.savedPosition[3] = y
+	local point, x, y = unpack(anchorData.defaultPosition)
 
-	self.currentPosition = { point, x, y }
-	self.lastPosition = { point, x, y }
+	anchorData.currentPosition = { point, x, y }
+	anchorData.lastPosition = { point, x, y }
 
-	self.frame:ClearAllPoints()
-	self.frame:SetPoint(point, UIParent, point, x, y)
-
-	local width, height = self.frame:GetSize()
-
-	self:ClearAllPoints()
-	self:SetPoint(point, UIParent, point, x, y)
-	self:SetSize(self.anchorWidth or width, self.anchorHeight or height)
+	self:UpdateScale(LAYOUT, anchorData.defaultScale)
+	self:UpdatePosition(LAYOUT, point, x, y)
 	self:UpdateText()
 
-	if (self.frame.PostUpdateAnchoring) then
-		self.frame:PostUpdateAnchoring(self.anchorWidth or width, self.anchorHeight or height, point, UIParent, point, x, y)
+	if (self.PostUpdate) then
+		self:PostUpdate("PositionUpdated", LAYOUT, point, x, y)
 	end
 end
 
--- Update display text on the anchor.
 Anchor.UpdateText = function(self)
-	local msg = string_format("%s, %.0f, %.0f", unpack(self.currentPosition))
+	local anchorData = AnchorData[self]
+
+	local msg
+	if (anchorData.isScalable and not compare(anchorData.scale, anchorData.defaultScale)) then
+		msg = string_format(Colors.highlight.colorCode.."%s, %.0f, %.0f ( %.2f )|r", anchorData.currentPosition[1], anchorData.currentPosition[2], anchorData.currentPosition[3], anchorData.scale)
+	else
+		msg = string_format(Colors.highlight.colorCode.."%s, %.0f, %.0f|r", unpack(anchorData.currentPosition))
+	end
+
 	if (self:IsMouseOver(20,-20,-20,20)) then
-		if (not self:IsInDefaultPosition()) then
+		if (self:IsInDefaultPosition()) then
+			msg = msg .. Colors.green.colorCode.."\n<Left-Click and drag to move>|r"
+			if (anchorData.isScalable and compare(anchorData.scale, anchorData.defaultScale)) then
+				msg = msg .. Colors.green.colorCode.."\n<MouseWheel to change scale>|r"
+			end
+		else
 			if (self:HasMoved()) then
 				msg = msg .. Colors.green.colorCode.."\n<Right-Click to undo last change>|r"
 			end
 			msg = msg .. Colors.green.colorCode.."\n<Shift-Click to reset to default>|r"
 		end
+		self.Title:Hide()
+		self.Text:Show()
+	else
+		self.Title:Show()
+		self.Text:Hide()
 	end
+
 	self.Text:SetText(msg)
 	if (self:IsDragging()) then
 		self.Text:SetTextColor(unpack(Colors.normal))
 	else
 		self.Text:SetTextColor(unpack(Colors.highlight))
 	end
+end
+
+Anchor.UpdateLayoutInfo = function(self, layoutName)
+
+	if (self.PostUpdate) then
+		self:PostUpdate("LayoutsUpdated", layoutName)
+	end
+end
+
+Anchor.UpdatePosition = function(self, layoutName, point, x, y)
+	local anchorData = AnchorData[self]
+
+	anchorData.currentPosition = { point, x, y }
+
+	self:ClearAllPoints()
+	self:SetPointBase(point, UIParent, point, x, y)
+	self:UpdateText()
+
+	if (self.PostUpdate) then
+		self:PostUpdate("PositionUpdated", layoutName, point, x, y)
+	end
+end
+
+Anchor.UpdateScale = function(self, layoutName, scale)
+	local anchorData = AnchorData[self]
+	if (anchorData.scale == scale) then return end
+
+	anchorData.scale = scale
+
+	if (anchorData.width and anchorData.height) then
+		self:SetSizeBase(anchorData.width * anchorData.scale, anchorData.height * anchorData.scale)
+		self:UpdateText()
+	end
+
+	if (self.PostUpdate) then
+		self:PostUpdate("ScaleUpdated", LAYOUT, scale)
+	end
+end
+
+-- Anchor Getters
+--------------------------------------
+Anchor.GetPosition = function(self)
+	return unpack(AnchorData[self].currentPosition)
+end
+
+Anchor.GetScale = function(self)
+	return AnchorData[self].scale
+end
+
+-- 'true' if the frame has moved since last showing the anchor.
+Anchor.HasMoved = function(self)
+	local anchorData = AnchorData[self]
+	local point, x, y = unpack(anchorData.currentPosition)
+	local point2, x2, y2 = unpack(anchorData.lastPosition)
+	return not compare(anchorData.scale, anchorData.lastScale or anchorData.defaultScale) or not compare(point, x, y, point2, x2, y2)
+end
+
+-- 'true' if the frame is in its default position.
+Anchor.IsInDefaultPosition = function(self)
+	local anchorData = AnchorData[self]
+	local point, x, y = getPosition(self)
+	local point2, x2, y2 = unpack(anchorData.defaultPosition)
+	return compare(anchorData.scale, anchorData.defaultScale) and compare(point, x, y, point2, x2, y2)
+end
+
+-- 'true' if the frame can be scaled.
+Anchor.IsScalable = function(self)
+	return AnchorData[self].isScalable
+end
+
+-- Anchor Setters
+--------------------------------------
+-- Scale can still be set and changed,
+-- this setting only toggles mousewheel input.
+Anchor.SetScalable = function(self, scalable)
+	if (scalable) then
+		AnchorData[self].isScalable = true
+		self:EnableMouseWheel(true)
+	else
+		AnchorData[self].isScalable = nil
+		self:EnableMouseWheel(false)
+	end
+end
+
+-- Scale can be outside these bounds,
+-- they don't even need to exist.
+-- This is only for mousewheel input.
+Anchor.SetMinMaxScale = function(self, min, max, step)
+	local anchorData = AnchorData[self]
+	anchorData.minScale = min
+	anchorData.maxScale = max
+	anchorData.scaleStep = step
+end
+
+Anchor.SetDefaultScale = function(self, scale)
+	AnchorData[self].defaultScale = scale
+end
+
+Anchor.SetDefaultPosition = function(self, point, x, y)
+	AnchorData[self].defaultPosition = { point, x, y }
+end
+
+-- Don't scale, just size based on it.
+Anchor.SetScale = function(self, scale)
+	self:UpdateScale(LAYOUT, scale)
+end
+
+Anchor.SetSize = function(self, width, height)
+	local anchorData = AnchorData[self]
+	anchorData.width, anchorData.height = width, height
+	self:SetSizeBase(width * anchorData.scale, height * anchorData.scale)
+end
+
+Anchor.SetWidth = function(self, width)
+	local anchorData = AnchorData[self]
+	anchorData.width = width
+	self:SetWidthBase(width * anchorData.scale)
+end
+
+Anchor.SetHeight = function(self, height)
+	local anchorData = AnchorData[self]
+	anchorData.height = height
+	self:SetHeightBase(height * anchorData.scale)
+end
+
+Anchor.SetPoint = function(self, ...)
+
+	-- Set the raw point to what the user has decided.
+	self:SetPointBase(...)
+
+	-- Parse the position.
+	local point, x, y = getPosition(self)
+
+	-- Reset the position to our system.
+	self:UpdatePosition(LAYOUT, point, x, y)
+
+	-- Set this as the default position
+	-- if none has been registered so far.
+	local anchorData = AnchorData[self]
+	if (not anchorData.defaultPosition) then
+		anchorData.defaultPosition = { point, x, y }
+	end
+end
+
+Anchor.SetTitle = function(self, title)
+	self.Title:SetText(title)
 end
 
 -- Anchor Script Handlers
@@ -271,6 +443,26 @@ Anchor.OnClick = function(self, button)
 	end
 end
 
+Anchor.OnMouseWheel = function(self, delta)
+	local anchorData = AnchorData[self]
+	local scale = anchorData.scale
+	local step = anchorData.scaleStep or .1
+	if (delta > 0) then
+		if ((scale + step) > anchorData.maxScale) then
+			scale = anchorData.maxScale
+		else
+			scale = scale + step
+		end
+	elseif (delta < 0) then
+		if ((scale - step) < anchorData.minScale) then
+			scale = anchorData.minScale
+		else
+			scale = scale - step
+		end
+	end
+	self:SetScale(scale)
+end
+
 Anchor.OnDragStart = function(self, button)
 	self:StartMoving()
 	self:SetUserPlaced(false)
@@ -279,25 +471,16 @@ Anchor.OnDragStart = function(self, button)
 end
 
 Anchor.OnDragStop = function(self)
+	local anchorData = AnchorData[self]
+
 	self:StopMovingOrSizing()
 	self:SetScript("OnUpdate", nil)
 
-	local point, x, y = GetPosition(self)
-	self.currentPosition = { point, x, y }
-	self:ClearAllPoints()
-	self:SetPoint(point, UIParent, point, x, y)
+	local point, x, y = getPosition(self)
 
-	-- Always reuse saved table, or it stops saving.
-	self.savedPosition[1] = point
-	self.savedPosition[2] = x
-	self.savedPosition[3] = y
+	anchorData.currentPosition = { getPosition(self) }
 
-	self.frame:ClearAllPoints()
-	self.frame:SetPoint(point, UIParent, point, x, y)
-
-	if (self.frame.PostUpdateAnchoring) then
-		self.frame:PostUpdateAnchoring(self.anchorWidth or width, self.anchorHeight or height, point, UIParent, point, x, y)
-	end
+	self:UpdatePosition(LAYOUT, point, x, y)
 end
 
 Anchor.OnEnter = function(self)
@@ -311,24 +494,21 @@ Anchor.OnLeave = function(self)
 end
 
 Anchor.OnShow = function(self)
-	local point, x, y = GetPosition(self.frame)
+	local anchorData = AnchorData[self]
+	local point, x, y = getPosition(self)
 
-	self.lastPosition = { point, x, y }
-	self.currentPosition = { point, x, y }
-
-	local effectiveScale = self.frame:GetEffectiveScale()
-	local width, height = self.frame:GetSize()
+	anchorData.lastScale = anchorData.scale
+	anchorData.lastPosition = { point, x, y }
+	anchorData.currentPosition = { point, x, y }
 
 	self:SetFrameLevel(50)
 	self:SetAlpha(.75)
-	self:SetScale(effectiveScale)
 	self:ClearAllPoints()
-	self:SetPoint(point, UIParent, point, x, y)
-	self:SetSize(self.anchorWidth or width, self.anchorHeight or height)
+	self:SetPointBase(point, UIParent, point, x, y)
 	self:UpdateText()
 
-	if (self.frame.PostUpdateAnchoring) then
-		self.frame:PostUpdateAnchoring(self.anchorWidth or width, self.anchorHeight or height, point, UIParent, point, x, y)
+	if (self.PostUpdate) then
+		self:PostUpdate(point, x, y)
 	end
 end
 
@@ -344,43 +524,43 @@ Anchor.OnUpdate = function(self, elapsed)
 	end
 	self.elapsed = 0
 
-	local point, x, y = GetPosition(self)
+	local anchorData = AnchorData[self]
+	local point, x, y = getPosition(self)
 
 	-- Reuse old table here,
 	-- or we'll spam the garbage handler.
-	self.currentPosition[1] = point
-	self.currentPosition[2] = x
-	self.currentPosition[3] = y
+	anchorData.currentPosition[1] = point
+	anchorData.currentPosition[2] = x
+	anchorData.currentPosition[3] = y
 
 	self:UpdateText()
+
+	if (self.PostUpdate) then
+		self:PostUpdate("Dragging", LAYOUT, point, x, y)
+	end
 end
 
 -- Public API
 --------------------------------------
-Widgets.RegisterFrameForMovement = function(frame, db, ...)
-	if (InCombatLockdown()) then return end
-	return Anchor:Create(frame, db, ...).savedPosition
+Widgets.RequestMovableFrameAnchor = function()
+	return Anchor:Create()
 end
 
 Widgets.ShowMovableFrameAnchors = function()
-	if (InCombatLockdown()) then return end
-	for i,anchor in next,Anchors do
+	for anchor in next,AnchorData do
 		anchor:Show()
 	end
 end
 
 Widgets.HideMovableFrameAnchors = function()
-	for i,anchor in next,Anchors do
+	for anchor in next,AnchorData do
 		anchor:Hide()
 	end
 end
 
 Widgets.ToggleMovableFrameAnchors = function()
-	if (InCombatLockdown()) then
-		return Widgets:HideMovableFrameAnchors()
-	end
 	local allshown = true
-	for i,anchor in next,Anchors do
+	for anchor in next,AnchorData do
 		if (not anchor:IsShown()) then
 			allshown = false
 			break
@@ -391,4 +571,61 @@ Widgets.ToggleMovableFrameAnchors = function()
 	else
 		Widgets:ShowMovableFrameAnchors()
 	end
+end
+
+-- Private event frame
+local eventHandler = CreateFrame("Frame")
+eventHandler:RegisterEvent("PLAYER_REGEN_DISABLED")
+eventHandler:RegisterEvent("PLAYER_REGEN_ENABLED")
+eventHandler:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED")
+eventHandler:SetScript("OnEvent", function(self, event, ...)
+
+	if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
+		local layoutInfo = ...
+		local layoutName = layoutNames[layoutInfo.activeLayout]
+		if (layoutName ~= LAYOUT) then
+			LAYOUT = layoutName
+			for anchor,anchorData in next,AnchorData do
+				anchor:UpdateLayoutInfo(layoutName) -- let modules reposition
+				anchor:OnShow() -- update anchor, don't show
+			end
+		end
+
+	elseif (event == "PLAYER_SPECIALIZATION_CHANGED") then
+		local layoutInfo = C_EditMode.GetLayouts()
+		local layoutName = layoutNames[layoutInfo.activeLayout]
+		if (layoutName ~= LAYOUT) then
+			LAYOUT = layoutName
+			for anchor in next,AnchorData do
+				anchor:UpdateLayoutInfo(layoutName) -- let modules reposition
+				anchor:OnShow() -- update anchor, don't show
+			end
+		end
+
+	elseif (event == "PLAYER_REGEN_DISABLED") then
+		for anchor in next,AnchorData do
+			if (anchor.PostUpdate) then
+				if (anchor:IsShown()) then
+					anchor:PostUpdate("CombatStart", LAYOUT)
+				end
+			end
+		end
+
+	elseif (event == "PLAYER_REGEN_ENABLED") then
+		if (InCombatLockdown()) then return end
+
+		for anchor in next,AnchorData do
+			if (anchor.PostUpdate) then
+				if (anchor:IsShown()) then
+					anchor:PostUpdate("CombatEnd", LAYOUT)
+				end
+			end
+		end
+
+	end
+end)
+
+if (EditModeManagerFrame) then
+	hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() Widgets:ShowMovableFrameAnchors() end)
+	hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function() Widgets:HideMovableFrameAnchors() end)
 end

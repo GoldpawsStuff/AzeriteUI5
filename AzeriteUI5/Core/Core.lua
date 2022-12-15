@@ -132,9 +132,4 @@ ns.OnInitialize = function(self)
 	--self:RegisterChatCommand("unlock", "UnlockMovableFrames")
 	--self:RegisterChatCommand("togglelock", "ToggleMovableFrames")
 
-	if (EditModeManagerFrame) then
-		hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() self:UnlockMovableFrames() end)
-		hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function() self:LockMovableFrames() end)
-	end
-
 end

@@ -55,101 +55,74 @@ LibStub("AceConsole-3.0"):RegisterChatCommand("toggleblips", function()
 	g:SetShown(show)
 end)
 
---do return end
+do return end
 
-local MyButtonDB
+-- Attempt to create a proxy anchor with callbacks
+local anchor = ns.Widgets.RequestMovableFrameAnchor()
+anchor:SetScalable(true)
+anchor:SetMinMaxScale(.75, 1.25, .05)
+anchor:SetSize(439, 93)
+anchor:SetPoint("BOTTOMLEFT", 167, 100)
+anchor:SetTitle(ns.Prefix.."PlayerFrame")
 
-local button = CreateFrame("Button", ns.Prefix.."PlayerFrame", UIParent)
-button:SetScale(ns:GetRelativeScale())
-button:SetSize(439, 93)
-
-local updateFrameSettings = function(unitFrame)
-	if (InCombatLockdown()) then return end
-	unitFrame:ClearAllPoints()
-	unitFrame:SetPoint(MyButtonDB[layoutName].point, MyButtonDB[layoutName].x, MyButtonDB[layoutName].y)
-	unitFrame:SetScale(MyButtonDB[layoutName].scale * ns:GetRelativeScale())
-end
-
-local onPositionChanged = function(frame, layoutName, point, x, y)
-
-	-- From here you can save the position into a savedvariable
-	MyButtonDB[layoutName].point = point
-	MyButtonDB[layoutName].x = x
-	MyButtonDB[layoutName].y = y
-
-	-- Here we need to move the actual frame,
-	-- and register for combat end if needed.
-	local unitFrame = frame.unitFrame
-	if (unitFrame) then
-		if (InCombatLockdown()) then
-			return self:RegisterEvent("PLAYER_REGEN_ENABLED", updateFrameSettings)
-		end
-		updateFrameSettings(unitFrame)
-	end
-end
-
-local defaultPosition = {
-	enabled = true,
-	scale = 1,
-	point = "BOTTOMLEFT",
-	x = 167,
-	y = 100
+local savedPosition = {
+	Azerite = {
+		scale = 1,
+		[1] = "BOTTOMLEFT",
+		[2] = 167,
+		[3] = 100
+	},
+	Classic = {
+		scale = 1,
+		[1] = "TOPLEFT",
+		[2] = 167,
+		[3] = -100
+	},
+	Modern = {
+		scale = 1,
+		[1] = "TOPLEFT",
+		[2] = 167,
+		[3] = -100
+	}
 }
 
-local LEM = LibStub("LibEditMode")
+anchor.PostUpdate = function(self, reason, layoutName, ...)
+	if (reason == "LayoutsUpdated") then
+		if (savedPosition[layoutName]) then
 
-LEM:AddFrame(button, onPositionChanged, defaultPosition)
+			-- Update defaults
+			-- Update current positon
+			self:SetScale(savedPosition[layoutName].scale or self:GetScale())
+			self:ClearAllPoints()
+			self:SetPoint(unpack(savedPosition[layoutName]))
 
-LEM:RegisterCallback("enter", function()
-	-- From here you can show your button if it was hidden.
-end)
-
-LEM:RegisterCallback("exit", function()
-	-- From here you can hide your button if it's supposed to be hidden.
-end)
-
-LEM:RegisterCallback("layout", function(layoutName)
-	-- This will be called every time the Edit Mode layout is changed (which also happens at login),
-	-- use it to load the saved button position from savedvariables and position it.
-	if (not MyButtonDB) then
-		MyButtonDB = {}
-	end
-	if (not MyButtonDB[layoutName]) then
-		MyButtonDB[layoutName] = CopyTable(defaultPosition)
-	end
-
-	button:ClearAllPoints()
-	button:SetPoint(MyButtonDB[layoutName].point, MyButtonDB[layoutName].x, MyButtonDB[layoutName].y)
-end)
-
-LEM:AddFrameSettings(button, {
-	{
-		name = "Enable",
-		kind = LEM.SettingType.Checkbox,
-		default = true,
-		get = function(layoutName)
-			return MyButtonDB[layoutName].enabled
-		end,
-		set = function(layoutName, value)
-			MyButtonDB[layoutName].enabled = value
+		else
+			savedPosition[layoutName] = { self:GetPosition() }
+			savedPosition[layoutName].scale = self:GetScale()
 		end
-	},
-	{
-		name = "Scale",
-		kind = LEM.SettingType.Slider,
-		default = 1,
-		get = function(layoutName)
-			return MyButtonDB[layoutName].scale
-		end,
-		set = function(layoutName, value)
-			MyButtonDB[layoutName].scale = value
-			button:SetScale(value * ns:GetRelativeScale())
-		end,
-		minValue = 0.75,
-		maxValue = 1.25,
-		valueStep = 0.05,
-		formatter = function(value)
-			return string.format("%.2f", value)
-		end,
-	}
-})
+
+	elseif (reason == "PositionUpdated") then
+		-- Fires when position has been changed.
+		local point, x, y = ...
+
+		savedPosition[layoutName] = { point, x, y }
+		savedPosition[layoutName].scale = self:GetScale()
+
+	elseif (reason == "ScaleUpdated") then
+		-- Fires when scale has been mousewheel updated.
+		local scale = ...
+
+		savedPosition[layoutName].scale = scale
+
+	elseif (reason == "Dragging") then
+		-- Fires on every drag update. Spammy-
+		local point, x, y = ...
+
+	elseif (reason == "CombatStart") then
+		-- Fires right before combat lockdown
+
+	elseif (reason == "CombatEnd") then
+		-- Fires when combat lockdown ends
+
+	end
+end
