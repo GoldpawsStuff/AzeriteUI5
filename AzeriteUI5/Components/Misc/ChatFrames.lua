@@ -28,6 +28,7 @@ local ChatFrames = ns:NewModule("ChatFrames", "LibMoreEvents-1.0", "AceHook-3.0"
 
 -- Addon API
 local GetFont = ns.API.GetFont
+local IsAddOnEnabled = ns.API.IsAddOnEnabled
 local UIHider = ns.Hider
 
 local defaults = { profile = ns:Merge({
@@ -532,7 +533,7 @@ end
 
 ChatFrames.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ChatFrames", defaults)
-	self:SetEnabledState(self.db.profile.enabled)
+	self:SetEnabledState(not IsAddOnEnabled("Prat-3.0") and not IsAddOnEnabled("ls_Glass") and self.db.profile.enabled)
 
 	-- Add a command to clear all chat frames.
 	-- I mainly use this to remove clutter before taking screenshots.
