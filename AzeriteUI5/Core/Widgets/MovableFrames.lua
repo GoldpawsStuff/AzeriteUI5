@@ -150,7 +150,8 @@ Anchor.Create = function(self)
 	end
 
 	anchor:Hide()
-	anchor:SetFrameStrata("DIALOG")
+	anchor:SetFrameStrata("HIGH")
+	anchor:SetFrameLevel(1000)
 	anchor:SetMovable(true)
 	anchor:SetHitRectInsets(-20,-20,-20,-20)
 	anchor:RegisterForDrag("LeftButton")
