@@ -28,30 +28,6 @@ local oUF = ns.oUF
 
 local PlayerMod = ns:NewModule("PlayerFrame", "LibMoreEvents-1.0")
 
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		Azerite = {
-			scale = 1,
-			[1] = "BOTTOMLEFT",
-			[2] = 167,
-			[3] = 100
-		},
-		Classic = {
-			scale = 1,
-			[1] = "TOPLEFT",
-			[2] = 167,
-			[3] = -100
-		},
-		Modern = {
-			scale = 1,
-			[1] = "TOPLEFT",
-			[2] = 167,
-			[3] = -100
-		}
-	}
-}, ns.UnitFrame.defaults) }
-
 -- Lua API
 local next = next
 local string_gsub = string.gsub
@@ -66,15 +42,33 @@ local GetMedia = ns.API.GetMedia
 local IsAddOnEnabled = ns.API.IsAddOnEnabled
 
 -- Constants
-local IsLoveFestival = ns.API.IsLoveFestival()
-local IsWinterVeil = ns.API.IsWinterVeil()
 local playerClass = ns.PlayerClass
 local playerLevel = UnitLevel("player")
 local playerXPDisabled = IsXPUserDisabled()
-local hardenedLevel = 10
 
--- sourced from FrameXML/UnitPowerBarAlt.lua
-local ALTERNATE_POWER_INDEX = Enum.PowerType.Alternate or 10
+local defaults = { profile = ns:Merge({
+	enabled = true,
+	savedPosition = {
+		Azerite = {
+			scale = 1,
+			[1] = "BOTTOMLEFT",
+			[2] = 46,
+			[3] = 100
+		},
+		Classic = {
+			scale = 1,
+			[1] = "TOPLEFT",
+			[2] = 46,
+			[3] = -46
+		},
+		Modern = {
+			scale = 1,
+			[1] = "TOPLEFT",
+			[2] = 46,
+			[3] = -46
+		}
+	}
+}, ns.UnitFrame.defaults) }
 
 local barSparkMap = {
 	{ keyPercent =   0/512, topOffset = -24/64, bottomOffset = -39/64 },
@@ -697,7 +691,7 @@ end
 
 -- Update player frame based on player level.
 local UnitFrame_UpdateTextures = function(self)
-	local key = (playerXPDisabled or IsLevelAtEffectiveMaxLevel(playerLevel)) and "Seasoned" or playerLevel < hardenedLevel and "Novice" or "Hardened"
+	local key = (playerXPDisabled or IsLevelAtEffectiveMaxLevel(playerLevel)) and "Seasoned" or playerLevel < 10 and "Novice" or "Hardened"
 	local db = config[key]
 
 	local health = self.Health
@@ -1090,7 +1084,7 @@ local style = function(self, unit)
 	-- Seasonal Flavors
 	--------------------------------------------
 	-- Feast of Winter Veil
-	if (IsWinterVeil) then
+	if (ns.API.IsWinterVeil()) then
 		local winterVeilPower = power:CreateTexture(nil, "OVERLAY", nil, 0)
 		winterVeilPower:SetSize(unpack(db.Seasonal.WinterVeilPowerSize))
 		winterVeilPower:SetPoint(unpack(db.Seasonal.WinterVeilPowerPlace))
@@ -1107,7 +1101,7 @@ local style = function(self, unit)
 	end
 
 	-- Love is in the Air
-	if (IsLoveFestival) then
+	if (ns.API.IsLoveFestival()) then
 		combatIndicator:SetSize(unpack(db.Seasonal.LoveFestivalCombatIndicatorSize))
 		combatIndicator:ClearAllPoints()
 		combatIndicator:SetPoint(unpack(db.Seasonal.LoveFestivalCombatIndicatorPosition))
@@ -1133,8 +1127,8 @@ PlayerMod.DisableBlizzard = function(self)
 	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_HIDE")
 	PlayerPowerBarAlt:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
+	-- Move to PlayerHUD!
 	-- Disable player cast bar
-
 	-- Disable class powers
 	-- Disable monk stagger
 	-- Disable death knight runes
@@ -1146,7 +1140,7 @@ PlayerMod.GetAnchor = function(self)
 		local anchor = ns.Widgets.RequestMovableFrameAnchor()
 		anchor:SetScalable(true)
 		anchor:SetMinMaxScale(.75, 1.25, .05)
-		anchor:SetSize(439, 93)
+		anchor:SetSize(560, 160)
 		anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
 		anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
 		anchor:SetTitle(ns.Prefix.."PlayerFrame")
@@ -1163,11 +1157,15 @@ PlayerMod.OnAnchorUpdate = function(self, reason, layoutName, ...)
 	if (reason == "LayoutsUpdated") then
 		if (savedPosition[layoutName]) then
 
-			-- Update defaults
-			-- Update current positon
 			self.Anchor:SetScale(savedPosition[layoutName].scale or self.Anchor:GetScale())
 			self.Anchor:ClearAllPoints()
 			self.Anchor:SetPoint(unpack(savedPosition[layoutName]))
+
+			local defaultPosition = defaults.profile.savedPosition[layoutName]
+			if (defaultPosition) then
+				self.Anchor:SetDefaultPosition(unpack(defaultPosition))
+			end
+
 			self.currentLayout = layoutName
 
 		else
@@ -1231,13 +1229,23 @@ PlayerMod.UpdatePositionAndScale = function(self)
 	if (ns.UnitFrames.Player) then
 		local savedPosition = PlayerMod.db.profile.savedPosition
 		if (self.currentLayout and savedPosition[self.currentLayout]) then
-			ns.UnitFrames.Player:ClearAllPoints()
-			ns.UnitFrames.Player:SetPoint(unpack(savedPosition[self.currentLayout]))
+			--ns.UnitFrames.Player:SetPoint(unpack(savedPosition[self.currentLayout]))
 			ns.UnitFrames.Player:SetScale(savedPosition[self.currentLayout].scale)
+			ns.UnitFrames.Player:ClearAllPoints()
+			ns.UnitFrames.Player:SetPoint("BOTTOMLEFT", self.Anchor, "BOTTOMLEFT", 121, 0)
 		end
 	end
 	self.positionNeedsFix = nil
 end
+
+--local Player = ns.UnitFrames.Player
+--if (Player) then
+--	if (db.enablePlayer and not Player:IsEnabled()) then
+--		Player:Enable()
+--	elseif (not db.enablePlayer and Player:IsEnabled()) then
+--		Player:Disable()
+--	end
+--end
 
 PlayerMod.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_REGEN_ENABLED") then
