@@ -42,7 +42,7 @@ local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 
 local LAYOUT
-local layoutNames = setmetatable({"Modern", "Classic"}, {
+local layoutNames = setmetatable({ "Modern", "Classic" }, {
 	__index = function(t, key)
 		if (key > 2) then
 			-- The first 2 indices are reserved for 'Modern' and 'Classic' layouts, and anything
@@ -243,8 +243,8 @@ Anchor.ResetLastChange = function(self)
 	self:UpdatePosition(LAYOUT, point, x, y)
 	self:UpdateText()
 
-	if (self.PostUpdate) then
-		self:PostUpdate("PositionUpdated", LAYOUT, point, x, y)
+	if (self.Callback) then
+		self:Callback("PositionUpdated", LAYOUT, point, x, y)
 	end
 end
 
@@ -262,8 +262,8 @@ Anchor.ResetToDefault = function(self)
 	self:UpdatePosition(LAYOUT, point, x, y)
 	self:UpdateText()
 
-	if (self.PostUpdate) then
-		self:PostUpdate("PositionUpdated", LAYOUT, point, x, y)
+	if (self.Callback) then
+		self:Callback("PositionUpdated", LAYOUT, point, x, y)
 	end
 end
 
@@ -306,8 +306,8 @@ end
 
 Anchor.UpdateLayoutInfo = function(self, layoutName)
 
-	if (self.PostUpdate) then
-		self:PostUpdate("LayoutsUpdated", layoutName)
+	if (self.Callback) then
+		self:Callback("LayoutsUpdated", layoutName)
 	end
 end
 
@@ -320,8 +320,8 @@ Anchor.UpdatePosition = function(self, layoutName, point, x, y)
 	self:SetPointBase(point, UIParent, point, x, y)
 	self:UpdateText()
 
-	if (self.PostUpdate) then
-		self:PostUpdate("PositionUpdated", layoutName, point, x, y)
+	if (self.Callback) then
+		self:Callback("PositionUpdated", layoutName, point, x, y)
 	end
 end
 
@@ -336,8 +336,8 @@ Anchor.UpdateScale = function(self, layoutName, scale)
 		self:UpdateText()
 	end
 
-	if (self.PostUpdate) then
-		self:PostUpdate("ScaleUpdated", LAYOUT, scale)
+	if (self.Callback) then
+		self:Callback("ScaleUpdated", LAYOUT, scale)
 	end
 end
 
@@ -513,8 +513,8 @@ Anchor.OnShow = function(self)
 	self:SetPointBase(point, UIParent, point, x, y)
 	self:UpdateText()
 
-	if (self.PostUpdate) then
-		self:PostUpdate(point, x, y)
+	if (self.Callback) then
+		self:Callback("AnchorShown", LAYOUT, point, x, y)
 	end
 end
 
@@ -541,8 +541,8 @@ Anchor.OnUpdate = function(self, elapsed)
 
 	self:UpdateText()
 
-	if (self.PostUpdate) then
-		self:PostUpdate("Dragging", LAYOUT, point, x, y)
+	if (self.Callback) then
+		self:Callback("Dragging", LAYOUT, point, x, y)
 	end
 end
 
@@ -581,6 +581,7 @@ end
 
 -- Private event frame
 local eventHandler = CreateFrame("Frame")
+eventHandler:RegisterEvent("PLAYER_ENTERING_WORLD")
 eventHandler:RegisterEvent("PLAYER_REGEN_DISABLED")
 eventHandler:RegisterEvent("PLAYER_REGEN_ENABLED")
 eventHandler:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED")
@@ -589,30 +590,26 @@ eventHandler:SetScript("OnEvent", function(self, event, ...)
 	if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
 		local layoutInfo = ...
 		local layoutName = layoutNames[layoutInfo.activeLayout]
-		if (layoutName ~= LAYOUT) then
-			LAYOUT = layoutName
-			for anchor,anchorData in next,AnchorData do
-				anchor:UpdateLayoutInfo(layoutName) -- let modules reposition
-				anchor:OnShow() -- update anchor, don't show
-			end
+		LAYOUT = layoutName
+		for anchor in next,AnchorData do
+			anchor:UpdateLayoutInfo(layoutName) -- let modules reposition
+			anchor:OnShow() -- update anchor, don't show
 		end
 
-	elseif (event == "PLAYER_SPECIALIZATION_CHANGED") then
+	elseif (event == "PLAYER_SPECIALIZATION_CHANGED" or event == "PLAYER_ENTERING_WORLD") then
 		local layoutInfo = C_EditMode.GetLayouts()
 		local layoutName = layoutNames[layoutInfo.activeLayout]
-		if (layoutName ~= LAYOUT) then
-			LAYOUT = layoutName
-			for anchor in next,AnchorData do
-				anchor:UpdateLayoutInfo(layoutName) -- let modules reposition
-				anchor:OnShow() -- update anchor, don't show
-			end
+		LAYOUT = layoutName
+		for anchor in next,AnchorData do
+			anchor:UpdateLayoutInfo(layoutName) -- let modules reposition
+			anchor:OnShow() -- update anchor, don't show
 		end
 
 	elseif (event == "PLAYER_REGEN_DISABLED") then
 		for anchor in next,AnchorData do
-			if (anchor.PostUpdate) then
+			if (anchor.Callback) then
 				if (anchor:IsShown()) then
-					anchor:PostUpdate("CombatStart", LAYOUT)
+					anchor:Callback("CombatStart", LAYOUT)
 				end
 			end
 		end
@@ -621,9 +618,9 @@ eventHandler:SetScript("OnEvent", function(self, event, ...)
 		if (InCombatLockdown()) then return end
 
 		for anchor in next,AnchorData do
-			if (anchor.PostUpdate) then
+			if (anchor.Callback) then
 				if (anchor:IsShown()) then
-					anchor:PostUpdate("CombatEnd", LAYOUT)
+					anchor:Callback("CombatEnd", LAYOUT)
 				end
 			end
 		end
@@ -631,7 +628,5 @@ eventHandler:SetScript("OnEvent", function(self, event, ...)
 	end
 end)
 
-if (EditModeManagerFrame) then
-	hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() Widgets:ShowMovableFrameAnchors() end)
-	hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function() Widgets:HideMovableFrameAnchors() end)
-end
+hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() Widgets:ShowMovableFrameAnchors() end)
+hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function() Widgets:HideMovableFrameAnchors() end)
