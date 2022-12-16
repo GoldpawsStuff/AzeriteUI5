@@ -29,25 +29,151 @@ local oUF = ns.oUF
 local PlayerMod = ns:NewModule("PlayerFrame", "LibMoreEvents-1.0")
 
 local defaults = { profile = ns:Merge({
-	enabled = true
+	enabled = true,
+	savedPosition = {
+		Azerite = {
+			scale = 1,
+			[1] = "BOTTOMLEFT",
+			[2] = 167,
+			[3] = 100
+		},
+		Classic = {
+			scale = 1,
+			[1] = "TOPLEFT",
+			[2] = 167,
+			[3] = -100
+		},
+		Modern = {
+			scale = 1,
+			[1] = "TOPLEFT",
+			[2] = 167,
+			[3] = -100
+		}
+	}
 }, ns.UnitFrame.defaults) }
 
 local style = function(self, unit)
 
 end
 
-PlayerMod.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("PlayerFrame", defaults)
-	self:SetEnabledState(self.db.profile.enabled)
-
+PlayerMod.DisableBlizzard = function(self)
 	oUF:DisableBlizzard("player")
-	oUF:RegisterStyle(ns.Prefix.."Player", style)
 
 	-- Disable Player Alternate Power Bar
 	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_SHOW")
 	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_HIDE")
 	PlayerPowerBarAlt:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
+	-- Disable player cast bar
+
+	-- Disable class powers
+	-- Disable monk stagger
+	-- Disable death knight runes
+end
+
+PlayerMod.GetAnchor = function(self)
+	if (not self.Anchor) then
+
+		local anchor = ns.Widgets.RequestMovableFrameAnchor()
+		anchor:SetScalable(true)
+		anchor:SetMinMaxScale(.75, 1.25, .05)
+		anchor:SetSize(439, 93)
+		anchor:SetPoint("BOTTOMLEFT", 167, 100)
+		anchor:SetTitle(ns.Prefix.."PlayerFrame")
+		anchor.PostUpdate = function(_, reason, layoutName, ...)
+			PlayerMod:OnAnchorUpdate(reason, layoutName, ...)
+		end
+
+		self.Anchor = anchor
+	end
+	return self.Anchor
+end
+
+PlayerMod.OnAnchorUpdate = function(self, reason, layoutName, ...)
+	local savedPosition = PlayerMod.db.profile.savedPosition
+
+	if (reason == "LayoutsUpdated") then
+		if (savedPosition[layoutName]) then
+
+			-- Update defaults
+			-- Update current positon
+			self.Anchor:SetScale(savedPosition[layoutName].scale or self.Anchor:GetScale())
+			self.Anchor:ClearAllPoints()
+			self.Anchor:SetPoint(unpack(savedPosition[layoutName]))
+			self.currentLayout = layoutName
+
+		else
+			savedPosition[layoutName] = { self.Anchor:GetPosition() }
+			savedPosition[layoutName].scale = self.Anchor:GetScale()
+		end
+
+		self:UpdatePositionAndScale()
+
+	elseif (reason == "PositionUpdated") then
+		-- Fires when position has been changed.
+		local point, x, y = ...
+
+		savedPosition[layoutName] = { point, x, y }
+		savedPosition[layoutName].scale = self.Anchor:GetScale()
+
+		self:UpdatePositionAndScale()
+
+	elseif (reason == "ScaleUpdated") then
+		-- Fires when scale has been mousewheel updated.
+		local scale = ...
+
+		savedPosition[layoutName].scale = scale
+
+		self:UpdatePositionAndScale()
+
+	elseif (reason == "Dragging") then
+		-- Fires on every drag update. Spammy.
+		if (not self.incombat) then
+			self:OnAnchorUpdate("PositionUpdated", layoutName, ...)
+		end
+
+	elseif (reason == "CombatStart") then
+		-- Fires right before combat lockdown for visible anchors.
+		self.positionNeedsFix = true
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+
+	elseif (reason == "CombatEnd") then
+		-- Fires when combat lockdown ends for visible anchors.
+
+	end
+end
+
+PlayerMod.UpdatePositionAndScale = function(self)
+	if (ns.UnitFrames.Player) then
+		local savedPosition = PlayerMod.db.profile.savedPosition
+		if (self.currentLayout and savedPosition[self.currentLayout]) then
+			ns.UnitFrames.Player:ClearAllPoints()
+			ns.UnitFrames.Player:SetPoint(unpack(savedPosition[self.currentLayout]))
+			ns.UnitFrames.Player:SetScale(savedPosition[self.currentLayout].scale)
+		end
+	end
+	self.positionNeedsFix = nil
+end
+
+PlayerMod.OnEvent = function(self, event, ...)
+	if (event == "PLAYER_REGEN_ENABLED") then
+		if (InCombatLockdown()) then return end
+		--self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+		self.incombat = nil
+		if (self.positionNeedsFix) then
+			self:UpdatePositionAndScale()
+		end
+	elseif (event == "PLAYER_REGEN_DISABLED") then
+		self.incombat = true
+	end
+end
+
+PlayerMod.OnInitialize = function(self)
+	self.db = ns.db:RegisterNamespace("PlayerFrame", defaults)
+	self:SetEnabledState(self.db.profile.enabled)
+	self:DisableBlizzard()
+
+	oUF:RegisterStyle(ns.Prefix.."Player", style)
 end
 
 PlayerMod.OnEnable = function(self)
@@ -56,6 +182,7 @@ PlayerMod.OnEnable = function(self)
 	else
 		oUF:SetActiveStyle(ns.Prefix.."Player")
 		ns.UnitFrames.Player = oUF:Spawn("player", ns.Prefix.."UnitFramePlayer")
+		ns.UnitFrames.Player.Anchor = self:GetAnchor()
 	end
 end
 
