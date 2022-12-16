@@ -60,60 +60,48 @@ do
 	end
 end
 
-local defaults = {
-	profile = {
-		enabled = true,
-		bars = {
-			["**"] = {
-				enabled = false,
-				layout = "standard",
-				buttons = 12,
-				columns = 12,
-				rows = 1,
-				visibility = {
-					overridebar = false,
-					vehicleui = false
-				}
-			},
-			[1] = { --[[ primary action bar ]]
-				enabled = true,
-				layout = "map",
-				visibility = {
-					overridebar = true,
-					vehicleui = true
-				}
-			},
-			[2] = { --[[ bottomleft multibar ]]
-				enabled = false,
-				layout = "map"
-			},
-			[3] = { --[[ bottomright multibar ]]
-				enabled = false,
-				colums = 1,
-				rows = 12
-			},
-			[4] = { --[[ right multibar ]]
-				enabled = false,
-				colums = 1,
-				rows = 12
-			},
-			[5] = { --[[ left multibar ]]
-				enabled = false,
-				colums = 1,
-				rows = 12
-			},
-			[6] = { --[[]]
-				enabled = false,
-			},
-			[7] = { --[[]]
-				enabled = false,
-			},
-			[8] = { --[[]]
-				enabled = false,
+local defaults = { profile = ns:Merge({
+	enabled = true,
+	bars = {
+		["**"] = ns:Merge({
+		}, ns.ButtonBar.defaults),
+		[1] = { --[[ primary action bar ]]
+			layout = "map",
+			visibility = {
+				overridebar = true,
+				vehicleui = true
 			}
+		},
+		[2] = { --[[ bottomleft multibar ]]
+			enabled = false,
+			layout = "map"
+		},
+		[3] = { --[[ bottomright multibar ]]
+			enabled = false,
+			colums = 1,
+			rows = 12
+		},
+		[4] = { --[[ right multibar ]]
+			enabled = false,
+			colums = 1,
+			rows = 12
+		},
+		[5] = { --[[ left multibar ]]
+			enabled = false,
+			colums = 1,
+			rows = 12
+		},
+		[6] = { --[[]]
+			enabled = false,
+		},
+		[7] = { --[[]]
+			enabled = false,
+		},
+		[8] = { --[[]]
+			enabled = false,
 		}
 	}
-}
+}, ns.moduleDefaults) }
 
 BarMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ActionBars", defaults)
