@@ -236,5 +236,5 @@ MinimapMod.OnInitialize = function(self)
 end
 
 MinimapMod.OnEnable = function(self)
-	Minimap:SetTheme(self.db.profile.theme)
+	self:SetMinimapTheme(self.db.profile.theme)
 end
