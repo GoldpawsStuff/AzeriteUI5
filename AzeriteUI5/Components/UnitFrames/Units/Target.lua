@@ -1233,21 +1233,22 @@ TargetMod.DisableBlizzard = function(self)
 	oUF:DisableBlizzard("target")
 end
 
-TargetMod.GetAnchor = function(self)
-	if (not self.Anchor) then
+TargetMod.UpdatePositionAndScale = function(self)
+	if (InCombatLockdown()) then return end
 
-		local anchor = ns.Widgets.RequestMovableFrameAnchor()
-		anchor:SetScalable(true)
-		anchor:SetMinMaxScale(.75, 1.25, .05)
-		anchor:SetSize(550, 210)
-		anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
-		anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
-		anchor:SetTitle(HUD_EDIT_MODE_TARGET_FRAME_LABEL)
-		anchor.Callback = function(_, ...) self:OnAnchorUpdate(...) end
-
-		self.Anchor = anchor
+	local frame = ns.UnitFrames.Target
+	if (frame) then
+		local savedPosition = self.currentLayout and self.db.profile.savedPosition[self.currentLayout]
+		if (savedPosition) then
+			local point, x, y = unpack(savedPosition)
+			local scale = savedPosition.scale
+			frame:SetScale(scale)
+			frame:ClearAllPoints()
+			frame:SetPoint(point, UIParent, point, x/scale - 113, y/scale - 39)
+		end
 	end
-	return self.Anchor
+
+	self.positionNeedsFix = nil
 end
 
 TargetMod.OnAnchorUpdate = function(self, reason, layoutName, ...)
@@ -1324,32 +1325,9 @@ TargetMod.OnAnchorUpdate = function(self, reason, layoutName, ...)
 	end
 end
 
-TargetMod.UpdatePositionAndScale = function(self)
-	if (ns.UnitFrames.Target) then
-		local savedPosition = TargetMod.db.profile.savedPosition
-		if (self.currentLayout and savedPosition[self.currentLayout]) then
-			--ns.UnitFrames.Target:SetPoint(unpack(savedPosition[self.currentLayout]))
-			ns.UnitFrames.Target:SetScale(savedPosition[self.currentLayout].scale)
-			ns.UnitFrames.Target:ClearAllPoints()
-			ns.UnitFrames.Target:SetPoint("TOPRIGHT", self.Anchor, "TOPRIGHT", -113, -39)
-		end
-	end
-	self.positionNeedsFix = nil
-end
-
---local Target = ns.UnitFrames.Target
---if (Target) then
---	if (db.enableTarget and not Target:IsEnabled()) then
---		Target:Enable()
---	elseif (not db.enableTarget and Target:IsEnabled()) then
---		Target:Disable()
---	end
---end
-
 TargetMod.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_REGEN_ENABLED") then
 		if (InCombatLockdown()) then return end
-		--self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 		self.incombat = nil
 		if (self.positionNeedsFix) then
 			self:UpdatePositionAndScale()
@@ -1368,17 +1346,35 @@ TargetMod.OnInitialize = function(self)
 end
 
 TargetMod.OnEnable = function(self)
-	if (ns.UnitFrames.Target) then
-		ns.UnitFrames.Target:Enable()
+	local target = ns.UnitFrames.Target
+	if (target) then
+		if (not target:IsEnabled()) then
+			target:Enable()
+		end
 	else
+
 		oUF:SetActiveStyle(ns.Prefix.."Target")
 		ns.UnitFrames.Target = oUF:Spawn("target", ns.Prefix.."UnitFrameTarget")
-		ns.UnitFrames.Target.Anchor = self:GetAnchor()
+
+		self.Frame = ns.UnitFrames.Target
+
+		local anchor = ns.Widgets.RequestMovableFrameAnchor()
+		anchor:SetScalable(true)
+		anchor:SetMinMaxScale(.75, 1.25, .05)
+		anchor:SetSize(550, 210)
+		anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
+		anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
+		anchor:SetTitle(HUD_EDIT_MODE_TARGET_FRAME_LABEL)
+		anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
+
+		self.Anchor = anchor
+
 	end
 end
 
 TargetMod.OnDisable = function(self)
-	if (ns.UnitFrames.Target) then
-		ns.UnitFrames.Target:Disable()
+	local frame = ns.UnitFrames.Target
+	if (frame and frame:IsEnabled()) then
+		frame:Disable()
 	end
 end

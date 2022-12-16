@@ -1122,21 +1122,22 @@ PlayerMod.DisableBlizzard = function(self)
 	-- Disable death knight runes
 end
 
-PlayerMod.GetAnchor = function(self)
-	if (not self.Anchor) then
+PlayerMod.UpdatePositionAndScale = function(self)
+	if (InCombatLockdown()) then return end
 
-		local anchor = ns.Widgets.RequestMovableFrameAnchor()
-		anchor:SetScalable(true)
-		anchor:SetMinMaxScale(.75, 1.25, .05)
-		anchor:SetSize(560, 160 + 20)
-		anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
-		anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
-		anchor:SetTitle(HUD_EDIT_MODE_PLAYER_FRAME_LABEL)
-		anchor.Callback = function(_, ...) self:OnAnchorUpdate(...) end
-
-		self.Anchor = anchor
+	local frame = ns.UnitFrames.Player
+	if (frame) then
+		local savedPosition = self.currentLayout and self.db.profile.savedPosition[self.currentLayout]
+		if (savedPosition) then
+			local point, x, y = unpack(savedPosition)
+			local scale = savedPosition.scale
+			frame:SetScale(scale)
+			frame:ClearAllPoints()
+			frame:SetPoint(point, UIParent, point, x/scale + 121, y/scale)
+		end
 	end
-	return self.Anchor
+
+	self.positionNeedsFix = nil
 end
 
 PlayerMod.OnAnchorUpdate = function(self, reason, layoutName, ...)
@@ -1213,32 +1214,9 @@ PlayerMod.OnAnchorUpdate = function(self, reason, layoutName, ...)
 	end
 end
 
-PlayerMod.UpdatePositionAndScale = function(self)
-	if (ns.UnitFrames.Player) then
-		local savedPosition = PlayerMod.db.profile.savedPosition
-		if (self.currentLayout and savedPosition[self.currentLayout]) then
-			--ns.UnitFrames.Player:SetPoint(unpack(savedPosition[self.currentLayout]))
-			ns.UnitFrames.Player:SetScale(savedPosition[self.currentLayout].scale)
-			ns.UnitFrames.Player:ClearAllPoints()
-			ns.UnitFrames.Player:SetPoint("BOTTOMLEFT", self.Anchor, "BOTTOMLEFT", 121, 0)
-		end
-	end
-	self.positionNeedsFix = nil
-end
-
---local Player = ns.UnitFrames.Player
---if (Player) then
---	if (db.enablePlayer and not Player:IsEnabled()) then
---		Player:Enable()
---	elseif (not db.enablePlayer and Player:IsEnabled()) then
---		Player:Disable()
---	end
---end
-
 PlayerMod.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_REGEN_ENABLED") then
 		if (InCombatLockdown()) then return end
-		--self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 		self.incombat = nil
 		if (self.positionNeedsFix) then
 			self:UpdatePositionAndScale()
@@ -1257,17 +1235,35 @@ PlayerMod.OnInitialize = function(self)
 end
 
 PlayerMod.OnEnable = function(self)
-	if (ns.UnitFrames.Player) then
-		ns.UnitFrames.Player:Enable()
+	local player = ns.UnitFrames.Player
+	if (player) then
+		if (not player:IsEnabled()) then
+			player:Enable()
+		end
 	else
+
 		oUF:SetActiveStyle(ns.Prefix.."Player")
 		ns.UnitFrames.Player = oUF:Spawn("player", ns.Prefix.."UnitFramePlayer")
-		ns.UnitFrames.Player.Anchor = self:GetAnchor()
+
+		self.Frame = ns.UnitFrames.Player
+
+		local anchor = ns.Widgets.RequestMovableFrameAnchor()
+		anchor:SetScalable(true)
+		anchor:SetMinMaxScale(.75, 1.25, .05)
+		anchor:SetSize(560, 160 + 20)
+		anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
+		anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
+		anchor:SetTitle(HUD_EDIT_MODE_PLAYER_FRAME_LABEL)
+		anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
+
+		self.Anchor = anchor
+
 	end
 end
 
 PlayerMod.OnDisable = function(self)
-	if (ns.UnitFrames.Player) then
-		ns.UnitFrames.Player:Disable()
+	local player = ns.UnitFrames.Player
+	if (player and player:IsEnabled()) then
+		player:Disable()
 	end
 end
