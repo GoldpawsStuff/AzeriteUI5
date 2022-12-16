@@ -78,11 +78,10 @@ PlayerMod.GetAnchor = function(self)
 		anchor:SetScalable(true)
 		anchor:SetMinMaxScale(.75, 1.25, .05)
 		anchor:SetSize(439, 93)
-		anchor:SetPoint("BOTTOMLEFT", 167, 100)
+		anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
+		anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
 		anchor:SetTitle(ns.Prefix.."PlayerFrame")
-		anchor.PostUpdate = function(_, reason, layoutName, ...)
-			PlayerMod:OnAnchorUpdate(reason, layoutName, ...)
-		end
+		anchor.Callback = function(_, ...) self:OnAnchorUpdate(...) end
 
 		self.Anchor = anchor
 	end
@@ -105,6 +104,22 @@ PlayerMod.OnAnchorUpdate = function(self, reason, layoutName, ...)
 		else
 			savedPosition[layoutName] = { self.Anchor:GetPosition() }
 			savedPosition[layoutName].scale = self.Anchor:GetScale()
+		end
+
+		-- Purge layouts not matching editmode themes or our defaults.
+		for name in pairs(savedPosition) do
+			if (not defaults.profile.savedPosition[name]) then
+				local found
+				for lname in pairs(C_EditMode.GetLayouts().layouts) do
+					if (lname == name) then
+						found = true
+						break
+					end
+				end
+				if (not found) then
+					savedPosition[name] = nil
+				end
+			end
 		end
 
 		self:UpdatePositionAndScale()
