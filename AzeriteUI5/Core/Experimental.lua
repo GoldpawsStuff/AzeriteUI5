@@ -55,7 +55,7 @@ LibStub("AceConsole-3.0"):RegisterChatCommand("toggleblips", function()
 	g:SetShown(show)
 end)
 
-do return end
+--do return end
 
 -- Attempt to create a proxy anchor with callbacks
 local anchor = ns.Widgets.RequestMovableFrameAnchor()

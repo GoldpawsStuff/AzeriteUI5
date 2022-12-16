@@ -139,7 +139,7 @@ end
 -- Anchor Template
 --------------------------------------
 local mt = getmetatable(CreateFrame("Button")).__index
-local Anchor = { SetPointBase = mt.SetPoint, SetSizeBase = mt.SetSize, SetWidthBase = mt.SetWidth, SetHeightBase = mt.SetHeight }
+local Anchor = {}
 
 -- Constructor
 Anchor.Create = function(self)
@@ -164,13 +164,21 @@ Anchor.Create = function(self)
 	anchor:SetScript("OnEnter", Anchor.OnEnter)
 	anchor:SetScript("OnLeave", Anchor.OnLeave)
 
-	local overlay = anchor:CreateTexture(nil, "ARTWORK", nil, 1)
+	local overlay = CreateFrame("Frame", nil, anchor, ns.BackdropTemplate)
 	overlay:SetAllPoints()
-	overlay:SetColorTexture(1, 1, 1, .75)
-	overlay:SetVertexColor(.25, .5, 1)
+	overlay:SetBackdrop({
+		bgFile =[[Interface\Tooltips\UI-Tooltip-Background]],
+		tile = true,
+		tileSize = 16,
+		edgeFile = [[Interface\Tooltips\UI-Tooltip-Border]],
+		edgeSize = 16,
+		insets = { left = 5, right = 3, top = 3, bottom = 5 }
+	})
+	overlay:SetBackdropColor(.5, 1, .5, .75)
+	overlay:SetBackdropBorderColor(.5, 1, .5, 1)
 	anchor.Overlay = overlay
 
-	local text = anchor:CreateFontString(nil, "OVERLAY", nil, 1)
+	local text = overlay:CreateFontString(nil, "OVERLAY", nil, 1)
 	text:SetFontObject(GetFont(13, true))
 	text:SetTextColor(unpack(Colors.highlight))
 	text:SetIgnoreParentScale(true)
@@ -178,31 +186,45 @@ Anchor.Create = function(self)
 	text:SetPoint("CENTER")
 	anchor.Text = text
 
-	local title = anchor:CreateFontString(nil, "OVERLAY", nil, 1)
+	local title = overlay:CreateFontString(nil, "OVERLAY", nil, 1)
 	title:SetFontObject(GetFont(15, true))
 	title:SetTextColor(unpack(Colors.highlight))
 	title:SetIgnoreParentScale(true)
 	title:SetIgnoreParentAlpha(true)
 	title:SetPoint("CENTER")
-	--title:SetPoint("BOTTOM", text, "TOP", 0, 1)
 	anchor.Title = title
 
 	AnchorData[anchor] = {
 		anchor = anchor,
-		--width = nil,
-		--height = nil,
-		--lastScale = nil,
-		--lastPosition = nil,
-		--currentPosition = nil,
 		scale = 1,
 		minScale = .5,
 		maxScale = 1.5,
 		isScalable = false,
-		defaultScale = 1,
-		--defaultPosition = nil,
+		defaultScale = 1
 	}
 
 	return anchor
+end
+
+-- 'true' if the frame is in its default position and scale.
+Anchor.IsInDefaultPosition = function(self)
+	local anchorData = AnchorData[self]
+	local point, x, y = getPosition(self)
+	local point2, x2, y2 = unpack(anchorData.defaultPosition)
+	return compare(anchorData.scale, anchorData.defaultScale) and compare(point, x, y, point2, x2, y2)
+end
+
+-- 'true' if the frame can be scaled.
+Anchor.IsScalable = function(self)
+	return AnchorData[self].isScalable
+end
+
+-- 'true' if the frame has moved since last showing the anchor.
+Anchor.HasMovedSinceLastUpdate = function(self)
+	local anchorData = AnchorData[self]
+	local point, x, y = unpack(anchorData.currentPosition)
+	local point2, x2, y2 = unpack(anchorData.lastPosition)
+	return not compare(anchorData.scale, anchorData.lastScale or anchorData.defaultScale) or not compare(point, x, y, point2, x2, y2)
 end
 
 -- Reset to initial position after last showing the anchor.
@@ -248,7 +270,7 @@ Anchor.UpdateText = function(self)
 	local anchorData = AnchorData[self]
 
 	local msg
-	if (anchorData.isScalable and not compare(anchorData.scale, anchorData.defaultScale)) then
+	if (self:IsScalable() and not compare(anchorData.scale, anchorData.defaultScale)) then
 		msg = string_format(Colors.highlight.colorCode.."%s, %.0f, %.0f ( %.2f )|r", anchorData.currentPosition[1], anchorData.currentPosition[2], anchorData.currentPosition[3], anchorData.scale)
 	else
 		msg = string_format(Colors.highlight.colorCode.."%s, %.0f, %.0f|r", unpack(anchorData.currentPosition))
@@ -257,11 +279,11 @@ Anchor.UpdateText = function(self)
 	if (self:IsMouseOver(20,-20,-20,20)) then
 		if (self:IsInDefaultPosition()) then
 			msg = msg .. Colors.green.colorCode.."\n<Left-Click and drag to move>|r"
-			if (anchorData.isScalable and compare(anchorData.scale, anchorData.defaultScale)) then
+			if (self:IsScalable() and compare(anchorData.scale, anchorData.defaultScale)) then
 				msg = msg .. Colors.green.colorCode.."\n<MouseWheel to change scale>|r"
 			end
 		else
-			if (self:HasMoved()) then
+			if (self:HasMovedSinceLastUpdate()) then
 				msg = msg .. Colors.green.colorCode.."\n<Right-Click to undo last change>|r"
 			end
 			msg = msg .. Colors.green.colorCode.."\n<Shift-Click to reset to default>|r"
@@ -328,27 +350,6 @@ Anchor.GetScale = function(self)
 	return AnchorData[self].scale
 end
 
--- 'true' if the frame has moved since last showing the anchor.
-Anchor.HasMoved = function(self)
-	local anchorData = AnchorData[self]
-	local point, x, y = unpack(anchorData.currentPosition)
-	local point2, x2, y2 = unpack(anchorData.lastPosition)
-	return not compare(anchorData.scale, anchorData.lastScale or anchorData.defaultScale) or not compare(point, x, y, point2, x2, y2)
-end
-
--- 'true' if the frame is in its default position.
-Anchor.IsInDefaultPosition = function(self)
-	local anchorData = AnchorData[self]
-	local point, x, y = getPosition(self)
-	local point2, x2, y2 = unpack(anchorData.defaultPosition)
-	return compare(anchorData.scale, anchorData.defaultScale) and compare(point, x, y, point2, x2, y2)
-end
-
--- 'true' if the frame can be scaled.
-Anchor.IsScalable = function(self)
-	return AnchorData[self].isScalable
-end
-
 -- Anchor Setters
 --------------------------------------
 -- Scale can still be set and changed,
@@ -386,24 +387,28 @@ Anchor.SetScale = function(self, scale)
 	self:UpdateScale(LAYOUT, scale)
 end
 
+Anchor.SetSizeBase = mt.SetSize
 Anchor.SetSize = function(self, width, height)
 	local anchorData = AnchorData[self]
 	anchorData.width, anchorData.height = width, height
 	self:SetSizeBase(width * anchorData.scale, height * anchorData.scale)
 end
 
+Anchor.SetWidthBase = mt.SetWidth
 Anchor.SetWidth = function(self, width)
 	local anchorData = AnchorData[self]
 	anchorData.width = width
 	self:SetWidthBase(width * anchorData.scale)
 end
 
+Anchor.SetHeightBase = mt.SetHeight
 Anchor.SetHeight = function(self, height)
 	local anchorData = AnchorData[self]
 	anchorData.height = height
 	self:SetHeightBase(height * anchorData.scale)
 end
 
+Anchor.SetPointBase = mt.SetPoint
 Anchor.SetPoint = function(self, ...)
 
 	-- Set the raw point to what the user has decided.
@@ -437,7 +442,7 @@ Anchor.OnClick = function(self, button)
 		end
 	elseif (button == "RightButton") then
 		self:SetFrameLevel(40)
-		if (self:HasMoved()) then
+		if (self:HasMovedSinceLastUpdate()) then
 			self:ResetLastChange()
 		end
 	end
