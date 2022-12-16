@@ -39,7 +39,8 @@ local GetMedia = ns.API.GetMedia
 local UIHider = ns.Hider
 
 local defaults = { profile = ns:Merge({
-	enabled = true
+	enabled = true,
+	theme = "Azerite"
 }, ns.moduleDefaults) }
 
 local DEFAULT_THEME = "Blizzard"
@@ -136,8 +137,18 @@ Prototype.RegisterTheme = function(self, name, skin)
 	Skins[name] = skin
 end
 
-Prototype.SetTheme = function(self, name)
-	if (not Skins[name] or name == CURRENT_THEME) then return end
+Prototype.SetTheme = function(self, requestedTheme)
+
+	-- Theme names are case sensitive,
+	-- but we don't want the input to be.
+	local name
+	for theme in next,Skins do
+		if (string.lower(theme) == string.lower(requestedTheme)) then
+			name = theme
+			break
+		end
+	end
+	if (not name or not Skins[name] or name == CURRENT_THEME) then return end
 
 	local current, new = Skins[CURRENT_THEME], Skins[name]
 
@@ -202,16 +213,13 @@ Prototype.SetTheme = function(self, name)
 	end
 
 	CURRENT_THEME = name
+
+	-- Store the theme setting
+	MinimapMod.db.profile.theme = name
 end
 
-MinimapMod.SetTheme = function(self, theme)
-	local theme = self:GetArgs(string.lower(theme))
-	for name in next,Skins do
-		if (string.lower(name) == theme) then
-			Minimap:SetTheme(name)
-			return
-		end
-	end
+MinimapMod.SetMinimapTheme = function(self, input)
+	Minimap:SetTheme((self:GetArgs(string.lower(input))))
 end
 
 MinimapMod.Embed = function(self)
@@ -224,9 +232,9 @@ MinimapMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("Minimap", defaults)
 	self:SetEnabledState(self.db.profile.enabled)
 	self:Embed()
-	self:RegisterChatCommand("setminimaptheme", "SetTheme")
+	self:RegisterChatCommand("setminimaptheme", "SetMinimapTheme")
 end
 
 MinimapMod.OnEnable = function(self)
-	Minimap:SetTheme("Azerite")
+	Minimap:SetTheme(self.db.profile.theme)
 end
