@@ -54,18 +54,6 @@ local defaults = { profile = ns:Merge({
 			[1] = "BOTTOMLEFT",
 			[2] = 46,
 			[3] = 100
-		},
-		Classic = {
-			scale = 1,
-			[1] = "TOPLEFT",
-			[2] = 46,
-			[3] = -46
-		},
-		Modern = {
-			scale = 1,
-			[1] = "TOPLEFT",
-			[2] = 46,
-			[3] = -46
 		}
 	}
 }, ns.UnitFrame.defaults) }
@@ -1140,10 +1128,10 @@ PlayerMod.GetAnchor = function(self)
 		local anchor = ns.Widgets.RequestMovableFrameAnchor()
 		anchor:SetScalable(true)
 		anchor:SetMinMaxScale(.75, 1.25, .05)
-		anchor:SetSize(560, 160)
+		anchor:SetSize(560, 160 + 20)
 		anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
 		anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
-		anchor:SetTitle(ns.Prefix.."PlayerFrame")
+		anchor:SetTitle(HUD_EDIT_MODE_PLAYER_FRAME_LABEL)
 		anchor.Callback = function(_, ...) self:OnAnchorUpdate(...) end
 
 		self.Anchor = anchor
