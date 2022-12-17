@@ -139,7 +139,7 @@ MicroMenu.SpawnButtons = function(self)
 
 		button:SetScript("OnLeave", function(self)
 			if (self:IsEnabled()) then
-				text:SetTextColor(unpack(Colors.normal))
+				text:SetTextColor(unpack(Colors.title))
 			else
 				text:SetTextColor(unpack(Colors.gray))
 			end
