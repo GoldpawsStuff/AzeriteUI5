@@ -24,12 +24,17 @@ externals:
   Libs/LibEditMode:
     url: git://github.com/p3lim-wow/LibEditMode.git
     tag: latest
+  Libs/LibEditModeOverride:
+    url: https://github.com/plusmouse/LibEditModeOverride
+    tag: latest
   Libs/oUF:
     url: git://github.com/oUF-wow/oUF.git
     tag: latest
 
 embedded-libraries:
     - ace3
+    - ouf
+    - libeditmodeoverride
 
 optional-dependencies:
     - ace3

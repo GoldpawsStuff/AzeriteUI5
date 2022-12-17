@@ -25,6 +25,7 @@
 
 	<Include file="LibDropDown\embed.xml"/>
 	<Include file="LibEditMode\embed.xml"/>
+	<Include file="LibEditModeOverride\LibEditModeOverride.xml"/>
 
 	<Script file="LibMoreEvents-1.0\LibMoreEvents-1.0.lua"/>
 	<Script file="LibOrb-1.0\LibOrb-1.0.lua"/>
