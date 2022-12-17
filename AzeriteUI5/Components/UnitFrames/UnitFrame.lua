@@ -124,6 +124,9 @@ ns.UnitFrame.modulePrototype = {
 		if (event == "PLAYER_REGEN_ENABLED") then
 			if (InCombatLockdown()) then return end
 			self.incombat = nil
+			if (self.positionNeedsFix) then
+				self:UpdatePositionAndScale()
+			end
 		elseif (event == "PLAYER_REGEN_DISABLED") then
 			self.incombat = true
 		end
@@ -131,6 +134,7 @@ ns.UnitFrame.modulePrototype = {
 
 	OnAnchorUpdate = function(self, reason, layoutName, ...)
 		local savedPosition = self.db.profile.savedPosition
+		local lockdown = InCombatLockdown()
 
 		if (reason == "LayoutsUpdated") then
 			if (savedPosition[layoutName]) then
@@ -194,19 +198,19 @@ ns.UnitFrame.modulePrototype = {
 
 		elseif (reason == "CombatStart") then
 			-- Fires right before combat lockdown for visible anchors.
-			self.positionNeedsFix = true
+
 
 		elseif (reason == "CombatEnd") then
 			-- Fires when combat lockdown ends for visible anchors.
-			if (self.positionNeedsFix) then
-				self:UpdatePositionAndScale()
-			end
 
 		end
 	end,
 
 	UpdatePositionAndScale = function(self)
-		if (InCombatLockdown()) then return end
+		if (InCombatLockdown()) then
+			self.positionNeedsFix = true
+			return
+		end
 		if (not self.frame) then return end
 
 		local savedPosition = self.currentLayout and self.db.profile.savedPosition[self.currentLayout]
@@ -236,7 +240,6 @@ ns.UnitFrame.modulePrototype = {
 			end
 		end
 
-		self.positionNeedsFix = nil
 	end
 }
 
