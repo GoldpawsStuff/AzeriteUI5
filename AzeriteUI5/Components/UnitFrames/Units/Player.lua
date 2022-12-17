@@ -26,7 +26,7 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local PlayerMod = ns:NewModule("PlayerFrame", "LibMoreEvents-1.0")
+local PlayerMod = ns:Merge(ns:NewModule("PlayerFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
 
 -- Lua API
 local next = next
@@ -91,7 +91,7 @@ local config = {
 	-- General Settings
 	-----------------------------------------
 	Size = { 439, 93 },
-	Position = { "BOTTOMLEFT", 167, 100 },
+	--Position = { "BOTTOMLEFT", 167, 100 },
 	HitRectInsets = { 0, 0, 0, 6 },
 
 	-- Health Value Text
@@ -789,7 +789,7 @@ end
 
 -- Frame Script Handlers
 --------------------------------------------
-local OnEvent = function(self, event, unit, ...)
+local UnitFrame_OnEvent = function(self, event, unit, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		playerXPDisabled = IsXPUserDisabled()
 		playerLevel = UnitLevel("player")
@@ -818,8 +818,9 @@ local style = function(self, unit)
 
 	local db = config
 	self:SetSize(unpack(db.Size))
-	self:SetPoint(unpack(db.Position))
 	self:SetHitRectInsets(unpack(db.HitRectInsets))
+	self:SetFrameLevel(self:GetFrameLevel() + 2)
+	self:SetIgnoreParentAlpha(true)
 
 	-- Overlay for icons and text
 	--------------------------------------------
@@ -1098,172 +1099,51 @@ local style = function(self, unit)
 	end
 
 	-- Register events to handle texture updates.
-	self:RegisterEvent("PLAYER_ALIVE", OnEvent, true)
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", OnEvent, true)
-	self:RegisterEvent("DISABLE_XP_GAIN", OnEvent, true)
-	self:RegisterEvent("ENABLE_XP_GAIN", OnEvent, true)
-	self:RegisterEvent("PLAYER_LEVEL_UP", OnEvent, true)
-	self:RegisterEvent("PLAYER_XP_UPDATE", OnEvent, true)
+	self:RegisterEvent("PLAYER_ALIVE", UnitFrame_OnEvent, true)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", UnitFrame_OnEvent, true)
+	self:RegisterEvent("DISABLE_XP_GAIN", UnitFrame_OnEvent, true)
+	self:RegisterEvent("ENABLE_XP_GAIN", UnitFrame_OnEvent, true)
+	self:RegisterEvent("PLAYER_LEVEL_UP", UnitFrame_OnEvent, true)
+	self:RegisterEvent("PLAYER_XP_UPDATE", UnitFrame_OnEvent, true)
 
 end
 
-PlayerMod.DisableBlizzard = function(self)
-	oUF:DisableBlizzard("player")
+PlayerMod.Spawn = function(self)
 
-	-- Disable Player Alternate Power Bar
-	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_SHOW")
-	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_HIDE")
-	PlayerPowerBarAlt:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	-- UnitFrame
+	---------------------------------------------------
+	local unit, name = "player", "Player"
 
-	-- Move to PlayerHUD!
-	-- Disable player cast bar
-	-- Disable class powers
-	-- Disable monk stagger
-	-- Disable death knight runes
-end
+	oUF:RegisterStyle(ns.Prefix..name, style)
+	oUF:SetActiveStyle(ns.Prefix..name)
 
-PlayerMod.UpdatePositionAndScale = function(self)
-	if (InCombatLockdown()) then return end
+	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
 
-	local frame = ns.UnitFrames.Player
-	if (frame) then
-		local savedPosition = self.currentLayout and self.db.profile.savedPosition[self.currentLayout]
-		if (savedPosition) then
-			local point, x, y = unpack(savedPosition)
-			local scale = savedPosition.scale
-			frame:SetScale(scale)
-			frame:ClearAllPoints()
-			frame:SetPoint(point, UIParent, point, x/scale + 121, y/scale)
-		end
-	end
+	-- Movable Frame Anchor
+	---------------------------------------------------
+	local anchor = ns.Widgets.RequestMovableFrameAnchor()
+	anchor:SetTitle(HUD_EDIT_MODE_PLAYER_FRAME_LABEL)
+	anchor:SetScalable(true)
+	anchor:SetMinMaxScale(.75, 1.25, .05)
+	anchor:SetSize(560, 180)
+	anchor:SetPoint(unpack(self.defaults.profile.savedPosition.Azerite))
+	anchor:SetScale(self.defaults.profile.savedPosition.Azerite.scale)
+	anchor.frameOffsetX = 121
+	anchor.frameOffsetY = 0
+	anchor.framePoint = "BOTTOMLEFT"
+	anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
 
-	self.positionNeedsFix = nil
-end
-
-PlayerMod.OnAnchorUpdate = function(self, reason, layoutName, ...)
-	local savedPosition = PlayerMod.db.profile.savedPosition
-
-	if (reason == "LayoutsUpdated") then
-		if (savedPosition[layoutName]) then
-
-			self.Anchor:SetScale(savedPosition[layoutName].scale or self.Anchor:GetScale())
-			self.Anchor:ClearAllPoints()
-			self.Anchor:SetPoint(unpack(savedPosition[layoutName]))
-
-			local defaultPosition = defaults.profile.savedPosition[layoutName]
-			if (defaultPosition) then
-				self.Anchor:SetDefaultPosition(unpack(defaultPosition))
-			end
-
-			self.currentLayout = layoutName
-
-		else
-			savedPosition[layoutName] = { self.Anchor:GetPosition() }
-			savedPosition[layoutName].scale = self.Anchor:GetScale()
-		end
-
-		-- Purge layouts not matching editmode themes or our defaults.
-		for name in pairs(savedPosition) do
-			if (not defaults.profile.savedPosition[name]) then
-				local found
-				for lname in pairs(C_EditMode.GetLayouts().layouts) do
-					if (lname == name) then
-						found = true
-						break
-					end
-				end
-				if (not found) then
-					savedPosition[name] = nil
-				end
-			end
-		end
-
-		self:UpdatePositionAndScale()
-
-	elseif (reason == "PositionUpdated") then
-		-- Fires when position has been changed.
-		local point, x, y = ...
-
-		savedPosition[layoutName] = { point, x, y }
-		savedPosition[layoutName].scale = self.Anchor:GetScale()
-
-		self:UpdatePositionAndScale()
-
-	elseif (reason == "ScaleUpdated") then
-		-- Fires when scale has been mousewheel updated.
-		local scale = ...
-
-		savedPosition[layoutName].scale = scale
-
-		self:UpdatePositionAndScale()
-
-	elseif (reason == "Dragging") then
-		-- Fires on every drag update. Spammy.
-		if (not self.incombat) then
-			self:OnAnchorUpdate("PositionUpdated", layoutName, ...)
-		end
-
-	elseif (reason == "CombatStart") then
-		-- Fires right before combat lockdown for visible anchors.
-		self.positionNeedsFix = true
-		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-
-	elseif (reason == "CombatEnd") then
-		-- Fires when combat lockdown ends for visible anchors.
-
-	end
-end
-
-PlayerMod.OnEvent = function(self, event, ...)
-	if (event == "PLAYER_REGEN_ENABLED") then
-		if (InCombatLockdown()) then return end
-		self.incombat = nil
-		if (self.positionNeedsFix) then
-			self:UpdatePositionAndScale()
-		end
-	elseif (event == "PLAYER_REGEN_DISABLED") then
-		self.incombat = true
-	end
+	self.anchor = anchor
 end
 
 PlayerMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PlayerFrame", defaults)
+	self.defaults = defaults
 	self:SetEnabledState(self.db.profile.enabled)
-	self:DisableBlizzard()
 
-	oUF:RegisterStyle(ns.Prefix.."Player", style)
-end
+	oUF:DisableBlizzard("player")
 
-PlayerMod.OnEnable = function(self)
-	local frame = ns.UnitFrames.Player
-	if (frame) then
-		if (not frame:IsEnabled()) then
-			frame:Enable()
-		end
-	else
-
-		oUF:SetActiveStyle(ns.Prefix.."Player")
-		ns.UnitFrames.Player = oUF:Spawn("player", ns.Prefix.."UnitFramePlayer")
-
-		self.Frame = ns.UnitFrames.Player
-
-		local anchor = ns.Widgets.RequestMovableFrameAnchor()
-		anchor:SetScalable(true)
-		anchor:SetMinMaxScale(.75, 1.25, .05)
-		anchor:SetSize(560, 160 + 20)
-		anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
-		anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
-		anchor:SetTitle(HUD_EDIT_MODE_PLAYER_FRAME_LABEL)
-		anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
-
-		self.Anchor = anchor
-
-	end
-end
-
-PlayerMod.OnDisable = function(self)
-	local frame = ns.UnitFrames.Player
-	if (frame and frame:IsEnabled()) then
-		frame:Disable()
-	end
+	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_SHOW")
+	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_HIDE")
+	PlayerPowerBarAlt:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end
