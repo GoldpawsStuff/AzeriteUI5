@@ -1235,10 +1235,10 @@ PlayerMod.OnInitialize = function(self)
 end
 
 PlayerMod.OnEnable = function(self)
-	local player = ns.UnitFrames.Player
-	if (player) then
-		if (not player:IsEnabled()) then
-			player:Enable()
+	local frame = ns.UnitFrames.Player
+	if (frame) then
+		if (not frame:IsEnabled()) then
+			frame:Enable()
 		end
 	else
 
@@ -1262,8 +1262,8 @@ PlayerMod.OnEnable = function(self)
 end
 
 PlayerMod.OnDisable = function(self)
-	local player = ns.UnitFrames.Player
-	if (player and player:IsEnabled()) then
-		player:Disable()
+	local frame = ns.UnitFrames.Player
+	if (frame and frame:IsEnabled()) then
+		frame:Disable()
 	end
 end

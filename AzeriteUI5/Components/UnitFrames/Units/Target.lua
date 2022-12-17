@@ -1346,10 +1346,10 @@ TargetMod.OnInitialize = function(self)
 end
 
 TargetMod.OnEnable = function(self)
-	local target = ns.UnitFrames.Target
-	if (target) then
-		if (not target:IsEnabled()) then
-			target:Enable()
+	local frame = ns.UnitFrames.Target
+	if (frame) then
+		if (not frame:IsEnabled()) then
+			frame:Enable()
 		end
 	else
 
