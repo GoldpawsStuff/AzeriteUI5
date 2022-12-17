@@ -79,7 +79,7 @@ Bartender.HandleBartender = function(self, event, addon)
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "HandleBartender")
 	end
 
-	self:HandleMicroMenu()
+	--self:HandleMicroMenu()
 	self:HandlePetBattles()
 	self:HandleVehicle()
 
