@@ -608,9 +608,9 @@ eventHandler:SetScript("OnEvent", function(self, event, ...)
 	elseif (event == "PLAYER_REGEN_DISABLED") then
 		for anchor in next,AnchorData do
 			if (anchor.Callback) then
-				if (anchor:IsShown()) then
+				--if (anchor:IsShown()) then
 					anchor:Callback("CombatStart", LAYOUT)
-				end
+				--end
 			end
 		end
 
@@ -619,9 +619,9 @@ eventHandler:SetScript("OnEvent", function(self, event, ...)
 
 		for anchor in next,AnchorData do
 			if (anchor.Callback) then
-				if (anchor:IsShown()) then
+				--if (anchor:IsShown()) then
 					anchor:Callback("CombatEnd", LAYOUT)
-				end
+				--end
 			end
 		end
 
