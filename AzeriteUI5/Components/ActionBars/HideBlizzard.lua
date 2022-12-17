@@ -84,7 +84,7 @@ end
 
 BlizzardABDisabler.HideBlizzard = function(self)
 
-	hideActionBarFrame(MainMenuBar, true)
+	hideActionBarFrame(MainMenuBar, false)
 	hideActionBarFrame(MultiBarBottomLeft, true)
 	hideActionBarFrame(MultiBarBottomRight, true)
 	hideActionBarFrame(MultiBarLeft, true)
@@ -114,10 +114,10 @@ BlizzardABDisabler.HideBlizzard = function(self)
 	--hideActionBarFrame(OverrideActionBar, true)
 
 	-- these events drive visibility, we want the MainMenuBar to remain invisible
-	--MainMenuBar:UnregisterEvent("PLAYER_REGEN_ENABLED")
-	--MainMenuBar:UnregisterEvent("PLAYER_REGEN_DISABLED")
-	--MainMenuBar:UnregisterEvent("ACTIONBAR_SHOWGRID")
-	--MainMenuBar:UnregisterEvent("ACTIONBAR_HIDEGRID")
+	MainMenuBar:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	MainMenuBar:UnregisterEvent("PLAYER_REGEN_DISABLED")
+	MainMenuBar:UnregisterEvent("ACTIONBAR_SHOWGRID")
+	MainMenuBar:UnregisterEvent("ACTIONBAR_HIDEGRID")
 
 	ActionBarController:UnregisterAllEvents()
 	ActionBarController:RegisterEvent("SETTINGS_LOADED") -- needed to update paging
