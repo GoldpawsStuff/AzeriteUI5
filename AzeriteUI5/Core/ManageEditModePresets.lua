@@ -132,7 +132,8 @@ local layouts = {
 	}
 }
 
-EditMode.ResetLayout = function(self, layoutInfo)
+-- Reset a layout's systems to our defaults.
+EditMode.ResetSystems = function(self, layoutInfo)
 	if (InCombatLockdown()) then return end
 	if (not LEMO:AreLayoutsLoaded()) then return end
 
@@ -150,12 +151,14 @@ EditMode.ResetLayouts = function(self)
 	if (InCombatLockdown()) then return end
 	if (not LEMO:AreLayoutsLoaded()) then return end
 
+	-- Delete all existing layouts, in case they are of the wrong type.
 	for layoutIndex,layoutInfo in ipairs(layouts) do
-		if LEMO:DoesLayoutExist(layoutInfo.layoutName) then
+		if (LEMO:DoesLayoutExist(layoutInfo.layoutName)) then
 			LEMO:DeleteLayout(layoutInfo.layoutName)
 		end
 	end
 
+	-- Create and reset our custom layouts.
 	self:RestoreLayouts()
 
 	LEMO:SetActiveLayout(layouts.defaultLayout)
@@ -171,7 +174,7 @@ EditMode.RestoreLayouts = function(self)
 		if (not LEMO:DoesLayoutExist(layoutInfo.layoutName)) then
 			LEMO:AddLayout(layoutInfo.layoutType, layoutInfo.layoutName)
 			LEMO:ApplyChanges()
-			self:ResetLayout(layoutInfo)
+			self:ResetSystems(layoutInfo)
 		end
 	end
 end
@@ -190,6 +193,8 @@ EditMode.OnEvent = function(self, event, ...)
 end
 
 EditMode.OnInitialize = function(self)
-	self:RegisterChatCommand("resetlayout", "ResetLayouts")
+	-- Cannot register for this in OnEnable, that's too late.
 	self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
+
+	self:RegisterChatCommand("resetlayout", "ResetLayouts")
 end
