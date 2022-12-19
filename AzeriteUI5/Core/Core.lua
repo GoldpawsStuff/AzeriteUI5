@@ -24,7 +24,7 @@
 
 --]]
 local Addon, ns = ...
-ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "AceConsole-3.0")
+ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "LibMoreEvents-1.0", "AceConsole-3.0")
 ns.L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
 ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false)
 ns.Hider = CreateFrame("Frame"); ns.Hider:Hide()
@@ -98,7 +98,7 @@ end
 
 -- Returns the ideal scale for blizzard elements.
 ns.GetBlizzardScale = function(self)
-	return 768/960
+	return 768/1080 -- 768/960
 end
 
 -- Returns the ideal scale for our elements
@@ -127,9 +127,5 @@ ns.OnInitialize = function(self)
 	self.db.RegisterCallback(self, "OnProfileReset", "UpdateSettings")
 
 	self:RegisterChatCommand("resetscale", "ResetBlizzardScale")
-
-	--self:RegisterChatCommand("lock", "LockMovableFrames")
-	--self:RegisterChatCommand("unlock", "UnlockMovableFrames")
-	--self:RegisterChatCommand("togglelock", "ToggleMovableFrames")
 
 end

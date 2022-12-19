@@ -137,6 +137,7 @@ ns.UnitFrame.modulePrototype = {
 		local lockdown = InCombatLockdown()
 
 		if (reason == "LayoutsUpdated") then
+
 			if (savedPosition[layoutName]) then
 
 				self.anchor:SetScale(savedPosition[layoutName].scale or self.anchor:GetScale())
@@ -148,16 +149,35 @@ ns.UnitFrame.modulePrototype = {
 					self.anchor:SetDefaultPosition(unpack(defaultPosition))
 				end
 
-				self.currentLayout = layoutName
+				self.initialPositionSet = true
+					--self.currentLayout = layoutName
 
 			else
+				-- The user is unlikely to have a preset with our name
+				-- on the first time logging in.
+				if (not self.initialPositionSet) then
+					--print("setting default position for", layoutName, self.frame:GetName())
+
+					local defaultPosition = self.defaults.profile.savedPosition.Azerite
+
+					self.anchor:SetScale(defaultPosition.scale)
+					self.anchor:ClearAllPoints()
+					self.anchor:SetPoint(unpack(defaultPosition))
+					self.anchor:SetDefaultPosition(unpack(defaultPosition))
+
+					self.initialPositionSet = true
+					--self.currentLayout = layoutName
+				end
+
 				savedPosition[layoutName] = { self.anchor:GetPosition() }
 				savedPosition[layoutName].scale = self.anchor:GetScale()
 			end
 
+			self.currentLayout = layoutName
+
 			-- Purge layouts not matching editmode themes or our defaults.
 			for name in pairs(savedPosition) do
-				if (not self.defaults.profile.savedPosition[name]) then
+				if (not self.defaults.profile.savedPosition[name] and name ~= "Modern" and name ~= "Classic") then
 					local found
 					for lname in pairs(C_EditMode.GetLayouts().layouts) do
 						if (lname == name) then

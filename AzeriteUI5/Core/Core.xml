@@ -33,6 +33,7 @@
 	<!-- Core -->
 	<Script file="Core.lua"/>
 	<Script file="FixBlizzardBugs.lua"/>
+	<Script file="ManageEditModePresets.lua"/>
 	<Script file="Debugging.lua"/>
 	<Script file="Experimental.lua"/>
 

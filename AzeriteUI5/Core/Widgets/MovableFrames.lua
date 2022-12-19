@@ -210,6 +210,7 @@ end
 -- 'true' if the frame is in its default position and scale.
 Anchor.IsInDefaultPosition = function(self)
 	local anchorData = AnchorData[self]
+	if (not anchorData.defaultPosition) then return end
 	local point, x, y = getPosition(self)
 	local point2, x2, y2 = unpack(anchorData.defaultPosition)
 	return compare(anchorData.scale, anchorData.defaultScale) and compare(point, x, y, point2, x2, y2)
@@ -223,6 +224,7 @@ end
 -- 'true' if the frame has moved since last showing the anchor.
 Anchor.HasMovedSinceLastUpdate = function(self)
 	local anchorData = AnchorData[self]
+	if (not anchorData.lastPosition) then return end
 	local point, x, y = unpack(anchorData.currentPosition)
 	local point2, x2, y2 = unpack(anchorData.lastPosition)
 	return not compare(anchorData.scale, anchorData.lastScale or anchorData.defaultScale) or not compare(point, x, y, point2, x2, y2)
