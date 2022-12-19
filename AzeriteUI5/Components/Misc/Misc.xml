@@ -4,6 +4,7 @@
 	<Script file="ChatFrames.lua"/>
 	<Script file="Minimap.lua"/>
 	<Script file="ObjectivesTracker.lua"/>
+	<Script file="Tooltips.lua"/>
 	<Script file="UIErrorsFrame.lua"/>
 
 </Ui>
