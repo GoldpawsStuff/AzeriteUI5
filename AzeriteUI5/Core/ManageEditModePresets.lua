@@ -24,12 +24,11 @@
 
 --]]
 local Addon, ns = ...
-local oUF = ns.oUF
 
 local EditMode = ns:NewModule("EditMode", "LibMoreEvents-1.0", "AceConsole-3.0")
 local LEMO = LibStub("LibEditModeOverride-1.0")
 
-local theme = {
+local azeriteSystems = {
 	[Enum.EditModeSystem.ChatFrame] = {
 		settings = {
 			[Enum.EditModeChatFrameSetting.WidthHundreds] = 4,
@@ -134,19 +133,13 @@ EditMode.RestorePreset = function(self)
 	LEMO:SetActiveLayout("Azerite")
 	LEMO:ApplyChanges()
 
-	for system,systemInfo in ipairs(theme) do
+	for system,systemInfo in ipairs(azeriteSystems) do
 		local systemFrame = EditModeManagerFrame:GetRegisteredSystemFrame(system)
-		if (systemFrame) then
-			if (systemInfo.anchorInfo) then
-				LEMO:ReanchorFrame(systemFrame, systemInfo.anchorInfo.point, systemInfo.anchorInfo.relativeTo, systemInfo.anchorInfo.relativePoint, systemInfo.anchorInfo.offsetX, systemInfo.anchorInfo.offsetY)
-			end
-			if (systemInfo.settings) then
-				for setting,value in ipairs(systemInfo.settings) do
-					LEMO:SetFrameSetting(systemFrame, setting, value)
-				end
-			end
-			LEMO:ApplyChanges()
+		LEMO:ReanchorFrame(systemFrame, systemInfo.anchorInfo.point, systemInfo.anchorInfo.relativeTo, systemInfo.anchorInfo.relativePoint, systemInfo.anchorInfo.offsetX, systemInfo.anchorInfo.offsetY)
+		for setting,value in ipairs(systemInfo.settings) do
+			LEMO:SetFrameSetting(systemFrame, setting, value)
 		end
+		LEMO:ApplyChanges()
 	end
 
 end
@@ -163,6 +156,6 @@ EditMode.OnEvent = function(self, event, ...)
 end
 
 EditMode.OnInitialize = function(self)
-	self:RegisterChatCommand("resetpreset", "RestorePreset")
+	self:RegisterChatCommand("resetlayout", "RestorePreset")
 	self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
 end
