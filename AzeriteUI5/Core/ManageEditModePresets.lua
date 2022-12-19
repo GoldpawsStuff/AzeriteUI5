@@ -43,7 +43,6 @@ EditMode.RestorePreset = function(self)
 
 	local minimap = EditModeManagerFrame:GetRegisteredSystemFrame(Enum.EditModeSystem.Minimap)
 
-	-- Reanchor frames. Where do I find these frames?
 	LEMO:ReanchorFrame(minimap, "BOTTOMRIGHT", -20, 20)
 	LEMO:SetFrameSetting(minimap, Enum.EditModeMinimapSetting.RotateMinimap, 1)
 
@@ -54,6 +53,12 @@ EditMode.RestorePreset = function(self)
 	local tooltip = EditModeManagerFrame:GetRegisteredSystemFrame(Enum.EditModeSystem.HudTooltip)
 	LEMO:ReanchorFrame(tooltip, "BOTTOMRIGHT", -319, 166)
 
+	local chat = EditModeManagerFrame:GetRegisteredSystemFrame(Enum.EditModeSystem.ChatFrame)
+	LEMO:ReanchorFrame(chat, "BOTTOMLEFT", 85, 350)
+	LEMO:SetFrameSetting(chat, Enum.EditModeChatFrameSetting.WidthHundreds, 4)
+	LEMO:SetFrameSetting(chat, Enum.EditModeChatFrameSetting.WidthTensAndOnes, 99)
+	LEMO:SetFrameSetting(chat, Enum.EditModeChatFrameSetting.HeightHundreds, 1)
+	LEMO:SetFrameSetting(chat, Enum.EditModeChatFrameSetting.HeightTensAndOnes, 76)
 
 	LEMO:ApplyChanges()
 
