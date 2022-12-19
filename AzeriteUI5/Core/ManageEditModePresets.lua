@@ -28,6 +28,8 @@ local Addon, ns = ...
 local EditMode = ns:NewModule("EditMode", "LibMoreEvents-1.0", "AceConsole-3.0")
 local LEMO = LibStub("LibEditModeOverride-1.0")
 
+local ipairs = ipairs
+
 local azeriteSystems = {
 	[Enum.EditModeSystem.ChatFrame] = {
 		settings = {
@@ -121,19 +123,20 @@ local azeriteSystems = {
 	}
 }
 
-EditMode.RestorePreset = function(self)
+local layouts = {
+	defaultLayout = "Azerite",
+	{
+		layoutName = "Azerite",
+		layoutType = Enum.EditModeLayoutType.Account,
+		systems = azeriteSystems,
+	}
+}
+
+EditMode.ResetLayout = function(self, layoutInfo)
 	if (InCombatLockdown()) then return end
 	if (not LEMO:AreLayoutsLoaded()) then return end
 
-	if (not LEMO:DoesLayoutExist("Azerite")) then
-		LEMO:AddLayout(Enum.EditModeLayoutType.Character, "Azerite")
-		LEMO:ApplyChanges()
-	end
-
-	LEMO:SetActiveLayout("Azerite")
-	LEMO:ApplyChanges()
-
-	for system,systemInfo in ipairs(azeriteSystems) do
+	for system,systemInfo in ipairs(layoutInfo.systems) do
 		local systemFrame = EditModeManagerFrame:GetRegisteredSystemFrame(system)
 		LEMO:ReanchorFrame(systemFrame, systemInfo.anchorInfo.point, systemInfo.anchorInfo.relativeTo, systemInfo.anchorInfo.relativePoint, systemInfo.anchorInfo.offsetX, systemInfo.anchorInfo.offsetY)
 		for setting,value in ipairs(systemInfo.settings) do
@@ -141,7 +144,36 @@ EditMode.RestorePreset = function(self)
 		end
 		LEMO:ApplyChanges()
 	end
+end
 
+EditMode.ResetLayouts = function(self)
+	if (InCombatLockdown()) then return end
+	if (not LEMO:AreLayoutsLoaded()) then return end
+
+	for layoutIndex,layoutInfo in ipairs(layouts) do
+		if LEMO:DoesLayoutExist(layoutInfo.layoutName) then
+			LEMO:DeleteLayout(layoutInfo.layoutName)
+		end
+	end
+
+	self:RestoreLayouts()
+
+	LEMO:SetActiveLayout(layouts.defaultLayout)
+	LEMO:ApplyChanges()
+end
+
+EditMode.RestoreLayouts = function(self)
+	if (InCombatLockdown()) then return end
+	if (not LEMO:AreLayoutsLoaded()) then return end
+
+	-- Create and reset our custom layouts, if they don't exist.
+	for layoutIndex,layoutInfo in ipairs(layouts) do
+		if (not LEMO:DoesLayoutExist(layoutInfo.layoutName)) then
+			LEMO:AddLayout(layoutInfo.layoutType, layoutInfo.layoutName)
+			LEMO:ApplyChanges()
+			self:ResetLayout(layoutInfo)
+		end
+	end
 end
 
 EditMode.OnEvent = function(self, event, ...)
@@ -150,12 +182,14 @@ EditMode.OnEvent = function(self, event, ...)
 		LEMO:LoadLayouts()
 	end
 	if (not LEMO:AreLayoutsLoaded()) then return end
-	if (not LEMO:DoesLayoutExist("Azerite")) then
-		self:RestorePreset()
-	end
+
+	-- Restore our custom layouts if they have been deleted.
+	-- This might piss people off, so should probably make this a one-time thing.
+	-- Create a saved setting for "layoutsCreated" or something like that.
+	self:RestoreLayouts()
 end
 
 EditMode.OnInitialize = function(self)
-	self:RegisterChatCommand("resetlayout", "RestorePreset")
+	self:RegisterChatCommand("resetlayout", "ResetLayouts")
 	self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
 end
