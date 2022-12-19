@@ -29,6 +29,99 @@ local oUF = ns.oUF
 local EditMode = ns:NewModule("EditMode", "LibMoreEvents-1.0", "AceConsole-3.0")
 local LEMO = LibStub("LibEditModeOverride-1.0")
 
+local theme = {
+	[Enum.EditModeSystem.ChatFrame] = {
+		settings = {
+			[Enum.EditModeChatFrameSetting.WidthHundreds] = 4,
+			[Enum.EditModeChatFrameSetting.WidthTensAndOnes] = 99,
+			[Enum.EditModeChatFrameSetting.HeightHundreds] = 1,
+			[Enum.EditModeChatFrameSetting.HeightTensAndOnes] = 76
+		},
+		anchorInfo = {
+			point = "BOTTOMLEFT",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOMLEFT",
+			offsetX = 85,
+			offsetY = 350,
+		}
+	},
+
+	[Enum.EditModeSystem.EncounterBar] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOM",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOM",
+			offsetX = 0,
+			offsetY = 260,
+		}
+	},
+
+	[Enum.EditModeSystem.ExtraAbilities] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "CENTER",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOMRIGHT",
+			offsetX = -482,
+			offsetY = 360,
+		}
+	},
+
+	[Enum.EditModeSystem.Minimap] = {
+		settings = {
+			[Enum.EditModeMinimapSetting.HeaderUnderneath] = 0,
+			[Enum.EditModeMinimapSetting.RotateMinimap] = 1
+		},
+		anchorInfo = {
+			point = "BOTTOMRIGHT",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOMRIGHT",
+			offsetX = -20,
+			offsetY = 20,
+		}
+	},
+
+	[Enum.EditModeSystem.HudTooltip] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "BOTTOMRIGHT",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOMRIGHT",
+			offsetX = -319,
+			offsetY = 166,
+		}
+	},
+
+	[Enum.EditModeSystem.ObjectiveTracker] = {
+		settings = {
+			[Enum.EditModeObjectiveTrackerSetting.Height] = 40 -- doesn't stick
+		},
+		anchorInfo = {
+			point = "TOPRIGHT",
+			relativeTo = "UIParent",
+			relativePoint = "TOPRIGHT",
+			offsetX = -60,
+			offsetY = -280,
+		}
+	},
+
+	[Enum.EditModeSystem.TalkingHeadFrame] = {
+		settings = {
+		},
+		anchorInfo = {
+			point = "TOP",
+			relativeTo = "UIParent",
+			relativePoint = "TOP",
+			offsetX = 0,
+			offsetY = -100,
+		}
+	}
+}
+
 EditMode.RestorePreset = function(self)
 	if (InCombatLockdown()) then return end
 	if (not LEMO:AreLayoutsLoaded()) then return end
@@ -41,26 +134,20 @@ EditMode.RestorePreset = function(self)
 	LEMO:SetActiveLayout("Azerite")
 	LEMO:ApplyChanges()
 
-	local minimap = EditModeManagerFrame:GetRegisteredSystemFrame(Enum.EditModeSystem.Minimap)
-
-	LEMO:ReanchorFrame(minimap, "BOTTOMRIGHT", -20, 20)
-	LEMO:SetFrameSetting(minimap, Enum.EditModeMinimapSetting.RotateMinimap, 1)
-
-	local tracker = EditModeManagerFrame:GetRegisteredSystemFrame(Enum.EditModeSystem.ObjectiveTracker)
-	LEMO:SetFrameSetting(tracker, Enum.EditModeObjectiveTrackerSetting.Height, 40) -- doesn't stick
-	LEMO:ReanchorFrame(tracker, "TOPRIGHT", -60, -280)
-
-	local tooltip = EditModeManagerFrame:GetRegisteredSystemFrame(Enum.EditModeSystem.HudTooltip)
-	LEMO:ReanchorFrame(tooltip, "BOTTOMRIGHT", -319, 166)
-
-	local chat = EditModeManagerFrame:GetRegisteredSystemFrame(Enum.EditModeSystem.ChatFrame)
-	LEMO:ReanchorFrame(chat, "BOTTOMLEFT", 85, 350)
-	LEMO:SetFrameSetting(chat, Enum.EditModeChatFrameSetting.WidthHundreds, 4)
-	LEMO:SetFrameSetting(chat, Enum.EditModeChatFrameSetting.WidthTensAndOnes, 99)
-	LEMO:SetFrameSetting(chat, Enum.EditModeChatFrameSetting.HeightHundreds, 1)
-	LEMO:SetFrameSetting(chat, Enum.EditModeChatFrameSetting.HeightTensAndOnes, 76)
-
-	LEMO:ApplyChanges()
+	for system,systemInfo in ipairs(theme) do
+		local systemFrame = EditModeManagerFrame:GetRegisteredSystemFrame(system)
+		if (systemFrame) then
+			if (systemInfo.anchorInfo) then
+				LEMO:ReanchorFrame(systemFrame, systemInfo.anchorInfo.point, systemInfo.anchorInfo.relativeTo, systemInfo.anchorInfo.relativePoint, systemInfo.anchorInfo.offsetX, systemInfo.anchorInfo.offsetY)
+			end
+			if (systemInfo.settings) then
+				for setting,value in ipairs(systemInfo.settings) do
+					LEMO:SetFrameSetting(systemFrame, setting, value)
+				end
+			end
+			LEMO:ApplyChanges()
+		end
+	end
 
 end
 
