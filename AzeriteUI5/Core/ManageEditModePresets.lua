@@ -30,6 +30,12 @@ local LEMO = LibStub("LibEditModeOverride-1.0")
 
 local ipairs = ipairs
 
+local defaults = { profile = ns:Merge({
+	enabled = true,
+}, ns.moduleDefaults) }
+
+-- Mimicking the format used by Blizz in
+-- Interface\FrameXML\EditModePresetLayouts.lua
 local azeriteSystems = {
 	[Enum.EditModeSystem.ChatFrame] = {
 		settings = {
@@ -43,7 +49,7 @@ local azeriteSystems = {
 			relativeTo = "UIParent",
 			relativePoint = "BOTTOMLEFT",
 			offsetX = 85,
-			offsetY = 350,
+			offsetY = 350
 		}
 	},
 
@@ -55,7 +61,7 @@ local azeriteSystems = {
 			relativeTo = "UIParent",
 			relativePoint = "BOTTOM",
 			offsetX = 0,
-			offsetY = 260,
+			offsetY = 260
 		}
 	},
 
@@ -67,7 +73,7 @@ local azeriteSystems = {
 			relativeTo = "UIParent",
 			relativePoint = "BOTTOMRIGHT",
 			offsetX = -482,
-			offsetY = 360,
+			offsetY = 360
 		}
 	},
 
@@ -81,7 +87,7 @@ local azeriteSystems = {
 			relativeTo = "UIParent",
 			relativePoint = "BOTTOMRIGHT",
 			offsetX = -20,
-			offsetY = 20,
+			offsetY = 20
 		}
 	},
 
@@ -93,7 +99,7 @@ local azeriteSystems = {
 			relativeTo = "UIParent",
 			relativePoint = "BOTTOMRIGHT",
 			offsetX = -319,
-			offsetY = 166,
+			offsetY = 166
 		}
 	},
 
@@ -106,7 +112,7 @@ local azeriteSystems = {
 			relativeTo = "UIParent",
 			relativePoint = "TOPRIGHT",
 			offsetX = -60,
-			offsetY = -280,
+			offsetY = -280
 		}
 	},
 
@@ -118,17 +124,18 @@ local azeriteSystems = {
 			relativeTo = "UIParent",
 			relativePoint = "TOP",
 			offsetX = 0,
-			offsetY = -100,
+			offsetY = -100
 		}
 	}
 }
 
+-- Yes, it's only one. My thought was to maybe have more.
 local layouts = {
 	defaultLayout = "Azerite",
 	{
 		layoutName = "Azerite",
 		layoutType = Enum.EditModeLayoutType.Account,
-		systems = azeriteSystems,
+		systems = azeriteSystems
 	}
 }
 
@@ -193,6 +200,8 @@ EditMode.OnEvent = function(self, event, ...)
 end
 
 EditMode.OnInitialize = function(self)
+	self.db = ns.db:RegisterNamespace("EditMode", defaults)
+
 	-- Cannot register for this in OnEnable, that's too late.
 	self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
 
