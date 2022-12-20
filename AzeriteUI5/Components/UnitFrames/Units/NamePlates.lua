@@ -951,13 +951,7 @@ NamePlates.CheckForConflicts = function(self)
 	end
 end
 
-NamePlates.OnInitialize = function(self)
-	if (self:CheckForConflicts()) then return self:Disable() end
-
-	self.db = ns.db:RegisterNamespace("NamePlates", defaults)
-	self:SetEnabledState(self.db.profile.enabled)
-
-	oUF:RegisterStyle(ns.Prefix.."NamePlates", style)
+NamePlates.HookNamePlates = function(self)
 
 	local classNameplateManaBar = NamePlateDriverFrame.classNamePlatePowerBar
 	if (classNameplateManaBar) then
@@ -983,6 +977,24 @@ NamePlates.OnInitialize = function(self)
 		end
 	end)
 
+	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", function()
+		if (InCombatLockdown()) then return end
+		C_NamePlate.SetNamePlateFriendlySize(unpack(config.Size))
+		C_NamePlate.SetNamePlateEnemySize(unpack(config.Size))
+		C_NamePlate.SetNamePlateSelfSize(unpack(config.Size))
+	end)
+
+end
+
+NamePlates.OnInitialize = function(self)
+	if (self:CheckForConflicts()) then return self:Disable() end
+
+	self.db = ns.db:RegisterNamespace("NamePlates", defaults)
+	self:SetEnabledState(self.db.profile.enabled)
+
+	oUF:RegisterStyle(ns.Prefix.."NamePlates", style)
+
+	self:HookNamePlates()
 end
 
 NamePlates.OnEnable = function(self)
