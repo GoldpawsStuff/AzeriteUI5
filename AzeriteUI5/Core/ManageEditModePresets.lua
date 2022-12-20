@@ -139,18 +139,28 @@ local layouts = {
 	}
 }
 
--- Reset a layout's systems to our defaults.
-EditMode.ResetSystems = function(self, layoutInfo)
+EditMode.RestoreLayouts = function(self)
 	if (InCombatLockdown()) then return end
 	if (not LEMO:AreLayoutsLoaded()) then return end
 
-	for system,systemInfo in ipairs(layoutInfo.systems) do
-		local systemFrame = EditModeManagerFrame:GetRegisteredSystemFrame(system)
-		LEMO:ReanchorFrame(systemFrame, systemInfo.anchorInfo.point, systemInfo.anchorInfo.relativeTo, systemInfo.anchorInfo.relativePoint, systemInfo.anchorInfo.offsetX, systemInfo.anchorInfo.offsetY)
-		for setting,value in ipairs(systemInfo.settings) do
-			LEMO:SetFrameSetting(systemFrame, setting, value)
+	-- Create and reset our custom layouts, if they don't exist.
+	for _,layoutInfo in ipairs(layouts) do
+		if (not LEMO:DoesLayoutExist(layoutInfo.layoutName)) then
+			LEMO:AddLayout(layoutInfo.layoutType, layoutInfo.layoutName)
+			LEMO:SetActiveLayout(layoutInfo.layoutName)
+			LEMO:ApplyChanges()
+
+			for system,systemInfo in pairs(layoutInfo.systems) do
+				local systemFrame = EditModeManagerFrame:GetRegisteredSystemFrame(system)
+				LEMO:ReanchorFrame(systemFrame, systemInfo.anchorInfo.point, systemInfo.anchorInfo.relativeTo, systemInfo.anchorInfo.relativePoint, systemInfo.anchorInfo.offsetX, systemInfo.anchorInfo.offsetY)
+
+				for setting,value in ipairs(systemInfo.settings) do
+					LEMO:SetFrameSetting(systemFrame, setting, value)
+				end
+
+				LEMO:ApplyChanges()
+			end
 		end
-		LEMO:ApplyChanges()
 	end
 end
 
@@ -159,9 +169,10 @@ EditMode.ResetLayouts = function(self)
 	if (not LEMO:AreLayoutsLoaded()) then return end
 
 	-- Delete all existing layouts, in case they are of the wrong type.
-	for layoutIndex,layoutInfo in ipairs(layouts) do
+	for _,layoutInfo in ipairs(layouts) do
 		if (LEMO:DoesLayoutExist(layoutInfo.layoutName)) then
 			LEMO:DeleteLayout(layoutInfo.layoutName)
+			LEMO:ApplyChanges()
 		end
 	end
 
@@ -170,20 +181,6 @@ EditMode.ResetLayouts = function(self)
 
 	LEMO:SetActiveLayout(layouts.defaultLayout)
 	LEMO:ApplyChanges()
-end
-
-EditMode.RestoreLayouts = function(self)
-	if (InCombatLockdown()) then return end
-	if (not LEMO:AreLayoutsLoaded()) then return end
-
-	-- Create and reset our custom layouts, if they don't exist.
-	for layoutIndex,layoutInfo in ipairs(layouts) do
-		if (not LEMO:DoesLayoutExist(layoutInfo.layoutName)) then
-			LEMO:AddLayout(layoutInfo.layoutType, layoutInfo.layoutName)
-			LEMO:ApplyChanges()
-			self:ResetSystems(layoutInfo)
-		end
-	end
 end
 
 EditMode.OnEvent = function(self, event, ...)
