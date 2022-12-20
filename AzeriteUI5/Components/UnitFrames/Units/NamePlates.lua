@@ -489,7 +489,14 @@ local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 		self:SetIgnoreParentAlpha(false)
 		self.Health.Value:Hide()
 		self.Name:Hide()
+		if (self:IsElementEnabled("Auras")) then
+			self:DisableElement("Auras")
+		end
 	else
+		if (not self:IsElementEnabled("Auras")) then
+			self:EnableElement("Auras")
+			self.Auras:ForceUpdate()
+		end
 		if (self.isMouseOver or self.isTarget or self.inCombat) then
 			-- SetIgnoreParentAlpha requires explicit true/false, or it'll bug out.
 			self:SetIgnoreParentAlpha((self.isMouseOver and not self.isTarget) and true or false)
