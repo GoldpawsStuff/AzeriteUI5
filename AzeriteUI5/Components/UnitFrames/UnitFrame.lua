@@ -77,6 +77,10 @@ local defaults = {
 
 -- UnitFrame Prototype
 ---------------------------------------------------
+oUF:RegisterMetaFunction("CreateBar", UnitFrame_CreateBar)
+oUF:RegisterMetaFunction("CreateRing", UnitFrame_CreateRing)
+oUF:RegisterMetaFunction("CreateOrb", UnitFrame_CreateOrb)
+
 ns.UnitFrame = {}
 ns.UnitFrame.defaults = defaults
 ns.UnitFrame.Spawn = function(unit, overrideName, ...)
@@ -84,10 +88,6 @@ ns.UnitFrame.Spawn = function(unit, overrideName, ...)
 	local frame = oUF:Spawn(unit, overrideName)
 	frame.isUnitFrame = true
 	frame.colors = ns.Colors
-
-	frame.CreateBar = UnitFrame_CreateBar
-	frame.CreateRing = UnitFrame_CreateRing
-	frame.CreateOrb = UnitFrame_CreateOrb
 
 	--frame:RegisterForClicks("LeftButtonDown", "RightButtonDown")
 	frame:SetScript("OnEnter", UnitFrame_OnEnter)
