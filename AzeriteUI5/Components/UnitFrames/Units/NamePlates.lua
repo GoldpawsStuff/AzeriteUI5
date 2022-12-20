@@ -432,12 +432,12 @@ local NamePlate_PostUpdatePositions = function(self)
 
 	if (self.isPRD) then
 
-		if (auras.numRows or auras.usingNameOffset ~= nil) then
-			auras:ClearAllPoints()
-			auras:SetPoint(unpack(db.AurasPosition))
-			auras.numRows = nil
-			auras.usingNameOffset = nil
-		end
+		--if (auras.numRows or auras.usingNameOffset ~= nil) then
+		--	auras:ClearAllPoints()
+		--	auras:SetPoint(unpack(db.AurasPosition))
+		--	auras.numRows = nil
+		--	auras.usingNameOffset = nil
+		--end
 
 	else
 
