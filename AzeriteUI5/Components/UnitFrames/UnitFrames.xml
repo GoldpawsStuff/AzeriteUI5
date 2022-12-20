@@ -6,9 +6,9 @@
 	<Script file="Functions.lua"/>
 	<Script file="Tags.lua"/>
 
-	<Script file="Sorting.lua"/>
-	<Script file="Styling.lua"/>
-	<Script file="Filters.lua"/>
+	<Script file="Auras\Sorting.lua"/>
+	<Script file="Auras\Styling.lua"/>
+	<Script file="Auras\Filters.lua"/>
 
 	<Script file="Units\Player.lua"/>
 	<Script file="Units\Pet.lua"/>
