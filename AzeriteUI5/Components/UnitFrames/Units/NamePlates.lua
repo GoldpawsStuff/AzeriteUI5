@@ -28,6 +28,8 @@ local oUF = ns.oUF
 
 local NamePlates = ns:NewModule("NamePlates", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0")
 
+local LibSmoothBar = LibStub("LibSmoothBar-1.0")
+
 -- Lua API
 local math_floor = math.floor
 local select = select
@@ -42,9 +44,15 @@ local GetMedia = ns.API.GetMedia
 -- Constants
 local playerClass = ns.PlayerClass
 
-local defaults = { profile = ns:Merge({
-	enabled = true
-}, ns.NamePlate.defaults) }
+ns.ActiveNamePlates = {}
+ns.NamePlates = {}
+
+local defaults = {
+	profile = {
+		enabled = true,
+		scale = 1
+	}
+}
 
 local barSparkMap = {
 	top = {
@@ -362,7 +370,7 @@ local Power_PostUpdate = function(element, unit, cur, min, max)
 		return
 	end
 
-	local db = ns.Config.NamePlates
+	local db = config
 	local shouldShow
 
 	if (self.isPRD) then
@@ -415,7 +423,7 @@ end
 
 -- Messy callback that handles positions
 -- of elements above the health bar.
-local UnitFrame_PostUpdatePositions = function(self)
+local NamePlate_PostUpdatePositions = function(self)
 	local db = config
 
 	local auras = self.Auras
@@ -469,12 +477,12 @@ end
 
 -- Element proxy for the position updater above.
 local Auras_PostUpdate = function(element, unit)
-	UnitFrame_PostUpdatePositions(element.__owner)
+	NamePlate_PostUpdatePositions(element.__owner)
 end
 
 -- Callback that handles positions of elements
 -- that change position within their frame.
-local UnitFrame_PostUpdateElements = function(self, event, unit, ...)
+local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 	if (unit and unit ~= self.unit) then return end
 
 	if (self.isPRD) then
@@ -499,12 +507,12 @@ local UnitFrame_PostUpdateElements = function(self, event, unit, ...)
 		end
 	end
 
-	UnitFrame_PostUpdatePositions(self)
+	NamePlate_PostUpdatePositions(self)
 end
 
 -- This is called on UpdateAllElements,
 -- which is called when a frame is shown or its unit changed.
-local UnitFrame_PostUpdate = function(self, event, unit, ...)
+local NamePlate_PostUpdate = function(self, event, unit, ...)
 	if (unit and unit ~= self.unit) then return end
 
 	unit = unit or self.unit
@@ -534,10 +542,30 @@ local UnitFrame_PostUpdate = function(self, event, unit, ...)
 	end
 
 	TargetHighlight_Update(self, event, unit, ...)
-	UnitFrame_PostUpdateElements(self, event, unit, ...)
+	NamePlate_PostUpdateElements(self, event, unit, ...)
 end
 
-local UnitFrame_OnEvent = function(self, event, unit, ...)
+local NamePlate_OnEnter = function(self, ...)
+	self.isMouseOver = true
+	if (self.OnEnter) then
+		self:OnEnter(...)
+	end
+end
+
+local NamePlate_OnLeave = function(self, ...)
+	self.isMouseOver = nil
+	if (self.OnLeave) then
+		self:OnLeave(...)
+	end
+end
+
+local NamePlate_OnHide = function(self)
+	self.inCombat = nil
+	self.isFocus = nil
+	self.isTarget = nil
+end
+
+local NamePlate_OnEvent = function(self, event, unit, ...)
 	if (unit and unit ~= self.unit) then return end
 
 	unit = unit or self.unit
@@ -545,14 +573,14 @@ local UnitFrame_OnEvent = function(self, event, unit, ...)
 	if (event == "PLAYER_REGEN_DISABLED") then
 		self.inCombat = true
 
-		UnitFrame_PostUpdateElements(self, event, unit, ...)
+		NamePlate_PostUpdateElements(self, event, unit, ...)
 
 		return
 
 	elseif (event == "PLAYER_REGEN_ENABLED") then
 		self.inCombat = nil
 
-		UnitFrame_PostUpdateElements(self, event, unit, ...)
+		NamePlate_PostUpdateElements(self, event, unit, ...)
 
 		return
 
@@ -560,7 +588,7 @@ local UnitFrame_OnEvent = function(self, event, unit, ...)
 		self.isTarget = UnitIsUnit(unit, "target")
 
 		TargetHighlight_Update(self, event, unit, ...)
-		UnitFrame_PostUpdateElements(self, event, unit, ...)
+		NamePlate_PostUpdateElements(self, event, unit, ...)
 
 		return
 
@@ -568,26 +596,25 @@ local UnitFrame_OnEvent = function(self, event, unit, ...)
 		self.isFocus = UnitIsUnit(unit, "focus")
 
 		TargetHighlight_Update(self, event, unit, ...)
-		UnitFrame_PostUpdateElements(self, event, unit, ...)
+		NamePlate_PostUpdateElements(self, event, unit, ...)
 
 		return
 	end
 
-	UnitFrame_PostUpdate(self, event, unit, ...)
-end
-
-local UnitFrame_OnHide = function(self)
-	self.inCombat = nil
-	self.isFocus = nil
-	self.isTarget = nil
+	NamePlate_PostUpdate(self, event, unit, ...)
 end
 
 local style = function(self, unit, id)
 
 	local db = config
 
+	self.colors = ns.Colors
+
+	self:SetPoint("CENTER",0,0)
 	self:SetSize(unpack(db.Size))
 	self:SetFrameLevel(self:GetFrameLevel() + 2)
+
+	self:SetScript("OnHide", NamePlate_OnHide)
 
 	-- Overlay for icons and text
 	--------------------------------------------
@@ -793,17 +820,17 @@ local style = function(self, unit, id)
 	self.Auras = auras
 	self.Auras.PostUpdate = Auras_PostUpdate
 
-	self.PostUpdate = UnitFrame_PostUpdate
-	self.OnEnter = UnitFrame_PostUpdateElements
-	self.OnLeave = UnitFrame_PostUpdateElements
-	self.OnHide = UnitFrame_OnHide
+	self.PostUpdate = NamePlate_PostUpdate
+	self.OnEnter = NamePlate_PostUpdateElements
+	self.OnLeave = NamePlate_PostUpdateElements
+	--self.OnHide = NamePlate_OnHide
 
 	-- Register events to handle additional texture updates.
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", UnitFrame_OnEvent, true)
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", UnitFrame_OnEvent, true)
-	self:RegisterEvent("PLAYER_FOCUS_CHANGED", UnitFrame_OnEvent, true)
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", UnitFrame_OnEvent, true)
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", UnitFrame_OnEvent, true)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", NamePlate_OnEvent, true)
+	self:RegisterEvent("PLAYER_TARGET_CHANGED", NamePlate_OnEvent, true)
+	self:RegisterEvent("PLAYER_FOCUS_CHANGED", NamePlate_OnEvent, true)
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", NamePlate_OnEvent, true)
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", NamePlate_OnEvent, true)
 
 end
 
@@ -873,12 +900,15 @@ local callback = function(self, event, unit)
 
 		self.isPRD = UnitIsUnit(unit, "player")
 
-		ns.NamePlates[self] = nameplate
-		ns.ActiveNamePlates[self] = nameplate
+		ns.NamePlates[self] = true
+		ns.ActiveNamePlates[self] = true
 
 	elseif (event == "NAME_PLATE_UNIT_REMOVED") then
 
 		self.isPRD = nil
+		self.inCombat = nil
+		self.isFocus = nil
+		self.isTarget = nil
 
 		ns.ActiveNamePlates[self] = nil
 	end
@@ -886,25 +916,22 @@ end
 
 local MOUSEOVER
 local checkMouseOver = function()
-	local hasMouseOver = UnitExists("mouseover")
-	if (hasMouseOver) then
+	if (UnitExists("mouseover")) then
 		if (MOUSEOVER) then
 			if (UnitIsUnit(MOUSEOVER.unit, "mouseover")) then
 				return
 			end
-			ns.NamePlate.OnLeave(MOUSEOVER)
+			NamePlate_OnLeave(MOUSEOVER)
 			MOUSEOVER = nil
 		end
-		local isMouseOver
 		for frame in next,ns.ActiveNamePlates do
-			isMouseOver = UnitIsUnit(frame.unit, "mouseover")
-			if (isMouseOver) then
+			if (UnitIsUnit(frame.unit, "mouseover")) then
 				MOUSEOVER = frame
-				return ns.NamePlate.OnEnter(frame)
+				return NamePlate_OnEnter(MOUSEOVER)
 			end
 		end
 	elseif (MOUSEOVER) then
-		ns.NamePlate.OnLeave(MOUSEOVER)
+		NamePlate_OnLeave(MOUSEOVER)
 		MOUSEOVER = nil
 	end
 end
