@@ -26,14 +26,21 @@
 local Addon, ns = ...
 local ErrorsFrame = ns:NewModule("ErrorsFrame", "LibMoreEvents-1.0", "AceHook-3.0")
 
--- WoW API
-local GetCVarBool = GetCVarBool
-local GetGameMessageInfo = GetGameMessageInfo
-local PlayVocalErrorSoundID = PlayVocalErrorSoundID
-local PlaySoundKitID = PlaySoundKitID
+-- Addon API
+local Colors = ns.Colors
+local GetFont = ns.API.GetFont
+local GetMedia = ns.API.GetMedia
 
 local defaults = { profile = ns:Merge({
-	enabled = true
+	enabled = true,
+	savedPosition = {
+		Azerite = {
+			scale = 1,
+			[1] = "TOP",
+			[2] = 0,
+			[3] = -600
+		}
+	}
 }, ns.moduleDefaults) }
 
 local blackList = {
@@ -90,6 +97,37 @@ local blackList = {
 	[ SPELL_FAILED_UNIT_NOT_BEHIND ] = true, 				-- Target needs to be behind you.
 }
 
+ErrorsFrame.UpdatePositionAndScale = function(self)
+
+	local savedPosition = self.currentLayout and self.db.profile.savedPosition[self.currentLayout]
+	if (savedPosition) then
+		local point, x, y = unpack(savedPosition)
+		local scale = savedPosition.scale
+		local frame = UIErrorsFrame
+		local anchor = self.anchor
+
+		-- Set the scale before positioning,
+		-- or everything will be wonky.
+		frame:SetScale(scale)
+
+		if (anchor and anchor.framePoint) then
+			-- Position the frame at the anchor,
+			-- with the given point and offsets.
+			frame:ClearAllPoints()
+			frame:SetPoint(anchor.framePoint, anchor, anchor.framePoint, (anchor.frameOffsetX or 0)/scale, (anchor.frameOffsetY or 0)/scale)
+
+			-- Parse where this actually is relative to UIParent
+			local point, x, y = ns.API.GetPosition(frame)
+
+			-- Reposition the frame relative to UIParent,
+			-- to avoid it being hooked to our anchor in combat.
+			frame:ClearAllPoints()
+			frame:SetPoint(point, UIParent, point, x, y)
+		end
+	end
+
+end
+
 ErrorsFrame.OnEvent = function(self, event, ...)
 	if event == "SYSMSG" then
 		local msg, r, g, b = ...
@@ -137,11 +175,111 @@ ErrorsFrame.OnUnregisterEvent = function(self, event)
 	self:UnregisterEvent(event, "OnEvent")
 end
 
+ErrorsFrame.OnAnchorUpdate = function(self, reason, layoutName, ...)
+	local savedPosition = self.db.profile.savedPosition
+	local lockdown = InCombatLockdown()
+
+	if (reason == "LayoutsUpdated") then
+
+		if (savedPosition[layoutName]) then
+
+			self.anchor:SetScale(savedPosition[layoutName].scale or self.anchor:GetScale())
+			self.anchor:ClearAllPoints()
+			self.anchor:SetPoint(unpack(savedPosition[layoutName]))
+
+			local defaultPosition = self.defaults.profile.savedPosition[layoutName]
+			if (defaultPosition) then
+				self.anchor:SetDefaultPosition(unpack(defaultPosition))
+			end
+
+			self.initialPositionSet = true
+				--self.currentLayout = layoutName
+
+		else
+			-- The user is unlikely to have a preset with our name
+			-- on the first time logging in.
+			if (not self.initialPositionSet) then
+				--print("setting default position for", layoutName, self.frame:GetName())
+
+				local defaultPosition = self.defaults.profile.savedPosition.Azerite
+
+				self.anchor:SetScale(defaultPosition.scale)
+				self.anchor:ClearAllPoints()
+				self.anchor:SetPoint(unpack(defaultPosition))
+				self.anchor:SetDefaultPosition(unpack(defaultPosition))
+
+				self.initialPositionSet = true
+				--self.currentLayout = layoutName
+			end
+
+			savedPosition[layoutName] = { self.anchor:GetPosition() }
+			savedPosition[layoutName].scale = self.anchor:GetScale()
+		end
+
+		self.currentLayout = layoutName
+
+		-- Purge layouts not matching editmode themes or our defaults.
+		for name in pairs(savedPosition) do
+			if (not self.defaults.profile.savedPosition[name] and name ~= "Modern" and name ~= "Classic") then
+				local found
+				for lname in pairs(C_EditMode.GetLayouts().layouts) do
+					if (lname == name) then
+						found = true
+						break
+					end
+				end
+				if (not found) then
+					savedPosition[name] = nil
+				end
+			end
+		end
+
+		self:UpdatePositionAndScale()
+
+	elseif (reason == "PositionUpdated") then
+		-- Fires when position has been changed.
+		local point, x, y = ...
+
+		savedPosition[layoutName] = { point, x, y }
+		savedPosition[layoutName].scale = self.anchor:GetScale()
+
+		self:UpdatePositionAndScale()
+
+	elseif (reason == "ScaleUpdated") then
+		-- Fires when scale has been mousewheel updated.
+		local scale = ...
+
+		savedPosition[layoutName].scale = scale
+
+		self:UpdatePositionAndScale()
+
+	elseif (reason == "Dragging") then
+		-- Fires on every drag update. Spammy.
+		--if (not self.incombat) then
+			self:OnAnchorUpdate("PositionUpdated", layoutName, ...)
+		--end
+
+	elseif (reason == "CombatStart") then
+		-- Fires right before combat lockdown for visible anchors.
+
+
+	elseif (reason == "CombatEnd") then
+		-- Fires when combat lockdown ends for visible anchors.
+
+	end
+end
+
 ErrorsFrame.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ErrorsFrame", defaults)
+	self.defaults = defaults
 	self:SetEnabledState(self.db.profile.enabled)
 
 	UIErrorsFrame:UnregisterAllEvents()
+	UIErrorsFrame:SetFrameStrata("LOW")
+	UIErrorsFrame:SetHeight(22)
+	UIErrorsFrame:SetAlpha(.75)
+	UIErrorsFrame:SetFontObject(GetFont(18, true))
+	UIErrorsFrame:SetShadowColor(0, 0, 0, .5)
 
 	self:RegisterEvent("SYSMSG", "OnEvent")
 	self:RegisterEvent("UI_ERROR_MESSAGE", "OnEvent")
@@ -150,7 +288,20 @@ ErrorsFrame.OnInitialize = function(self)
 	-- Macros can toggle this, so we need to hook into it.
 	self:SecureHook(UIErrorsFrame, "RegisterEvent", "OnRegisterEvent")
 	self:SecureHook(UIErrorsFrame, "UnregisterEvent", "OnUnregisterEvent")
-end
 
-ErrorsFrame.OnEnable = function(self)
+	-- Movable Frame Anchor
+	---------------------------------------------------
+	local anchor = ns.Widgets.RequestMovableFrameAnchor()
+	anchor:SetTitle(SYSTEM_MESSAGES)
+	anchor:SetScalable(true)
+	anchor:SetMinMaxScale(.75, 1.25, .05)
+	anchor:SetSize(760, 22)
+	anchor:SetPoint(unpack(self.defaults.profile.savedPosition.Azerite))
+	anchor:SetScale(self.defaults.profile.savedPosition.Azerite.scale)
+	anchor.frameOffsetX = 0
+	anchor.frameOffsetY = 0
+	anchor.framePoint = "CENTER"
+	anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
+
+	self.anchor = anchor
 end
