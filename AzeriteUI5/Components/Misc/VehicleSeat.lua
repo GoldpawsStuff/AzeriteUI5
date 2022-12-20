@@ -24,63 +24,41 @@
 
 --]]
 local Addon, ns = ...
-local RaidWarnings = ns:NewModule("RaidWarnings", "LibMoreEvents-1.0", "AceHook-3.0")
+local VehicleSeat = ns:NewModule("VehicleSeat")
 
 -- Lua API
 local pairs, unpack = pairs, unpack
-
--- Addon API
-local Colors = ns.Colors
-local GetFont = ns.API.GetFont
-local GetMedia = ns.API.GetMedia
 
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
 		Azerite = {
 			scale = 1,
-			[1] = "TOP",
-			[2] = 0,
-			[3] = -340
+			[1] = "BOTTOMRIGHT",
+			[2] = -480+64,
+			[3] = 210-64
 		}
 	}
 }, ns.moduleDefaults) }
 
-RaidWarnings.InitializeRaidWarningFrame = function(self)
+VehicleSeat.InitializeVehicleSeatIndicator = function(self)
 
-	-- The RaidWarnings have a tendency to look really weird,
-	-- as the SetTextHeight method scales the text after it already
-	-- has been turned into a bitmap and turned into a texture.
-	-- So I'm just going to turn it off. Completely.
-	RaidWarningFrame:SetAlpha(.85)
-	RaidWarningFrame:SetHeight(80)
+	VehicleSeatIndicator:SetParent(UIParent)
+	VehicleSeatIndicator:SetFrameStrata("BACKGROUND")
 
-	RaidWarningFrame.timings.RAID_NOTICE_MIN_HEIGHT = 26
-	RaidWarningFrame.timings.RAID_NOTICE_MAX_HEIGHT = 26
-	RaidWarningFrame.timings.RAID_NOTICE_SCALE_UP_TIME = 0
-	RaidWarningFrame.timings.RAID_NOTICE_SCALE_DOWN_TIME = 0
+	-- This will block UIParent_ManageFramePositions() from being executed
+	VehicleSeatIndicator.IsShown = function() return false end
 
-	RaidWarningFrameSlot1:SetFontObject(GetFont(26, true, "Chat"))
-	RaidWarningFrameSlot1:SetShadowColor(0, 0, 0, .5)
-	RaidWarningFrameSlot1:SetWidth(760)
-	RaidWarningFrameSlot1.SetTextHeight = function() end
-
-	RaidWarningFrameSlot2:SetFontObject(GetFont(26, true, "Chat"))
-	RaidWarningFrameSlot2:SetShadowColor(0, 0, 0, .5)
-	RaidWarningFrameSlot2:SetWidth(760)
-	RaidWarningFrameSlot2.SetTextHeight = function() end
-
-	self.frame = RaidWarningFrame
-
+	self.frame = VehicleSeatIndicator
 end
 
-RaidWarnings.InitializeMovableFrameAnchor = function(self)
+VehicleSeat.InitializeMovableFrameAnchor = function(self)
 
 	local anchor = ns.Widgets.RequestMovableFrameAnchor()
-	anchor:SetTitle(CHAT_MSG_RAID_WARNING)
+	anchor:SetTitle("Vehicle Seat")
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
-	anchor:SetSize(760, 80)
+	anchor:SetSize(128, 128)
 	anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
 	anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
 	anchor.frameOffsetX = 0
@@ -89,10 +67,9 @@ RaidWarnings.InitializeMovableFrameAnchor = function(self)
 	anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
 
 	self.anchor = anchor
-
 end
 
-RaidWarnings.UpdatePositionAndScale = function(self)
+VehicleSeat.UpdatePositionAndScale = function(self)
 
 	local savedPosition = self.currentLayout and self.db.profile.savedPosition[self.currentLayout]
 	if (savedPosition) then
@@ -123,7 +100,7 @@ RaidWarnings.UpdatePositionAndScale = function(self)
 
 end
 
-RaidWarnings.OnAnchorUpdate = function(self, reason, layoutName, ...)
+VehicleSeat.OnAnchorUpdate = function(self, reason, layoutName, ...)
 	local savedPosition = self.db.profile.savedPosition
 	local lockdown = InCombatLockdown()
 
@@ -217,10 +194,10 @@ RaidWarnings.OnAnchorUpdate = function(self, reason, layoutName, ...)
 	end
 end
 
-RaidWarnings.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("RaidWarnings", defaults)
+VehicleSeat.OnInitialize = function(self)
+	self.db = ns.db:RegisterNamespace("VehicleSeat", defaults)
 	self:SetEnabledState(self.db.profile.enabled)
 
-	self:InitializeRaidWarningFrame()
+	self:InitializeVehicleSeatIndicator()
 	self:InitializeMovableFrameAnchor()
 end

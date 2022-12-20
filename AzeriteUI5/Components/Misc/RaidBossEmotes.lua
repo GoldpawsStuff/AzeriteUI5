@@ -26,6 +26,9 @@
 local Addon, ns = ...
 local RaidBossEmotes = ns:NewModule("RaidBossEmotes", "LibMoreEvents-1.0", "AceHook-3.0")
 
+-- Lua API
+local pairs, unpack = pairs, unpack
+
 -- Addon API
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
@@ -43,13 +46,58 @@ local defaults = { profile = ns:Merge({
 	}
 }, ns.moduleDefaults) }
 
+RaidBossEmotes.InitializeRaidBossEmoteFrame = function(self)
+
+	-- The RaidWarnings have a tendency to look really weird,
+	-- as the SetTextHeight method scales the text after it already
+	-- has been turned into a bitmap and turned into a texture.
+	-- So I'm just going to turn it off. Completely.
+	RaidBossEmoteFrame:SetAlpha(.85)
+	RaidBossEmoteFrame:SetHeight(80)
+
+	RaidBossEmoteFrame.timings.RAID_NOTICE_MIN_HEIGHT = 26
+	RaidBossEmoteFrame.timings.RAID_NOTICE_MAX_HEIGHT = 26
+	RaidBossEmoteFrame.timings.RAID_NOTICE_SCALE_UP_TIME = 0
+	RaidBossEmoteFrame.timings.RAID_NOTICE_SCALE_DOWN_TIME = 0
+
+	RaidBossEmoteFrameSlot1:SetFontObject(GetFont(26, true, "Chat"))
+	RaidBossEmoteFrameSlot1:SetShadowColor(0, 0, 0, .5)
+	RaidBossEmoteFrameSlot1:SetWidth(760)
+	RaidBossEmoteFrameSlot1.SetTextHeight = function() end
+
+	RaidBossEmoteFrameSlot2:SetFontObject(GetFont(26, true, "Chat"))
+	RaidBossEmoteFrameSlot2:SetShadowColor(0, 0, 0, .5)
+	RaidBossEmoteFrameSlot2:SetWidth(760)
+	RaidBossEmoteFrameSlot2.SetTextHeight = function() end
+
+	self.frame = RaidBossEmoteFrame
+end
+
+RaidBossEmotes.InitializeMovableFrameAnchor = function(self)
+
+	local anchor = ns.Widgets.RequestMovableFrameAnchor()
+	anchor:SetTitle(CHAT_MSG_RAID_BOSS_EMOTE)
+	anchor:SetScalable(true)
+	anchor:SetMinMaxScale(.75, 1.25, .05)
+	anchor:SetSize(760, 80)
+	anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
+	anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
+	anchor.frameOffsetX = 0
+	anchor.frameOffsetY = 0
+	anchor.framePoint = "CENTER"
+	anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
+
+	self.anchor = anchor
+
+end
+
 RaidBossEmotes.UpdatePositionAndScale = function(self)
 
 	local savedPosition = self.currentLayout and self.db.profile.savedPosition[self.currentLayout]
 	if (savedPosition) then
 		local point, x, y = unpack(savedPosition)
 		local scale = savedPosition.scale
-		local frame = RaidBossEmoteFrame
+		local frame = self.frame
 		local anchor = self.anchor
 
 		-- Set the scale before positioning,
@@ -86,7 +134,7 @@ RaidBossEmotes.OnAnchorUpdate = function(self, reason, layoutName, ...)
 			self.anchor:ClearAllPoints()
 			self.anchor:SetPoint(unpack(savedPosition[layoutName]))
 
-			local defaultPosition = self.defaults.profile.savedPosition[layoutName]
+			local defaultPosition = defaults.profile.savedPosition[layoutName]
 			if (defaultPosition) then
 				self.anchor:SetDefaultPosition(unpack(defaultPosition))
 			end
@@ -100,7 +148,7 @@ RaidBossEmotes.OnAnchorUpdate = function(self, reason, layoutName, ...)
 			if (not self.initialPositionSet) then
 				--print("setting default position for", layoutName, self.frame:GetName())
 
-				local defaultPosition = self.defaults.profile.savedPosition.Azerite
+				local defaultPosition = defaults.profile.savedPosition.Azerite
 
 				self.anchor:SetScale(defaultPosition.scale)
 				self.anchor:ClearAllPoints()
@@ -119,7 +167,7 @@ RaidBossEmotes.OnAnchorUpdate = function(self, reason, layoutName, ...)
 
 		-- Purge layouts not matching editmode themes or our defaults.
 		for name in pairs(savedPosition) do
-			if (not self.defaults.profile.savedPosition[name] and name ~= "Modern" and name ~= "Classic") then
+			if (not defaults.profile.savedPosition[name] and name ~= "Modern" and name ~= "Classic") then
 				local found
 				for lname in pairs(C_EditMode.GetLayouts().layouts) do
 					if (lname == name) then
@@ -170,44 +218,8 @@ end
 
 RaidBossEmotes.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("RaidBossEmotes", defaults)
-	self.defaults = defaults
 	self:SetEnabledState(self.db.profile.enabled)
 
-	-- The RaidWarnings have a tendency to look really weird,
-	-- as the SetTextHeight method scales the text after it already
-	-- has been turned into a bitmap and turned into a texture.
-	-- So I'm just going to turn it off. Completely.
-	RaidBossEmoteFrame:SetAlpha(.85)
-	RaidBossEmoteFrame:SetHeight(80)
-
-	RaidBossEmoteFrame.timings.RAID_NOTICE_MIN_HEIGHT = 26
-	RaidBossEmoteFrame.timings.RAID_NOTICE_MAX_HEIGHT = 26
-	RaidBossEmoteFrame.timings.RAID_NOTICE_SCALE_UP_TIME = 0
-	RaidBossEmoteFrame.timings.RAID_NOTICE_SCALE_DOWN_TIME = 0
-
-	RaidBossEmoteFrameSlot1:SetFontObject(GetFont(26, true, "Chat"))
-	RaidBossEmoteFrameSlot1:SetShadowColor(0, 0, 0, .5)
-	RaidBossEmoteFrameSlot1:SetWidth(760)
-	RaidBossEmoteFrameSlot1.SetTextHeight = function() end
-
-	RaidBossEmoteFrameSlot2:SetFontObject(GetFont(26, true, "Chat"))
-	RaidBossEmoteFrameSlot2:SetShadowColor(0, 0, 0, .5)
-	RaidBossEmoteFrameSlot2:SetWidth(760)
-	RaidBossEmoteFrameSlot2.SetTextHeight = function() end
-
-	-- Movable Frame Anchor
-	---------------------------------------------------
-	local anchor = ns.Widgets.RequestMovableFrameAnchor()
-	anchor:SetTitle(CHAT_MSG_RAID_BOSS_EMOTE)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.75, 1.25, .05)
-	anchor:SetSize(760, 80)
-	anchor:SetPoint(unpack(self.defaults.profile.savedPosition.Azerite))
-	anchor:SetScale(self.defaults.profile.savedPosition.Azerite.scale)
-	anchor.frameOffsetX = 0
-	anchor.frameOffsetY = 0
-	anchor.framePoint = "CENTER"
-	anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
-
-	self.anchor = anchor
+	self:InitializeRaidBossEmoteFrame()
+	self:InitializeMovableFrameAnchor()
 end

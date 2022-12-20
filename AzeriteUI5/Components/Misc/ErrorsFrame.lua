@@ -26,6 +26,9 @@
 local Addon, ns = ...
 local ErrorsFrame = ns:NewModule("ErrorsFrame", "LibMoreEvents-1.0", "AceHook-3.0")
 
+-- Lua API
+local pairs, unpack = pairs, unpack
+
 -- Addon API
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
@@ -97,13 +100,52 @@ local blackList = {
 	[ SPELL_FAILED_UNIT_NOT_BEHIND ] = true, 				-- Target needs to be behind you.
 }
 
+ErrorsFrame.InitializeErrorsFrame = function(self)
+
+	self.frame = UIErrorsFrame
+
+	UIErrorsFrame:UnregisterAllEvents()
+	UIErrorsFrame:SetFrameStrata("LOW")
+	UIErrorsFrame:SetHeight(22)
+	UIErrorsFrame:SetAlpha(.75)
+	UIErrorsFrame:SetFontObject(GetFont(18, true))
+	UIErrorsFrame:SetShadowColor(0, 0, 0, .5)
+
+	self:RegisterEvent("SYSMSG", "OnEvent")
+	self:RegisterEvent("UI_ERROR_MESSAGE", "OnEvent")
+	self:RegisterEvent("UI_INFO_MESSAGE", "OnEvent")
+
+	-- Macros can toggle this, so we need to hook into it.
+	self:SecureHook(UIErrorsFrame, "RegisterEvent", "OnRegisterEvent")
+	self:SecureHook(UIErrorsFrame, "UnregisterEvent", "OnUnregisterEvent")
+
+end
+
+ErrorsFrame.InitializeMovableFrameAnchor = function(self)
+
+	local anchor = ns.Widgets.RequestMovableFrameAnchor()
+	anchor:SetTitle(SYSTEM_MESSAGES)
+	anchor:SetScalable(true)
+	anchor:SetMinMaxScale(.75, 1.25, .05)
+	anchor:SetSize(760, 22)
+	anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
+	anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
+	anchor.frameOffsetX = 0
+	anchor.frameOffsetY = 0
+	anchor.framePoint = "CENTER"
+	anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
+
+	self.anchor = anchor
+
+end
+
 ErrorsFrame.UpdatePositionAndScale = function(self)
 
 	local savedPosition = self.currentLayout and self.db.profile.savedPosition[self.currentLayout]
 	if (savedPosition) then
 		local point, x, y = unpack(savedPosition)
 		local scale = savedPosition.scale
-		local frame = UIErrorsFrame
+		local frame = self.frame
 		local anchor = self.anchor
 
 		-- Set the scale before positioning,
@@ -128,53 +170,6 @@ ErrorsFrame.UpdatePositionAndScale = function(self)
 
 end
 
-ErrorsFrame.OnEvent = function(self, event, ...)
-	if event == "SYSMSG" then
-		local msg, r, g, b = ...
-		if (not msg or blackList[msg]) then return end
-		UIErrorsFrame:CheckAddMessage(msg, r, g, b, 1)
-	elseif (event == "UI_ERROR_MESSAGE") then
-		local messageType, msg = ...
-		if (not msg or blackList.msgTypes[messageType] or blackList[msg]) then return end
-		if (UIErrorsFrame.TryDisplayMessage) then
-			UIErrorsFrame:TryDisplayMessage(messageType, msg, 1, 0, 0, 1)
-		else
-			UIErrorsFrame:AddMessage(msg, 1, 0, 0, 1)
-		end
-		-- Play an error sound if the appropriate cvars allows it.
-		-- Blizzard plays these sound too, but they don't slave it to the error speech setting. We do.
-		if (GetCVarBool("Sound_EnableDialog") and GetCVarBool("Sound_EnableErrorSpeech")) then
-			local errorStringId, soundKitID, voiceID = GetGameMessageInfo(messageType)
-			if (voiceID) then
-				-- No idea what channel this ends up in.
-				-- *Edit: Seems to be Dialog by default for this one.
-				PlayVocalErrorSoundID(voiceID)
-			elseif (soundKitID) then
-				-- Blizzard sends this to the Master channel. We won't.
-				PlaySoundKitID(soundKitID, "Dialog")
-			end
-		end
-
-	elseif (event == "UI_INFO_MESSAGE") then
-		local messageType, msg = ...
-		if (not msg or blackList.msgTypes[messageType] or blackList[msg]) then return end
-		if (UIErrorsFrame.TryDisplayMessage) then
-			UIErrorsFrame:TryDisplayMessage(messageType, msg, 1, .82, 0, 1)
-		else
-			UIErrorsFrame:AddMessage(msg, 1, .82, 0, 1)
-		end
-	end
-end
-
-ErrorsFrame.OnRegisterEvent = function(self, event, ...)
-	UIErrorsFrame:UnregisterEvent(event)
-	self:RegisterEvent(event, "OnEvent", ...)
-end
-
-ErrorsFrame.OnUnregisterEvent = function(self, event)
-	self:UnregisterEvent(event, "OnEvent")
-end
-
 ErrorsFrame.OnAnchorUpdate = function(self, reason, layoutName, ...)
 	local savedPosition = self.db.profile.savedPosition
 	local lockdown = InCombatLockdown()
@@ -187,7 +182,7 @@ ErrorsFrame.OnAnchorUpdate = function(self, reason, layoutName, ...)
 			self.anchor:ClearAllPoints()
 			self.anchor:SetPoint(unpack(savedPosition[layoutName]))
 
-			local defaultPosition = self.defaults.profile.savedPosition[layoutName]
+			local defaultPosition = defaults.profile.savedPosition[layoutName]
 			if (defaultPosition) then
 				self.anchor:SetDefaultPosition(unpack(defaultPosition))
 			end
@@ -201,7 +196,7 @@ ErrorsFrame.OnAnchorUpdate = function(self, reason, layoutName, ...)
 			if (not self.initialPositionSet) then
 				--print("setting default position for", layoutName, self.frame:GetName())
 
-				local defaultPosition = self.defaults.profile.savedPosition.Azerite
+				local defaultPosition = defaults.profile.savedPosition.Azerite
 
 				self.anchor:SetScale(defaultPosition.scale)
 				self.anchor:ClearAllPoints()
@@ -220,7 +215,7 @@ ErrorsFrame.OnAnchorUpdate = function(self, reason, layoutName, ...)
 
 		-- Purge layouts not matching editmode themes or our defaults.
 		for name in pairs(savedPosition) do
-			if (not self.defaults.profile.savedPosition[name] and name ~= "Modern" and name ~= "Classic") then
+			if (not defaults.profile.savedPosition[name] and name ~= "Modern" and name ~= "Classic") then
 				local found
 				for lname in pairs(C_EditMode.GetLayouts().layouts) do
 					if (lname == name) then
@@ -269,39 +264,57 @@ ErrorsFrame.OnAnchorUpdate = function(self, reason, layoutName, ...)
 	end
 end
 
+ErrorsFrame.OnRegisterEvent = function(self, event, ...)
+	UIErrorsFrame:UnregisterEvent(event)
+	self:RegisterEvent(event, "OnEvent", ...)
+end
+
+ErrorsFrame.OnUnregisterEvent = function(self, event)
+	self:UnregisterEvent(event, "OnEvent")
+end
+
+ErrorsFrame.OnEvent = function(self, event, ...)
+	if event == "SYSMSG" then
+		local msg, r, g, b = ...
+		if (not msg or blackList[msg]) then return end
+		UIErrorsFrame:CheckAddMessage(msg, r, g, b, 1)
+	elseif (event == "UI_ERROR_MESSAGE") then
+		local messageType, msg = ...
+		if (not msg or blackList.msgTypes[messageType] or blackList[msg]) then return end
+		if (UIErrorsFrame.TryDisplayMessage) then
+			UIErrorsFrame:TryDisplayMessage(messageType, msg, 1, 0, 0, 1)
+		else
+			UIErrorsFrame:AddMessage(msg, 1, 0, 0, 1)
+		end
+		-- Play an error sound if the appropriate cvars allows it.
+		-- Blizzard plays these sound too, but they don't slave it to the error speech setting. We do.
+		if (GetCVarBool("Sound_EnableDialog") and GetCVarBool("Sound_EnableErrorSpeech")) then
+			local errorStringId, soundKitID, voiceID = GetGameMessageInfo(messageType)
+			if (voiceID) then
+				-- No idea what channel this ends up in.
+				-- *Edit: Seems to be Dialog by default for this one.
+				PlayVocalErrorSoundID(voiceID)
+			elseif (soundKitID) then
+				-- Blizzard sends this to the Master channel. We won't.
+				PlaySoundKitID(soundKitID, "Dialog")
+			end
+		end
+
+	elseif (event == "UI_INFO_MESSAGE") then
+		local messageType, msg = ...
+		if (not msg or blackList.msgTypes[messageType] or blackList[msg]) then return end
+		if (UIErrorsFrame.TryDisplayMessage) then
+			UIErrorsFrame:TryDisplayMessage(messageType, msg, 1, .82, 0, 1)
+		else
+			UIErrorsFrame:AddMessage(msg, 1, .82, 0, 1)
+		end
+	end
+end
+
 ErrorsFrame.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ErrorsFrame", defaults)
-	self.defaults = defaults
 	self:SetEnabledState(self.db.profile.enabled)
 
-	UIErrorsFrame:UnregisterAllEvents()
-	UIErrorsFrame:SetFrameStrata("LOW")
-	UIErrorsFrame:SetHeight(22)
-	UIErrorsFrame:SetAlpha(.75)
-	UIErrorsFrame:SetFontObject(GetFont(18, true))
-	UIErrorsFrame:SetShadowColor(0, 0, 0, .5)
-
-	self:RegisterEvent("SYSMSG", "OnEvent")
-	self:RegisterEvent("UI_ERROR_MESSAGE", "OnEvent")
-	self:RegisterEvent("UI_INFO_MESSAGE", "OnEvent")
-
-	-- Macros can toggle this, so we need to hook into it.
-	self:SecureHook(UIErrorsFrame, "RegisterEvent", "OnRegisterEvent")
-	self:SecureHook(UIErrorsFrame, "UnregisterEvent", "OnUnregisterEvent")
-
-	-- Movable Frame Anchor
-	---------------------------------------------------
-	local anchor = ns.Widgets.RequestMovableFrameAnchor()
-	anchor:SetTitle(SYSTEM_MESSAGES)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.75, 1.25, .05)
-	anchor:SetSize(760, 22)
-	anchor:SetPoint(unpack(self.defaults.profile.savedPosition.Azerite))
-	anchor:SetScale(self.defaults.profile.savedPosition.Azerite.scale)
-	anchor.frameOffsetX = 0
-	anchor.frameOffsetY = 0
-	anchor.framePoint = "CENTER"
-	anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
-
-	self.anchor = anchor
+	self:InitializeErrorsFrame()
+	self:InitializeMovableFrameAnchor()
 end
