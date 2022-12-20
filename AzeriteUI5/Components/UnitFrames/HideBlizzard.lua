@@ -30,8 +30,6 @@ local BlizzardUFDisabler = ns:NewModule("BlizzardUFDisabler")
 
 BlizzardUFDisabler.OnEnable = function(self)
 
-	oUF:DisableBlizzard("pet")
-	oUF:DisableBlizzard("target")
 	oUF:DisableBlizzard("focus")
 
 	-- Disable Boss Frames

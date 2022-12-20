@@ -2,14 +2,13 @@
 
 	<Script file="HideBlizzard.lua"/>
 
+	<Script file="UnitFrame.lua"/>
 	<Script file="Functions.lua"/>
 	<Script file="Tags.lua"/>
 
-	<Script file="AuraSorts.lua"/>
-	<Script file="AuraStyles.lua"/>
-	<Script file="AuraFilters.lua"/>
-
-	<Script file="UnitFrame.lua"/>
+	<Script file="Sorting.lua"/>
+	<Script file="Styling.lua"/>
+	<Script file="Filters.lua"/>
 
 	<Script file="Units\Player.lua"/>
 	<Script file="Units\Pet.lua"/>

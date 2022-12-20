@@ -453,7 +453,7 @@ local NamePlate_PostUpdatePositions = function(self)
 			end
 		end
 
-		local numAuras = (ns.IsRetail) and (#auras.sortedBuffs + #auras.sortedDebuffs) or (auras.visibleBuffs + auras.visibleDebuffs)
+		local numAuras = #auras.sortedBuffs + #auras.sortedDebuffs
 		local numRows = (numAuras > 0) and (math_floor(numAuras / auras.numPerRow)) or 0
 
 		if (numRows ~= auras.numRows or hasName ~= auras.usingNameOffset or auras.usingNameOffset == nil) then
@@ -541,10 +541,7 @@ local NamePlate_PostUpdate = function(self, event, unit, ...)
 	self.Power:SetOrientation(main)
 	self.Health:SetOrientation(main)
 	self.Health.Preview:SetOrientation(main)
-
-	if (ns.IsRetail) then
-		self.Health.Absorb:SetOrientation(reverse)
-	end
+	self.Health.Absorb:SetOrientation(reverse)
 
 	TargetHighlight_Update(self, event, unit, ...)
 	NamePlate_PostUpdateElements(self, event, unit, ...)
