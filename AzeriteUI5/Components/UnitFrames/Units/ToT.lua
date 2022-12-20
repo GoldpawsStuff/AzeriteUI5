@@ -328,7 +328,6 @@ local style = function(self, unit)
 	local db = config
 
 	self:SetSize(unpack(db.Size))
-	self:SetPoint(unpack(db.Position))
 	self:SetHitRectInsets(unpack(db.HitRectInsets))
 	self:SetFrameLevel(self:GetFrameLevel() + 10)
 
@@ -490,13 +489,13 @@ ToTMod.Spawn = function(self)
 	-- Movable Frame Anchor
 	---------------------------------------------------
 	local anchor = ns.Widgets.RequestMovableFrameAnchor()
-	anchor:SetTitle(HUD_EDIT_MODE_PLAYER_FRAME_LABEL)
+	anchor:SetTitle(SHOW_TARGET_OF_TARGET_TEXT) -- crazy long
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
 	anchor:SetSize(136, 47)
 	anchor:SetPoint(unpack(self.defaults.profile.savedPosition.Azerite))
 	anchor:SetScale(self.defaults.profile.savedPosition.Azerite.scale)
-	anchor.frameOffsetX = 121
+	anchor.frameOffsetX = 0
 	anchor.frameOffsetY = 0
 	anchor.framePoint = "BOTTOMLEFT"
 	anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
