@@ -28,8 +28,6 @@ local oUF = ns.oUF
 
 local NamePlates = ns:NewModule("NamePlates", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0")
 
-local LibSmoothBar = LibStub("LibSmoothBar-1.0")
-
 -- Lua API
 local math_floor = math.floor
 local select = select
