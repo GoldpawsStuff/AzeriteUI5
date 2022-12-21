@@ -8,5 +8,5 @@ Work in progress.
 ## Chat Commands
 Note that the following commands do NOT work while engaged in combat. All settings are stored in the addons saved settings.
 
-- **/resetScale** - Resets the user interface scale to what the UI was designed for.
+- **/resetscale** - Resets the user interface scale to what the UI was designed for.
 - **/resetlayout** - Resets our custom EditMode preset "Azerite" to the default settings fitting the UI.
