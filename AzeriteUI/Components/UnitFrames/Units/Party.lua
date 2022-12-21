@@ -838,6 +838,7 @@ PartyFrameMod.Spawn = function(self)
 	anchor:SetSize(130*4, 130)
 	anchor:SetPoint(unpack(self.defaultPosition.Azerite))
 	anchor:SetScale(self.defaultPosition.Azerite.scale)
+	anchor:SetEditModeAccountSetting(Enum.EditModeAccountSetting.ShowPartyFrames)
 	anchor.frameOffsetX = 0
 	anchor.frameOffsetY = 0
 	anchor.framePoint = "TOPLEFT"

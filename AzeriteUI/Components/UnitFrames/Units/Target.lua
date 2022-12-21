@@ -1239,6 +1239,7 @@ TargetFrameMod.Spawn = function(self)
 	anchor:SetSize(550, 210)
 	anchor:SetPoint(unpack(self.defaultPosition.Azerite))
 	anchor:SetScale(self.defaultPosition.Azerite.scale)
+	anchor:SetEditModeAccountSetting(Enum.EditModeAccountSetting.ShowTargetAndFocus)
 	anchor.frameOffsetX = -113
 	anchor.frameOffsetY = -39
 	anchor.framePoint = "TOPRIGHT"

@@ -355,6 +355,10 @@ end
 
 -- Anchor Setters
 --------------------------------------
+Anchor.SetEditModeAccountSetting = function(self, setting)
+	self.editModeAccountSetting = setting
+end
+
 -- Scale can still be set and changed,
 -- this setting only toggles mousewheel input.
 Anchor.SetScalable = function(self, scalable)
@@ -556,7 +560,15 @@ end
 
 Widgets.ShowMovableFrameAnchors = function()
 	for anchor in next,AnchorData do
-		anchor:Show()
+		if (anchor.editModeAccountSetting) then
+			if (EditModeManagerFrame:GetAccountSettingValueBool(anchor.editModeAccountSetting)) then
+				anchor:Show()
+			else
+				anchor:Hide()
+			end
+		else
+			anchor:Show()
+		end
 	end
 end
 
@@ -578,6 +590,18 @@ Widgets.ToggleMovableFrameAnchors = function()
 		Widgets:HideMovableFrameAnchors()
 	else
 		Widgets:ShowMovableFrameAnchors()
+	end
+end
+
+Widgets.UpdateVisibleMovableFrameAnchors = function()
+	for anchor in next,AnchorData do
+		if (anchor.editModeAccountSetting) then
+			if (EditModeManagerFrame:GetAccountSettingValueBool(anchor.editModeAccountSetting)) then
+				anchor:Show()
+			else
+				anchor:Hide()
+			end
+		end
 	end
 end
 
@@ -632,3 +656,4 @@ end)
 
 hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() Widgets:ShowMovableFrameAnchors() end)
 hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function() Widgets:HideMovableFrameAnchors() end)
+hooksecurefunc(EditModeManagerFrame, "OnAccountSettingChanged", function() Widgets:UpdateVisibleMovableFrameAnchors() end )

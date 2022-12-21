@@ -617,6 +617,7 @@ BossFrameMod.Spawn = function(self)
 	anchor:SetSize(250, 485)
 	anchor:SetPoint(unpack(self.defaultPosition.Azerite))
 	anchor:SetScale(self.defaultPosition.Azerite.scale)
+	anchor:SetEditModeAccountSetting(Enum.EditModeAccountSetting.ShowBossFrames)
 	anchor.frameOffsetX = 0
 	anchor.frameOffsetY = 0
 	anchor.framePoint = "TOPRIGHT"
