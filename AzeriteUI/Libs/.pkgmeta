@@ -1,4 +1,4 @@
-package-as: AzeriteUI5
+package-as: AzeriteUI
 enable-nolib-creation: no
 
 externals:
@@ -24,7 +24,7 @@ tools-used:
     - ouf
 
 move-folders:
-    AzeriteUI5/AzeriteUI5: AzeriteUI5
+    AzeriteUI/AzeriteUI: AzeriteUI
 
 manual-changelog:
     filename: CHANGELOG.md
