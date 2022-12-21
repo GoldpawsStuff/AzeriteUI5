@@ -505,7 +505,6 @@ end
 
 ToTFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ToTFrame", defaults)
-	self.defaultPosition = defaults.profile.savedPosition
 	self:SetEnabledState(self.db.profile.enabled)
 
 	oUF:DisableBlizzard("targettarget")

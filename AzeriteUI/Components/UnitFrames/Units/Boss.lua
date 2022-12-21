@@ -628,6 +628,9 @@ end
 
 BossFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("BossFrames", defaults)
-	self.defaultPosition = defaults.profile.savedPosition
 	self:SetEnabledState(self.db.profile.enabled)
+
+	for i = 1, MAX_BOSS_FRAMES do
+		oUF:DisableBlizzard("boss"..i)
+	end
 end

@@ -483,8 +483,7 @@ end
 
 FocusFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("FocusFrame", defaults)
-	self.defaultPosition = defaults.profile.savedPosition
 	self:SetEnabledState(self.db.profile.enabled)
 
-	oUF:DisableBlizzard("targettarget")
+	oUF:DisableBlizzard("focus")
 end

@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
-	<Script file="HideBlizzard.lua"/>
-
 	<Script file="UnitFrame.lua"/>
 	<Script file="Functions.lua"/>
 	<Script file="Tags.lua"/>

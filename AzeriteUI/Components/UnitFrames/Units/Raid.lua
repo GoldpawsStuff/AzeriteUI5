@@ -26,9 +26,21 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
+LoadAddOn("Blizzard_CUFProfiles")
+LoadAddOn("Blizzard_CompactRaidFrames")
+
 local RaidFrameMod = ns:Merge(ns:NewModule("RaidFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
 
 -- PARTYRAID_LABEL
 
-LoadAddOn("Blizzard_CUFProfiles")
-LoadAddOn("Blizzard_CompactRaidFrames")
+RaidFrameMod.OnInitialize = function(self)
+
+	UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
+
+	CompactRaidFrameManager_SetSetting("IsShown", "0")
+
+	CompactRaidFrameContainer:UnregisterAllEvents()
+	CompactRaidFrameManager:UnregisterAllEvents()
+	CompactRaidFrameManager:SetParent(ns.Hider)
+
+end

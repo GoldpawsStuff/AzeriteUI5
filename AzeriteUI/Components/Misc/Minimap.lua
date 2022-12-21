@@ -24,9 +24,10 @@
 
 --]]
 local Addon, ns = ...
-local MinimapMod = ns:NewModule("Minimap", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0", "AceConsole-3.0")
 
 LoadAddOn("Blizzard_TimeManager")
+
+local MinimapMod = ns:NewModule("Minimap", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0", "AceConsole-3.0")
 
 -- Lua API
 local next = next

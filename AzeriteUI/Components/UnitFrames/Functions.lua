@@ -27,15 +27,6 @@ local Addon, ns = ...
 local oUF = ns.oUF
 local API = ns.API
 
--- WoW API
-local UnitIsDeadOrGhost = UnitIsDeadOrGhost
-local UnitGUID = UnitGUID
-local UnitHealth = UnitHealth
-local UnitHealthMax = UnitHealthMax
-local UnitIsConnected = UnitIsConnected
-local UnitPower = UnitPower
-local UnitPowerMax = UnitPowerMax
-
 API.UpdateHealth = function(self, event, unit)
 	if (not unit or self.unit ~= unit) then return end
 	local element = self.Health

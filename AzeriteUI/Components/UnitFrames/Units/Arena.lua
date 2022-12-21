@@ -27,3 +27,11 @@ local Addon, ns = ...
 local oUF = ns.oUF
 
 local ArenaFrameMod = ns:Merge(ns:NewModule("ArenaFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
+
+
+ArenaFrameMod.OnInitialize = function(self)
+
+	for i = 1, MAX_ARENA_ENEMIES do
+		oUF:DisableBlizzard("arena"..i)
+	end
+end

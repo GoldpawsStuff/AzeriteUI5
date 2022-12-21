@@ -1136,7 +1136,6 @@ end
 
 PlayerFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PlayerFrame", defaults)
-	self.defaultPosition = defaults.profile.savedPosition
 	self:SetEnabledState(self.db.profile.enabled)
 
 	oUF:DisableBlizzard("player")

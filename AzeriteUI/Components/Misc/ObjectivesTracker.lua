@@ -24,6 +24,9 @@
 
 --]]
 local Addon, ns = ...
+
+LoadAddOn("Blizzard_ObjectiveTracker")
+
 local Tracker = ns:NewModule("Tracker", "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0")
 
 -- WoW API
@@ -668,5 +671,3 @@ end
 Tracker.OnEnable = function(self)
 	self:SetObjectivesTrackerTheme(self.db.profile.theme)
 end
-
-LoadAddOn("Blizzard_ObjectiveTracker")

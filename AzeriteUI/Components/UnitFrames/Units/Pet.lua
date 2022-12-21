@@ -467,7 +467,6 @@ end
 
 PetFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PetFrame", defaults)
-	self.defaultPosition = defaults.profile.savedPosition
 	self:SetEnabledState(self.db.profile.enabled)
 
 	oUF:DisableBlizzard("pet")

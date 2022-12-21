@@ -38,22 +38,6 @@ local string_len = string.len
 local tonumber = tonumber
 local unpack = unpack
 
--- WoW API
-local UnitBattlePetLevel = UnitBattlePetLevel
-local UnitClassification = UnitClassification
-local UnitGetIncomingHeals = UnitGetIncomingHeals
-local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs
-local UnitHealth = UnitHealth
-local UnitHealthMax = UnitHealthMax
-local UnitIsAFK = UnitIsAFK
-local UnitIsBattlePetCompanion = UnitIsBattlePetCompanion
-local UnitIsDeadOrGhost = UnitIsDeadOrGhost
-local UnitIsWildBattlePet = UnitIsWildBattlePet
-local UnitEffectiveLevel = UnitEffectiveLevel or UnitLevel
-local UnitName = UnitName
-local UnitPower = UnitPower
-local UnitPowerMax = UnitPowerMax
-
 -- Addon API
 local Colors = ns.Colors
 local AbbreviateName = ns.API.AbbreviateName

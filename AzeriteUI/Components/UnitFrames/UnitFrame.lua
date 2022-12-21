@@ -135,18 +135,19 @@ ns.UnitFrame.modulePrototype = {
 	end,
 
 	OnAnchorUpdate = function(self, reason, layoutName, ...)
-		local savedPosition = self.db.profile.savedPosition
+		local savedPositions = self.db.profile.savedPosition
+		local defaultPositions = self.db.defaults.profile.savedPosition
 		local lockdown = InCombatLockdown()
 
 		if (reason == "LayoutsUpdated") then
 
 			if (savedPosition[layoutName]) then
 
-				self.anchor:SetScale(savedPosition[layoutName].scale or self.anchor:GetScale())
+				self.anchor:SetScale(savedPositions[layoutName].scale or self.anchor:GetScale())
 				self.anchor:ClearAllPoints()
-				self.anchor:SetPoint(unpack(savedPosition[layoutName]))
+				self.anchor:SetPoint(unpack(savedPositions[layoutName]))
 
-				local defaultPosition = self.defaultPosition[layoutName] or self.defaultPosition.Azerite
+				local defaultPosition = self.db.defaults.profile.savedPosition[layoutName] or defaultPositions.Azerite
 				if (defaultPosition) then
 					self.anchor:SetDefaultPosition(unpack(defaultPosition))
 				end
@@ -158,28 +159,27 @@ ns.UnitFrame.modulePrototype = {
 				-- The user is unlikely to have a preset with our name
 				-- on the first time logging in.
 				if (not self.initialPositionSet) then
-					--print("setting default position for", layoutName, self.frame:GetName())
 
-					local defaultPosition = self.defaultPosition.Azerite
+					local defaultPosition = defaultPositions.Azerite
 
 					self.anchor:SetScale(defaultPosition.scale)
 					self.anchor:ClearAllPoints()
 					self.anchor:SetPoint(unpack(defaultPosition))
-					self.anchor:SetDefaultPosition(unpack(defaultPosition))
+					self.anchor:SetDefaultPosition(unpack(ddefaultPosition))
 
 					self.initialPositionSet = true
 					--self.currentLayout = layoutName
 				end
 
-				savedPosition[layoutName] = { self.anchor:GetPosition() }
-				savedPosition[layoutName].scale = self.anchor:GetScale()
+				savedPositions[layoutName] = { self.anchor:GetPosition() }
+				savedPositions[layoutName].scale = self.anchor:GetScale()
 			end
 
 			self.currentLayout = layoutName
 
 			-- Purge layouts not matching editmode themes or our defaults.
-			for name in pairs(savedPosition) do
-				if (not self.defaultPosition[name] and name ~= "Modern" and name ~= "Classic") then
+			for name in pairs(savedPositions) do
+				if (not defaultPositions[name] and name ~= "Modern" and name ~= "Classic") then
 					local found
 					for lname in pairs(C_EditMode.GetLayouts().layouts) do
 						if (lname == name) then
@@ -188,7 +188,7 @@ ns.UnitFrame.modulePrototype = {
 						end
 					end
 					if (not found) then
-						savedPosition[name] = nil
+						savedPositions[name] = nil
 					end
 				end
 			end
@@ -199,8 +199,8 @@ ns.UnitFrame.modulePrototype = {
 			-- Fires when position has been changed.
 			local point, x, y = ...
 
-			savedPosition[layoutName] = { point, x, y }
-			savedPosition[layoutName].scale = self.anchor:GetScale()
+			savedPositions[layoutName] = { point, x, y }
+			savedPositions[layoutName].scale = self.anchor:GetScale()
 
 			self:UpdatePositionAndScale()
 
@@ -208,7 +208,7 @@ ns.UnitFrame.modulePrototype = {
 			-- Fires when scale has been mousewheel updated.
 			local scale = ...
 
-			savedPosition[layoutName].scale = scale
+			savedPositions[layoutName].scale = scale
 
 			self:UpdatePositionAndScale()
 

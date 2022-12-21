@@ -26,6 +26,8 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
+LoadAddOn("Blizzard_NamePlates")
+
 local NamePlatesMod = ns:NewModule("NamePlates", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0")
 
 -- Lua API
@@ -998,5 +1000,3 @@ NamePlatesMod.OnEnable = function(self)
 
 	self.mouseTimer = self:ScheduleRepeatingTimer(checkMouseOver, 1/20)
 end
-
-LoadAddOn("Blizzard_NamePlates")

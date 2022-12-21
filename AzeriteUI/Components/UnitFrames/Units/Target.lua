@@ -1251,7 +1251,6 @@ end
 
 TargetFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("TargetFrame", defaults)
-	self.defaultPosition = defaults.profile.savedPosition
 	self:SetEnabledState(self.db.profile.enabled)
 
 	oUF:DisableBlizzard("target")
