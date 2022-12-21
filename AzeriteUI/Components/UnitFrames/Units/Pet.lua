@@ -26,7 +26,7 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local PetMod = ns:Merge(ns:NewModule("PetFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
+local PetFrameMod = ns:Merge(ns:NewModule("PetFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
 
 -- Lua API
 local unpack = unpack
@@ -34,7 +34,6 @@ local string_gsub = string.gsub
 
 -- Addon API
 local Colors = ns.Colors
-local Config = ns.Config
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 
@@ -438,7 +437,7 @@ local style = function(self, unit)
 
 end
 
-PetMod.Spawn = function(self)
+PetFrameMod.Spawn = function(self)
 
 	-- UnitFrame
 	---------------------------------------------------
@@ -456,8 +455,8 @@ PetMod.Spawn = function(self)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
 	anchor:SetSize(136, 47)
-	anchor:SetPoint(unpack(self.defaults.profile.savedPosition.Azerite))
-	anchor:SetScale(self.defaults.profile.savedPosition.Azerite.scale)
+	anchor:SetPoint(unpack(self.defaultPosition.Azerite))
+	anchor:SetScale(self.defaultPosition.Azerite.scale)
 	anchor.frameOffsetX = 0
 	anchor.frameOffsetY = 0
 	anchor.framePoint = "BOTTOMLEFT"
@@ -466,9 +465,9 @@ PetMod.Spawn = function(self)
 	self.anchor = anchor
 end
 
-PetMod.OnInitialize = function(self)
+PetFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PetFrame", defaults)
-	self.defaults = defaults
+	self.defaultPosition = defaults.profile.savedPosition
 	self:SetEnabledState(self.db.profile.enabled)
 
 	oUF:DisableBlizzard("pet")

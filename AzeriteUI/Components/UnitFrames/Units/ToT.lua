@@ -26,7 +26,7 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local ToTMod = ns:Merge(ns:NewModule("ToTFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
+local ToTFrameMod = ns:Merge(ns:NewModule("ToTFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
 
 -- Lua API
 local unpack = unpack
@@ -475,7 +475,7 @@ local style = function(self, unit)
 
 end
 
-ToTMod.Spawn = function(self)
+ToTFrameMod.Spawn = function(self)
 
 	-- UnitFrame
 	---------------------------------------------------
@@ -493,8 +493,8 @@ ToTMod.Spawn = function(self)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
 	anchor:SetSize(136, 47)
-	anchor:SetPoint(unpack(self.defaults.profile.savedPosition.Azerite))
-	anchor:SetScale(self.defaults.profile.savedPosition.Azerite.scale)
+	anchor:SetPoint(unpack(self.defaultPosition.Azerite))
+	anchor:SetScale(self.defaultPosition.Azerite.scale)
 	anchor.frameOffsetX = 0
 	anchor.frameOffsetY = 0
 	anchor.framePoint = "BOTTOMLEFT"
@@ -503,9 +503,9 @@ ToTMod.Spawn = function(self)
 	self.anchor = anchor
 end
 
-ToTMod.OnInitialize = function(self)
+ToTFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ToTFrame", defaults)
-	self.defaults = defaults
+	self.defaultPosition = defaults.profile.savedPosition
 	self:SetEnabledState(self.db.profile.enabled)
 
 	oUF:DisableBlizzard("targettarget")

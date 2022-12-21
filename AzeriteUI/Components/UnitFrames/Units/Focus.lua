@@ -26,7 +26,7 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local FocusMod = ns:Merge(ns:NewModule("FocusFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
+local FocusFrameMod = ns:Merge(ns:NewModule("FocusFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
 
 -- Lua API
 local unpack = unpack
@@ -452,7 +452,7 @@ local style = function(self, unit)
 
 end
 
-FocusMod.Spawn = function(self)
+FocusFrameMod.Spawn = function(self)
 
 	-- UnitFrame
 	---------------------------------------------------
@@ -470,8 +470,8 @@ FocusMod.Spawn = function(self)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
 	anchor:SetSize(136, 47)
-	anchor:SetPoint(unpack(self.defaults.profile.savedPosition.Azerite))
-	anchor:SetScale(self.defaults.profile.savedPosition.Azerite.scale)
+	anchor:SetPoint(unpack(self.defaultPosition.Azerite))
+	anchor:SetScale(self.defaultPosition.Azerite.scale)
 	anchor.frameOffsetX = 0
 	anchor.frameOffsetY = 0
 	anchor.framePoint = "BOTTOMLEFT"
@@ -480,9 +480,9 @@ FocusMod.Spawn = function(self)
 	self.anchor = anchor
 end
 
-FocusMod.OnInitialize = function(self)
+FocusFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("FocusFrame", defaults)
-	self.defaults = defaults
+	self.defaultPosition = defaults.profile.savedPosition
 	self:SetEnabledState(self.db.profile.enabled)
 
 	oUF:DisableBlizzard("targettarget")

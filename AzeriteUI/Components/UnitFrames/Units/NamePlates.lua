@@ -26,7 +26,7 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local NamePlates = ns:NewModule("NamePlates", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0")
+local NamePlatesMod = ns:NewModule("NamePlates", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0")
 
 -- Lua API
 local math_floor = math.floor
@@ -938,7 +938,7 @@ local checkMouseOver = function()
 	end
 end
 
-NamePlates.CheckForConflicts = function(self)
+NamePlatesMod.CheckForConflicts = function(self)
 	for i,addon in next,{ Kui_Nameplates, NamePlateKAI, NeatPlates, Plater, SimplePlates, TidyPlates, TidyPlates_ThreatPlates, TidyPlatesContinued } do
 		if (ns.API.IsAddOnEnabled(addon)) then
 			return true
@@ -946,7 +946,7 @@ NamePlates.CheckForConflicts = function(self)
 	end
 end
 
-NamePlates.HookNamePlates = function(self)
+NamePlatesMod.HookNamePlates = function(self)
 
 	local classNameplateManaBar = NamePlateDriverFrame.classNamePlatePowerBar
 	if (classNameplateManaBar) then
@@ -981,7 +981,7 @@ NamePlates.HookNamePlates = function(self)
 
 end
 
-NamePlates.OnInitialize = function(self)
+NamePlatesMod.OnInitialize = function(self)
 	if (self:CheckForConflicts()) then return self:Disable() end
 
 	self.db = ns.db:RegisterNamespace("NamePlates", defaults)
@@ -992,7 +992,7 @@ NamePlates.OnInitialize = function(self)
 	self:HookNamePlates()
 end
 
-NamePlates.OnEnable = function(self)
+NamePlatesMod.OnEnable = function(self)
 	oUF:SetActiveStyle(ns.Prefix.."NamePlates")
 	oUF:SpawnNamePlates(ns.Prefix, callback--[[, cvars]])
 

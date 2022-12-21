@@ -105,7 +105,9 @@ ns.UnitFrame.modulePrototype = {
 		if (frame) then
 			frame:Enable()
 		else
-			self:Spawn()
+			if (self.Spawn) then
+				self:Spawn()
+			end
 		end
 		self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnCombatEvent")
 		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnCombatEvent")
@@ -144,7 +146,7 @@ ns.UnitFrame.modulePrototype = {
 				self.anchor:ClearAllPoints()
 				self.anchor:SetPoint(unpack(savedPosition[layoutName]))
 
-				local defaultPosition = self.defaults.profile.savedPosition[layoutName]
+				local defaultPosition = self.defaultPosition[layoutName] or self.defaultPosition.Azerite
 				if (defaultPosition) then
 					self.anchor:SetDefaultPosition(unpack(defaultPosition))
 				end
@@ -158,7 +160,7 @@ ns.UnitFrame.modulePrototype = {
 				if (not self.initialPositionSet) then
 					--print("setting default position for", layoutName, self.frame:GetName())
 
-					local defaultPosition = self.defaults.profile.savedPosition.Azerite
+					local defaultPosition = self.defaultPosition.Azerite
 
 					self.anchor:SetScale(defaultPosition.scale)
 					self.anchor:ClearAllPoints()
@@ -177,7 +179,7 @@ ns.UnitFrame.modulePrototype = {
 
 			-- Purge layouts not matching editmode themes or our defaults.
 			for name in pairs(savedPosition) do
-				if (not self.defaults.profile.savedPosition[name] and name ~= "Modern" and name ~= "Classic") then
+				if (not self.defaultPosition[name] and name ~= "Modern" and name ~= "Classic") then
 					local found
 					for lname in pairs(C_EditMode.GetLayouts().layouts) do
 						if (lname == name) then
@@ -262,6 +264,3 @@ ns.UnitFrame.modulePrototype = {
 
 	end
 }
-
-LoadAddOn("Blizzard_CUFProfiles")
-LoadAddOn("Blizzard_CompactRaidFrames")

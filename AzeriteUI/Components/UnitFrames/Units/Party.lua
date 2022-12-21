@@ -24,3 +24,6 @@
 
 --]]
 local Addon, ns = ...
+local oUF = ns.oUF
+
+local PartyFramesMod = ns:Merge(ns:NewModule("PartyFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)

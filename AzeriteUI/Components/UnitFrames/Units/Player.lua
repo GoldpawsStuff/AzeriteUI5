@@ -26,7 +26,7 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local PlayerMod = ns:Merge(ns:NewModule("PlayerFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
+local PlayerFrameMod = ns:Merge(ns:NewModule("PlayerFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
 
 -- Lua API
 local next = next
@@ -36,10 +36,8 @@ local unpack = unpack
 
 -- Addon API
 local Colors = ns.Colors
-local Config = ns.Config
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
-local IsAddOnEnabled = ns.API.IsAddOnEnabled
 
 -- Constants
 local playerClass = ns.PlayerClass
@@ -1108,7 +1106,7 @@ local style = function(self, unit)
 
 end
 
-PlayerMod.Spawn = function(self)
+PlayerFrameMod.Spawn = function(self)
 
 	-- UnitFrame
 	---------------------------------------------------
@@ -1126,8 +1124,8 @@ PlayerMod.Spawn = function(self)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
 	anchor:SetSize(560, 180)
-	anchor:SetPoint(unpack(self.defaults.profile.savedPosition.Azerite))
-	anchor:SetScale(self.defaults.profile.savedPosition.Azerite.scale)
+	anchor:SetPoint(unpack(self.defaultPosition.Azerite))
+	anchor:SetScale(self.defaultPosition.Azerite.scale)
 	anchor.frameOffsetX = 121
 	anchor.frameOffsetY = 0
 	anchor.framePoint = "BOTTOMLEFT"
@@ -1136,9 +1134,9 @@ PlayerMod.Spawn = function(self)
 	self.anchor = anchor
 end
 
-PlayerMod.OnInitialize = function(self)
+PlayerFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PlayerFrame", defaults)
-	self.defaults = defaults
+	self.defaultPosition = defaults.profile.savedPosition
 	self:SetEnabledState(self.db.profile.enabled)
 
 	oUF:DisableBlizzard("player")
