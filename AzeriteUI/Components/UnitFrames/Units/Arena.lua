@@ -26,4 +26,4 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local ArenaFramesMod = ns:Merge(ns:NewModule("ArenaFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
+local ArenaFrameMod = ns:Merge(ns:NewModule("ArenaFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)

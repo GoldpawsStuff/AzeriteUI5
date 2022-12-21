@@ -26,7 +26,9 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local RaidFramesMod = ns:Merge(ns:NewModule("RaidFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
+local RaidFrameMod = ns:Merge(ns:NewModule("RaidFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
+
+-- PARTYRAID_LABEL
 
 LoadAddOn("Blizzard_CUFProfiles")
 LoadAddOn("Blizzard_CompactRaidFrames")

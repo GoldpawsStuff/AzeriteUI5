@@ -26,7 +26,7 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local BossFramesMod = ns:Merge(ns:NewModule("BossFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
+local BossFrameMod = ns:Merge(ns:NewModule("BossFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
 
 -- Lua API
 local string_gsub = string.gsub
@@ -376,7 +376,7 @@ local UnitFrame_OnEvent = function(self, event, unit, ...)
 	UnitFrame_PostUpdate(self)
 end
 
-local style = function(self, unit, id)
+local style = function(self, unit)
 
 	local db = config
 
@@ -567,26 +567,26 @@ local style = function(self, unit, id)
 
 end
 
--- Fake Header
+-- Fake GroupHeader
 ---------------------------------------------------
-local BossHeader = CreateFrame("Frame")
-local BossHeader_MT = { __index = BossHeader }
+local GroupHeader = CreateFrame("Frame")
+local GroupHeader_MT = { __index = GroupHeader }
 
-BossHeader.Enable = function(self)
+GroupHeader.Enable = function(self)
 	if (InCombatLockdown()) then return end
 	for i,frame in next,self.units do
 		frame:Enable()
 	end
 end
 
-BossHeader.Disable = function(self)
+GroupHeader.Disable = function(self)
 	if (InCombatLockdown()) then return end
 	for i,frame in next,self.units do
 		frame:Disable()
 	end
 end
 
-BossFramesMod.Spawn = function(self)
+BossFrameMod.Spawn = function(self)
 
 	-- UnitFrames
 	---------------------------------------------------
@@ -595,7 +595,7 @@ BossFramesMod.Spawn = function(self)
 	oUF:RegisterStyle(ns.Prefix..name, style)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
-	local frame = setmetatable(CreateFrame("Frame", nil, UIParent), BossHeader_MT)
+	local frame = setmetatable(CreateFrame("Frame", nil, UIParent), GroupHeader_MT)
 	frame:SetSize(250, 485)
 	frame.units = {}
 
@@ -625,7 +625,7 @@ BossFramesMod.Spawn = function(self)
 	self.anchor = anchor
 end
 
-BossFramesMod.OnInitialize = function(self)
+BossFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("BossFrames", defaults)
 	self.defaultPosition = defaults.profile.savedPosition
 	self:SetEnabledState(self.db.profile.enabled)
