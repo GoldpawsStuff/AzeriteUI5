@@ -41,6 +41,8 @@ local unpack = unpack
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 
+local CURRENT
+
 local LAYOUT
 local layoutNames = setmetatable({ "Modern", "Classic" }, {
 	__index = function(t, key)
@@ -163,8 +165,8 @@ Anchor.Create = function(self)
 	anchor:SetScript("OnClick", Anchor.OnClick)
 	anchor:SetScript("OnShow", Anchor.OnShow)
 	anchor:SetScript("OnHide", Anchor.OnHide)
-	anchor:SetScript("OnEnter", Anchor.OnEnter)
-	anchor:SetScript("OnLeave", Anchor.OnLeave)
+	--anchor:SetScript("OnEnter", Anchor.OnEnter)
+	--anchor:SetScript("OnLeave", Anchor.OnLeave)
 
 	local overlay = CreateFrame("Frame", nil, anchor, ns.BackdropTemplate)
 	overlay:SetAllPoints()
@@ -300,7 +302,7 @@ Anchor.UpdateText = function(self)
 		msg = string_format(Colors.highlight.colorCode.."%s, %.0f, %.0f|r", unpack(anchorData.currentPosition))
 	end
 
-	if (self:IsMouseOver(20,-20,-20,20)) then
+	if (self.isSelected) then -- self:IsMouseOver(20,-20,-20,20)
 		if (self:IsInDefaultPosition()) then
 			msg = msg .. Colors.green.colorCode.."\n<Left-Click and drag to move>|r"
 			if (self:IsScalable() and compare(anchorData.scale, anchorData.defaultScale)) then
@@ -465,6 +467,15 @@ end
 --------------------------------------
 Anchor.OnClick = function(self, button)
 	if (button == "LeftButton") then
+		if (CURRENT) then
+			CURRENT.isSelected = nil
+			CURRENT:OnLeave()
+			--CURRENT:UpdateText()
+		end
+		CURRENT = self
+		self.isSelected = true
+		self:OnEnter()
+		--self:UpdateText()
 		self:SetFrameLevel(60)
 		if (IsShiftKeyDown() and not self:IsInDefaultPosition()) then
 			self:ResetToDefault()
