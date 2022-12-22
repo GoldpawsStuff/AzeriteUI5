@@ -577,23 +577,18 @@ Widgets.RequestMovableFrameAnchor = function()
 end
 
 Widgets.ShowMovableFrameAnchors = function()
-	local isInEditMode = EditModeManagerFrameMixin:IsEditModeActive()
 	for anchor in next,AnchorData do
-		if (not isInEditMode) then
-			anchor:Hide()
-		else
-			if (anchor.editModeAccountSetting) then
-				if (EditModeManagerFrame:GetAccountSettingValueBool(anchor.editModeAccountSetting)) then
-					if (anchor:IsEnabled()) then
-						anchor:Show()
-					end
-				else
-					anchor:Hide()
-				end
-			else
+		if (anchor.editModeAccountSetting) then
+			if (EditModeManagerFrame:GetAccountSettingValueBool(anchor.editModeAccountSetting)) then
 				if (anchor:IsEnabled()) then
 					anchor:Show()
 				end
+			else
+				anchor:Hide()
+			end
+		else
+			if (anchor:IsEnabled()) then
+				anchor:Show()
 			end
 		end
 	end
@@ -669,6 +664,18 @@ eventHandler:SetScript("OnEvent", function(self, event, ...)
 	end
 end)
 
-hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() Widgets:ShowMovableFrameAnchors() end)
-hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function() Widgets:HideMovableFrameAnchors() end)
+local IN_EDIT_MODE
+
+local OnEnterEditMode = function()
+	IN_EDIT_MODE = true
+	Widgets:ShowMovableFrameAnchors()
+end
+
+local OnExitEditMode = function()
+	IN_EDIT_MODE = false
+	Widgets:HideMovableFrameAnchors()
+end
+
+hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() OnEnterEditMode() end)
+hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()  OnExitEditMode() end)
 hooksecurefunc(EditModeManagerFrame, "OnAccountSettingChanged", function() Widgets:ShowMovableFrameAnchors() end )
