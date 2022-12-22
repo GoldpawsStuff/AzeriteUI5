@@ -30,8 +30,19 @@ local defaults = {
 
 }
 
-local Bar = {}
+local Bar = CreateFrame("Frame")
+local Bar_MT = { __index = Bar }
 
 ns.Bar = {}
 ns.Bar.prototype = Bar
 ns.Bar.defaults = defaults
+
+ns.Bar.Create = function(self, id, config, name)
+
+	local bar = setmetatable(CreateFrame("Frame", name, UIParent, "SecureHandlerStateTemplate"), Bar_MT)
+	bar.id = id
+	bar.name = name or id
+	bar.config = config
+
+	return bar
+end

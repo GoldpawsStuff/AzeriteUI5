@@ -25,8 +25,7 @@
 --]]
 local Addon, ns = ...
 
-local BarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "AceConsole-3.0")
-local LAB10 = LibStub("LibActionButton-1.0")
+local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "AceConsole-3.0")
 
 -- Return blizzard barID by barnum.
 local BAR_TO_ID = {
@@ -40,56 +39,49 @@ local BAR_TO_ID = {
 	[8] = MULTIBAR_7_ACTIONBAR_PAGE
 }
 
--- Return bindaction by blizzard barID.
-local BINDTEMPLATE_BY_ID = {
-	[BAR_TO_ID[1]] = "ACTIONBUTTON%d",
-	[BAR_TO_ID[2]] = "MULTIACTIONBAR1BUTTON%d",
-	[BAR_TO_ID[3]] = "MULTIACTIONBAR2BUTTON%d",
-	[BAR_TO_ID[4]] = "MULTIACTIONBAR3BUTTON%d",
-	[BAR_TO_ID[5]] = "MULTIACTIONBAR4BUTTON%d",
-	[BAR_TO_ID[6]] = "MULTIACTIONBAR5BUTTON%d",
-	[BAR_TO_ID[7]] = "MULTIACTIONBAR6BUTTON%d",
-	[BAR_TO_ID[8]] = "MULTIACTIONBAR7BUTTON%d"
-}
-
--- Return barnum by blizzard barID.
-local ID_TO_BAR = {}
-do
-	for bar,id in next,BAR_TO_ID do
-		ID_TO_BAR[id] = bar
-	end
-end
-
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	bars = {
 		["**"] = ns:Merge({
-		}, ns.ButtonBar.defaults),
+		}, ns.ActionBar.defaults),
 		[1] = { --[[ primary action bar ]]
 			layout = "map",
+			maptype = "azerite",
 			visibility = {
+				dragon = true,
+				possess = true,
 				overridebar = true,
 				vehicleui = true
 			}
 		},
 		[2] = { --[[ bottomleft multibar ]]
 			enabled = false,
-			layout = "map"
+			layout = "map",
+			maptype = "zigzag",
 		},
 		[3] = { --[[ bottomright multibar ]]
 			enabled = false,
-			colums = 1,
-			rows = 12
+			grid = {
+				growth = "vertical",
+				growthHorizontal = "RIGHT",
+				growthVertical = "DOWN",
+			}
 		},
-		[4] = { --[[ right multibar ]]
+		[4] = { --[[ right multibar 1 ]]
 			enabled = false,
-			colums = 1,
-			rows = 12
+			grid = {
+				growth = "vertical",
+				growthHorizontal = "RIGHT",
+				growthVertical = "DOWN",
+			}
 		},
-		[5] = { --[[ left multibar ]]
+		[5] = { --[[ right multibar 2 ]]
 			enabled = false,
-			colums = 1,
-			rows = 12
+			grid = {
+				growth = "vertical",
+				growthHorizontal = "RIGHT",
+				growthVertical = "DOWN",
+			}
 		},
 		[6] = { --[[]]
 			enabled = false,
@@ -103,13 +95,46 @@ local defaults = { profile = ns:Merge({
 	}
 }, ns.moduleDefaults) }
 
-BarMod.OnInitialize = function(self)
+-- Returns a localized named usable for our movable frame anchor.
+ActionBarMod.GetBarDisplayName = function(self, id)
+	local barID = tonumber(id)
+	if (barID == RIGHT_ACTIONBAR_PAGE) then
+		return SHOW_MULTIBAR3_TEXT -- "Right Action Bar 1"
+	elseif (barID == LEFT_ACTIONBAR_PAGE) then
+		return SHOW_MULTIBAR4_TEXT -- "Right Action Bar 2"
+	else
+		return HUD_EDIT_MODE_ACTION_BAR_LABEL:format(barID) -- "Action Bar %d"
+	end
+end
+
+ActionBarMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ActionBars", defaults)
+
+	self.bars = {}
+
 	self:SetEnabledState(self.db.profile.enabled)
+
 end
 
-BarMod.OnEnable = function(self)
+ActionBarMod.OnEnable = function(self)
+	if (next(self.bars)) then
+		for i,bar in ipairs(self.bars) do
+			bar:SetEnabled(bar.config.enabled)
+		end
+		return
+	end
+
+	for i = 1,8 do
+		local bar = ns.ActionBar:Create(BAR_TO_ID[i], ns.Prefix.."ActionBar"..i, self.db.profile.bars[i])
+
+		self.bars[i] = bar
+	end
 end
 
-BarMod.OnDisable = function(self)
+ActionBarMod.OnDisable = function(self)
+	if (not next(self.bars)) then return end
+
+	for i,bar in ipairs(self.bars) do
+		bar:Disable()
+	end
 end
