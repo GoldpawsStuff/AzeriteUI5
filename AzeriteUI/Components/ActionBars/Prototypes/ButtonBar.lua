@@ -30,7 +30,12 @@ local Bar = ns.Bar.prototype
 local ButtonBar = setmetatable({}, { __index = Bar })
 local ButtonBar_MT = { __index = ButtonBar }
 
-local next, math_ceil, math_floor = next, math.ceil, math.floor
+-- Lua API
+local next = next
+local math_ceil = math.ceil
+local math_floor = math.floor
+local math_max = math.max
+local math_min = math.min
 
 local maps = {
 	azerite = {
@@ -136,11 +141,24 @@ ButtonBar.UpdateButtonLayout = function(self)
 	if (layout == "map") then
 
 		local map = maps[self.config.maptype]
+		local left, right, top, bottom
 
 		for id,button in next,buttons do
 			button:ClearAllPoints()
 			button:SetPoint(map[id])
+
+			local bleft = button:GetLeft()
+			local bright = button:GetLeft()
+			local btop = button:GetLeft()
+			local bbottom = button:GetLeft()
+
+			left = left and math_min(left, bleft) or bleft
+			right = right and math_max(right, bright) or bright
+			top = top and math_max(top, btop) or btop
+			bottom = bottom and math_min(bottom, bbottom) or bbottom
 		end
+
+		self:SetSize(right-left, top-bottom)
 
 		return
 
@@ -162,6 +180,7 @@ ButtonBar.UpdateButtonLayout = function(self)
 			width = buttonWidth*totalbreaks + (grid.breakpadding or grid.padding)*(totalbreaks-1)
 			height = buttonHeight*grid.breakpoint + grid.padding*(grid.breakpoint - 1)
 		end
+
 		self:SetSize(width, height)
 
 		local point = (grid.growthVertical == "UP" and "BOTTOM" or "TOP")..(grid.growthHorizontal == "RIGHT" and "LEFT" or "RIGHT")

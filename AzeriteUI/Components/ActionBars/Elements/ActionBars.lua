@@ -52,12 +52,28 @@ local defaults = { profile = ns:Merge({
 				possess = true,
 				overridebar = true,
 				vehicleui = true
+			},
+			savedPosition = {
+				Azerite = {
+					scale = 1,
+					[1] = "BOTTOMLEFT",
+					[2] = 60,
+					[3] = 42
+				}
 			}
 		},
 		[2] = { --[[ bottomleft multibar ]]
 			enabled = false,
 			layout = "map",
 			maptype = "zigzag",
+			savedPosition = {
+				Azerite = {
+					scale = 1,
+					[1] = "BOTTOMLEFT",
+					[2] = 780,
+					[3] = 42
+				}
+			}
 		},
 		[3] = { --[[ bottomright multibar ]]
 			enabled = false,
@@ -65,6 +81,14 @@ local defaults = { profile = ns:Merge({
 				growth = "vertical",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
+			},
+			savedPosition = {
+				Azerite = {
+					scale = 1,
+					[1] = "RIGHT",
+					[2] = 0,
+					[3] = -40
+				}
 			}
 		},
 		[4] = { --[[ right multibar 1 ]]
@@ -73,6 +97,14 @@ local defaults = { profile = ns:Merge({
 				growth = "vertical",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
+			},
+			savedPosition = {
+				Azerite = {
+					scale = 1,
+					[1] = "RIGHT",
+					[2] = 0,
+					[3] = -(40 + 72)
+				}
 			}
 		},
 		[5] = { --[[ right multibar 2 ]]
@@ -81,19 +113,188 @@ local defaults = { profile = ns:Merge({
 				growth = "vertical",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
+			},
+			savedPosition = {
+				Azerite = {
+					scale = 1,
+					[1] = "RIGHT",
+					[2] = 0,
+					[3] = -(40 + 72*2)
+				}
 			}
 		},
 		[6] = { --[[]]
 			enabled = false,
+			savedPosition = {
+				Azerite = {
+					scale = 1,
+					[1] = "CENTER",
+					[2] = 0,
+					[3] = 72
+				}
+			}
 		},
 		[7] = { --[[]]
 			enabled = false,
+			savedPosition = {
+				Azerite = {
+					scale = 1,
+					[1] = "CENTER",
+					[2] = 0,
+					[3] = 0
+				}
+			}
 		},
 		[8] = { --[[]]
 			enabled = false,
+			savedPosition = {
+				Azerite = {
+					scale = 1,
+					[1] = "CENTER",
+					[2] = 0,
+					[3] = -72
+				}
+			}
 		}
 	}
 }, ns.moduleDefaults) }
+
+
+local ActionBar_OnSizeChanged = function(self)
+	self.anchor:SetSize(self.GetSize())
+end
+
+local ActionBar_UpdatePositionAndScale = function(self)
+	if (InCombatLockdown()) then
+		self.positionNeedsFix = true
+		return
+	end
+	if (not self.frame) then return end
+
+	local savedPosition = self.currentLayout and self.db.profile.savedPosition[self.currentLayout]
+	if (savedPosition) then
+		local point, x, y = unpack(savedPosition)
+		local scale = savedPosition.scale
+		local frame = self.frame
+		local anchor = self.anchor
+
+		-- Set the scale before positioning,
+		-- or everything will be wonky.
+		frame:SetScale(scale * ns.API.GetDefaultElementScale())
+
+		if (anchor and anchor.framePoint) then
+			-- Position the frame at the anchor,
+			-- with the given point and offsets.
+			frame:ClearAllPoints()
+			frame:SetPoint(anchor.framePoint, anchor, anchor.framePoint, (anchor.frameOffsetX or 0)/scale, (anchor.frameOffsetY or 0)/scale)
+
+			-- Parse where this actually is relative to UIParent
+			local point, x, y = ns.API.GetPosition(frame)
+
+			-- Reposition the frame relative to UIParent,
+			-- to avoid it being hooked to our anchor in combat.
+			frame:ClearAllPoints()
+			frame:SetPoint(point, UIParent, point, x, y)
+		end
+	end
+
+end
+
+local ActionBar_OnAnchorUpdate = function(self, reason, layoutName, ...)
+	local savedPositions = self.config.savedPosition
+	local defaultPositions = self.defaults.savedPosition
+	local lockdown = InCombatLockdown()
+
+	if (reason == "LayoutsUpdated") then
+
+		if (savedPositions[layoutName]) then
+
+			self.anchor:SetScale(savedPositions[layoutName].scale or self.anchor:GetScale())
+			self.anchor:ClearAllPoints()
+			self.anchor:SetPoint(unpack(savedPositions[layoutName]))
+
+			local defaultPosition = defaultPositions[layoutName] or defaultPositions.Azerite
+			if (defaultPosition) then
+				self.anchor:SetDefaultPosition(unpack(defaultPosition))
+			end
+
+			self.initialPositionSet = true
+				--self.currentLayout = layoutName
+
+		else
+			-- The user is unlikely to have a preset with our name
+			-- on the first time logging in.
+			if (not self.initialPositionSet) then
+
+				local defaultPosition = defaultPositions.Azerite
+
+				self.anchor:SetScale(defaultPosition.scale)
+				self.anchor:ClearAllPoints()
+				self.anchor:SetPoint(unpack(defaultPosition))
+				self.anchor:SetDefaultPosition(unpack(ddefaultPosition))
+
+				self.initialPositionSet = true
+				--self.currentLayout = layoutName
+			end
+
+			savedPositions[layoutName] = { self.anchor:GetPosition() }
+			savedPositions[layoutName].scale = self.anchor:GetScale()
+		end
+
+		self.currentLayout = layoutName
+
+		-- Purge layouts not matching editmode themes or our defaults.
+		for name in pairs(savedPositions) do
+			if (not defaultPositions[name] and name ~= "Modern" and name ~= "Classic") then
+				local found
+				for lname in pairs(C_EditMode.GetLayouts().layouts) do
+					if (lname == name) then
+						found = true
+						break
+					end
+				end
+				if (not found) then
+					savedPositions[name] = nil
+				end
+			end
+		end
+
+		self:UpdatePositionAndScale()
+
+	elseif (reason == "PositionUpdated") then
+		-- Fires when position has been changed.
+		local point, x, y = ...
+
+		savedPositions[layoutName] = { point, x, y }
+		savedPositions[layoutName].scale = self.anchor:GetScale()
+
+		self:UpdatePositionAndScale()
+
+	elseif (reason == "ScaleUpdated") then
+		-- Fires when scale has been mousewheel updated.
+		local scale = ...
+
+		savedPositions[layoutName].scale = scale
+
+		self:UpdatePositionAndScale()
+
+	elseif (reason == "Dragging") then
+		-- Fires on every drag update. Spammy.
+		if (not self.incombat) then
+			self:OnAnchorUpdate("PositionUpdated", layoutName, ...)
+		end
+
+	elseif (reason == "CombatStart") then
+		-- Fires right before combat lockdown for visible anchors.
+
+
+	elseif (reason == "CombatEnd") then
+		-- Fires when combat lockdown ends for visible anchors.
+
+	end
+end
+
+
 
 -- Returns a localized named usable for our movable frame anchor.
 ActionBarMod.GetBarDisplayName = function(self, id)
@@ -125,7 +326,27 @@ ActionBarMod.OnEnable = function(self)
 	end
 
 	for i = 1,8 do
-		local bar = ns.ActionBar:Create(BAR_TO_ID[i], ns.Prefix.."ActionBar"..i, self.db.profile.bars[i])
+
+		local bar = ns.ActionBar:Create(BAR_TO_ID[i], self.db.profile.bars[i], ns.Prefix.."ActionBar"..i)
+		bar.defaults = defaults.profile.bars[i]
+
+		bar:SetScript("OnSizeChanged", ActionBar_OnSizeChanged)
+		bar.OnAnchorUpdate = ActionBar_OnAnchorUpdate
+		bar.UpdatePositionAndScale = ActionBar_UpdatePositionAndScale
+
+		local anchor = ns.Widgets.RequestMovableFrameAnchor()
+		anchor:SetTitle(self:GetBarDisplayName(bar.id))
+		anchor:SetScalable(true)
+		anchor:SetMinMaxScale(.75, 1.25, .05)
+		anchor:SetSize(1,1) -- will be updated later
+		anchor:SetPoint(unpack(defaults.profile.bars[i].savedPosition.Azerite))
+		anchor:SetScale(defaults.profile.bars[i].savedPosition.Azerite.scale)
+		anchor.frameOffsetX = 0
+		anchor.frameOffsetY = 0
+		anchor.framePoint = "BOTTOMLEFT"
+		anchor.Callback = function(anchor,...) bar:OnAnchorUpdate(...) end
+
+		bar.anchor = anchor
 
 		self.bars[i] = bar
 	end
