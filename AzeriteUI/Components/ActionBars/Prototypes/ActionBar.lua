@@ -32,6 +32,8 @@ local ActionBar_MT = { __index = ActionBar }
 
 local select, string_format = select, string.format
 
+local playerClass = ns.PlayerClass
+
 -- Return bindaction by blizzard barID.
 local BINDTEMPLATE_BY_ID = {
 	[1] = "ACTIONBUTTON%d",
@@ -137,6 +139,7 @@ ActionBar.Enable = function(self)
 
 	self:UpdateStateDriver()
 	self:UpdateVisibilityDriver()
+	self:UpdateBindings()
 end
 
 ActionBar.Disable = function(self)

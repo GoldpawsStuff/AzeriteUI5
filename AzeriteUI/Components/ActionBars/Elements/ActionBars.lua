@@ -27,6 +27,17 @@ local Addon, ns = ...
 
 local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "AceConsole-3.0")
 
+-- Lua API
+local next,string_format = next,string.format
+
+-- Addon API
+local Colors = ns.Colors
+local GetFont = ns.API.GetFont
+local GetMedia = ns.API.GetMedia
+local RegisterCooldown = ns.Widgets.RegisterCooldown
+local UIHider = ns.Hider
+local noop = ns.Noop
+
 -- Return blizzard barID by barnum.
 local BAR_TO_ID = {
 	[1] = 1,
@@ -165,6 +176,254 @@ local defaults = { profile = ns:Merge({
 		}
 	}
 }, ns.moduleDefaults) }
+
+local config = {
+
+	ButtonSize = { 64, 64 },
+	ButtonHitRects =  { -10, -10, -10, -10 },
+	ButtonMaskTexture = GetMedia("actionbutton-mask-circular"),
+
+	ButtonBackdropPosition = { "CENTER", 0, 0 },
+	ButtonBackdropSize = { 134.295081967, 134.295081967 },
+	ButtonBackdropTexture = GetMedia("actionbutton-backdrop"),
+	ButtonBackdropColor = { .67, .67, .67, 1 },
+
+	ButtonIconPosition = { "CENTER", 0, 0 },
+	ButtonIconSize = { 44, 44 },
+
+	ButtonKeybindPosition = { "TOPLEFT", -5, -5 },
+	ButtonKeybindJustifyH = "CENTER",
+	ButtonKeybindJustifyV = "BOTTOM",
+	ButtonKeybindFont = GetFont(15, true),
+	ButtonKeybindColor = { Colors.quest.gray[1], Colors.quest.gray[2], Colors.quest.gray[3], .75 },
+
+	ButtonCountPosition = { "BOTTOMRIGHT", -3, 3 },
+	ButtonCountJustifyH = "CENTER",
+	ButtonCountJustifyV = "BOTTOM",
+	ButtonCountFont = GetFont(18, true),
+	ButtonCountColor = { Colors.normal[1], Colors.normal[2], Colors.normal[3], .85 },
+
+	ButtonCooldownCountPosition = { "CENTER", 1, 0 },
+	ButtonCooldownCountJustifyH = "CENTER",
+	ButtonCooldownCountJustifyV = "MIDDLE",
+	ButtonCooldownCountFont = GetFont(16, true),
+	ButtonCooldownCountColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .85 },
+
+	ButtonBorderPosition = { "CENTER", 0, 0 },
+	ButtonBorderSize = { 134.295081967, 134.295081967 },
+	ButtonBorderTexture = GetMedia("actionbutton-border"),
+	ButtonBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3], 1 },
+
+	ButtonSpellHighlightPosition = { "CENTER", 0, 0 },
+	ButtonSpellHighlightSize = { 134.295081967, 134.295081967 },
+	ButtonSpellHighlightTexture = GetMedia("actionbutton-spellhighlight"),
+
+}
+
+local buttonOnEnter = function(self)
+	self.icon.darken:SetAlpha(0)
+	if (self.OnEnter) then
+		self:OnEnter()
+	end
+end
+
+local buttonOnLeave = function(self)
+	self.icon.darken:SetAlpha(.1)
+	if (self.OnLeave) then
+		self:OnLeave()
+	end
+end
+
+local style = function(button)
+
+	local db = config
+
+	-- Clean up the button template
+	for _,i in next,{ "AutoCastShine", "Border", "Name", "NewActionTexture", "NormalTexture", "SpellHighlightAnim", "SpellHighlightTexture",
+		--[[ WoW10 ]] "CheckedTexture", "HighlightTexture", "BottomDivider", "RightDivider", "SlotArt", "SlotBackground" } do
+		if (button[i] and button[i].Stop) then button[i]:Stop() elseif button[i] then button[i]:SetParent(UIHider) end
+	end
+
+	local m = db.ButtonMaskTexture
+	local b = GetMedia("blank")
+
+	button:SetAttribute("buttonLock", true)
+	button:SetSize(unpack(db.ButtonSize))
+	button:SetHitRectInsets(unpack(db.ButtonHitRects))
+	button:SetNormalTexture("")
+	button:SetHighlightTexture("")
+	button:SetCheckedTexture("")
+
+	-- Custom slot texture
+	local backdrop = button:CreateTexture(nil, "BACKGROUND", nil, -7)
+	backdrop:SetSize(unpack(db.ButtonBackdropSize))
+	backdrop:SetPoint(unpack(db.ButtonBackdropPosition))
+	backdrop:SetTexture(db.ButtonBackdropTexture)
+	backdrop:SetVertexColor(unpack(db.ButtonBackdropColor))
+	button.backdrop = backdrop
+
+	-- Icon
+	local icon = button.icon
+	icon:SetDrawLayer("BACKGROUND", 1)
+	icon:ClearAllPoints()
+	icon:SetPoint(unpack(db.ButtonIconPosition))
+	icon:SetSize(unpack(db.ButtonIconSize))
+	icon:RemoveMaskTexture(button.IconMask)
+	icon:SetMask(m)
+
+	-- Custom icon darkener
+	local darken = button:CreateTexture(nil, "BACKGROUND", nil, 2)
+	darken:SetAllPoints(button.icon)
+	darken:SetTexture(m)
+	darken:SetVertexColor(0, 0, 0, .1)
+	button.icon.darken = darken
+
+	button:SetScript("OnEnter", buttonOnEnter)
+	button:SetScript("OnLeave", buttonOnLeave)
+
+	-- Button is pushed
+	-- Responds to mouse and keybinds
+	-- if we allow blizzard to handle it.
+	local pushedTexture = button:CreateTexture(nil, "ARTWORK", nil, 1)
+	pushedTexture:SetVertexColor(1, 1, 1, .05)
+	pushedTexture:SetTexture(m)
+	pushedTexture:SetAllPoints(button.icon)
+	button.PushedTexture = pushedTexture
+
+	button:SetPushedTexture(button.PushedTexture)
+	button:GetPushedTexture():SetBlendMode("ADD")
+	button:GetPushedTexture():SetDrawLayer("ARTWORK", 1)
+
+	-- Autoattack flash
+	local flash = button.Flash
+	flash:SetDrawLayer("ARTWORK", 2)
+	flash:SetAllPoints(icon)
+	flash:SetVertexColor(1, 0, 0, .25)
+	flash:SetTexture(m)
+	flash:Hide()
+
+	-- Button cooldown frame
+	local cooldown = button.cooldown
+	cooldown:SetFrameLevel(button:GetFrameLevel() + 1)
+	cooldown:ClearAllPoints()
+	cooldown:SetAllPoints(button.icon)
+	cooldown:SetReverse(false)
+	cooldown:SetSwipeTexture(m)
+	cooldown:SetDrawSwipe(true)
+	cooldown:SetBlingTexture(b, 0, 0, 0, 0)
+	cooldown:SetDrawBling(false)
+	cooldown:SetEdgeTexture(b)
+	cooldown:SetDrawEdge(false)
+	cooldown:SetHideCountdownNumbers(true)
+
+	-- Custom overlay frame
+	local overlay = CreateFrame("Frame", nil, button)
+	overlay:SetFrameLevel(button:GetFrameLevel() + 3)
+	overlay:SetAllPoints()
+	button.overlay = overlay
+
+	local border = overlay:CreateTexture(nil, "BORDER", nil, 1)
+	border:SetPoint(unpack(db.ButtonBorderPosition))
+	border:SetSize(unpack(db.ButtonBorderSize))
+	border:SetTexture(db.ButtonBorderTexture)
+	border:SetVertexColor(unpack(db.ButtonBorderColor))
+	button.iconBorder = border
+
+	-- Custom spell highlight
+	local spellHighlight = overlay:CreateTexture(nil, "ARTWORK", nil, -7)
+	spellHighlight:SetTexture(db.ButtonSpellHighlightTexture)
+	spellHighlight:SetSize(unpack(db.ButtonSpellHighlightSize))
+	spellHighlight:SetPoint(unpack(db.ButtonSpellHighlightPosition))
+	spellHighlight:Hide()
+	button.spellHighlight = spellHighlight
+
+	-- Custom cooldown count
+	local cooldownCount = overlay:CreateFontString(nil, "ARTWORK", nil, 1)
+	cooldownCount:SetPoint(unpack(db.ButtonCooldownCountPosition))
+	cooldownCount:SetFontObject(db.ButtonCooldownCountFont)
+	cooldownCount:SetJustifyH(db.ButtonCooldownCountJustifyH)
+	cooldownCount:SetJustifyV(db.ButtonCooldownCountJustifyV)
+	cooldownCount:SetTextColor(unpack(db.ButtonCooldownCountColor))
+	button.cooldownCount = cooldownCount
+
+	-- Button charge/stack count
+	local count = button.Count
+	count:SetParent(overlay)
+	count:SetDrawLayer("OVERLAY", 1)
+	count:ClearAllPoints()
+	count:SetPoint(unpack(db.ButtonCountPosition))
+	count:SetFontObject(db.ButtonCountFont)
+	count:SetJustifyH(db.ButtonCountJustifyH)
+	count:SetJustifyV(db.ButtonCountJustifyV)
+	count:SetTextColor(unpack(db.ButtonCountColor))
+
+	-- Button keybind
+	local hotkey = button.HotKey
+	hotkey:SetParent(overlay)
+	hotkey:SetDrawLayer("OVERLAY", 1)
+	hotkey:ClearAllPoints()
+	hotkey:SetPoint(unpack(db.ButtonKeybindPosition))
+	hotkey:SetJustifyH(db.ButtonKeybindJustifyH)
+	hotkey:SetJustifyV(db.ButtonKeybindJustifyV)
+	hotkey:SetFontObject(db.ButtonKeybindFont)
+	hotkey:SetTextColor(unpack(db.ButtonKeybindColor))
+
+	RegisterCooldown(button.cooldown, button.cooldownCount)
+
+	hooksecurefunc(cooldown, "SetSwipeTexture", function(c,t) if t ~= m then c:SetSwipeTexture(m) end end)
+	hooksecurefunc(cooldown, "SetBlingTexture", function(c,t) if t ~= b then c:SetBlingTexture(b,0,0,0,0) end end)
+	hooksecurefunc(cooldown, "SetEdgeTexture", function(c,t) if t ~= b then c:SetEdgeTexture(b) end end)
+	--hooksecurefunc(cooldown, "SetSwipeColor", function(c,r,g,b,a) if not a or a>.76 then c:SetSwipeColor(r,g,b,.75) end end)
+	hooksecurefunc(cooldown, "SetDrawSwipe", function(c,h) if not h then c:SetDrawSwipe(true) end end)
+	hooksecurefunc(cooldown, "SetDrawBling", function(c,h) if h then c:SetDrawBling(false) end end)
+	hooksecurefunc(cooldown, "SetDrawEdge", function(c,h) if h then c:SetDrawEdge(false) end end)
+	hooksecurefunc(cooldown, "SetHideCountdownNumbers", function(c,h) if not h then c:SetHideCountdownNumbers(true) end end)
+	hooksecurefunc(cooldown, "SetCooldown", function(c) c:SetAlpha(.75) end)
+
+	local config = button.config or {}
+	config.text = {
+		hotkey = {
+			font = {
+				font = db.ButtonKeybindFont:GetFont(),
+				size = select(2, db.ButtonKeybindFont:GetFont()),
+				flags = select(3, db.ButtonKeybindFont:GetFont()),
+			},
+			color = db.ButtonKeybindColor,
+			position = {
+				anchor = db.ButtonKeybindPosition[1],
+				relAnchor = db.ButtonKeybindPosition[1],
+				offsetX = db.ButtonKeybindPosition[2],
+				offsetY = db.ButtonKeybindPosition[3],
+			},
+			justifyH = db.ButtonKeybindJustifyH,
+		},
+		count = {
+			font = {
+				font = db.ButtonCountFont:GetFont(),
+				size = select(2, db.ButtonCountFont:GetFont()),
+				flags = select(3, db.ButtonCountFont:GetFont()),
+			},
+			color = db.ButtonCountColor,
+			position = {
+				anchor = db.ButtonCountPosition[1],
+				relAnchor = db.ButtonCountPosition[1],
+				offsetX = db.ButtonCountPosition[2],
+				offsetY = db.ButtonCountPosition[3],
+			},
+			justifyH = db.ButtonCountJustifyH,
+		}
+	}
+	button:UpdateConfig(config)
+
+	-- Disable masque for our buttons,
+	-- they are not compatible.
+	button.AddToMasque = noop
+	button.AddToButtonFacade = noop
+	button.LBFSkinned = nil
+	button.MasqueSkinned = nil
+
+	return button
+end
 
 ActionBarMod.UpdatePositionAndScale = function(self, bar)
 	if (InCombatLockdown()) then
@@ -308,6 +567,10 @@ ActionBarMod.OnEvent = function(self, event, ...)
 		end
 	elseif (event == "PLAYER_REGEN_DISABLED") then
 		self.incombat = true
+	elseif (event == "UPDATE_BINDINGS") then
+		for id,bar in next(self.bars) do
+			bar:UpdateBindings()
+		end
 	end
 end
 
@@ -321,10 +584,72 @@ ActionBarMod.OnInitialize = function(self)
 
 		local config = self.db.profile.bars[i]
 		local bar = ns.ActionBar:Create(BAR_TO_ID[i], config, ns.Prefix.."ActionBar"..i)
+
+		-- Set an initial size and point before button updates,
+		-- since mapped buttons (like the primary and secondary bars have)
+		-- rely on the bar having these to correctly size both the bar and the anchor.
 		bar:SetPoint(unpack(defaults.profile.bars[i].savedPosition.Azerite))
 		bar:SetSize(2,2)
+
+		-- This will spawn the buttons.
 		bar:UpdateButtons()
+
+		-- This will fix the layout and size of the bar.
 		bar:UpdateButtonLayout()
+
+		-- This is pretty damn pointless at this point.
+		bar:UpdateBindings()
+
+		for id,button in next,bar.buttons do
+			style(button)
+		end
+
+		if (i == 1) then
+
+			local exitButton = {
+				func = function(button)
+					if (UnitExists("vehicle")) then
+						VehicleExit()
+					else
+						PetDismiss()
+					end
+				end,
+				tooltip = _G.LEAVE_VEHICLE,
+				texture = [[Interface\Icons\achievement_bg_kill_carrier_opposing_flagroom]]
+			}
+
+			bar.buttons[7]:SetState(16, "custom", exitButton)
+			bar.buttons[7]:SetState(17, "custom", exitButton)
+			bar.buttons[7]:SetState(18, "custom", exitButton)
+
+			-- Pet Battle Keybind Fixer
+			-------------------------------------------------------
+			local buttons = bar.buttons
+			local controller = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+			controller:SetAttribute("_onstate-petbattle", string_format([[
+				if (newstate == "petbattle") then
+					b = b or table.new();
+					b[1], b[2], b[3], b[4], b[5], b[6] = "%s", "%s", "%s", "%s", "%s", "%s";
+					for i = 1,6 do
+						local button, vbutton = "CLICK "..b[i]..":LeftButton", "ACTIONBUTTON"..i
+						for k=1,select("#", GetBindingKey(button)) do
+							local key = select(k, GetBindingKey(button))
+							self:SetBinding(true, key, vbutton)
+						end
+						-- do the same for the default UIs bindings
+						for k=1,select("#", GetBindingKey(vbutton)) do
+							local key = select(k, GetBindingKey(vbutton))
+							self:SetBinding(true, key, vbutton)
+						end
+					end
+				else
+					self:ClearBindings()
+				end
+			]], buttons[1]:GetName(), buttons[2]:GetName(), buttons[3]:GetName(), buttons[4]:GetName(), buttons[5]:GetName(), buttons[6]:GetName()))
+
+			self.petBattleController = controller
+
+		end
 
 		local anchor = ns.Widgets.RequestMovableFrameAnchor()
 		anchor:SetTitle(self:GetBarDisplayName(i))
@@ -353,10 +678,15 @@ end
 
 ActionBarMod.OnEnable = function(self)
 	for i,bar in next,self.bars do
-		bar:SetEnabled(bar.config.enabled)
+		if (bar.config.enabled) then
+			bar:Enable()
+		else
+			bar:Disable()
+		end
 	end
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	self:RegisterEvent("UPDATE_BINDINGS", "UpdateBindings")
 end
 
 ActionBarMod.OnDisable = function(self)
@@ -365,4 +695,5 @@ ActionBarMod.OnDisable = function(self)
 	end
 	self:UnregisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	self:UnregisterEvent("UPDATE_BINDINGS", "UpdateBindings")
 end
