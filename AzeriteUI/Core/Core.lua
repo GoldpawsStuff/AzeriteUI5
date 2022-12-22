@@ -30,7 +30,7 @@ ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false)
 ns.Hider = CreateFrame("Frame"); ns.Hider:Hide()
 ns.Noop = function() end
 
-ns.SETTINGS_VERSION = -99999
+ns.SETTINGS_VERSION = -9999
 
 _G[Addon] = ns
 

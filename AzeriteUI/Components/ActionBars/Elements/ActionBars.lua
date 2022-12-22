@@ -39,6 +39,9 @@ local BAR_TO_ID = {
 	[8] = MULTIBAR_7_ACTIONBAR_PAGE
 }
 
+local ID_TO_BAR = {}
+for i,j in pairs(BAR_TO_ID) do ID_TO_BAR[j] = i end
+
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	bars = {
@@ -78,6 +81,7 @@ local defaults = { profile = ns:Merge({
 		[3] = { --[[ bottomright multibar ]]
 			enabled = false,
 			grid = {
+				breakpoint = 6,
 				growth = "vertical",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
@@ -86,30 +90,33 @@ local defaults = { profile = ns:Merge({
 				Azerite = {
 					scale = 1,
 					[1] = "RIGHT",
-					[2] = 0,
-					[3] = -40
+					[2] = -40,
+					[3] = 0
 				}
 			}
 		},
 		[4] = { --[[ right multibar 1 ]]
 			enabled = false,
 			grid = {
+				breakpoint = 6,
 				growth = "vertical",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
 			},
 			savedPosition = {
+				breakpoint = 6,
 				Azerite = {
 					scale = 1,
 					[1] = "RIGHT",
-					[2] = 0,
-					[3] = -(40 + 72)
+					[2] = -(40 + 10 + 72*2),
+					[3] = 0
 				}
 			}
 		},
 		[5] = { --[[ right multibar 2 ]]
 			enabled = false,
 			grid = {
+				breakpoint = 6,
 				growth = "vertical",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
@@ -118,8 +125,8 @@ local defaults = { profile = ns:Merge({
 				Azerite = {
 					scale = 1,
 					[1] = "RIGHT",
-					[2] = 0,
-					[3] = -(40 + 72*2)
+					[2] = -(40 + 10 + 72*2 + 10 + 72*2),
+					[3] = 0
 				}
 			}
 		},
@@ -130,7 +137,7 @@ local defaults = { profile = ns:Merge({
 					scale = 1,
 					[1] = "CENTER",
 					[2] = 0,
-					[3] = 72
+					[3] = 72 + 10
 				}
 			}
 		},
@@ -152,96 +159,90 @@ local defaults = { profile = ns:Merge({
 					scale = 1,
 					[1] = "CENTER",
 					[2] = 0,
-					[3] = -72
+					[3] = -(72 + 10)
 				}
 			}
 		}
 	}
 }, ns.moduleDefaults) }
 
-
-local ActionBar_OnSizeChanged = function(self)
-	self.anchor:SetSize(self.GetSize())
-end
-
-local ActionBar_UpdatePositionAndScale = function(self)
+ActionBarMod.UpdatePositionAndScale = function(self, bar)
 	if (InCombatLockdown()) then
 		self.positionNeedsFix = true
 		return
 	end
-	if (not self.frame) then return end
 
-	local savedPosition = self.currentLayout and self.db.profile.savedPosition[self.currentLayout]
+	local savedPosition = bar.currentLayout and bar.config.savedPosition[bar.currentLayout]
 	if (savedPosition) then
 		local point, x, y = unpack(savedPosition)
 		local scale = savedPosition.scale
-		local frame = self.frame
-		local anchor = self.anchor
+		local anchor = bar.anchor
 
 		-- Set the scale before positioning,
 		-- or everything will be wonky.
-		frame:SetScale(scale * ns.API.GetDefaultElementScale())
+		bar:SetScale(scale * ns.API.GetDefaultElementScale())
 
 		if (anchor and anchor.framePoint) then
 			-- Position the frame at the anchor,
 			-- with the given point and offsets.
-			frame:ClearAllPoints()
-			frame:SetPoint(anchor.framePoint, anchor, anchor.framePoint, (anchor.frameOffsetX or 0)/scale, (anchor.frameOffsetY or 0)/scale)
+			bar:ClearAllPoints()
+			bar:SetPoint(anchor.framePoint, anchor, anchor.framePoint, (anchor.frameOffsetX or 0)/scale, (anchor.frameOffsetY or 0)/scale)
 
 			-- Parse where this actually is relative to UIParent
-			local point, x, y = ns.API.GetPosition(frame)
+			local point, x, y = ns.API.GetPosition(bar)
 
 			-- Reposition the frame relative to UIParent,
 			-- to avoid it being hooked to our anchor in combat.
-			frame:ClearAllPoints()
-			frame:SetPoint(point, UIParent, point, x, y)
+			bar:ClearAllPoints()
+			bar:SetPoint(point, UIParent, point, x, y)
 		end
 	end
 
 end
 
-local ActionBar_OnAnchorUpdate = function(self, reason, layoutName, ...)
-	local savedPositions = self.config.savedPosition
-	local defaultPositions = self.defaults.savedPosition
-	local lockdown = InCombatLockdown()
+ActionBarMod.OnAnchorUpdate = function(self, bar, reason, layoutName, ...)
+	local savedPositions = self.db.profile.bars[ID_TO_BAR[bar.id]].savedPosition
+	local defaultPositions = self.db.defaults.profile.bars[ID_TO_BAR[bar.id]].savedPosition
+
+	local anchor = bar.anchor
 
 	if (reason == "LayoutsUpdated") then
 
 		if (savedPositions[layoutName]) then
 
-			self.anchor:SetScale(savedPositions[layoutName].scale or self.anchor:GetScale())
-			self.anchor:ClearAllPoints()
-			self.anchor:SetPoint(unpack(savedPositions[layoutName]))
+			anchor:SetScale(savedPositions[layoutName].scale or anchor:GetScale())
+			anchor:ClearAllPoints()
+			anchor:SetPoint(unpack(savedPositions[layoutName]))
 
 			local defaultPosition = defaultPositions[layoutName] or defaultPositions.Azerite
 			if (defaultPosition) then
-				self.anchor:SetDefaultPosition(unpack(defaultPosition))
+				anchor:SetDefaultPosition(unpack(defaultPosition))
 			end
 
-			self.initialPositionSet = true
+			bar.initialPositionSet = true
 				--self.currentLayout = layoutName
 
 		else
 			-- The user is unlikely to have a preset with our name
 			-- on the first time logging in.
-			if (not self.initialPositionSet) then
+			if (not bar.initialPositionSet) then
 
 				local defaultPosition = defaultPositions.Azerite
 
-				self.anchor:SetScale(defaultPosition.scale)
-				self.anchor:ClearAllPoints()
-				self.anchor:SetPoint(unpack(defaultPosition))
-				self.anchor:SetDefaultPosition(unpack(ddefaultPosition))
+				anchor:SetScale(defaultPosition.scale)
+				anchor:ClearAllPoints()
+				anchor:SetPoint(unpack(defaultPosition))
+				anchor:SetDefaultPosition(unpack(ddefaultPosition))
 
-				self.initialPositionSet = true
+				bar.initialPositionSet = true
 				--self.currentLayout = layoutName
 			end
 
-			savedPositions[layoutName] = { self.anchor:GetPosition() }
-			savedPositions[layoutName].scale = self.anchor:GetScale()
+			savedPositions[layoutName] = { anchor:GetPosition() }
+			savedPositions[layoutName].scale = anchor:GetScale()
 		end
 
-		self.currentLayout = layoutName
+		bar.currentLayout = layoutName
 
 		-- Purge layouts not matching editmode themes or our defaults.
 		for name in pairs(savedPositions) do
@@ -259,16 +260,16 @@ local ActionBar_OnAnchorUpdate = function(self, reason, layoutName, ...)
 			end
 		end
 
-		self:UpdatePositionAndScale()
+		self:UpdatePositionAndScale(bar)
 
 	elseif (reason == "PositionUpdated") then
 		-- Fires when position has been changed.
 		local point, x, y = ...
 
 		savedPositions[layoutName] = { point, x, y }
-		savedPositions[layoutName].scale = self.anchor:GetScale()
+		savedPositions[layoutName].scale = anchor:GetScale()
 
-		self:UpdatePositionAndScale()
+		self:UpdatePositionAndScale(bar)
 
 	elseif (reason == "ScaleUpdated") then
 		-- Fires when scale has been mousewheel updated.
@@ -276,25 +277,15 @@ local ActionBar_OnAnchorUpdate = function(self, reason, layoutName, ...)
 
 		savedPositions[layoutName].scale = scale
 
-		self:UpdatePositionAndScale()
+		self:UpdatePositionAndScale(bar)
 
 	elseif (reason == "Dragging") then
 		-- Fires on every drag update. Spammy.
 		if (not self.incombat) then
-			self:OnAnchorUpdate("PositionUpdated", layoutName, ...)
+			self:OnAnchorUpdate(bar, "PositionUpdated", layoutName, ...)
 		end
-
-	elseif (reason == "CombatStart") then
-		-- Fires right before combat lockdown for visible anchors.
-
-
-	elseif (reason == "CombatEnd") then
-		-- Fires when combat lockdown ends for visible anchors.
-
 	end
 end
-
-
 
 -- Returns a localized named usable for our movable frame anchor.
 ActionBarMod.GetBarDisplayName = function(self, id)
@@ -308,54 +299,70 @@ ActionBarMod.GetBarDisplayName = function(self, id)
 	end
 end
 
+ActionBarMod.OnEvent = function(self, event, ...)
+	if (event == "PLAYER_REGEN_ENABLED") then
+		if (InCombatLockdown()) then return end
+		self.incombat = nil
+		if (self.positionNeedsFix) then
+			self:UpdatePositionAndScale()
+		end
+	elseif (event == "PLAYER_REGEN_DISABLED") then
+		self.incombat = true
+	end
+end
+
 ActionBarMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ActionBars", defaults)
-
 	self.bars = {}
 
 	self:SetEnabledState(self.db.profile.enabled)
 
-end
-
-ActionBarMod.OnEnable = function(self)
-	if (next(self.bars)) then
-		for i,bar in ipairs(self.bars) do
-			bar:SetEnabled(bar.config.enabled)
-		end
-		return
-	end
-
 	for i = 1,8 do
 
-		local bar = ns.ActionBar:Create(BAR_TO_ID[i], self.db.profile.bars[i], ns.Prefix.."ActionBar"..i)
-		bar.defaults = defaults.profile.bars[i]
-
-		bar:SetScript("OnSizeChanged", ActionBar_OnSizeChanged)
-		bar.OnAnchorUpdate = ActionBar_OnAnchorUpdate
-		bar.UpdatePositionAndScale = ActionBar_UpdatePositionAndScale
+		local config = self.db.profile.bars[i]
+		local bar = ns.ActionBar:Create(BAR_TO_ID[i], config, ns.Prefix.."ActionBar"..i)
+		bar:SetPoint(unpack(defaults.profile.bars[i].savedPosition.Azerite))
+		bar:SetSize(2,2)
+		bar:UpdateButtons()
+		bar:UpdateButtonLayout()
 
 		local anchor = ns.Widgets.RequestMovableFrameAnchor()
-		anchor:SetTitle(self:GetBarDisplayName(bar.id))
+		anchor:SetTitle(self:GetBarDisplayName(i))
 		anchor:SetScalable(true)
 		anchor:SetMinMaxScale(.75, 1.25, .05)
-		anchor:SetSize(1,1) -- will be updated later
+		anchor:SetSize(bar:GetSize()) -- will be updated later
 		anchor:SetPoint(unpack(defaults.profile.bars[i].savedPosition.Azerite))
 		anchor:SetScale(defaults.profile.bars[i].savedPosition.Azerite.scale)
 		anchor.frameOffsetX = 0
 		anchor.frameOffsetY = 0
 		anchor.framePoint = "BOTTOMLEFT"
-		anchor.Callback = function(anchor,...) bar:OnAnchorUpdate(...) end
+		anchor.Callback = function(_,...) self:OnAnchorUpdate(bar, ...) end
+
+		-- do this on layout updates too
+		if (config.grid and config.grid.growth == "vertical") then
+			anchor.Text:SetRotation((-90 / 180) * math.pi)
+			anchor.Title:SetRotation((-90 / 180) * math.pi)
+		end
 
 		bar.anchor = anchor
 
 		self.bars[i] = bar
 	end
+
+end
+
+ActionBarMod.OnEnable = function(self)
+	for i,bar in next,self.bars do
+		bar:SetEnabled(bar.config.enabled)
+	end
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 end
 
 ActionBarMod.OnDisable = function(self)
-	if (not next(self.bars)) then return end
-
-	for i,bar in ipairs(self.bars) do
+	for i,bar in next,self.bars do
 		bar:Disable()
 	end
+	self:UnregisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 end

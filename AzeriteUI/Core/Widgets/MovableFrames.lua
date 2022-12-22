@@ -185,6 +185,8 @@ Anchor.Create = function(self)
 	text:SetTextColor(unpack(Colors.highlight))
 	text:SetIgnoreParentScale(true)
 	text:SetIgnoreParentAlpha(true)
+	text:SetJustifyV("MIDDLE")
+	text:SetJustifyH("CENTER")
 	text:SetPoint("CENTER")
 	anchor.Text = text
 
@@ -193,6 +195,8 @@ Anchor.Create = function(self)
 	title:SetTextColor(unpack(Colors.highlight))
 	title:SetIgnoreParentScale(true)
 	title:SetIgnoreParentAlpha(true)
+	title:SetJustifyV("MIDDLE")
+	title:SetJustifyH("CENTER")
 	title:SetPoint("CENTER")
 	anchor.Title = title
 
@@ -572,11 +576,16 @@ end
 
 -- Public API
 --------------------------------------
+local editModeActive
+
 Widgets.RequestMovableFrameAnchor = function()
 	return Anchor:Create()
 end
 
-Widgets.ShowMovableFrameAnchors = function()
+Widgets.UpdateMovableFrameAnchors = function(requestedByEditMode)
+	if (requestedByEditMode) then
+		editModeActive = true
+	end
 	for anchor in next,AnchorData do
 		if (anchor.editModeAccountSetting) then
 			if (EditModeManagerFrame:GetAccountSettingValueBool(anchor.editModeAccountSetting)) then
@@ -594,24 +603,12 @@ Widgets.ShowMovableFrameAnchors = function()
 	end
 end
 
-Widgets.HideMovableFrameAnchors = function()
+Widgets.HideMovableFrameAnchors = function(requestedByEditMode)
+	if (requestedByEditMode) then
+		editModeActive = false
+	end
 	for anchor in next,AnchorData do
 		anchor:Hide()
-	end
-end
-
-Widgets.ToggleMovableFrameAnchors = function()
-	local allshown = true
-	for anchor in next,AnchorData do
-		if (anchor:IsEnabled() and not anchor:IsShown()) then
-			allshown = false
-			break
-		end
-	end
-	if (allshown) then
-		Widgets:HideMovableFrameAnchors()
-	else
-		Widgets:ShowMovableFrameAnchors()
 	end
 end
 
@@ -664,18 +661,6 @@ eventHandler:SetScript("OnEvent", function(self, event, ...)
 	end
 end)
 
-local IN_EDIT_MODE
-
-local OnEnterEditMode = function()
-	IN_EDIT_MODE = true
-	Widgets:ShowMovableFrameAnchors()
-end
-
-local OnExitEditMode = function()
-	IN_EDIT_MODE = false
-	Widgets:HideMovableFrameAnchors()
-end
-
-hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() OnEnterEditMode() end)
-hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()  OnExitEditMode() end)
-hooksecurefunc(EditModeManagerFrame, "OnAccountSettingChanged", function() Widgets:ShowMovableFrameAnchors() end )
+hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() Widgets:UpdateMovableFrameAnchors(true) end)
+hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()  Widgets:HideMovableFrameAnchors(true) end)
+hooksecurefunc(EditModeManagerFrame, "OnAccountSettingChanged", function() Widgets:UpdateMovableFrameAnchors() end )

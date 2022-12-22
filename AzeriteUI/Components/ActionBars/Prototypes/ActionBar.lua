@@ -103,8 +103,7 @@ ns.ActionBar.Create = function(self, id, config, name)
 		control:ChildUpdate("state", newstate);
 	]])
 
-	bar:UpdateButtonLayout()
-	bar:SetEnabled(config.enabled)
+	bar:UpdateButtons()
 
 	return bar
 end
@@ -153,8 +152,11 @@ ActionBar.SetEnabled = function(self, enable)
 
 	self.enabled = not not enable
 
-	self:UpdateStateDriver()
-	self:UpdateVisibilityDriver()
+	if (self.enabled) then
+		self:Enable()
+	else
+		self:Disable()
+	end
 end
 
 ActionBar.IsEnabled = function(self)

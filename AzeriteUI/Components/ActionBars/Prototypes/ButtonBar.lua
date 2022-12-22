@@ -125,7 +125,6 @@ ButtonBar.UpdateButtons = function(self, buttonConfig)
 		button:SetEnabled(id <= numbuttons)
 	end
 
-	self:UpdateButtonLayout()
 end
 
 ButtonBar.UpdateButtonLayout = function(self)
@@ -145,20 +144,29 @@ ButtonBar.UpdateButtonLayout = function(self)
 
 		for id,button in next,buttons do
 			button:ClearAllPoints()
-			button:SetPoint(map[id])
+			button:SetPoint(unpack(map[id]))
 
 			local bleft = button:GetLeft()
-			local bright = button:GetLeft()
-			local btop = button:GetLeft()
-			local bbottom = button:GetLeft()
+			local bright = button:GetRight()
+			local btop = button:GetTop()
+			local bbottom = button:GetBottom()
 
 			left = left and math_min(left, bleft) or bleft
 			right = right and math_max(right, bright) or bright
 			top = top and math_max(top, btop) or btop
 			bottom = bottom and math_min(bottom, bbottom) or bbottom
+
 		end
 
-		self:SetSize(right-left, top-bottom)
+		local width, height = right-left, top-bottom
+
+		self:SetSize(width, height)
+
+		if (self.anchor) then
+			self.anchor:SetSize(width, height)
+			self.anchor.Text:SetRotation(0)
+			self.anchor.Title:SetRotation(0)
+		end
 
 		return
 
@@ -169,8 +177,8 @@ ButtonBar.UpdateButtonLayout = function(self)
 		local buttonWidth = self.buttonWidth
 		local buttonHeight = self.buttonHeight
 
-		local width, height
 		local totalbreaks = math_ceil(self.config.numbuttons/grid.breakpoint)
+		local width, height
 
 		if (grid.growth == "horizontal") then
 			width = buttonWidth*grid.breakpoint + grid.padding*(grid.breakpoint - 1)
