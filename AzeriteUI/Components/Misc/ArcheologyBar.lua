@@ -75,7 +75,7 @@ ArcheologyBar.UpdatePositionAndScale = function(self)
 
 		-- Set the scale before positioning,
 		-- or everything will be wonky.
-		frame:SetScale(scale)
+		frame:SetScale(scale * ns.API.GetDefaultElementScale())
 
 		if (anchor and anchor.framePoint) then
 			-- Position the frame at the anchor,

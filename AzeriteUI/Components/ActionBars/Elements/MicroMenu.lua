@@ -158,7 +158,7 @@ MicroMenu.SpawnButtons = function(self)
 	backdrop:SetPoint("TOP", self.buttons[#self.buttons], "TOP", 0, 18)
 
 	local toggle = CreateFrame("CheckButton", ns.Prefix.."MicroMenuToggleButton", UIParent, "SecureHandlerClickTemplate")
-	toggle:SetScale(ns:GetRelativeScale())
+	toggle:SetScale(ns.API.GetDefaultElementScale())
 	toggle:SetSize(48, 48)
 	toggle:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4)
 	toggle:RegisterForClicks("AnyUp")

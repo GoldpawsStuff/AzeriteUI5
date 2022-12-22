@@ -56,9 +56,6 @@ local tonumber = tonumber
 -- Addon API
 local SetRelativeScale = ns.API.SetRelativeScale
 local UpdateObjectScales = ns.API.UpdateObjectScales
-local ShowMovableFrameAnchors = ns.Widgets.ShowMovableFrameAnchors
-local HideMovableFrameAnchors = ns.Widgets.HideMovableFrameAnchors
-local ToggleMovableFrameAnchors = ns.Widgets.ToggleMovableFrameAnchors
 
 -- Proxy method to avoid modules using the callback object directly
 ns.Fire = function(self, name, ...)
@@ -78,33 +75,10 @@ ns.Merge = function(self, target, source)
 	return target
 end
 
-ns.LockMovableFrames = function(self)
-	HideMovableFrameAnchors()
-end
-
-ns.UnlockMovableFrames = function(self)
-	ShowMovableFrameAnchors()
-end
-
-ns.ToggleMovableFrames = function(self)
-	ToggleMovableFrameAnchors()
-end
-
 ns.ResetBlizzardScale = function(self)
 	if (InCombatLockdown()) then return end
-	SetCVar("uiScale", self:GetBlizzardScale())
+	SetCVar("uiScale", ns.API.GetDefaultBlizzardScale())
 	ReloadUI() -- need a reset as the above can taint
-end
-
--- Returns the ideal scale for blizzard elements.
-ns.GetBlizzardScale = function(self)
-	return 768/1080 -- 768/960
-end
-
--- Returns the ideal scale for our elements
--- when they are parented to UIParent and its scale.
-ns.GetRelativeScale = function(self)
-	return ns.API.GetDefaultScale()/self:GetBlizzardScale()
 end
 
 ns.UpdateSettings = function(self, event, ...)

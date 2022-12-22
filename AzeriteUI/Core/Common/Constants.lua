@@ -74,3 +74,4 @@ ns.Private.PlayerName = UnitNameUnmodified("player")
 ------------------------------------------------------
 ns.UIScale = 768/1080
 ns.Private.UIDefaultScale = 768/1080
+ns.Private.UIDefaultBlizzardScale = 768/1080

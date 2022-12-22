@@ -407,6 +407,7 @@ Anchor.SetDefaultPosition = function(self, point, x, y)
 end
 
 -- Don't scale, just size based on it.
+Anchor.SetBaseScale = mt.SetScale
 Anchor.SetScale = function(self, scale)
 	self:UpdateScale(LAYOUT, scale)
 end
