@@ -455,8 +455,8 @@ PetFrameMod.Spawn = function(self)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
 	anchor:SetSize(136, 47)
-	anchor:SetPoint(unpack(self.defaultPosition.Azerite))
-	anchor:SetScale(self.defaultPosition.Azerite.scale)
+	anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
+	anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
 	anchor.frameOffsetX = 0
 	anchor.frameOffsetY = 0
 	anchor.framePoint = "BOTTOMLEFT"

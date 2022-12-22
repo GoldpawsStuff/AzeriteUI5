@@ -141,7 +141,7 @@ ns.UnitFrame.modulePrototype = {
 
 		if (reason == "LayoutsUpdated") then
 
-			if (savedPosition[layoutName]) then
+			if (savedPositions[layoutName]) then
 
 				self.anchor:SetScale(savedPositions[layoutName].scale or self.anchor:GetScale())
 				self.anchor:ClearAllPoints()
