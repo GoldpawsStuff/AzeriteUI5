@@ -150,6 +150,7 @@ Anchor.Create = function(self)
 	end
 
 	anchor:Hide()
+	anchor:Enable()
 	anchor:SetFrameStrata("HIGH")
 	anchor:SetFrameLevel(1000)
 	anchor:SetMovable(true)
@@ -205,6 +206,22 @@ Anchor.Create = function(self)
 	}
 
 	return anchor
+end
+
+Anchor.Enable = function(self)
+	self.enabled = true
+end
+
+Anchor.Disable = function(self)
+	self.enabled = false
+end
+
+Anchor.IsEnabled = function(self)
+	return self.enabled
+end
+
+Anchor.SetEnabled = function(self, enable)
+	self.enabled = enable and true or false
 end
 
 -- 'true' if the frame is in its default position and scale.
@@ -559,15 +576,24 @@ Widgets.RequestMovableFrameAnchor = function()
 end
 
 Widgets.ShowMovableFrameAnchors = function()
+	local isInEditMode = EditModeManagerFrameMixin:IsEditModeActive()
 	for anchor in next,AnchorData do
-		if (anchor.editModeAccountSetting) then
-			if (EditModeManagerFrame:GetAccountSettingValueBool(anchor.editModeAccountSetting)) then
-				anchor:Show()
-			else
-				anchor:Hide()
-			end
+		if (not isInEditMode) then
+			anchor:Hide()
 		else
-			anchor:Show()
+			if (anchor.editModeAccountSetting) then
+				if (EditModeManagerFrame:GetAccountSettingValueBool(anchor.editModeAccountSetting)) then
+					if (anchor:IsEnabled()) then
+						anchor:Show()
+					end
+				else
+					anchor:Hide()
+				end
+			else
+				if (anchor:IsEnabled()) then
+					anchor:Show()
+				end
+			end
 		end
 	end
 end
@@ -581,7 +607,7 @@ end
 Widgets.ToggleMovableFrameAnchors = function()
 	local allshown = true
 	for anchor in next,AnchorData do
-		if (not anchor:IsShown()) then
+		if (anchor:IsEnabled() and not anchor:IsShown()) then
 			allshown = false
 			break
 		end
@@ -590,18 +616,6 @@ Widgets.ToggleMovableFrameAnchors = function()
 		Widgets:HideMovableFrameAnchors()
 	else
 		Widgets:ShowMovableFrameAnchors()
-	end
-end
-
-Widgets.UpdateVisibleMovableFrameAnchors = function()
-	for anchor in next,AnchorData do
-		if (anchor.editModeAccountSetting) then
-			if (EditModeManagerFrame:GetAccountSettingValueBool(anchor.editModeAccountSetting)) then
-				anchor:Show()
-			else
-				anchor:Hide()
-			end
-		end
 	end
 end
 
@@ -656,4 +670,4 @@ end)
 
 hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() Widgets:ShowMovableFrameAnchors() end)
 hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function() Widgets:HideMovableFrameAnchors() end)
-hooksecurefunc(EditModeManagerFrame, "OnAccountSettingChanged", function() Widgets:UpdateVisibleMovableFrameAnchors() end )
+hooksecurefunc(EditModeManagerFrame, "OnAccountSettingChanged", function() Widgets:ShowMovableFrameAnchors() end )
