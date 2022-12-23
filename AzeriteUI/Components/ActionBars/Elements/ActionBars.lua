@@ -373,22 +373,25 @@ local style = function(button)
 	button:SetScript("OnEnter", buttonOnEnter)
 	button:SetScript("OnLeave", buttonOnLeave)
 
+	-- Some crap WoW10 border I can't figure out how to remove right now.
+	button:DisableDrawLayer("ARTWORK")
+
 	-- Button is pushed
 	-- Responds to mouse and keybinds
 	-- if we allow blizzard to handle it.
-	local pushedTexture = button:CreateTexture(nil, "ARTWORK", nil, 1)
-	pushedTexture:SetVertexColor(1, 1, 1, .05)
+	local pushedTexture = button:CreateTexture(nil, "OVERLAY", nil, 1)
+	pushedTexture:SetVertexColor(1, 1, 1, .2)
 	pushedTexture:SetTexture(m)
 	pushedTexture:SetAllPoints(button.icon)
 	button.PushedTexture = pushedTexture
 
 	button:SetPushedTexture(button.PushedTexture)
 	button:GetPushedTexture():SetBlendMode("ADD")
-	button:GetPushedTexture():SetDrawLayer("ARTWORK", 1)
+	button:GetPushedTexture():SetDrawLayer("OVERLAY", 1)
 
 	-- Autoattack flash
 	local flash = button.Flash
-	flash:SetDrawLayer("ARTWORK", 2)
+	flash:SetDrawLayer("OVERLAY", 2)
 	flash:SetAllPoints(icon)
 	flash:SetVertexColor(1, 0, 0, .25)
 	flash:SetTexture(m)
@@ -409,6 +412,27 @@ local style = function(button)
 	cooldown:SetDrawEdge(false)
 	cooldown:SetHideCountdownNumbers(true)
 
+	button.UpdateCharge = function(self)
+		local m = config.ButtonMaskTexture
+		local b = GetMedia("blank")
+		local cooldown = self.chargeCooldown
+		if (not cooldown) then return end
+		cooldown:SetFrameStrata(self:GetFrameStrata())
+		cooldown:SetFrameLevel(self:GetFrameLevel() + 2)
+		cooldown:SetUseCircularEdge(true)
+		cooldown:SetReverse(false)
+		cooldown:SetSwipeTexture(m)
+		cooldown:SetDrawSwipe(true)
+		cooldown:SetBlingTexture(b, 0, 0, 0, 0)
+		cooldown:SetDrawBling(false)
+		cooldown:SetEdgeTexture(b)
+		cooldown:SetDrawEdge(false)
+		cooldown:SetHideCountdownNumbers(true)
+		cooldown:SetAlpha(.5)
+		cooldown:ClearAllPoints()
+		cooldown:SetAllPoints(self.icon)
+	end
+
 	-- Custom overlay frame
 	local overlay = CreateFrame("Frame", nil, button)
 	overlay:SetFrameLevel(button:GetFrameLevel() + 3)
@@ -420,6 +444,7 @@ local style = function(button)
 	border:SetSize(unpack(db.ButtonBorderSize))
 	border:SetTexture(db.ButtonBorderTexture)
 	border:SetVertexColor(unpack(db.ButtonBorderColor))
+	--border:SetAlpha(0)
 	button.iconBorder = border
 
 	-- Custom spell highlight
@@ -924,29 +949,6 @@ ActionBarMod.OnInitialize = function(self)
 
 		self.bars[i] = bar
 	end
-
-	-- This grabs the lab charge cooldowns and fixes them.
-	hooksecurefunc("CooldownFrame_Set", function(cooldown)
-		local parent = cooldown:GetParent()
-		if (not self.buttons[parent]) then return end
-		if (not parent.chargeCooldown or parent.chargeCooldown ~= cooldown) then return end
-		local m = config.ButtonMaskTexture
-		local b = GetMedia("blank")
-		cooldown:SetFrameStrata(parent:GetFrameStrata())
-		cooldown:SetFrameLevel(parent:GetFrameLevel() + 2)
-		cooldown:SetUseCircularEdge(true)
-		cooldown:SetReverse(false)
-		cooldown:SetSwipeTexture(m)
-		cooldown:SetDrawSwipe(true)
-		cooldown:SetBlingTexture(b, 0, 0, 0, 0)
-		cooldown:SetDrawBling(false)
-		cooldown:SetEdgeTexture(b)
-		cooldown:SetDrawEdge(false)
-		cooldown:SetHideCountdownNumbers(true)
-		cooldown:SetAlpha(.5)
-		cooldown:ClearAllPoints()
-		cooldown:SetAllPoints(parent.cooldown)
-	end)
 
 	self:RegisterChatCommand("enablebar", "EnableBar")
 	self:RegisterChatCommand("disablebar", "DisableBar")
