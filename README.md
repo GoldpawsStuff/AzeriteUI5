@@ -14,5 +14,13 @@ AzeriteUI5 is a custom user interface for World of Warcraft Dragonflight. Issues
 ## Chat Commands
 Note that the following commands do NOT work while engaged in combat. All settings are stored in the addons saved settings.
 
+### Layout & Scaling
 - **/resetscale** - Resets the user interface scale to what the UI was designed for.
 - **/resetlayout** - Resets our custom EditMode preset "Azerite" to the default settings fitting the UI.
+
+### Action Bars
+Change actionbar settings like enabled bars, number of buttons and fading.
+- **/enablebar \<barID\>** - Enable a bar. Valid barIDs are 1-8.
+- **/disablebar \<barID\>** - Disable a bar. Valid barIDs are 1-8.
+- **/enablebarfade** - Enable bar fading.
+- **/disablebarfade** - Disable bar fading, keeping buttons with actions always visible.
