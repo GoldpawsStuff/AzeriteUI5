@@ -1844,6 +1844,11 @@ local function StartChargeCooldown(parent, chargeStart, chargeDuration, chargeMo
 		Masque:UpdateCharge(parent)
 	end
 
+	-- GE Fix: integrate better with regular styling
+	if parent.UpdateCharge then
+		parent:UpdateCharge()
+	end
+
 	if not chargeStart or chargeStart == 0 then
 		EndChargeCooldown(parent.chargeCooldown)
 	end
