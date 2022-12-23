@@ -334,7 +334,7 @@ local UpdateProgressBar = function(_, _, line)
 				end
 				local i = 1
 				while icon:GetMaskTexture(i) do
-					icon:RemoveMaskTexture(icon:GetMaskTexture())
+					icon:RemoveMaskTexture(icon:GetMaskTexture(i))
 					i = i + 1
 				end
 				icon:SetSize(20, 20)

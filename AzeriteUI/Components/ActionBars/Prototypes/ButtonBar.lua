@@ -111,14 +111,14 @@ ButtonBar.CreateButton = function(self, config)
 	return button
 end
 
-ButtonBar.UpdateButtons = function(self, buttonConfig)
+ButtonBar.UpdateButtons = function(self)
 	if (InCombatLockdown()) then return end
 
 	local buttons = self.buttons
 	local numbuttons = self.config.numbuttons
 
 	for id = #buttons + 1, numbuttons do
-		self:CreateButton(buttonConfig or self.buttonConfig)
+		self:CreateButton()
 	end
 
 	for id,button in next,buttons do

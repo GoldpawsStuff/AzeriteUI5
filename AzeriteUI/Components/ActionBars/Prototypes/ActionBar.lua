@@ -114,9 +114,9 @@ ns.ActionBar.Create = function(self, id, config, name)
 	return bar
 end
 
-ActionBar.CreateButton = function(self, buttonConfig)
+ActionBar.CreateButton = function(self, config)
 
-	local button = ButtonBar.CreateButton(self, buttonConfig)
+	local button = ButtonBar.CreateButton(self, config)
 
 	for k = 1,18 do
 		button:SetState(k, "action", (k - 1) * 12 + button.id)
@@ -130,7 +130,7 @@ ActionBar.CreateButton = function(self, buttonConfig)
 	local keyBoundTarget = string_format(BINDTEMPLATE_BY_ID[self.id], button.id)
 	button.keyBoundTarget = keyBoundTarget
 
-	local buttonConfig = button.config or buttonConfig
+	local buttonConfig = button.config or {}
 	buttonConfig.keyBoundTarget = keyBoundTarget
 
 	button:UpdateConfig(buttonConfig)

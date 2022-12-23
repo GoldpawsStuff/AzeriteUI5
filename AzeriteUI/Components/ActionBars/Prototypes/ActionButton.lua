@@ -25,16 +25,16 @@
 --]]
 local Addon, ns = ...
 
-local LAB = LibStub("LibActionButton-1.0")
+local LAB = LibStub("LibActionButton-1.0-GE")
 
+-- Default button config
 local defaults = {
 	outOfRangeColoring = "button",
 	tooltip = "enabled",
 	showGrid = false,
 	colors = {
 		range = { 1, .15, .15 },
-		mana = { .25, .25, 1 },
-		disabled = { .4, .36, .32 }
+		mana = { .25, .25, 1 }
 	},
 	hideElements = {
 		macro = true,
@@ -55,7 +55,7 @@ ns.ActionButton.defaults = defaults
 
 ns.ActionButton.Create = function(id, name, header, config)
 
-	local button = LAB:CreateButton(id, name, header, ns:Merge(config, defaults))
+	local button = LAB:CreateButton(id, name, header, config)
 
 	ns.ActionButtons[button] = true
 

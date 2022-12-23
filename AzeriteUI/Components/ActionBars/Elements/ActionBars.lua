@@ -26,6 +26,7 @@
 local Addon, ns = ...
 
 local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "LibFadingFrames-1.0", "AceConsole-3.0")
+local LAB = LibStub("LibActionButton-1.0-GE")
 
 -- Lua API
 local next = next
@@ -224,6 +225,86 @@ local config = {
 
 }
 
+---------------------------------------------
+-- LAB Overrides & MaxDps Integration
+---------------------------------------------
+local ShowMaxDps = function(self)
+	if (self.SpellHighlight) then
+		if (self.maxDpsGlowColor) then
+			local r, g, b, a = unpack(self.maxDpsGlowColor)
+			self.SpellHighlight:SetVertexColor(r, g, b, a or .75)
+		else
+			self.SpellHighlight:SetVertexColor(249/255, 188/255, 65/255, .75)
+		end
+		self.SpellHighlight:Show()
+		LAB.callbacks:Fire("OnButtonShowOverlayGlow", self)
+	end
+end
+
+local HideMaxDps = function(self)
+	if (self.SpellHighlight) then
+		if (not self.maxDpsGlowShown) then
+			self.SpellHighlight:Hide()
+			LAB.callbacks:Fire("OnButtonHideOverlayGlow", self)
+		end
+	end
+end
+
+local UpdateMaxDps = function(self)
+	if (self.maxDpsGlowShown) then
+		ShowMaxDps(self)
+	else
+		if (WoWWrath) then
+			HideMaxDps(self)
+		else
+			local spellId = self:GetSpellId()
+			if (spellId and IsSpellOverlayed(spellId)) then
+				ShowMaxDps(self)
+			else
+				HideMaxDps(self)
+			end
+		end
+	end
+end
+
+local UpdateUsable = function(self)
+	local config = self.config
+
+	if (UnitIsDeadOrGhost("player")) then
+		self.icon:SetDesaturated(true)
+		self.icon:SetVertexColor(unpack(config.colors.disabled))
+
+	elseif (self.outOfRange) then
+		self.icon:SetDesaturated(true)
+		self.icon:SetVertexColor(unpack(config.colors.range))
+	else
+		local isUsable, notEnoughMana = self:IsUsable()
+		if (isUsable) then
+			self.icon:SetDesaturated(false)
+			self.icon:SetVertexColor(1, 1, 1)
+
+		elseif (notEnoughMana) then
+			self.icon:SetDesaturated(true)
+			self.icon:SetVertexColor(unpack(config.colors.mana))
+		else
+			self.icon:SetDesaturated(true)
+			self.icon:SetVertexColor(.4, .36, .32)
+		end
+	end
+
+	local isLevelLinkLocked = C_LevelLink.IsActionLocked(self._state_action)
+	if (not self.icon:IsDesaturated()) then
+		self.icon:SetDesaturated(isLevelLinkLocked)
+		if isLevelLinkLocked then
+			self.icon:SetVertexColor(.4, .36, .32)
+		end
+	end
+	if (self.LevelLinkLockIcon) then
+		self.LevelLinkLockIcon:SetShown(isLevelLinkLocked)
+	end
+
+end
+
 local buttonOnEnter = function(self)
 	self.icon.darken:SetAlpha(0)
 	if (self.OnEnter) then
@@ -272,6 +353,13 @@ local style = function(button)
 	icon:ClearAllPoints()
 	icon:SetPoint(unpack(db.ButtonIconPosition))
 	icon:SetSize(unpack(db.ButtonIconSize))
+
+	local i = 1
+	while button.icon:GetMaskTexture(i) do
+		button.icon:RemoveMaskTexture(button.icon:GetMaskTexture(i))
+		i = i + 1
+	end
+
 	icon:RemoveMaskTexture(button.IconMask)
 	icon:SetMask(m)
 
@@ -311,6 +399,7 @@ local style = function(button)
 	cooldown:SetFrameLevel(button:GetFrameLevel() + 1)
 	cooldown:ClearAllPoints()
 	cooldown:SetAllPoints(button.icon)
+	cooldown:SetUseCircularEdge(true)
 	cooldown:SetReverse(false)
 	cooldown:SetSwipeTexture(m)
 	cooldown:SetDrawSwipe(true)
@@ -596,6 +685,57 @@ ActionBarMod.DisableBar = function(self, input)
 	self:UpdateSettings()
 end
 
+-- fucking charge cooldown styling
+ActionBarMod.UpdateChargeCooldowns = function(self)
+	if (not self.chargeCooldowns) then
+		self.chargeCooldowns = {}
+	end
+
+	local m = config.ButtonMaskTexture
+	local b = GetMedia("blank")
+
+	local i = 1
+	local cooldown = _G["LAB10ChargeCooldown"..i]
+	while cooldown do
+		if (not self.chargeCooldowns[cooldown]) then
+
+			cooldown:SetFrameLevel(button:GetFrameLevel() + 1)
+			cooldown:ClearAllPoints()
+			cooldown:SetAllPoints(button.icon)
+			cooldown:SetUseCircularEdge(true)
+			cooldown:SetReverse(false)
+			cooldown:SetSwipeTexture(m)
+			cooldown:SetDrawSwipe(true)
+			cooldown:SetBlingTexture(b, 0, 0, 0, 0)
+			cooldown:SetDrawBling(false)
+			cooldown:SetEdgeTexture(b)
+			cooldown:SetDrawEdge(false)
+			cooldown:SetHideCountdownNumbers(true)
+
+			hooksecurefunc(cooldown, "SetSwipeTexture", function(c,t) if t ~= m then c:SetSwipeTexture(m) end end)
+			hooksecurefunc(cooldown, "SetBlingTexture", function(c,t) if t ~= b then c:SetBlingTexture(b,0,0,0,0) end end)
+			hooksecurefunc(cooldown, "SetEdgeTexture", function(c,t) if t ~= b then c:SetEdgeTexture(b) end end)
+			--hooksecurefunc(cooldown, "SetSwipeColor", function(c,r,g,b,a) if not a or a>.76 then c:SetSwipeColor(r,g,b,.75) end end)
+			hooksecurefunc(cooldown, "SetDrawSwipe", function(c,h) if not h then c:SetDrawSwipe(true) end end)
+			hooksecurefunc(cooldown, "SetDrawBling", function(c,h) if h then c:SetDrawBling(false) end end)
+			hooksecurefunc(cooldown, "SetDrawEdge", function(c,h) if h then c:SetDrawEdge(false) end end)
+			hooksecurefunc(cooldown, "SetHideCountdownNumbers", function(c,h) if not h then c:SetHideCountdownNumbers(true) end end)
+			hooksecurefunc(cooldown, "SetCooldown", function(c) c:SetAlpha(.75) end)
+
+			hooksecurefunc(cooldown, "Show", function(self)
+				local parent = self:GetParent()
+				self:GetFrameStrata(parent:GetFrameStrata())
+				self:SetFrameLevel(parent:GetFrameLevel() + 1)
+			end)
+
+			self.chargeCooldowns[cooldown] = true
+		end
+		i = i + 1
+		cooldown = _G["LAB10ChargeCooldown"..i]
+	end
+
+end
+
 ActionBarMod.UpdateSettings = function(self)
 	local db = self.db.profile
 
@@ -658,12 +798,35 @@ ActionBarMod.OnEvent = function(self, event, ...)
 		for id,bar in next(self.bars) do
 			bar:UpdateBindings()
 		end
+	elseif (event == "OnButtonUpdate") then
+		local button = ...
+		if (self.buttons[button]) then
+			button.cooldown:ClearAllPoints()
+			button.cooldown:SetAllPoints(button.icon)
+			button.cooldown:SetDrawEdge(false)
+
+			local i = 1
+			while button.icon:GetMaskTexture(i) do
+				button.icon:RemoveMaskTexture(button.icon:GetMaskTexture(i))
+				i = i + 1
+			end
+			button.icon:SetMask(config.ButtonMaskTexture)
+
+			UpdateUsable(button)
+		end
+
+	elseif (event == "OnButtonUsable") then
+		local button = ...
+		if (self.buttons[button]) then
+			UpdateUsable(button)
+		end
 	end
 end
 
 ActionBarMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ActionBars", defaults)
 	self.bars = {}
+	self.buttons = {}
 
 	self:SetEnabledState(self.db.profile.enabled)
 
@@ -689,6 +852,7 @@ ActionBarMod.OnInitialize = function(self)
 
 		for id,button in next,bar.buttons do
 			style(button)
+			self.buttons[button] = true
 		end
 
 		if (i == 1) then
@@ -761,26 +925,54 @@ ActionBarMod.OnInitialize = function(self)
 		self.bars[i] = bar
 	end
 
+	-- This grabs the lab charge cooldowns and fixes them.
+	hooksecurefunc("CooldownFrame_Set", function(cooldown)
+		local parent = cooldown:GetParent()
+		if (not self.buttons[parent]) then return end
+		if (not parent.chargeCooldown or parent.chargeCooldown ~= cooldown) then return end
+		local m = config.ButtonMaskTexture
+		local b = GetMedia("blank")
+		cooldown:SetFrameStrata(parent:GetFrameStrata())
+		cooldown:SetFrameLevel(parent:GetFrameLevel() + 2)
+		cooldown:SetUseCircularEdge(true)
+		cooldown:SetReverse(false)
+		cooldown:SetSwipeTexture(m)
+		cooldown:SetDrawSwipe(true)
+		cooldown:SetBlingTexture(b, 0, 0, 0, 0)
+		cooldown:SetDrawBling(false)
+		cooldown:SetEdgeTexture(b)
+		cooldown:SetDrawEdge(false)
+		cooldown:SetHideCountdownNumbers(true)
+		cooldown:SetAlpha(.5)
+		cooldown:ClearAllPoints()
+		cooldown:SetAllPoints(parent.cooldown)
+	end)
+
 	self:RegisterChatCommand("enablebar", "EnableBar")
 	self:RegisterChatCommand("disablebar", "DisableBar")
 	self:RegisterChatCommand("enablebarfade", "EnableBarFading")
 	self:RegisterChatCommand("disablebarfade", "DisableBarFading")
-
 end
 
 ActionBarMod.OnEnable = function(self)
 	self:UpdateSettings()
 	self:UpdateBindings()
+
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterEvent("UPDATE_BINDINGS", "UpdateBindings")
+
+	LAB.RegisterCallback(self, "OnButtonUpdate", "OnEvent")
 end
 
 ActionBarMod.OnDisable = function(self)
 	for i,bar in next,self.bars do
 		bar:Disable()
 	end
+
 	self:UnregisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:UnregisterEvent("UPDATE_BINDINGS", "UpdateBindings")
+
+	LAB.UnregisterCallback(self, "OnButtonUpdate")
 end
