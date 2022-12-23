@@ -562,15 +562,27 @@ end
 ActionBarMod.EnableBar = function(self, input)
 	if (InCombatLockdown()) then return end
 
+	local db = self.db.profile.bars
 	local id = self:GetArgs(string_lower(input))
 
+	if (not id or not db[id]) then return end
+
+	db[id].enabled = true
+
+	self:UpdateSettings()
 end
 
 ActionBarMod.DisableBar = function(self, input)
 	if (InCombatLockdown()) then return end
 
+	local db = self.db.profile.bars
 	local id = self:GetArgs(string_lower(input))
 
+	if (not id or not db[id]) then return end
+
+	db[id].enabled = false
+
+	self:UpdateSettings()
 end
 
 ActionBarMod.UpdateSettings = function(self)
@@ -614,12 +626,12 @@ end
 
 ActionBarMod.EnableBarFading = function(self)
 	self.db.profile.enableBarFading = true
-
+	self:UpdateSettings()
 end
 
 ActionBarMod.DisableBarFading = function(self)
 	self.db.profile.enableBarFading = false
-
+	self:UpdateSettings()
 end
 
 ActionBarMod.OnEvent = function(self, event, ...)
@@ -753,6 +765,8 @@ ActionBarMod.OnEnable = function(self)
 			bar:Disable()
 		end
 	end
+	self:UpdateSettings()
+	self:UpdateBindings()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterEvent("UPDATE_BINDINGS", "UpdateBindings")
