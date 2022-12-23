@@ -209,9 +209,9 @@ ButtonBar.UpdateButtonLayout = function(self)
 					end
 				else
 					if (grid.growthHorizontal == "RIGHT") then
-						offsetX = offsetX + (buttonWidth + grid.padding) * (id - 1)
+						offsetX = offsetX + (buttonWidth + grid.padding)
 					elseif (grid.growthHorizontal == "LEFT") then
-						offsetX = offsetX - (buttonWidth + grid.padding) * (id - 1)
+						offsetX = offsetX - (buttonWidth + grid.padding)
 					end
 				end
 
@@ -225,9 +225,9 @@ ButtonBar.UpdateButtonLayout = function(self)
 					offsetY = 0
 				else
 					if (grid.growthVertical == "DOWN") then
-						offsetY = offsetY - (buttonWidth + grid.padding) * (id - 1)
+						offsetY = offsetY - (buttonWidth + grid.padding)
 					elseif (grid.growthVertical == "UP") then
-						offsetY = offsetY + (buttonWidth + grid.padding) * (id - 1)
+						offsetY = offsetY + (buttonWidth + grid.padding)
 					end
 				end
 			end
