@@ -25,7 +25,7 @@
 --]]
 local Addon, ns = ...
 
-local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "AceConsole-3.0")
+local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "LibFadingFrames-1.0", "AceConsole-3.0")
 
 -- Lua API
 local next,string_format = next,string.format
@@ -55,6 +55,7 @@ for i,j in pairs(BAR_TO_ID) do ID_TO_BAR[j] = i end
 
 local defaults = { profile = ns:Merge({
 	enabled = true,
+	enableBarFading = true,
 	bars = {
 		["**"] = ns:Merge({
 		}, ns.ActionBar.defaults),
@@ -558,6 +559,69 @@ ActionBarMod.GetBarDisplayName = function(self, id)
 	end
 end
 
+ActionBarMod.EnableBar = function(self, input)
+	if (InCombatLockdown()) then return end
+
+	local id = self:GetArgs(string_lower(input))
+
+end
+
+ActionBarMod.DisableBar = function(self, input)
+	if (InCombatLockdown()) then return end
+
+	local id = self:GetArgs(string_lower(input))
+
+end
+
+ActionBarMod.UpdateSettings = function(self)
+	local db = self.db.profile
+
+	for i,bar in next,self.bars do
+		local config = db.bars[i]
+
+		-- Update enabled bars.
+		if (config.enabled and not bar:IsEnabled()) then
+			bar:Enable()
+		elseif (not config.enabled and bar:IsEnabled()) then
+			bar:Disable()
+		end
+
+		-- Update bar fading for enabled bars.
+		if (config.enabled and db.enableBarFading) then
+			if (i == 1) then
+				if (config.layout == "map") then
+					for id = 7, #bar.buttons do
+						self:RegisterFrameForFading(bar.buttons[i])
+					end
+				else
+					for id, button in next,bar.buttons do
+						self:UnregisterFrameForFading(bar.buttons[i])
+					end
+				end
+			else
+				for id, button in next,bar.buttons do
+					self:RegisterFrameForFading(bar.buttons[i])
+				end
+			end
+		else
+			for id, button in next,bar.buttons do
+				self:UnregisterFrameForFading(bar.buttons[i])
+			end
+		end
+
+	end
+end
+
+ActionBarMod.EnableBarFading = function(self)
+	self.db.profile.enableBarFading = true
+
+end
+
+ActionBarMod.DisableBarFading = function(self)
+	self.db.profile.enableBarFading = false
+
+end
+
 ActionBarMod.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_REGEN_ENABLED") then
 		if (InCombatLockdown()) then return end
@@ -673,6 +737,11 @@ ActionBarMod.OnInitialize = function(self)
 
 		self.bars[i] = bar
 	end
+
+	self:RegisterChatCommand("enablebar", "EnableBar")
+	self:RegisterChatCommand("disablebar", "DisableBar")
+	self:RegisterChatCommand("enablebarfade", "EnableBarFading")
+	self:RegisterChatCommand("disablebarfade", "DisableBarFading")
 
 end
 
