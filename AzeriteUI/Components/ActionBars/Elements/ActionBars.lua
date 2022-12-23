@@ -28,7 +28,10 @@ local Addon, ns = ...
 local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "LibFadingFrames-1.0", "AceConsole-3.0")
 
 -- Lua API
-local next,string_format = next,string.format
+local next = next
+local string_format = string.format
+local string_lower = string.lower
+local tonumber = tonumber
 
 -- Addon API
 local Colors = ns.Colors
@@ -426,6 +429,14 @@ local style = function(button)
 	return button
 end
 
+ActionBarMod.UpdateBindings = function(self)
+	for i,bar in next,self.bars do
+		if (bar:IsEnabled()) then
+			bar:UpdateBindings()
+		end
+	end
+end
+
 ActionBarMod.UpdatePositionAndScale = function(self, bar)
 	if (InCombatLockdown()) then
 		self.positionNeedsFix = true
@@ -563,7 +574,7 @@ ActionBarMod.EnableBar = function(self, input)
 	if (InCombatLockdown()) then return end
 
 	local db = self.db.profile.bars
-	local id = self:GetArgs(string_lower(input))
+	local id = tonumber((self:GetArgs(string_lower(input))))
 
 	if (not id or not db[id]) then return end
 
@@ -576,7 +587,7 @@ ActionBarMod.DisableBar = function(self, input)
 	if (InCombatLockdown()) then return end
 
 	local db = self.db.profile.bars
-	local id = self:GetArgs(string_lower(input))
+	local id = tonumber((self:GetArgs(string_lower(input))))
 
 	if (not id or not db[id]) then return end
 
@@ -589,35 +600,35 @@ ActionBarMod.UpdateSettings = function(self)
 	local db = self.db.profile
 
 	for i,bar in next,self.bars do
-		local config = db.bars[i]
+		local bardb = db.bars[i]
 
 		-- Update enabled bars.
-		if (config.enabled and not bar:IsEnabled()) then
+		if (bardb.enabled) then
 			bar:Enable()
-		elseif (not config.enabled and bar:IsEnabled()) then
+		else
 			bar:Disable()
 		end
 
 		-- Update bar fading for enabled bars.
-		if (config.enabled and db.enableBarFading) then
+		if (bardb.enabled and db.enableBarFading) then
 			if (i == 1) then
-				if (config.layout == "map") then
-					for id = 7, #bar.buttons do
-						self:RegisterFrameForFading(bar.buttons[i])
+				if (bardb.layout == "map") then
+					for id = 8, #bar.buttons do
+						self:RegisterFrameForFading(bar.buttons[id], "actionbuttons", unpack(config.ButtonHitRects))
 					end
 				else
 					for id, button in next,bar.buttons do
-						self:UnregisterFrameForFading(bar.buttons[i])
+						self:UnregisterFrameForFading(bar.buttons[id])
 					end
 				end
 			else
 				for id, button in next,bar.buttons do
-					self:RegisterFrameForFading(bar.buttons[i])
+					self:RegisterFrameForFading(bar.buttons[id], "actionbuttons", unpack(config.ButtonHitRects))
 				end
 			end
 		else
 			for id, button in next,bar.buttons do
-				self:UnregisterFrameForFading(bar.buttons[i])
+				self:UnregisterFrameForFading(bar.buttons[id])
 			end
 		end
 
@@ -758,13 +769,6 @@ ActionBarMod.OnInitialize = function(self)
 end
 
 ActionBarMod.OnEnable = function(self)
-	for i,bar in next,self.bars do
-		if (bar.config.enabled) then
-			bar:Enable()
-		else
-			bar:Disable()
-		end
-	end
 	self:UpdateSettings()
 	self:UpdateBindings()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")

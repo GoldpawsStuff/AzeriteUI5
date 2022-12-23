@@ -107,12 +107,16 @@ ns.ActionBar.Create = function(self, id, config, name)
 
 	bar:UpdateButtons()
 
+	if (not bar.config.enabled) then
+		bar:Disable()
+	end
+
 	return bar
 end
 
-ActionBar.CreateButton = function(self, config)
+ActionBar.CreateButton = function(self, buttonConfig)
 
-	local button = ButtonBar.CreateButton(self, config)
+	local button = ButtonBar.CreateButton(self, buttonConfig)
 
 	for k = 1,18 do
 		button:SetState(k, "action", (k - 1) * 12 + button.id)
@@ -126,16 +130,16 @@ ActionBar.CreateButton = function(self, config)
 	local keyBoundTarget = string_format(BINDTEMPLATE_BY_ID[self.id], button.id)
 	button.keyBoundTarget = keyBoundTarget
 
-	local config = button.config or config
-	config.keyBoundTarget = keyBoundTarget
+	local buttonConfig = button.config or buttonConfig
+	buttonConfig.keyBoundTarget = keyBoundTarget
 
-	button:UpdateConfig(config)
+	button:UpdateConfig(buttonConfig)
 end
 
 ActionBar.Enable = function(self)
 	if (InCombatLockdown()) then return end
 
-	self.enabled = true
+	self.config.enabled = true
 
 	self:UpdateStateDriver()
 	self:UpdateVisibilityDriver()
@@ -145,7 +149,7 @@ end
 ActionBar.Disable = function(self)
 	if (InCombatLockdown()) then return end
 
-	self.enabled = false
+	self.config.enabled = false
 
 	self:UpdateVisibilityDriver()
 end
@@ -153,9 +157,9 @@ end
 ActionBar.SetEnabled = function(self, enable)
 	if (InCombatLockdown()) then return end
 
-	self.enabled = not not enable
+	self.config.enabled = not not enable
 
-	if (self.enabled) then
+	if (self.config.enabled) then
 		self:Enable()
 	else
 		self:Disable()
@@ -163,7 +167,7 @@ ActionBar.SetEnabled = function(self, enable)
 end
 
 ActionBar.IsEnabled = function(self)
-	return self.enabled
+	return self.config.enabled
 end
 
 ActionBar.UpdateBindings = function(self)
@@ -223,7 +227,7 @@ ActionBar.UpdateVisibilityDriver = function(self)
 	local config = self.config
 
 	local visdriver
-	if (self.enabled) then
+	if (self.config.enabled) then
 
 		visdriver = "[petbattle]hide;"
 
