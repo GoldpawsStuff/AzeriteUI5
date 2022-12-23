@@ -28,7 +28,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ]]
-local MAJOR_VERSION = "LibActionButton-1.0"
+local MAJOR_VERSION = "LibActionButton-1.0-GE"
 local MINOR_VERSION = 105
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
@@ -50,8 +50,8 @@ local UseCustomFlyout = WoWRetail
 
 local KeyBound = LibStub("LibKeyBound-1.0", true)
 local CBH = LibStub("CallbackHandler-1.0")
-local LBG = LibStub("LibButtonGlow-1.0", true)
-local Masque = LibStub("Masque", true)
+local LBG --= LibStub("LibButtonGlow-1.0", true) -- GE Fix: Remove
+local Masque --= LibStub("Masque", true) -- GE Fix: Remove
 
 lib.eventFrame = lib.eventFrame or CreateFrame("Frame")
 lib.eventFrame:UnregisterAllEvents()
@@ -1798,12 +1798,12 @@ function UpdateCount(self)
 		if count > (self.maxDisplayCount or 9999) then
 			self.Count:SetText("*")
 		else
-			self.Count:SetText(count)
+			self.Count:SetText(count > 1 and count or "") -- GE Fix: Hide when no stacks
 		end
 	else
 		local charges, maxCharges, _chargeStart, _chargeDuration = self:GetCharges()
 		if charges and maxCharges and maxCharges > 1 then
-			self.Count:SetText(charges)
+			self.Count:SetText(charges > 1 and charges or "") -- GE Fix: Hide when no stacks
 		else
 			self.Count:SetText("")
 		end
@@ -2034,6 +2034,8 @@ function UpdateNewAction(self)
 		end
 	end
 end
+-- GE Fix: disable
+function UpdateNewAction(self) end
 
 hooksecurefunc("UpdateOnBarHighlightMarksBySpell", function(spellID)
 	lib.ON_BAR_HIGHLIGHT_MARK_TYPE = "spell"
