@@ -219,11 +219,48 @@ Prototype.SetTheme = function(self, requestedTheme)
 	MinimapMod.db.profile.theme = name
 end
 
+local Minimap_OnMouseWheel = function(self, delta)
+	if (delta > 0) then
+		(Minimap.ZoomIn or MinimapZoomIn):Click()
+	elseif (delta < 0) then
+		(Minimap.ZoomOut or MinimapZoomOut):Click()
+	end
+end
+
+local Minimap_OnMouseUp = function(self, button)
+	if (button == "RightButton") then
+		if (ns.IsWrath) then
+			ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, "MiniMapTracking", 8, 5)
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "SFX")
+		else
+			MinimapCluster.Tracking.Button:OnMouseDown()
+		end
+	elseif (button == "MiddleButton" and ns.IsRetail) then
+		local GLP = GarrisonLandingPageMinimapButton or ExpansionLandingPageMinimapButton
+		if (GLP and GLP:IsShown()) and (not InCombatLockdown()) then
+			if (GLP.ToggleLandingPage) then
+				GLP:ToggleLandingPage()
+			else
+				GarrisonLandingPage_Toggle()
+			end
+		end
+	else
+		local func = Minimap.OnClick or Minimap_OnClick
+		if (func) then
+			func(self)
+		end
+	end
+end
+
 MinimapMod.SetMinimapTheme = function(self, input)
 	Minimap:SetTheme((self:GetArgs(string.lower(input))))
 end
 
 MinimapMod.Embed = function(self)
+	Minimap:EnableMouseWheel(true)
+	Minimap:SetScript("OnMouseWheel", Minimap_OnMouseWheel)
+	Minimap:SetScript("OnMouseUp", Minimap_OnMouseUp)
+
 	for method,func in next,Prototype do
 		_G.Minimap[method] = func
 	end
