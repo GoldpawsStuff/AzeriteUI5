@@ -851,7 +851,8 @@ PartyFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PartyFrames", defaults)
 	self:SetEnabledState(self.db.profile.enabled)
 
-	for i = 1, MEMBERS_PER_RAID_GROUP do
-		oUF:DisableBlizzard("party"..i)
-	end
+	-- Don't disable. Yet.
+	--for i = 1, MEMBERS_PER_RAID_GROUP do
+	--	oUF:DisableBlizzard("party"..i)
+	--end
 end
