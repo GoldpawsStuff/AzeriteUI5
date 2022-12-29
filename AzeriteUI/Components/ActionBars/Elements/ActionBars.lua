@@ -270,9 +270,9 @@ end
 local UpdateUsable = function(self)
 	local config = self.config
 
-	if (UnitIsDeadOrGhost("player")) then
+	if (UnitIsDeadOrGhost("player") or IsFlying() or IsMounted()) then
 		self.icon:SetDesaturated(true)
-		self.icon:SetVertexColor(unpack(config.colors.disabled))
+		self.icon:SetVertexColor(.4, .36, .32)
 
 	elseif (self.outOfRange) then
 		self.icon:SetDesaturated(true)
@@ -292,15 +292,17 @@ local UpdateUsable = function(self)
 		end
 	end
 
-	local isLevelLinkLocked = C_LevelLink.IsActionLocked(self._state_action)
-	if (not self.icon:IsDesaturated()) then
-		self.icon:SetDesaturated(isLevelLinkLocked)
-		if isLevelLinkLocked then
-			self.icon:SetVertexColor(.4, .36, .32)
+	if (self._state_type == "action") then
+		local isLevelLinkLocked = C_LevelLink.IsActionLocked(self._state_action)
+		if (not self.icon:IsDesaturated()) then
+			self.icon:SetDesaturated(isLevelLinkLocked)
+			if (isLevelLinkLocked) then
+				self.icon:SetVertexColor(.4, .36, .32)
+			end
 		end
-	end
-	if (self.LevelLinkLockIcon) then
-		self.LevelLinkLockIcon:SetShown(isLevelLinkLocked)
+		if (self.LevelLinkLockIcon) then
+			self.LevelLinkLockIcon:SetShown(isLevelLinkLocked)
+		end
 	end
 
 end
@@ -965,6 +967,7 @@ ActionBarMod.OnEnable = function(self)
 	self:RegisterEvent("UPDATE_BINDINGS", "UpdateBindings")
 
 	LAB.RegisterCallback(self, "OnButtonUpdate", "OnEvent")
+	LAB.RegisterCallback(self, "OnButtonUsable", "OnEvent")
 end
 
 ActionBarMod.OnDisable = function(self)
