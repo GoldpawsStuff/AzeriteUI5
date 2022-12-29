@@ -86,6 +86,13 @@ ns.UpdateSettings = function(self, event, ...)
 	self.callbacks:Fire("Saved_Settings_Updated")
 end
 
+ns.OnEvent = function(self, event, ...)
+	if (event == "PLAYER_ENTERING_WORLD") then
+		print("Type |cff4488ff/resetlayout|r to reset the AzeriteUI editmode profile!")
+		print("Type |cff4488ff/resetscale|r to set the ui scale to AzeriteUI default.")
+	end
+end
+
 ns.OnInitialize = function(self)
 
 	self.db = LibStub("AceDB-3.0"):New("AzeriteUI5_DB", defaults, true)
@@ -101,5 +108,7 @@ ns.OnInitialize = function(self)
 	self.db.RegisterCallback(self, "OnProfileReset", "UpdateSettings")
 
 	self:RegisterChatCommand("resetscale", "ResetBlizzardScale")
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 
 end

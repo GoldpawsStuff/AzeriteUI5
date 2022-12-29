@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.6-Alpha] 2022-12-29 (Dragonflight)
+### Added
+- Added startup chat messages to inform about `/resetscale` and `/resetlayout`.
+
 ## [5.0.5-Alpha] 2022-12-29 (Dragonflight)
 ### Changed
 - The blizzard compact raid frames should no longer forcefully be disabled.
