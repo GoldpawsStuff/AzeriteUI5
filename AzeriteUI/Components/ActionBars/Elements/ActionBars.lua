@@ -25,7 +25,7 @@
 --]]
 local Addon, ns = ...
 
-local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "LibFadingFrames-1.0", "AceConsole-3.0")
+local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "LibFadingFrames-1.0", "AceConsole-3.0", "AceTimer-3.0")
 local LAB = LibStub("LibActionButton-1.0-GE")
 
 -- Lua API
@@ -270,7 +270,7 @@ end
 local UpdateUsable = function(self)
 	local config = self.config
 
-	if (UnitIsDeadOrGhost("player") or IsFlying() or IsMounted()) then
+	if (UnitIsDeadOrGhost("player") or IsMounted()) then
 		self.icon:SetDesaturated(true)
 		self.icon:SetVertexColor(.4, .36, .32)
 
@@ -434,6 +434,8 @@ local style = function(button)
 		cooldown:ClearAllPoints()
 		cooldown:SetAllPoints(self.icon)
 	end
+
+	--button.UpdateLocal = UpdateUsable
 
 	-- Custom overlay frame
 	local overlay = CreateFrame("Frame", nil, button)
@@ -839,10 +841,11 @@ ActionBarMod.OnEvent = function(self, event, ...)
 			end
 			button.icon:SetMask(config.ButtonMaskTexture)
 
+			-- The update function calls this for valid actions
 			UpdateUsable(button)
 		end
 
-	elseif (event == "OnButtonUsable") then
+	elseif (event == "OnButtonUsable" or event == "OnButtonState") then
 		local button = ...
 		if (self.buttons[button]) then
 			UpdateUsable(button)
@@ -958,6 +961,10 @@ ActionBarMod.OnInitialize = function(self)
 	self:RegisterChatCommand("disablebarfade", "DisableBarFading")
 end
 
+ActionBarMod.UpdateBarStates = function(self)
+
+end
+
 ActionBarMod.OnEnable = function(self)
 	self:UpdateSettings()
 	self:UpdateBindings()
@@ -966,8 +973,13 @@ ActionBarMod.OnEnable = function(self)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterEvent("UPDATE_BINDINGS", "UpdateBindings")
 
+	--if (not self.flightTimer) then
+	--	self:ScheduleRepeatingTimer("UpdateBarStates", 1/10)
+	--end
+
 	LAB.RegisterCallback(self, "OnButtonUpdate", "OnEvent")
 	LAB.RegisterCallback(self, "OnButtonUsable", "OnEvent")
+
 end
 
 ActionBarMod.OnDisable = function(self)
@@ -979,5 +991,11 @@ ActionBarMod.OnDisable = function(self)
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:UnregisterEvent("UPDATE_BINDINGS", "UpdateBindings")
 
+	--if (self.flightTimer) then
+	--	self:CancelTimer(self.flightTimer)
+	--end
+
 	LAB.UnregisterCallback(self, "OnButtonUpdate")
+	LAB.UnregisterCallback(self, "OnButtonUsable")
+
 end
