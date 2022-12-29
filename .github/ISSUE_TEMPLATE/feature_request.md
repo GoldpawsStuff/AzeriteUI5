@@ -7,6 +7,8 @@ assignees: Goldpaw
 
 ---
 
+Please note that this is the issue tracker for the Dragonflight/Retail version of AzeriteUI. For the Wrath Classic version visit [https://github.com/GoldpawsStuff/AzeriteUI4/issues](github.com/GoldpawsStuff/AzeriteUI4/issues)
+
 **Is your feature request related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
