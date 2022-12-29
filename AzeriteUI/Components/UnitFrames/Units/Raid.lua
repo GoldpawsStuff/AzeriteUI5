@@ -32,9 +32,7 @@ LoadAddOn("Blizzard_CompactRaidFrames")
 local RaidFrameMod = ns:Merge(ns:NewModule("RaidFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
 
 -- PARTYRAID_LABEL
-
-RaidFrameMod.OnInitialize = function(self)
-
+RaidFrameMod.DisableBlizzard = function(self)
 	UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
 
 	CompactRaidFrameManager_SetSetting("IsShown", "0")
@@ -42,5 +40,9 @@ RaidFrameMod.OnInitialize = function(self)
 	CompactRaidFrameContainer:UnregisterAllEvents()
 	CompactRaidFrameManager:UnregisterAllEvents()
 	CompactRaidFrameManager:SetParent(ns.Hider)
+end
 
+RaidFrameMod.OnInitialize = function(self)
+	-- Leave these enabled for now.
+	--self:DisableBlizzard()
 end
