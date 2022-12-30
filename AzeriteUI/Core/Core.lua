@@ -30,6 +30,7 @@ ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false)
 ns.Hider = CreateFrame("Frame"); ns.Hider:Hide()
 ns.Noop = function() end
 
+ns.EDIT_MODE_VERSION = -9999
 ns.SETTINGS_VERSION = -9999
 
 _G[Addon] = ns
@@ -97,10 +98,16 @@ ns.OnInitialize = function(self)
 
 	self.db = LibStub("AceDB-3.0"):New("AzeriteUI5_DB", defaults, true)
 
-	-- Force reset settings on backwards incompatible changes.
+	-- Force a settings reset on backwards incompatible changes.
 	if (self.db.profile.version ~= ns.SETTINGS_VERSION) then
 		self.db:ResetDB() -- Full db reset of all profiles. Destructive operation.
 		self.db.profile.version = ns.SETTINGS_VERSION -- Store version in default profile.
+		self.triggerProfileReset = true -- Tell modules about it, the simple way.
+	end
+
+	-- Force a settings reset on layout updates or fixes.
+	if (self.db.profile.layoutversion ~= ns.EDIT_MODE_VERSION) then
+		self.triggerEditModeReset = true -- Tell modules about it, the simple way.
 	end
 
 	self.db.RegisterCallback(self, "OnProfileChanged", "UpdateSettings")
