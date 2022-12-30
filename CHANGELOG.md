@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.9-Alpha] 2022-12-30 (Dragonflight)
+### Fixed
+- The Azerite layout in the editmode will no longer reset on every single login. I did not intend for that to happen.
+
 ## [5.0.8-Alpha] 2022-12-30 (Dragonflight)
 ### Fixed
 - Fixed some bugs in the initial positioning of actionbars and unitframes on the initial login on a character.
