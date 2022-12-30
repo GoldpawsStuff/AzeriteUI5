@@ -107,6 +107,7 @@ ns.OnInitialize = function(self)
 
 	-- Force a settings reset on layout updates or fixes.
 	if (self.db.profile.layoutversion ~= ns.EDIT_MODE_VERSION) then
+		self.db.profile.layoutversion = ns.EDIT_MODE_VERSION
 		self.triggerEditModeReset = true -- Tell modules about it, the simple way.
 	end
 
