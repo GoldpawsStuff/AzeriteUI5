@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.8-Alpha] 2022-12-30 (Dragonflight)
+### Fixed
+- Fixed some bugs in the initial positioning of actionbars and unitframes on the initial login on a character.
+- Fixed an issue that prevented our custom party (not raid) frames from showing.
+- Attempted to work around the initial Azerite editmode preset being wrong by adding a forced timed profile reset on the initial login, or when the addon decides it's time for an update. We're still in Alpha, forced resets happen.
+
 ## [5.0.7-Alpha] 2022-12-29 (Dragonflight)
 ### Changed
 - The blizzard compact party frames should no longer forcefully be disabled.
