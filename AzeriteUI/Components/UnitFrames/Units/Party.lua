@@ -482,9 +482,9 @@ local style = function(self, unit)
 
 	local db = config
 
-	--self:SetSize(unpack(db.PartySize))
+	self:SetSize(unpack(db.PartySize))
 	self:SetHitRectInsets(unpack(db.PartyHitRectInsets))
-	--self:SetFrameLevel(self:GetFrameLevel() + 10)
+	self:SetFrameLevel(self:GetFrameLevel() + 10)
 
 	-- Overlay for icons and text
 	--------------------------------------------
@@ -820,11 +820,11 @@ PartyFrameMod.Spawn = function(self)
 	frame:SetSize(130*4, 130)
 	frame.units = {}
 
-	for i = 1,MEMBERS_PER_RAID_GROUP do
+	for i = 1,4 do -- MEMBERS_PER_RAID_GROUP
 		local unitFrame = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)
 		unitFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", (i-1)*130, 0)
 
-		frame.units[i] = frame
+		frame.units[i] = unitFrame
 	end
 
 	self.frame = frame
@@ -851,7 +851,6 @@ PartyFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PartyFrames", defaults)
 	self:SetEnabledState(self.db.profile.enabled)
 
-	-- Don't disable. Yet.
 	--for i = 1, MEMBERS_PER_RAID_GROUP do
 	--	oUF:DisableBlizzard("party"..i)
 	--end
