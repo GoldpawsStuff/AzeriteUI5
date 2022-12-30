@@ -25,7 +25,7 @@
 --]]
 local Addon, ns = ...
 
-local EditMode = ns:NewModule("EditMode", "LibMoreEvents-1.0", "AceConsole-3.0")
+local EditMode = ns:NewModule("EditMode", "LibMoreEvents-1.0", "AceConsole-3.0", "AceTimer-3.0")
 local LEMO = LibStub("LibEditModeOverride-1.0")
 
 local ipairs = ipairs
@@ -101,6 +101,26 @@ local azeriteSystems = {
 			offsetX = -319,
 			offsetY = 166
 		}
+	},
+
+	[Enum.EditModeUnitFrameSystemIndices.Party] = {
+		settings = {
+			[Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames] = 0, -- this is the important part
+			[Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground] = 0,
+			[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
+			[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
+			[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
+			[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
+			[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
+			[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
+		},
+		anchorInfo = {
+			point = "TOPLEFT",
+			relativeTo = "CompactRaidFrameManager",
+			relativePoint = "TOPRIGHT",
+			offsetX = 0,
+			offsetY = -7,
+		},
 	},
 
 	[Enum.EditModeSystem.ObjectiveTracker] = {
@@ -183,9 +203,34 @@ EditMode.ResetLayouts = function(self)
 	LEMO:ApplyChanges()
 end
 
+EditMode.TriggerPresetChange = function(self)
+	LEMO:SetActiveLayout(layouts.defaultLayout)
+	LEMO:ApplyChanges()
+	-- Keep triggering until it works
+	if (LEMO:GetActiveLayout() ~= layouts.defaultLayout) then
+		return self:TriggerPresetChange("TriggerEditModeReset", 1)
+	end
+	self.TriggerPresetChange = ns.Noop
+end
+
+EditMode.TriggerEditModeReset = function(self, event, ...)
+	if (event == "PLAYER_ENTERING_WORLD") then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
+	end
+	-- Keep triggering until it works
+	LEMO:LoadLayouts()
+	if (not LEMO:AreLayoutsLoaded()) then
+		return self:ScheduleTimer("TriggerEditModeReset", 1)
+	end
+	-- Reset layouts.
+	self:ResetLayouts()
+	self:TriggerPresetChange()
+	self.TriggerEditModeReset = ns.Noop
+end
+
 EditMode.OnEvent = function(self, event, ...)
 	if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
-		self:UnregisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
+		self:UnregisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent") -- would be an endless loop otherwise.
 		LEMO:LoadLayouts()
 	end
 	if (not LEMO:AreLayoutsLoaded()) then return end
@@ -193,7 +238,7 @@ EditMode.OnEvent = function(self, event, ...)
 	-- Restore our custom layouts if they have been deleted.
 	-- This might piss people off, so should probably make this a one-time thing.
 	-- Create a saved setting for "layoutsCreated" or something like that.
-	self:RestoreLayouts()
+	self:RestoreLayouts() -- this trigger the event that got us here.
 end
 
 EditMode.OnInitialize = function(self)
@@ -201,6 +246,10 @@ EditMode.OnInitialize = function(self)
 
 	-- Cannot register for this in OnEnable, that's too late.
 	self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
+
+	if (ns.triggerEditModeReset) then
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", "TriggerEditModeReset")
+	end
 
 	self:RegisterChatCommand("resetlayout", "ResetLayouts")
 end
