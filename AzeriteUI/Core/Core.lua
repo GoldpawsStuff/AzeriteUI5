@@ -91,6 +91,7 @@ ns.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		print("Type |cff4488ff/resetlayout|r to reset the AzeriteUI editmode profile!")
 		print("Type |cff4488ff/resetscale|r to set the ui scale to AzeriteUI default.")
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent") -- once is enough.
 	end
 end
 
