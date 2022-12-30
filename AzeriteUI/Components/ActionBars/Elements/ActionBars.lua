@@ -621,7 +621,7 @@ ActionBarMod.OnAnchorUpdate = function(self, bar, reason, layoutName, ...)
 				anchor:SetScale(defaultPosition.scale)
 				anchor:ClearAllPoints()
 				anchor:SetPoint(unpack(defaultPosition))
-				anchor:SetDefaultPosition(unpack(ddefaultPosition))
+				anchor:SetDefaultPosition(unpack(defaultPosition))
 
 				bar.initialPositionSet = true
 				--self.currentLayout = layoutName

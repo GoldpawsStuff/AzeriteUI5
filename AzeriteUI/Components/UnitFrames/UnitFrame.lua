@@ -165,7 +165,7 @@ ns.UnitFrame.modulePrototype = {
 					self.anchor:SetScale(defaultPosition.scale)
 					self.anchor:ClearAllPoints()
 					self.anchor:SetPoint(unpack(defaultPosition))
-					self.anchor:SetDefaultPosition(unpack(ddefaultPosition))
+					self.anchor:SetDefaultPosition(unpack(defaultPosition))
 
 					self.initialPositionSet = true
 					--self.currentLayout = layoutName
