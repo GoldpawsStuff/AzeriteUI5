@@ -534,8 +534,10 @@ local Power_UpdateColor = function(self, event, unit)
 	local element = self.Power
 	local pType, pToken, altR, altG, altB = UnitPowerType(unit)
 	if (pToken) then
-		local color = config.PowerBarColors[pToken]
-		element:SetStatusBarColor(unpack(color))
+		local color = config.PowerBarColors[pToken] or Colors.power[pToken]
+		if (color) then
+			element:SetStatusBarColor(unpack(color))
+		end
 	end
 end
 
