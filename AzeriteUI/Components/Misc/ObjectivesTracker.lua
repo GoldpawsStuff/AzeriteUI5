@@ -327,7 +327,7 @@ local UpdateProgressBar = function(_, _, line)
 			if (icon) then
 				if (not Cache[icon]) then
 					Cache[icon] = {
-						mask = icon:GetMaskTexture(),
+						mask = icon:GetMaskTexture(1),
 						size = { icon:GetSize() },
 						points = { icon:GetPoint() }
 					}
@@ -387,7 +387,7 @@ local UpdateProgressBar = function(_, _, line)
 			if (cache) then
 				local i = 1
 				while icon:GetMaskTexture(i) do
-					icon:RemoveMaskTexture(icon:GetMaskTexture())
+					icon:RemoveMaskTexture(icon:GetMaskTexture(i))
 					i = i + 1
 				end
 				icon:SetSize(unpack(cache.size))
