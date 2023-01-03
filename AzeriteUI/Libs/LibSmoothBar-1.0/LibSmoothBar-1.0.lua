@@ -2,7 +2,7 @@
 
 	The MIT License (MIT)
 
-	Copyright (c) 2022 Lars Norberg
+	Copyright (c) 2023 Lars Norberg
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibSmoothBar-1.0"
-local MINOR_VERSION = 2
+local MINOR_VERSION = 3
 
 if (not LibStub) then
 	error(MAJOR_VERSION .. " requires LibStub.")

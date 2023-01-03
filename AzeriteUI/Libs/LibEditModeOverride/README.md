@@ -85,10 +85,19 @@ Change the active layout to `layoutName`. This name must exist. You need to call
 
 Does a layout with the name `layoutName` exist?
 
-### `LibEditModeOverride:GetPresetLayoutNames(layoutName)`
+### `LibEditModeOverride:GetPresetLayoutNames()`
 
 Returns a table of the names of all preset non-editable layouts.
 
-### `LibEditModeOverride:GetEditableLayoutNames(layoutName)`
+### `LibEditModeOverride:GetEditableLayoutNames()`
 
 Returns a table of the names of all editable layouts.
+
+### `LibEditModeOverride:CanEditActiveLayout()`
+
+Can the current layout be modified, either via edit mode or this library. If it
+cannot you will need to create or select a new layout to edit.
+
+### `LibEditModeOverride:GetActiveLayout()`
+
+Returns the string name of the currently active layout.

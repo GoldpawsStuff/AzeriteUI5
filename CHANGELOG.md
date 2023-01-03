@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.11-Alpha] 2023-01-03 (Dragonflight)
+### Changed
+- Updated LibEditModeOverride.
+
 ## [5.0.10-Alpha] 2022-12-30 (Dragonflight)
 ### Fixed
 - The chat command messages about scaling and layouts will no longer be shown on every portal, zoning or teleport. Just after fresh logins and manual reloads.
