@@ -816,9 +816,12 @@ PartyFrameMod.Spawn = function(self)
 	oUF:RegisterStyle(ns.Prefix..name, style)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
-	local frame = setmetatable(CreateFrame("Frame", nil, UIParent), GroupHeader_MT)
+	local frame = setmetatable(CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate"), GroupHeader_MT)
 	frame:SetSize(130*4, 130)
 	frame.units = {}
+
+	-- Keep this to party only, not raids.
+	RegisterStateDriver(frame, "visibility", "[group:party,nogroup:raid]show;hide")
 
 	for i = 1,4 do -- MEMBERS_PER_RAID_GROUP
 		local unitFrame = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)
