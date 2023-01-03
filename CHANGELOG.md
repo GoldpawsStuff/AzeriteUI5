@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.12-Alpha] 2023-01-03 (Dragonflight)
+### Changed
+- Party frames no longer appear when in a raid group.
+- Player buffs now have a dark gray border, while debuffs should be colored by school of magic, if any.
+
+### Fixed
+- Updated issues related to powerType colors causing the power crystal to sometimes bug out.
+- Fixed an issue related to caching of objective tracker mask textures when toggling between blizzard and azerite modes.
+
 ## [5.0.11-Alpha] 2023-01-03 (Dragonflight)
 ### Changed
 - Updated LibEditModeOverride.
