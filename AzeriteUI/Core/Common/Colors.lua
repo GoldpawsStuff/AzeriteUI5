@@ -237,21 +237,40 @@ Colors.runes = {
 
 -- Allow us to use power type index to get the color
 -- FrameXML/UnitFrame.lua
-Colors.power[0] = Colors.power.MANA
-Colors.power[1] = Colors.power.RAGE
-Colors.power[2] = Colors.power.FOCUS
-Colors.power[3] = Colors.power.ENERGY
-Colors.power[4] = Colors.power.CHI
-Colors.power[5] = Colors.power.RUNES
-Colors.power[6] = Colors.power.RUNIC_POWER
-Colors.power[7] = Colors.power.SOUL_SHARDS
-Colors.power[8] = Colors.power.LUNAR_POWER
-Colors.power[9] = Colors.power.HOLY_POWER
-Colors.power[11] = Colors.power.MAELSTROM
-Colors.power[13] = Colors.power.INSANITY
-Colors.power[17] = Colors.power.FURY
-Colors.power[18] = Colors.power.PAIN
-Colors.power[19] = Colors.power.ESSENCE
+--Colors.power[0] = Colors.power.MANA
+--Colors.power[1] = Colors.power.RAGE
+--Colors.power[2] = Colors.power.FOCUS
+--Colors.power[3] = Colors.power.ENERGY
+--Colors.power[4] = Colors.power.CHI
+--Colors.power[5] = Colors.power.RUNES
+--Colors.power[6] = Colors.power.RUNIC_POWER
+--Colors.power[7] = Colors.power.SOUL_SHARDS
+--Colors.power[8] = Colors.power.LUNAR_POWER
+--Colors.power[9] = Colors.power.HOLY_POWER
+--Colors.power[11] = Colors.power.MAELSTROM
+--Colors.power[13] = Colors.power.INSANITY
+--Colors.power[17] = Colors.power.FURY
+--Colors.power[18] = Colors.power.PAIN
+--Colors.power[19] = Colors.power.ESSENCE
+
+-- A bit more 10.0.2 compatible.
+Colors.power[Enum.PowerType.Mana] = Colors.power.MANA
+Colors.power[Enum.PowerType.Rage] = Colors.power.RAGE
+Colors.power[Enum.PowerType.Focus] = Colors.power.FOCUS
+Colors.power[Enum.PowerType.Energy] = Colors.power.ENERGY
+Colors.power[Enum.PowerType.ComboPoints] = Colors.power.COMBO_POINTS
+Colors.power[Enum.PowerType.Runes] = Colors.power.RUNES
+Colors.power[Enum.PowerType.RunicPower] = Colors.power.RUNIC_POWER
+Colors.power[Enum.PowerType.SoulShards] = Colors.power.SOUL_SHARDS
+Colors.power[Enum.PowerType.LunarPower] = Colors.power.LUNAR_POWER
+Colors.power[Enum.PowerType.HolyPower] = Colors.power.HOLY_POWER
+Colors.power[Enum.PowerType.Alternate] = Colors.power.ALTERNATE
+Colors.power[Enum.PowerType.Maelstrom] = Colors.power.MAELSTROM
+Colors.power[Enum.PowerType.Chi] = Colors.power.CHI
+Colors.power[Enum.PowerType.ArcaneCharges] = Colors.power.ARCANE_CHARGES
+Colors.power[Enum.PowerType.Fury] = Colors.power.FURY
+Colors.power[Enum.PowerType.Pain] = Colors.power.PAIN
+Colors.power[Enum.PowerType.Insanity] = Colors.power.INSANITY
 
 -- Reactions
 Colors.reaction = {}
