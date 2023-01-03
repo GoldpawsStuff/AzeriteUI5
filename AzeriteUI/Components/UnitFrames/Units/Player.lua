@@ -1063,8 +1063,9 @@ local style = function(self, unit)
 	auras.reanchorIfVisibleChanged = true
 	auras.PostUpdateButton = ns.AuraStyles.PlayerPostUpdateButton
 	auras.CustomFilter = ns.AuraFilters.PlayerAuraFilter
-	auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
+	--auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
 	auras.SortAuras = ns.AuraSorts.DefaultFunction -- only in retail
+	auras.showDebuffType = true
 
 	self.Auras = auras
 
