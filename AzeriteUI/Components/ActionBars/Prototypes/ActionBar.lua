@@ -85,6 +85,9 @@ ns.ActionBar.Create = function(self, id, config, name)
 	]])
 
 	bar:SetAttribute("_onstate-page", [[
+		-- Store the dragonriding state as a member value in lua
+		-- before actual page changes and button updates.
+		self:CallMethod("UpdateDragonRiding", newstate == "dragon" and true or false)
 		if (newstate == "possess" or newstate == "dragon" or newstate == "11") then
 			if HasVehicleActionBar() then
 				newstate = GetVehicleBarIndex()
@@ -168,6 +171,10 @@ end
 
 ActionBar.IsEnabled = function(self)
 	return self.config.enabled
+end
+
+ActionBar.UpdateDragonRiding = function(self, isDragonRiding)
+	self.isDragonRiding = isDragonRiding
 end
 
 ActionBar.UpdateBindings = function(self)
