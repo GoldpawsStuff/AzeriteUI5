@@ -825,6 +825,7 @@ PartyFrameMod.Spawn = function(self)
 
 	for i = 1,4 do -- MEMBERS_PER_RAID_GROUP
 		local unitFrame = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)
+		unitFrame:SetParent(frame) -- for the visibility driver to work.
 		unitFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", (i-1)*130, 0)
 
 		frame.units[i] = unitFrame
