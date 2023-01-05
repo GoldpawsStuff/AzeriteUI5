@@ -642,6 +642,11 @@ eventHandler:SetScript("OnEvent", function(self, event, ...)
 
 	elseif (event == "PLAYER_SPECIALIZATION_CHANGED" or event == "PLAYER_ENTERING_WORLD") then
 		local layoutInfo = C_EditMode.GetLayouts()
+		-- Sometimes this just isn't here on the initial login.
+		-- Layouts sometimes take longer to load, and I can't figure out the event. It's not the above.
+		if (not layoutInfo.activeLayout or ((layoutInfo.activeLayout - 2) > #layoutInfo.layouts)) then
+			return
+		end
 		local layoutName = layoutNames[layoutInfo.activeLayout]
 		LAYOUT = layoutName
 		for anchor in next,AnchorData do
