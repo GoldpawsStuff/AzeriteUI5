@@ -444,13 +444,13 @@ local UpdateQuestItemButton = function(button)
 				normalTexture = button:GetNormalTexture(),
 				highlightTexture = button:GetHighlightTexture(),
 				pushedTexture = button:GetPushedTexture(),
-				chechedTexture = button:GetCheckedTexture()
+				--chechedTexture = button:GetCheckedTexture()
 			}
 
 			button:SetNormalTexture("")
 			button:SetHighlightTexture(Custom[button].highlight)
 			button:SetPushedTexture(Custom[button].pushed)
-			button:SetCheckedTexture(Custom[button].cheched)
+			--button:SetCheckedTexture(Custom[button].cheched)
 
 			Custom[button].backdrop:Show()
 			Custom[button].highlight:Show()
@@ -509,7 +509,7 @@ local UpdateQuestItemButton = function(button)
 			button:SetNormalTexture(cache.normalTexture)
 			button:SetHighlightTexture(cache.highlightTexture)
 			button:SetPushedTexture(cache.pushedTexture)
-			button:SetCheckedTexture(cache.chechedTexture)
+			--button:SetCheckedTexture(cache.chechedTexture)
 			Cache[button] = nil
 		end
 
