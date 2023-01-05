@@ -345,6 +345,7 @@ ChatFrames.StyleTempFrame = function(self)
 end
 
 ChatFrames.UpdateTabAlpha = function(self, frame)
+	if (not frame.GetTab) then return end -- can fire for more frames than ours
 	local tab = frame:GetTab()
 	if (tab.noMouseAlpha == .4 or tab.noMouseAlpha == .2) then
 		tab:SetAlpha(0)
