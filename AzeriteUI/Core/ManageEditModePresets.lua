@@ -208,7 +208,7 @@ EditMode.TriggerPresetChange = function(self)
 	LEMO:ApplyChanges()
 	-- Keep triggering until it works
 	if (LEMO:GetActiveLayout() ~= layouts.defaultLayout) then
-		return self:TriggerPresetChange("TriggerEditModeReset", 1)
+		return self:TriggerPresetChange("TriggerPresetChange", 1)
 	end
 	self.TriggerPresetChange = ns.Noop
 end
