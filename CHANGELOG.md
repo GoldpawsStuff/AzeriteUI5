@@ -4,7 +4,14 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.0.14-Alpha] 2023-01-03 (Dragonflight)
+## [5.0.15-Alpha] 2023-01-05 (Dragonflight)
+### Changed
+- Attempted to prevent actionbuttons from being grayed out while dragonriding.
+
+### Fixed
+- The editmode azerite preset will no longer unintentionally attempt to reset on every logon.
+
+## [5.0.14-Alpha] 2023-01-05 (Dragonflight)
 ### Added
 - Added XP and Reputation tracking.
 
