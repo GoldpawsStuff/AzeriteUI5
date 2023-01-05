@@ -270,7 +270,7 @@ end
 local UpdateUsable = function(self)
 	local config = self.config
 
-	if (UnitIsDeadOrGhost("player") or IsMounted()) then
+	if (UnitIsDeadOrGhost("player") or (IsMounted() and not self.header.isDragonRiding)) then
 		self.icon:SetDesaturated(true)
 		self.icon:SetVertexColor(.4, .36, .32)
 
