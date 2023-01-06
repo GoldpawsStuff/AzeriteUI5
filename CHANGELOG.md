@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.17-Alpha] 2023-01-06 (Dragonflight)
+### Fixed
+- Fixed an issue with unit names in raid groups.
+
 ## [5.0.16-Alpha] 2023-01-06 (Dragonflight)
 ### Added
 - Added Combo Points, Arcane Charges, Chi, Holy Power, Soul Shards, Stagger and Runes.
