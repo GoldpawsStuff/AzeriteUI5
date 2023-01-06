@@ -267,7 +267,6 @@ local config = {
 
 -- Element Callbacks
 --------------------------------------------
-
 -- Create a point used for classpowers, stagger and runes.
 local ClassPower_CreatePoint = function(element, index)
 	local db = config
