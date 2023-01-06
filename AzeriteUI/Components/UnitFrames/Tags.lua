@@ -172,11 +172,13 @@ Methods[prefix("*:Health")] = function(unit, realUnit, ...)
 		local health, maxHealth = UnitHealth(unit), UnitHealthMax(unit)
 		if (maxHealth == 0) then return end
 		if (useSmart) then
-			if (health == maxHealth) then
-				return AbbreviateNumber(health)
+			local displayValue = health / maxHealth * 100 + .5
+			displayValue = displayValue - displayValue%1
+
+			if (displayValue < 100) then
+				return displayValue
 			else
-				local displayValue = health / maxHealth * 100 + .5
-				return displayValue - displayValue%1
+				return AbbreviateNumber(health)
 			end
 
 		elseif (useFull) then
