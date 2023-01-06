@@ -52,7 +52,7 @@ local defaults = { profile = ns:Merge({
 			scale = 1,
 			[1] = "BOTTOM",
 			[2] = 0,
-			[3] = 290
+			[3] = 290 - 16/2
 		}
 	}
 }, ns.UnitFrame.defaults) }
@@ -137,8 +137,30 @@ local Cast_Update = function(element, unit)
 		element.Backdrop:Show()
 		element:SetStatusBarColor(unpack(Colors.cast))
 	end
+
 	-- Don't show mega tiny spell queue zones, it just looks cluttered.
-	element.SafeZone:SetShown(((select(4, GetNetStats()) / 1000) / element.max) > .05)
+	-- Also, fix the tex coords. OuF does it all wrong.
+	local ratio = (select(4, GetNetStats()) / 1000) / element.max
+	if (ratio > 1) then ratio = 1 end
+	if (ratio > .05) then
+
+		local width, height = element:GetSize()
+		element.SafeZone:SetSize(width * ratio, height)
+		element.SafeZone:ClearAllPoints()
+
+		if (element.channeling) then
+			element.SafeZone:SetPoint("LEFT")
+			element.SafeZone:SetTexCoord(0, ratio, 0, 1)
+		else
+			element.SafeZone:SetPoint("RIGHT")
+			element.SafeZone:SetTexCoord(1-ratio, 1, 0, 1)
+		end
+
+		element.SafeZone:Show()
+	else
+		element.SafeZone:Hide()
+	end
+
 end
 
 -- Frame Script Handlers
@@ -147,7 +169,7 @@ local style = function(self, unit)
 
 	local db = config
 
-	self:SetSize(112, 11)
+	self:SetSize(112 + 16, 11 + 16)
 	self:EnableMouse(false)
 
 	-- Cast Bar
@@ -232,9 +254,10 @@ CastBarMod.Spawn = function(self)
 	anchor:SetTitle(HUD_EDIT_MODE_CAST_BAR_LABEL)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
-	anchor:SetSize(112, 11)
+	anchor:SetSize(112 + 16, 11 + 16)
 	anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
 	anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
+	anchor:SetEditModeAccountSetting(Enum.EditModeAccountSetting.ShowCastBar)
 	anchor.frameOffsetX = 0
 	anchor.frameOffsetY = 0
 	anchor.framePoint = "TOPLEFT"
@@ -247,6 +270,20 @@ CastBarMod.OnInitialize = function(self)
 	if (IsAddOnEnabled("Quartz")) then
 		return self:Disable()
 	end
+
 	self.db = ns.db:RegisterNamespace("PlayerCastBarFrame", defaults)
 	self:SetEnabledState(self.db.profile.enabled)
+
+	-- How the fuck do I get this out of the editmode?
+	PlayerCastingBarFrame:SetParent(UIHider)
+	PlayerCastingBarFrame:UnregisterAllEvents()
+	PlayerCastingBarFrame:SetUnit(nil)
+	PlayerCastingBarFrame:Hide()
+
+	PetCastingBarFrame:SetParent(UIHider)
+	PetCastingBarFrame:UnregisterAllEvents()
+	PetCastingBarFrame:SetUnit(nil)
+	PetCastingBarFrame:UnregisterEvent("UNIT_PET")
+	PetCastingBarFrame:Hide()
+
 end
