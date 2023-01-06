@@ -38,6 +38,7 @@ local unpack = unpack
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
+local IsAddOnEnabled = ns.API.IsAddOnEnabled
 
 -- Constants
 local playerClass = ns.PlayerClass
@@ -103,7 +104,149 @@ local config = {
 	CastBarShieldPosition = { "CENTER", 1, -2 },
 	CastBarShieldSize = { 193, 93 },
 	CastBarShieldTexture = GetMedia("cast_back_spiked"),
-	CastBarShieldColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
+	CastBarShieldColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] }
 
 }
 
+-- Element Callbacks
+--------------------------------------------
+local Cast_CustomDelayText = function(element, duration)
+	if (element.casting) then
+		duration = element.max - duration
+	end
+	element.Time:SetFormattedText("%.1f", duration)
+	element.Delay:SetFormattedText("|cffff0000%s%.2f|r", element.casting and "+" or "-", element.delay)
+end
+
+local Cast_CustomTimeText = function(element, duration)
+	if (element.casting) then
+		duration = element.max - duration
+	end
+	element.Time:SetFormattedText("%.1f", duration)
+	element.Delay:SetText()
+end
+
+-- Update cast bar color and backdrop to indicate protected casts.
+-- *Note that the shield icon works as an alternate backdrop here,
+--  which is why we're hiding the regular backdrop on protected casts.
+local Cast_Update = function(element, unit)
+	if (element.notInterruptible) then
+		element.Backdrop:Hide()
+		element:SetStatusBarColor(unpack(Colors.red))
+	else
+		element.Backdrop:Show()
+		element:SetStatusBarColor(unpack(Colors.cast))
+	end
+	-- Don't show mega tiny spell queue zones, it just looks cluttered.
+	element.SafeZone:SetShown(((select(4, GetNetStats()) / 1000) / element.max) > .05)
+end
+
+-- Frame Script Handlers
+--------------------------------------------
+local style = function(self, unit)
+
+	local db = config
+
+	self:SetSize(112, 11)
+	self:EnableMouse(false)
+
+	-- Cast Bar
+	--------------------------------------------
+	local cast = self:CreateBar()
+	cast:SetFrameStrata("MEDIUM")
+	cast:SetPoint("CENTER")
+	cast:SetSize(unpack(db.CastBarSize))
+	cast:SetStatusBarTexture(db.CastBarTexture)
+	cast:SetStatusBarColor(unpack(Colors.cast))
+	cast:SetOrientation(db.CastBarOrientation)
+	cast:SetSparkMap(db.CastBarSparkMap)
+	cast:DisableSmoothing(true)
+	cast.timeToHold = db.CastBarTimeToHoldFailed
+
+	local castBackdrop = cast:CreateTexture(nil, "BORDER", nil, -2)
+	castBackdrop:SetPoint(unpack(db.CastBarBackgroundPosition))
+	castBackdrop:SetSize(unpack(db.CastBarBackgroundSize))
+	castBackdrop:SetTexture(db.CastBarBackgroundTexture)
+	castBackdrop:SetVertexColor(unpack(db.CastBarBackgroundColor))
+	cast.Backdrop = castBackdrop
+
+	local castShield = cast:CreateTexture(nil, "BORDER", nil, -1)
+	castShield:SetPoint(unpack(db.CastBarShieldPosition))
+	castShield:SetSize(unpack(db.CastBarShieldSize))
+	castShield:SetTexture(db.CastBarShieldTexture)
+	castShield:SetVertexColor(unpack(db.CastBarShieldColor))
+	cast.Shield = castShield
+
+	local castSafeZone = cast:CreateTexture(nil, "ARTWORK", nil, 0)
+	castSafeZone:SetTexture(db.CastBarSpellQueueTexture)
+	castSafeZone:SetVertexColor(unpack(db.CastBarSpellQueueColor))
+	cast.SafeZone = castSafeZone
+
+	local castText = cast:CreateFontString(nil, "OVERLAY", nil, 0)
+	castText:SetPoint(unpack(db.CastBarTextPosition))
+	castText:SetFontObject(db.CastBarTextFont)
+	castText:SetTextColor(unpack(db.CastBarTextColor))
+	castText:SetJustifyH(db.CastBarTextJustifyH)
+	castText:SetJustifyV(db.CastBarTextJustifyV)
+	cast.Text = castText
+
+	local castTime = cast:CreateFontString(nil, "OVERLAY", nil, 0)
+	castTime:SetPoint(unpack(db.CastBarValuePosition))
+	castTime:SetFontObject(db.CastBarValueFont)
+	castTime:SetTextColor(unpack(db.CastBarValueColor))
+	castTime:SetJustifyH(db.CastBarValueJustifyH)
+	castTime:SetJustifyV(db.CastBarValueJustifyV)
+	cast.Time = castTime
+
+	local castDelay = cast:CreateFontString(nil, "OVERLAY", nil, 0)
+	castDelay:SetFontObject(GetFont(12,true))
+	castDelay:SetTextColor(unpack(Colors.red))
+	castDelay:SetPoint("LEFT", castTime, "RIGHT", 0, 0)
+	castDelay:SetJustifyV("MIDDLE")
+	cast.Delay = castDelay
+
+	cast.CustomDelayText = Cast_CustomDelayText
+	cast.CustomTimeText = Cast_CustomTimeText
+	cast.PostCastInterruptible = Cast_Update
+	cast.PostCastStart = Cast_Update
+	--cast.PostCastStop = Cast_Update -- needed?
+
+	self.Castbar = cast
+
+end
+
+CastBarMod.Spawn = function(self)
+
+	-- UnitFrame
+	---------------------------------------------------
+	local unit, name = "player", "PlayerCastBar"
+
+	oUF:RegisterStyle(ns.Prefix..name, style)
+	oUF:SetActiveStyle(ns.Prefix..name)
+
+	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
+
+	-- Movable Frame Anchor
+	---------------------------------------------------
+	local anchor = ns.Widgets.RequestMovableFrameAnchor()
+	anchor:SetTitle(HUD_EDIT_MODE_CAST_BAR_LABEL)
+	anchor:SetScalable(true)
+	anchor:SetMinMaxScale(.75, 1.25, .05)
+	anchor:SetSize(112, 11)
+	anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
+	anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
+	anchor.frameOffsetX = 0
+	anchor.frameOffsetY = 0
+	anchor.framePoint = "TOPLEFT"
+	anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
+
+	self.anchor = anchor
+end
+
+CastBarMod.OnInitialize = function(self)
+	if (IsAddOnEnabled("Quartz")) then
+		return self:Disable()
+	end
+	self.db = ns.db:RegisterNamespace("PlayerCastBarFrame", defaults)
+	self:SetEnabledState(self.db.profile.enabled)
+end
