@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.18-Beta] 2023-01-06 (Dragonflight)
+### Added
+- Added the floating player castbar.
+- Added latency, framerate, zone name, clock and new mail warning to the minimap.
+- Added the styled MBB button to the minimap.
+
 ## [5.0.17-Alpha] 2023-01-06 (Dragonflight)
 ### Fixed
 - Fixed an issue with unit names in raid groups.
