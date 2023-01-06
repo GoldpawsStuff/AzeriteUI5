@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.16-Alpha] 2023-01-06 (Dragonflight)
+### Added
+- Added Combo Points, Arcane Charges, Chi, Holy Power, Soul Shards, Stagger and Runes.
+
 ## [5.0.15-Alpha] 2023-01-05 (Dragonflight)
 ### Changed
 - Attempted to prevent actionbuttons from being grayed out while dragonriding.
