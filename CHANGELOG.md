@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Added the floating player castbar.
 - Added latency, framerate, zone name, clock and new mail warning to the minimap.
-- Added the styled MBB button to the minimap.
+- Added styling and positioning of the MBB addon icon.
 
 ## [5.0.17-Alpha] 2023-01-06 (Dragonflight)
 ### Fixed
