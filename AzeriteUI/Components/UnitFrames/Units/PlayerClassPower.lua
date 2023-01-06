@@ -305,7 +305,7 @@ end
 local ClassPower_PostUpdate = function(element, cur, max)
 
 	local style
-	if (max == 6) then
+	if (max >= 6) then
 		style = "Runes"
 	elseif (max == 5) then
 		style = playerClass == "MONK" and "Chi" or playerClass == "WARLOCK" and "SoulShards" or "ComboPoints"
@@ -503,7 +503,7 @@ local style = function(self, unit)
 		local classpower = CreateFrame("Frame", nil, self)
 		classpower:SetAllPoints(self)
 
-		local maxPoints = 5
+		local maxPoints = 10 -- for fuck's sake
 		for i = 1,maxPoints do
 			classpower[i] = ClassPower_CreatePoint(classpower)
 		end

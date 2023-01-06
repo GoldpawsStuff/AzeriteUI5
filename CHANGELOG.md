@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.20-Beta] 2023-01-06 (Dragonflight)
+### Fixed
+- The classpower element should no longer bug out for rogues with more than 5 combo points. However, it currently only shows a maximum of 6, even when you have 7. An update with the last point is coming in a few days!
+
 ## [5.0.19-Beta] 2023-01-06 (Dragonflight)
 ### Changed
 - Adjusted the nameplate aura filter to be a bit more selective.
