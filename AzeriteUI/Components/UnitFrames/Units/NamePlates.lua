@@ -853,7 +853,7 @@ local cvars = {
 
 	-- new CVar July 14th 2020. Wohoo! Thanks torhaala for telling me! :)
 	-- *has no effect in retail. probably for the classics only.
-	["clampTargetNameplateToScreen"] = 1,
+	--["clampTargetNameplateToScreen"] = 1,
 
 	-- Nameplate scale
 	["nameplateMinScale"] = .6, -- .8
@@ -895,7 +895,10 @@ local cvars = {
 	--["nameplateMaxDistance"] = 60, -- 20 is classic upper limit, 60 is BfA default
 
 	-- The max distance to show the target nameplate when the target is behind the camera.
-	["nameplateTargetBehindMaxDistance"] = 15 -- 15
+	["nameplateTargetBehindMaxDistance"] = 15, -- 15
+
+	-- Don't show this crap.
+	["nameplateResourceOnTarget"] = 0,
 }
 
 local callback = function(self, event, unit)
@@ -996,7 +999,7 @@ end
 
 NamePlatesMod.OnEnable = function(self)
 	oUF:SetActiveStyle(ns.Prefix.."NamePlates")
-	oUF:SpawnNamePlates(ns.Prefix, callback--[[, cvars]])
+	oUF:SpawnNamePlates(ns.Prefix, callback, cvars)
 
 	self.mouseTimer = self:ScheduleRepeatingTimer(checkMouseOver, 1/20)
 end
