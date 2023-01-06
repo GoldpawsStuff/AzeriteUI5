@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.19-Beta] 2023-01-06 (Dragonflight)
+### Changed
+- Adjusted the nameplate aura filter to be a bit more selective.
+- Enforce a few nameplate related cvars that messes with our plates.
+
 ## [5.0.18-Beta] 2023-01-06 (Dragonflight)
 ### Added
 - Added the floating player castbar.
