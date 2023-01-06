@@ -304,7 +304,7 @@ Prototype.SetTheme = function(self, requestedTheme)
 	MinimapMod.db.profile.theme = name
 
 	-- Update custom element visibility
-	self:UpdateCustomElements()
+	MinimapMod:UpdateCustomElements()
 end
 
 -- Element Callbacks
