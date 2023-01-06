@@ -821,9 +821,11 @@ PartyFrameMod.Spawn = function(self)
 	frame.units = {}
 
 	-- Keep this to party only, not raids.
-	RegisterStateDriver(frame, "visibility", "[group:party,nogroup:raid]show;hide")
+	-- *since we're no longer parenting to oUFs petbattle hider,
+	--  we need to handle the petbattle visibility ourselves.
+	RegisterStateDriver(frame, "visibility", "[petbattle]hide;[group:party,nogroup:raid]show;hide")
 
-	for i = 1,4 do -- MEMBERS_PER_RAID_GROUP
+	for i = 1,4 do
 		local unitFrame = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)
 		unitFrame:SetParent(frame) -- for the visibility driver to work.
 		unitFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", (i-1)*130, 0)
@@ -855,7 +857,7 @@ PartyFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PartyFrames", defaults)
 	self:SetEnabledState(self.db.profile.enabled)
 
-	--for i = 1, MEMBERS_PER_RAID_GROUP do
-	--	oUF:DisableBlizzard("party"..i)
-	--end
+	for i = 1, MEMBERS_PER_RAID_GROUP do
+		oUF:DisableBlizzard("party"..i)
+	end
 end
