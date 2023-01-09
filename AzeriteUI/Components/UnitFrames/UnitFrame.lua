@@ -89,7 +89,7 @@ ns.UnitFrame.Spawn = function(unit, overrideName, ...)
 	frame.isUnitFrame = true
 	frame.colors = ns.Colors
 
-	frame:RegisterForClicks("AnyDown", "AnyUp")
+	frame:RegisterForClicks("AnyUp")
 	frame:SetScript("OnEnter", UnitFrame_OnEnter)
 	frame:SetScript("OnLeave", UnitFrame_OnLeave)
 	frame:SetScript("OnHide", UnitFrame_OnHide)
