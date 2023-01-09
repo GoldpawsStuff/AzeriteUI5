@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.22-Beta] 2023-01-09 (Dragonflight)
+### Changed
+- Unitframes should now only respond to mouse release, not downpress. This should solve the issues with disappearing context menus.
+
+### Fixed
+- Fixed an issue where classpowers would bug out from getting update calls without max/min values passed.
+
 ## [5.0.21-Beta] 2023-01-06 (Dragonflight)
 ### Added
 - Added back version label to the UI for anything not release tagged, because bug reports are fully useless for me without this information.
