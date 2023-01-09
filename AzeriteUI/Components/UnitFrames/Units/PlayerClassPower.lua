@@ -303,6 +303,9 @@ end
 -- Update classpower layout and textures.
 -- *also used for one-time setup of stagger and runes.
 local ClassPower_PostUpdate = function(element, cur, max)
+	if (not cur or not max) then
+		return
+	end
 
 	local style
 	if (max >= 6) then
