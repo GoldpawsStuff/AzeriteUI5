@@ -772,6 +772,7 @@ ActionBarMod.UpdateSettings = function(self)
 		local bardb = db.bars[i]
 
 		-- Update enabled bars.
+		-- Settings not there?
 		if (bardb.enabled) then
 			bar:Enable()
 		else
