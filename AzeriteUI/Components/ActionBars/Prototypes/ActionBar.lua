@@ -110,9 +110,9 @@ ns.ActionBar.Create = function(self, id, config, name)
 
 	bar:UpdateButtons()
 
-	if (not bar.config.enabled) then
-		bar:Disable()
-	end
+	--if (not bar.config.enabled) then
+	--	bar:Disable()
+	--end
 
 	return bar
 end
