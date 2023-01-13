@@ -159,13 +159,13 @@ local layouts = {
 	}
 }
 
-EditMode.RestoreLayouts = function(self)
+EditMode.RestoreLayouts = function(self, forced)
 	if (InCombatLockdown()) then return end
 	if (not LEMO:AreLayoutsLoaded()) then return end
 
 	-- Create and reset our custom layouts, if they don't exist.
 	for _,layoutInfo in ipairs(layouts) do
-		if (not LEMO:DoesLayoutExist(layoutInfo.layoutName)) then
+		if (not LEMO:DoesLayoutExist(layoutInfo.layoutName) and (forced or not self.db.layoutsCreated)) then
 			LEMO:AddLayout(layoutInfo.layoutType, layoutInfo.layoutName)
 			LEMO:SetActiveLayout(layoutInfo.layoutName)
 			LEMO:ApplyChanges()
@@ -182,6 +182,8 @@ EditMode.RestoreLayouts = function(self)
 			end
 		end
 	end
+
+	self.db.layoutsCreated = true
 end
 
 EditMode.ResetLayouts = function(self)
@@ -197,7 +199,7 @@ EditMode.ResetLayouts = function(self)
 	end
 
 	-- Create and reset our custom layouts.
-	self:RestoreLayouts()
+	self:RestoreLayouts(true)
 
 	LEMO:SetActiveLayout(layouts.defaultLayout)
 	LEMO:ApplyChanges()
@@ -238,7 +240,9 @@ EditMode.OnEvent = function(self, event, ...)
 	-- Restore our custom layouts if they have been deleted.
 	-- This might piss people off, so should probably make this a one-time thing.
 	-- Create a saved setting for "layoutsCreated" or something like that.
-	self:RestoreLayouts() -- this trigger the event that got us here.
+	if (not self.db.layoutsCreated) then
+		self:RestoreLayouts() -- this trigger the event that got us here.
+	end
 end
 
 EditMode.OnInitialize = function(self)
