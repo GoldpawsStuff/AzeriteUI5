@@ -1,6 +1,6 @@
 -- Copyright 2022 plusmouse. Licensed under terms found in LICENSE file.
 
-local lib = LibStub:NewLibrary("LibEditModeOverride-1.0", 9)
+local lib = LibStub:NewLibrary("LibEditModeOverride-1.0", 10)
 
 if not lib then return end
 
@@ -220,7 +220,7 @@ function lib:AddLayout(layoutType, layoutName)
   end
 
   table.insert(layoutInfo.layouts, newLayoutIndex, newLayout)
-  C_EditMode.OnLayoutAdded(newLayoutIndex)
+  C_EditMode.OnLayoutAdded(newLayoutIndex, true)
   C_EditMode.SetActiveLayout(newLayoutIndex)
 end
 

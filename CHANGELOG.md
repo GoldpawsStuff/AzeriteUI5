@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.23-RC] 2023-01-13 (Dragonflight)
+### Fixed
+- Fixed some editmode integrations and additions causing bugs in WoW Client Patch 10.0.5.
+
 ## [5.0.22-Beta] 2023-01-09 (Dragonflight)
 ### Changed
 - Unitframes should now only respond to mouse release, not downpress. This should solve the issues with disappearing context menus.

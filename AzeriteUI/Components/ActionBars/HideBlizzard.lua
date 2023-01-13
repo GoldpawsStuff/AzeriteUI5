@@ -105,6 +105,8 @@ BlizzardABDisabler.HideBlizzard = function(self)
 		hideActionButton(_G["MultiBar7Button" .. i])
 	end
 
+	hideActionBarFrame(BagsBar, false) -- 10.0.5
+	hideActionBarFrame(MicroMenu, false) -- 10.0.5
 	hideActionBarFrame(MicroButtonAndBagsBar, false)
 	hideActionBarFrame(StanceBar, true)
 	hideActionBarFrame(PossessActionBar, true)

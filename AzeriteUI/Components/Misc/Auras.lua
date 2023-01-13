@@ -29,6 +29,14 @@ local Auras = ns:NewModule("Auras", "LibMoreEvents-1.0")
 
 Auras.DisableBlizzard = function(self)
 
+	 -- 10.0.5
+	if (BuffFrame.UpdateAuras) then
+		BuffFrame:UpdateAuras()
+	end
+	if (BuffFrame.UpdatePlayerBuffs) then
+		BuffFrame:UpdatePlayerBuffs()
+	end
+
 	BuffFrame:SetScript("OnLoad", nil)
 	BuffFrame:SetScript("OnUpdate", nil)
 	BuffFrame:SetScript("OnEvent", nil)
