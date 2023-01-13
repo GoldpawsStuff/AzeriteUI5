@@ -26,8 +26,7 @@
 local Addon, ns = ...
 
 local defaults = {
-	enabled = true,
-
+	enabled = true
 }
 
 local Bar = CreateFrame("Frame")
