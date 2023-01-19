@@ -61,7 +61,7 @@ local config = {
 	ExtraButtonBorderTexture = GetMedia("actionbutton-border"),
 	ExtraButtonBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3], 1 },
 
-	ExtraButtonBindPosition = { "TOPLEFT", 5, -5 },
+	ExtraButtonBindPosition = { "TOPLEFT", -10, -5 },
 	ExtraButtonBindJustifyH = "CENTER",
 	ExtraButtonBindJustifyV = "BOTTOM",
 	ExtraButtonBindFont = GetFont(15, true),
@@ -77,19 +77,24 @@ local config = {
 
 ExtraButtons.UpdateButton = function(self, button)
 
+	if (button.styled) then return end
+	button.styled = true
+
 	local name = button:GetName()
 	if (name and string_find(name, "ExtraActionButton%d+")) then
 		if (not self.ExtraButtons) then
 			self.ExtraButtons = {}
 		end
 		self.ExtraButtons[button] = true
+		if (name == "ExtraActionButton1") then
+			button.bindingAction = "EXTRAACTIONBUTTON1"
+		end
 	end
 
 	local db = config
 
 	local m = db.ExtraButtonMask
 	local b = GetMedia("blank")
-
 
 	if (button.icon or button.Icon) then (button.icon or button.Icon):SetAlpha(0) end
 	if (button.NormalTexture) then button.NormalTexture:SetAlpha(0) end -- Zone
@@ -177,6 +182,7 @@ ExtraButtons.UpdateButton = function(self, button)
 	local count = button.Count
 	if (count) then
 		count:SetParent(overlay)
+		count:SetDrawLayer("OVERLAY")
 		count:ClearAllPoints()
 		count:SetPoint(unpack(db.ExtraButtonCountPosition))
 		count:SetJustifyH(db.ExtraButtonCountJustifyH)
@@ -188,6 +194,7 @@ ExtraButtons.UpdateButton = function(self, button)
 	local keybind = button.HotKey
 	if (keybind) then
 		keybind:SetParent(overlay)
+		keybind:SetDrawLayer("OVERLAY")
 		keybind:ClearAllPoints()
 		keybind:SetPoint(unpack(db.ExtraButtonBindPosition))
 		keybind:SetFontObject(db.ExtraButtonBindFont)
@@ -196,7 +203,9 @@ ExtraButtons.UpdateButton = function(self, button)
 		keybind:SetShadowOffset(0, 0)
 		keybind:SetShadowColor(0, 0, 0, 1)
 		keybind:SetTextColor(unpack(db.ExtraButtonBindColor))
-		keybind:SetText(GetBindingKey(button:GetName()))
+		if (button.bindingAction) then
+			keybind:SetText(GetBindingKey(button.bindingAction))
+		end
 	end
 
 	if (not button.__GP_Icon) then
@@ -272,7 +281,11 @@ ExtraButtons.UpdateBindings = function(self)
 	if (self.ExtraButtons) then
 		for button in pairs(self.ExtraButtons) do
 			if (button.HotKey) then
-				button.HotKey:SetText(GetBindingKey(button:GetName()))
+				if (button.bindingAction) then
+					button.HotKey:SetText(GetBindingKey(button.bindingAction))
+				else
+					button.HotKey:SetText("")
+				end
 			end
 		end
 	end

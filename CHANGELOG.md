@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.26-RC] 2023-01-19 (Dragonflight)
+### Fixed
+- Fixed an issue where the zone ability styling would be applied indefinitely until the whole thing was just a blob.
+- Fixed an issue preventing the extraactionbutton keybind from being displayed.
+
 ## [5.0.25-RC] 2023-01-19 (Dragonflight)
 ### Fixed
 - The classpower element should no longer take up clickable screen space.
