@@ -25,7 +25,7 @@
 --]]
 local Addon, ns = ...
 
-local EditMode = ns:NewModule("EditMode", "LibMoreEvents-1.0", "AceConsole-3.0", "AceTimer-3.0")
+local EditMode = ns:NewModule("EditMode", "LibMoreEvents-1.0", "AceConsole-3.0", "AceTimer-3.0", "AceHook-3.0")
 local LEMO = LibStub("LibEditModeOverride-1.0")
 
 local ipairs = ipairs
@@ -165,7 +165,7 @@ EditMode.RestoreLayouts = function(self, forced)
 
 	-- Create and reset our custom layouts, if they don't exist.
 	for _,layoutInfo in ipairs(layouts) do
-		if (not LEMO:DoesLayoutExist(layoutInfo.layoutName) and (forced or not self.db.layoutsCreated)) then
+		if (not LEMO:DoesLayoutExist(layoutInfo.layoutName) and (forced or not self.db.profile.layoutsCreated)) then
 			LEMO:AddLayout(layoutInfo.layoutType, layoutInfo.layoutName)
 			LEMO:SetActiveLayout(layoutInfo.layoutName)
 			LEMO:ApplyChanges()
@@ -183,7 +183,7 @@ EditMode.RestoreLayouts = function(self, forced)
 		end
 	end
 
-	self.db.layoutsCreated = true
+	self.db.profile.layoutsCreated = true
 end
 
 EditMode.ResetLayouts = function(self)
@@ -238,10 +238,15 @@ EditMode.OnEvent = function(self, event, ...)
 	if (not LEMO:AreLayoutsLoaded()) then return end
 
 	-- Restore our custom layouts if they have been deleted.
-	-- This might piss people off, so should probably make this a one-time thing.
-	-- Create a saved setting for "layoutsCreated" or something like that.
-	if (not self.db.layoutsCreated) then
+	if (not self.db.profile.layoutsCreated) then
 		self:RestoreLayouts() -- this trigger the event that got us here.
+	end
+end
+
+-- Proxy this by secure hooks to make sure our code is run after.
+EditMode.OnEditModeManagerEvent = function(self, event, ...)
+	if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
+		self:OnEvent(event, ...)
 	end
 end
 
@@ -249,11 +254,13 @@ EditMode.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("EditMode", defaults)
 
 	-- Cannot register for this in OnEnable, that's too late.
-	self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
+	--self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
 
-	if (ns.triggerEditModeReset) then
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", "TriggerEditModeReset")
-	end
+	--self:SecureHook(EditModeManagerFrame, "OnEvent", "OnEditModeManagerEvent")
+
+	--if (ns.triggerEditModeReset) then
+	--	self:RegisterEvent("PLAYER_ENTERING_WORLD", "TriggerEditModeReset")
+	--end
 
 	self:RegisterChatCommand("resetlayout", "ResetLayouts")
 end

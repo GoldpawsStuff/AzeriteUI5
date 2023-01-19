@@ -489,7 +489,6 @@ local style = function(self, unit)
 	local db = config
 
 	self:SetSize(unpack(config.ClassPowerFrameSize))
-	self:EnableMouse(false)
 
 	local SCP = IsAddOnEnabled("SimpleClassPower")
 	if (not SCP) then
@@ -579,6 +578,7 @@ ClassPowerMod.Spawn = function(self)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
 	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
+	self.frame:EnableMouse(false)
 
 	-- Movable Frame Anchor
 	---------------------------------------------------

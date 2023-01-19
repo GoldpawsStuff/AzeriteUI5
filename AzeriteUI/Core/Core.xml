@@ -28,13 +28,14 @@
 		  so don't define Widget upvalues at loading!
 	-->
 	<Script file="Widgets\Cooldowns.lua"/>
-	<Script file="Widgets\MovableFrames.lua"/>
+	<Script file="Widgets\Popups.lua"/>
 
 	<!-- Core -->
 	<Script file="Core.lua"/>
 	<Script file="Development.lua"/>
 	<Script file="FixBlizzardBugs.lua"/>
 	<Script file="ManageEditModePresets.lua"/>
+	<Script file="MovableFrames.lua"/>
 	<Script file="Debugging.lua"/>
 	<Script file="Experimental.lua"/>
 

@@ -75,7 +75,7 @@ ns.AuraFilters.NameplateAuraFilter = function(element, unit, data)
 	elseif (data.nameplateShowAll) then
 		return true
 	elseif (data.nameplateShowSelf and button.isPlayer) then
-		if (button.isDebuff) then
+		if (button.isHarmful) then
 			return (not button.noDuration and data.duration < 61) or (data.count > 1)
 		else
 			return (not button.noDuration and data.duration < 31) or (data.count > 1)

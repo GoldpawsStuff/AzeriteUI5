@@ -170,7 +170,6 @@ local style = function(self, unit)
 	local db = config
 
 	self:SetSize(112 + 16, 11 + 16)
-	self:EnableMouse(false)
 
 	-- Cast Bar
 	--------------------------------------------
@@ -247,6 +246,7 @@ CastBarMod.Spawn = function(self)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
 	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
+	self.frame:EnableMouse(false)
 
 	-- Movable Frame Anchor
 	---------------------------------------------------

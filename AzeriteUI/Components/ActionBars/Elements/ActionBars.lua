@@ -340,6 +340,11 @@ local style = function(button)
 	button:SetNormalTexture("")
 	button:SetHighlightTexture("")
 	button:SetCheckedTexture("")
+	button:GetHighlightTexture():Hide()
+	button:GetCheckedTexture():Hide()
+
+	-- New 3.4.1 checked texture keeps being reset.
+	hooksecurefunc(button, "SetChecked", function() button:GetCheckedTexture():Hide() end)
 
 	-- Custom slot texture
 	local backdrop = button:CreateTexture(nil, "BACKGROUND", nil, -7)

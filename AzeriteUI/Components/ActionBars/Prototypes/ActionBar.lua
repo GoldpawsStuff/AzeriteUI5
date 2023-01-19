@@ -109,6 +109,7 @@ ns.ActionBar.Create = function(self, id, config, name)
 	]])
 
 	bar:UpdateButtons()
+	bar:UpdateVisibilityDriver()
 
 	--if (not bar.config.enabled) then
 	--	bar:Disable()

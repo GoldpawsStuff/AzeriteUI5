@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.25-RC] 2023-01-19 (Dragonflight)
+### Fixed
+- The classpower element should no longer take up clickable screen space.
+- The floating castbar element should no longer take up clickable screen space.
+- A problem with identifying debuffs and debuff types were solved, resulting on much better aura sorting, filtering and correctly colored borders on debuffs.
+
+## [5.0.24-RC] 2023-01-13 (Dragonflight)
+### Fixed
+- Unified the buff frame fixes to work for both retail and the PTR, and worked around a new retail issue that the previous build introduced.
+
 ## [5.0.23-RC] 2023-01-13 (Dragonflight)
 ### Fixed
 - Fixed some editmode integrations and additions causing bugs in WoW Client Patch 10.0.5.

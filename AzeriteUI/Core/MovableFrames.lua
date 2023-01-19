@@ -40,6 +40,7 @@ local unpack = unpack
 -- Addon API
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
+local GetMedia = ns.API.GetMedia
 
 local CURRENT
 
@@ -623,13 +624,49 @@ Widgets.HideMovableFrameAnchors = function(requestedByEditMode)
 	end
 end
 
--- Private event frame
-local eventHandler = CreateFrame("Frame")
-eventHandler:RegisterEvent("PLAYER_ENTERING_WORLD")
-eventHandler:RegisterEvent("PLAYER_REGEN_DISABLED")
-eventHandler:RegisterEvent("PLAYER_REGEN_ENABLED")
-eventHandler:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED")
-eventHandler:SetScript("OnEvent", function(self, event, ...)
+-- Movable Frame Manager Frame
+-- *cannot parent to the editmode frame
+local managerFrame = CreateFrame("Frame", Addon.."MovableFrameManager", UIParent)
+managerFrame:Hide()
+--managerFrame:SetFrameStrata("DIALOG")
+--managerFrame:SetFrameLevel(2)
+--managerFrame:SetPoint("TOPLEFT", EditModeManagerFrame, "TOPRIGHT", 10, -4)
+--managerFrame:SetSize(300, 600)
+
+if (false) then
+
+managerFrame.Title = managerFrame:CreateFontString(nil, "OVERLAY")
+managerFrame.Title:SetPoint("TOP", 0, -11)
+managerFrame.Title:SetFontObject(GetFont(16))
+managerFrame.Title:SetText(Addon)
+
+-- preset dropdown
+-- new preset button
+-- delete current preset button
+-- duplicate current preset button
+
+-- reset current editmode preset to azeriteui defaults button
+-- reset current uiscale to match azeriteui defauts button
+
+managerFrame.Backdrop = CreateFrame("Frame", nil, managerFrame, ns.BackdropTemplate)
+managerFrame.Backdrop:SetFrameLevel(1)
+managerFrame.Backdrop:SetPoint("TOPLEFT", -10, 10)
+managerFrame.Backdrop:SetPoint("BOTTOMRIGHT", 10, -10)
+managerFrame.Backdrop:SetBackdrop({
+	bgFile = [[Interface\Tooltips\UI-Tooltip-Background]],
+	edgeSize = 32, edgeFile = GetMedia("border-tooltip"),
+	tile = true,
+	insets = { left = 8, right = 8, top = 16, bottom = 16 }
+})
+managerFrame.Backdrop:SetBackdropColor(.05, .05, .05, .95)
+
+end
+
+managerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+managerFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+managerFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+--managerFrame:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED")
+managerFrame:SetScript("OnEvent", function(self, event, ...)
 
 	if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
 		local layoutInfo = ...
@@ -677,6 +714,20 @@ eventHandler:SetScript("OnEvent", function(self, event, ...)
 	end
 end)
 
-hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function() Widgets:UpdateMovableFrameAnchors(true) end)
-hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()  Widgets:HideMovableFrameAnchors(true) end)
+hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function()
+	Widgets:UpdateMovableFrameAnchors(true)
+	managerFrame:Show()
+end)
+
+hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
+	Widgets:HideMovableFrameAnchors(true)
+	managerFrame:Hide()
+end)
+
 hooksecurefunc(EditModeManagerFrame, "OnAccountSettingChanged", function() Widgets:UpdateMovableFrameAnchors() end )
+
+hooksecurefunc(EditModeManagerFrame, "OnEvent", function(self, event, ...)
+	if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
+		managerFrame:GetScript("OnEvent")(managerFrame, event, ...)
+	end
+end)
