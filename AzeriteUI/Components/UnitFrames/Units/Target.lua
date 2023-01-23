@@ -104,7 +104,7 @@ local config = {
 	-----------------------------------------
 	Size = { 439, 93 },
 	--Position = { "TOPRIGHT", -153, -79 },
-	HitRectInsets = { 0, -160, 40, 6 + 20 },
+	HitRectInsets = { 0, -110, -40, -26 },
 	IsFlippedHorizontally = true,
 
 	-- Health Value Text
