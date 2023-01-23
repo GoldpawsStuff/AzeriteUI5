@@ -83,16 +83,24 @@ oUF:RegisterMetaFunction("CreateOrb", UnitFrame_CreateOrb)
 
 ns.UnitFrame = {}
 ns.UnitFrame.defaults = defaults
+
+ns.UnitFrame.InitializeUnitFrame = function(self)
+
+	self.isUnitFrame = true
+	self.colors = ns.Colors
+
+	self:RegisterForClicks("AnyUp")
+	self:SetScript("OnEnter", UnitFrame_OnEnter)
+	self:SetScript("OnLeave", UnitFrame_OnLeave)
+	self:SetScript("OnHide", UnitFrame_OnHide)
+
+end
+
 ns.UnitFrame.Spawn = function(unit, overrideName, ...)
 
 	local frame = oUF:Spawn(unit, overrideName)
-	frame.isUnitFrame = true
-	frame.colors = ns.Colors
 
-	frame:RegisterForClicks("AnyUp")
-	frame:SetScript("OnEnter", UnitFrame_OnEnter)
-	frame:SetScript("OnLeave", UnitFrame_OnLeave)
-	frame:SetScript("OnHide", UnitFrame_OnHide)
+	ns.UnitFrame.InitializeUnitFrame(frame)
 
 	return frame
 end
@@ -102,7 +110,7 @@ end
 ns.UnitFrame.modulePrototype = {
 	OnEnable = function(self)
 		local frame = self.frame
-		if (frame) then
+		if (frame and frame.Enable) then
 			frame:Enable()
 		else
 			if (self.Spawn) then
@@ -115,7 +123,7 @@ ns.UnitFrame.modulePrototype = {
 
 	OnDisable = function(self)
 		local frame = self.frame
-		if (frame) then
+		if (frame and frame.Disable) then
 			frame:Disable()
 		end
 		self:UnregisterEvent("PLAYER_REGEN_DISABLED", "OnCombatEvent")

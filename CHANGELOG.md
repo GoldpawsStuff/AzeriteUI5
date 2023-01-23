@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.28-RC] 2023-01-23 (Dragonflight)
+### Changed
+- Party frames should once again be right-clickable.
+
 ## [5.0.27-RC] 2023-01-23 (Dragonflight)
 ### Changed
 - The target frame now have a bigger hitbox including the character name and portrait.

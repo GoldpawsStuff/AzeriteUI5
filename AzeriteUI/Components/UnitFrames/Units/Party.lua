@@ -487,6 +487,9 @@ local style = function(self, unit)
 	self:SetHitRectInsets(unpack(db.PartyHitRectInsets))
 	self:SetFrameLevel(self:GetFrameLevel() + 10)
 
+	-- Apply common scripts and member values.
+	ns.UnitFrame.InitializeUnitFrame(self)
+
 	-- Overlay for icons and text
 	--------------------------------------------
 	local overlay = CreateFrame("Frame", nil, self)
