@@ -30,6 +30,7 @@ local PartyFrameMod = ns:Merge(ns:NewModule("PartyFrames", "LibMoreEvents-1.0"),
 
 -- Lua API
 local string_gsub = string.gsub
+local type = type
 local unpack = unpack
 
 -- Addon API
@@ -790,21 +791,56 @@ end
 
 -- Fake GroupHeader
 ---------------------------------------------------
-local GroupHeader = CreateFrame("Frame")
-local GroupHeader_MT = { __index = GroupHeader }
+local GroupHeader = {}
+
+GroupHeader.ForAll = function(self, methodOrFunc, ...)
+	for i = 1, self:GetNumChildren() do
+		local frame = select(i, self.frame:GetChildren())
+		if (type(methodOrFunc) == "string") then
+			frame[methodOrFunc](frame, ...)
+		else
+			methodOrFunc(frame, ...)
+		end
+	end
+end
 
 GroupHeader.Enable = function(self)
 	if (InCombatLockdown()) then return end
-	for i,frame in next,self.units do
-		frame:Enable()
+	local visibility = select(3, self:GetPartyAttributes())
+	local type, list = string.split(" ", visibility, 2)
+	if (list and type == "custom") then
+		RegisterAttributeDriver(self, "state-visibility", list)
+		self.visibility = list
+	else
+		local condition = getCondition(string.split(",", visibility))
+		RegisterAttributeDriver(self, "state-visibility", condition)
+		self.visibility = condition
 	end
 end
 
 GroupHeader.Disable = function(self)
 	if (InCombatLockdown()) then return end
-	for i,frame in next,self.units do
-		frame:Disable()
-	end
+	RegisterAttributeDriver(self, "state-visibility", "hide")
+end
+
+PartyFrameMod.GetPartyAttributes = function(self)
+	return ns.Prefix.."Party", nil,
+	--"custom [@player,exists,nogroup:party] show;[group:party,nogroup:raid] show;hide", "showPlayer", true, "showSolo", true,
+	"custom [group:party,nogroup:raid] show;hide", "showPlayer", false, "showSolo", false,
+	"oUF-initialConfigFunction", [[
+		local header = self:GetParent();
+		self:SetWidth(header:GetAttribute("initial-width"));
+		self:SetHeight(header:GetAttribute("initial-height"));
+		self:SetFrameLevel(self:GetFrameLevel() + 10);
+	]],
+	"initial-width", config.PartySize[1],
+	"initial-height", config.PartySize[2],
+	"showParty", true,
+	"point", config.Anchor,
+	"xOffset", config.GrowthX,
+	"yOffset", config.GrowthY,
+	"sortMethod", config.Sorting,
+	"sortDir", config.SortDirection
 end
 
 PartyFrameMod.Spawn = function(self)
@@ -816,24 +852,21 @@ PartyFrameMod.Spawn = function(self)
 	oUF:RegisterStyle(ns.Prefix..name, style)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
-	local frame = setmetatable(CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate"), GroupHeader_MT)
-	frame:SetSize(130*4, 130)
-	frame.units = {}
+	self.frame = oUF:SpawnHeader(self:GetPartyAttributes())
+	self.frame:SetSize(unpack(config.PartySize))
 
-	-- Keep this to party only, not raids.
-	-- *since we're no longer parenting to oUFs petbattle hider,
-	--  we need to handle the petbattle visibility ourselves.
-	RegisterStateDriver(frame, "visibility", "[petbattle]hide;[group:party,nogroup:raid]show;hide")
-
-	for i = 1,4 do
-		local unitFrame = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)
-		unitFrame:SetParent(frame) -- for the visibility driver to work.
-		unitFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", (i-1)*130, 0)
-
-		frame.units[i] = unitFrame
+	-- Embed our custom methods
+	for method,func in next,GroupHeader do
+		self.frame[method] = func
 	end
 
-	self.frame = frame
+	-- Sometimes some elements are wrong or "get stuck" upon exiting the editmode.
+	hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
+		for i = 1, self.frame:GetNumChildren() do
+			local frame = select(i, self.frame:GetChildren())
+			frame:UpdateAllElements("RefreshUnit")
+		end
+	end)
 
 	-- Movable Frame Anchor
 	---------------------------------------------------
