@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-01-23 (Dragonflight)
+## [5.0.27-RC] 2023-01-23 (Dragonflight)
 ### Changed
 - The target frame now have a bigger hitbox including the character name and portrait.
 - Party frames are now spawned using secure group headers, and not as individual unit frames. The goal is to work around some strange update problems resulting in party frames displaying wrong units.
