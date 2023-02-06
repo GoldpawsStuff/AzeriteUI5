@@ -27,6 +27,7 @@ local Addon, ns = ...
 local oUF = ns.oUF
 
 local PlayerFrameMod = ns:Merge(ns:NewModule("PlayerFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
+local MFM = ns:GetModule("MovableFramesManager", true)
 
 -- Lua API
 local next = next
@@ -1120,7 +1121,7 @@ PlayerFrameMod.Spawn = function(self)
 
 	-- Movable Frame Anchor
 	---------------------------------------------------
-	local anchor = ns.Widgets.RequestMovableFrameAnchor()
+	local anchor = MFM:RequestAnchor()
 	anchor:SetTitle(HUD_EDIT_MODE_PLAYER_FRAME_LABEL)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
@@ -1137,10 +1138,21 @@ end
 
 PlayerFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PlayerFrame", defaults)
+	--self.db:SetProfile("Default")
+
 	self:SetEnabledState(self.db.profile.enabled)
 
+	-- Register the available layout names
+	-- with the movable frames manager.
+	if (MFM) then
+		MFM:RegisterPresets(self.db.profile.savedPosition)
+	end
+
+	-- Disable Blizzard player frame.
 	oUF:DisableBlizzard("player")
 
+	-- Disable Blizzard player alternate power bar,
+	-- as we're integrating this into the standard power crystal.
 	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_SHOW")
 	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_HIDE")
 	PlayerPowerBarAlt:UnregisterEvent("PLAYER_ENTERING_WORLD")

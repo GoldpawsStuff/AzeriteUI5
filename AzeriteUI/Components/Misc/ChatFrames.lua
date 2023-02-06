@@ -336,6 +336,7 @@ ChatFrames.StyleFrame = function(self, frame)
 	self:UpdateChatFont(frame)
 	self:SecureHook(frame, "SetFont", "UpdateChatFont")
 
+	frame.isSkinned = true
 end
 
 ChatFrames.StyleTempFrame = function(self)
@@ -534,6 +535,8 @@ end
 
 ChatFrames.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ChatFrames", defaults)
+	--self.db:SetProfile("Default")
+
 	self:SetEnabledState(not IsAddOnEnabled("Prat-3.0") and not IsAddOnEnabled("ls_Glass") and self.db.profile.enabled)
 
 	-- Add a command to clear all chat frames.

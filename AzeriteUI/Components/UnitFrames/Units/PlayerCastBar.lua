@@ -27,6 +27,7 @@ local Addon, ns = ...
 local oUF = ns.oUF
 
 local CastBarMod = ns:Merge(ns:NewModule("PlayerCastBarFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
+local MFM = ns:GetModule("MovableFramesManager", true)
 
 -- Lua API
 local next = next
@@ -250,7 +251,7 @@ CastBarMod.Spawn = function(self)
 
 	-- Movable Frame Anchor
 	---------------------------------------------------
-	local anchor = ns.Widgets.RequestMovableFrameAnchor()
+	local anchor = MFM:RequestAnchor()
 	anchor:SetTitle(HUD_EDIT_MODE_CAST_BAR_LABEL)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
@@ -272,7 +273,15 @@ CastBarMod.OnInitialize = function(self)
 	end
 
 	self.db = ns.db:RegisterNamespace("PlayerCastBarFrame", defaults)
+	--self.db:SetProfile("Default")
+
 	self:SetEnabledState(self.db.profile.enabled)
+
+	-- Register the available layout names
+	-- with the movable frames manager.
+	if (MFM) then
+		MFM:RegisterPresets(self.db.profile.savedPosition)
+	end
 
 	-- How the fuck do I get this out of the editmode?
 	PlayerCastingBarFrame:SetParent(UIHider)

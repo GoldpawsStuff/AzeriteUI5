@@ -24,8 +24,10 @@
 
 --]]
 local Addon, ns = ...
-local Widgets = ns.Private.Widgets or {}
-ns.Private.Widgets = Widgets
+
+local MovableFramesManager = ns:NewModule("MovableFramesManager", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
+local EMP = ns:GetModule("EditMode")
+local AceGUI = LibStub("AceGUI-3.0")
 
 -- Lua API
 local error = error
@@ -35,34 +37,27 @@ local next = next
 local rawget = rawget
 local setmetatable = setmetatable
 local string_format = string.format
+local table_insert = table.insert
+local table_sort = table.sort
 local unpack = unpack
 
 -- Addon API
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
+local UIHider = ns.Hider
 
-local CURRENT
+local DEFAULTLAYOUT = "Azerite" -- default layout name
+local LAYOUT = DEFAULTLAYOUT -- currently selected layout preset
 
-local LAYOUT
-local layoutNames = setmetatable({ "Modern", "Classic" }, {
-	__index = function(t, key)
-		if (key > 2) then
-			-- The first 2 indices are reserved for 'Modern' and 'Classic' layouts, and anything
-			-- else are custom ones, although GetLayouts() doesn't return data for the 'Modern'
-			-- and 'Classic' layouts, so we'll have to substract and check
-			local layouts = C_EditMode.GetLayouts().layouts
-			if ((key - 2) > #layouts) then
-				error("index is out of bounds")
-			else
-				return layouts[key - 2].layoutName
-			end
-		else
-			-- Also work for 'Modern' and 'Classic'
-			rawget(t, key)
-		end
-	end
-})
+-- Addon defaults. Don't change, does not affect what is saved.
+local defaults = {
+	char = {
+		layout = DEFAULTLAYOUT
+	}
+}
+
+local CURRENT -- currently selected anchor frame
 
 -- Anchor cache
 local AnchorData = {}
@@ -137,6 +132,23 @@ local getPosition = function(frame)
 			return "CENTER", (x - uiWidth/2) / frameScale, (y - uiHeight/2) / frameScale
 		end
 	end
+end
+
+-- Create frame backdrop
+local createBackdropFrame = function(frame)
+	local backdrop = CreateFrame("Frame", nil, frame, ns.BackdropTemplate)
+	backdrop:SetFrameLevel(frame:GetFrameLevel() - 1)
+	backdrop:SetPoint("TOPLEFT", -10, 10)
+	backdrop:SetPoint("BOTTOMRIGHT", 10, -10)
+	backdrop:SetBackdrop({
+		bgFile = [[Interface\Tooltips\UI-Tooltip-Background]],
+		edgeSize = 32, edgeFile = GetMedia("border-tooltip"),
+		tile = true,
+		insets = { left = 8, right = 8, top = 16, bottom = 16 }
+	})
+	backdrop:SetBackdropColor(.05, .05, .05, .95)
+
+	return backdrop
 end
 
 -- Anchor Template
@@ -311,7 +323,7 @@ Anchor.UpdateText = function(self)
 			end
 		else
 			if (self:HasMovedSinceLastUpdate()) then
-				msg = msg .. Colors.green.colorCode.."\n<Right-Click to undo last change>|r"
+				msg = msg .. Colors.green.colorCode.."\n<Ctrl and Right-Click to undo last change>|r"
 			end
 			msg = msg .. Colors.green.colorCode.."\n<Shift-Click to reset to default>|r"
 		end
@@ -327,13 +339,6 @@ Anchor.UpdateText = function(self)
 		self.Text:SetTextColor(unpack(Colors.normal))
 	else
 		self.Text:SetTextColor(unpack(Colors.highlight))
-	end
-end
-
-Anchor.UpdateLayoutInfo = function(self, layoutName)
-
-	if (self.Callback) then
-		self:Callback("LayoutsUpdated", layoutName)
 	end
 end
 
@@ -483,7 +488,7 @@ Anchor.OnClick = function(self, button)
 		end
 	elseif (button == "RightButton") then
 		self:SetFrameLevel(40)
-		if (self:HasMovedSinceLastUpdate()) then
+		if (IsControlKeyDown() and self:HasMovedSinceLastUpdate()) then
 			self:ResetLastChange()
 		end
 	end
@@ -586,18 +591,12 @@ Anchor.OnUpdate = function(self, elapsed)
 	end
 end
 
--- Public API
---------------------------------------
-local editModeActive
-
-Widgets.RequestMovableFrameAnchor = function()
-	return Anchor:Create()
+local RequestMovableFrameAnchor = function(...)
+	return Anchor:Create(...)
 end
 
-Widgets.UpdateMovableFrameAnchors = function(requestedByEditMode)
-	if (requestedByEditMode) then
-		editModeActive = true
-	end
+-- This needs to be updated on layout changes.
+local UpdateMovableFrameAnchors = function()
 	for anchor in next,AnchorData do
 		if (anchor.editModeAccountSetting) then
 			if (EditModeManagerFrame:GetAccountSettingValueBool(anchor.editModeAccountSetting)) then
@@ -615,119 +614,493 @@ Widgets.UpdateMovableFrameAnchors = function(requestedByEditMode)
 	end
 end
 
-Widgets.HideMovableFrameAnchors = function(requestedByEditMode)
-	if (requestedByEditMode) then
-		editModeActive = false
-	end
+local HideMovableFrameAnchors = function()
 	for anchor in next,AnchorData do
 		anchor:Hide()
 	end
 end
 
--- Movable Frame Manager Frame
--- *cannot parent to the editmode frame
-local managerFrame = CreateFrame("Frame", Addon.."MovableFrameManager", UIParent)
-managerFrame:Hide()
---managerFrame:SetFrameStrata("DIALOG")
---managerFrame:SetFrameLevel(2)
---managerFrame:SetPoint("TOPLEFT", EditModeManagerFrame, "TOPRIGHT", 10, -4)
---managerFrame:SetSize(300, 600)
+-- Module API
+--------------------------------------
+MovableFramesManager.RequestAnchor = function(self, ...)
+	return RequestMovableFrameAnchor(...)
+end
 
-if (false) then
+-- Register a preset name in our dropdown menu.
+MovableFramesManager.RegisterPreset = function(self, layoutName)
+	if (self.layouts[layoutName]) then return end
 
-managerFrame.Title = managerFrame:CreateFontString(nil, "OVERLAY")
-managerFrame.Title:SetPoint("TOP", 0, -11)
-managerFrame.Title:SetFontObject(GetFont(16))
-managerFrame.Title:SetText(Addon)
+	-- Add the preset to our list.
+	self.layouts[layoutName] = true
 
--- preset dropdown
--- new preset button
--- delete current preset button
--- duplicate current preset button
+	-- Update the manager frame.
+	self:UpdateMFMFrame()
+end
 
--- reset current editmode preset to azeriteui defaults button
--- reset current uiscale to match azeriteui defauts button
+-- Register a table of layout names at once.
+-- *The keys represent the layout names.
+MovableFramesManager.RegisterPresets = function(self, layoutTable)
+	for layoutName in pairs(layoutTable) do
+		if (type(layoutName) == "string") then
+			if (not self.layouts[layoutName]) then
+				self:RegisterPreset(layoutName)
+			end
+		end
+	end
+end
 
-managerFrame.Backdrop = CreateFrame("Frame", nil, managerFrame, ns.BackdropTemplate)
-managerFrame.Backdrop:SetFrameLevel(1)
-managerFrame.Backdrop:SetPoint("TOPLEFT", -10, 10)
-managerFrame.Backdrop:SetPoint("BOTTOMRIGHT", 10, -10)
-managerFrame.Backdrop:SetBackdrop({
-	bgFile = [[Interface\Tooltips\UI-Tooltip-Background]],
-	edgeSize = 32, edgeFile = GetMedia("border-tooltip"),
-	tile = true,
-	insets = { left = 8, right = 8, top = 16, bottom = 16 }
-})
-managerFrame.Backdrop:SetBackdropColor(.05, .05, .05, .95)
+-- Send a message to the modules to apply a saved preset.
+-- Will switch to the preset in our dropdown menu.
+MovableFramesManager.ApplyPreset = function(self, layoutName)
+	if (layoutName == LAYOUT) then return end
+	if (not self.layouts[layoutName]) then return end
+
+	-- Switch currently selected preset.
+	LAYOUT = layoutName
+
+	-- Store the setting.
+	self.db.char.layout = LAYOUT
+
+	-- Send message to modules to switch to the selected preset.
+	self:ForAllAnchors("LayoutsUpdated", LAYOUT)
+
+	-- Update the manager frame.
+	self:UpdateMFMFrame()
+end
+
+-- Send a message to modules to delete a saved preset.
+-- Will switch to the default preset in our dropdown menu.
+MovableFramesManager.DeletePreset = function(self, layoutName)
+	if (layoutName == DEFAULTLAYOUT) then return end
+	if (not self.layouts[layoutName]) then return end
+
+	-- Check if preset is the current one,
+	-- we'll have to swith to the default preset if it is.
+	if (layoutName == LAYOUT) then
+
+		-- Switch currently selected preset.
+		LAYOUT = DEFAULTLAYOUT
+
+		-- Store the setting.
+		self.db.char.layout = LAYOUT
+
+		-- Send message to modules to switch to the selected preset.
+		self:ForAllAnchors("LayoutsUpdated", LAYOUT)
+	end
+
+	-- Remove from our preset list.
+	self.layouts[layoutName] = nil
+
+	-- Send message to all moduels to remove the selected preset.
+	self:ForAllAnchors("LayoutDeleted", layoutName)
+
+	-- Update the manager frame.
+	self:UpdateMFMFrame()
+end
+
+-- Update available preset list in our dropdown.
+MovableFramesManager.UpdateMFMFrame = function(self)
+	local MFMFrame = self:GetMFMFrame()
+
+	-- Create a sorted table.
+	local sorted = {}
+	for layoutName in next,self.layouts do
+		table_insert(sorted, layoutName)
+	end
+	table_sort(sorted)
+
+	-- Apply the sorted table to our dropdown.
+	MFMFrame.SelectLayoutDropdown:SetList(sorted)
+
+	-- Select the currently active layout in the dropdown.
+	for i,layoutName in ipairs(sorted) do
+		if (layoutName == LAYOUT) then
+			MFMFrame.SelectLayoutDropdown:SetValue(i)
+			break
+		end
+	end
+
+	if (not EMP:AreLayoutsLoaded()) then return end
+
+	-- Toggle button enabled status.
+	MFMFrame.DeleteLayoutButton:SetDisabled(LAYOUT == DEFAULTLAYOUT)
+	MFMFrame.ResetEditModeLayoutButton:SetDisabled(self.incombat or not EMP:CanEditActiveLayout())
+	MFMFrame.CreateEditModeLayoutButton:SetDisabled(self.incombat or EMP:DoesDefaultLayoutExist())
 
 end
 
-managerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-managerFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-managerFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
---managerFrame:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED")
-managerFrame:SetScript("OnEvent", function(self, event, ...)
+MovableFramesManager.UpdateMovableFrameAnchors = function(self, ...)
+	UpdateMovableFrameAnchors()
+end
 
-	if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
-		local layoutInfo = ...
-		local layoutName = layoutNames[layoutInfo.activeLayout]
-		LAYOUT = layoutName
-		for anchor in next,AnchorData do
-			anchor:UpdateLayoutInfo(layoutName) -- let modules reposition
-			anchor:OnShow() -- update anchor, don't show
-		end
+MovableFramesManager.HideMovableFrameAnchors = function(self)
+	HideMovableFrameAnchors()
+end
 
-	elseif (event == "PLAYER_SPECIALIZATION_CHANGED" or event == "PLAYER_ENTERING_WORLD") then
-		local layoutInfo = C_EditMode.GetLayouts()
-		-- Sometimes this just isn't here on the initial login.
-		-- Layouts sometimes take longer to load, and I can't figure out the event. It's not the above.
-		if (not layoutInfo.activeLayout or ((layoutInfo.activeLayout - 2) > #layoutInfo.layouts)) then
-			return
-		end
-		local layoutName = layoutNames[layoutInfo.activeLayout]
-		LAYOUT = layoutName
-		for anchor in next,AnchorData do
-			anchor:UpdateLayoutInfo(layoutName) -- let modules reposition
-			anchor:OnShow() -- update anchor, don't show
-		end
+MovableFramesManager.OnEnterEditMode = function(self)
+	self:UpdateMFMFrame()
+	self:GetMFMFrame():Show()
+end
 
-	elseif (event == "PLAYER_REGEN_DISABLED") then
-		for anchor in next,AnchorData do
-			if (anchor.Callback) then
-				if (anchor:IsShown()) then
-					anchor:Callback("CombatStart", LAYOUT)
+MovableFramesManager.OnExitEditMode = function(self)
+	self:GetMFMFrame():Hide()
+end
+
+MovableFramesManager.GetMFMFrame = function(self)
+	if (not self.frame) then
+
+		-- Create primary window
+		--------------------------------------------------
+		local window = AceGUI:Create("Frame")
+		window:Hide()
+		window:SetWidth(360)
+		window:SetHeight(366)
+		window:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -220, -260)
+		window:SetTitle(Addon)
+		window:SetStatusText(Addon .." ".. (ns.IsDevelopment and "Git Version" or ns.Version))
+		window:SetLayout("Flow")
+
+		window.frame:SetResizable(false)
+		window.frame:SetBackdrop(nil)
+		window.frame.obj.sizer_se:Hide()
+		window.frame.obj.sizer_s:Hide()
+		window.frame.obj.sizer_e:Hide()
+		window.Backdrop = createBackdropFrame(window.frame)
+
+		self.frame = window
+
+		-- Layout Selection Dropdown Group
+		--------------------------------------------------
+		local group = AceGUI:Create("SimpleGroup")
+		group:SetLayout("Flow")
+		group:SetFullWidth(true)
+		group:SetAutoAdjustHeight(false)
+		group:SetHeight(54)
+
+		-- Dropdown label
+		local label = AceGUI:Create("Label")
+		label:SetText(HUD_EDIT_MODE_LAYOUT)
+		label:SetFontObject(GetFont(13, true))
+		label:SetColor(unpack(Colors.normal))
+		label:SetFullWidth(true)
+		group:AddChild(label)
+
+		-- Preset selection dropdown
+		local dropdown = AceGUI:Create("Dropdown")
+		dropdown:SetWidth(220)
+		dropdown:SetCallback("OnValueChanged", function(widget, script, key)
+			local selected
+			for i,item in widget.pullout:IterateItems() do
+				if (i == key) then
+					selected = item:GetText() or ""
+					break
 				end
 			end
+			if (selected) then
+				self:ApplyPreset(selected)
+			end
+		end)
+		group:AddChild(dropdown)
+		window.SelectLayoutDropdown = dropdown
+
+		window:AddChild(group)
+
+		-- Layout Management Group
+		--------------------------------------------------
+		local group = AceGUI:Create("SimpleGroup")
+		group:SetLayout("Flow")
+		group:SetFullWidth(true)
+		group:SetAutoAdjustHeight(false)
+		group:SetHeight(60)
+
+		local button = AceGUI:Create("Button")
+		button:SetText(CALENDAR_CREATE)
+		button:SetRelativeWidth(.3)
+		button:SetCallback("OnClick", function()
+
+			if (not self.DialogFrame) then
+
+				local popup = CreateFrame("Frame", nil, window.frame)
+				popup:Hide()
+				popup:SetFrameStrata("FULLSCREEN_DIALOG")
+				popup:SetToplevel(true)
+				popup:SetFrameLevel(1000)
+				popup:SetSize(380, 160)
+				popup:SetPoint("CENTER", window.frame)
+				popup:SetScript("OnShow", function()
+					window.frame:SetToplevel(false)
+				end)
+				popup:SetScript("OnHide", function()
+					window.frame:SetToplevel(true)
+				end)
+
+				popup.Backdrop = createBackdropFrame(popup)
+
+				local editbox = CreateFrame("EditBox", nil, popup, "InputBoxTemplate")
+				editbox:SetAutoFocus(true)
+				editbox:SetFontObject(GetFont(15, true))
+				editbox:SetScript("OnEnter", nil)
+				editbox:SetScript("OnLeave", nil)
+				editbox:SetScript("OnEscapePressed", function(widget)
+					widget:ClearFocus()
+				end)
+				editbox:SetScript("OnEnterPressed", function(widget)
+					widget:GetParent().AcceptButton:Click()
+				end)
+				editbox:SetScript("OnTextChanged", nil)
+				editbox:SetScript("OnReceiveDrag", nil)
+				editbox:SetScript("OnMouseDown", nil)
+				editbox:SetScript("OnEditFocusGained", function(widget)
+					widget:SetText("")
+					widget:SetCursorPosition(0)
+				end)
+				editbox:SetScript("OnEditFocusLost", function(widget)
+					widget:GetParent():Hide()
+					widget:SetText("")
+					widget:SetCursorPosition(0)
+				end)
+				editbox:SetTextInsets(3, 3, 6, 6)
+				editbox:SetMaxLetters(32)
+				editbox:SetPoint("BOTTOMLEFT", 28, 70)
+				editbox:SetPoint("BOTTOMRIGHT", -23, 70)
+				editbox:SetHeight(27)
+
+				popup.EditBox = editbox
+
+				local label = popup:CreateFontString(nil, "OVERLAY")
+				label:SetFontObject(GetFont(13, true))
+				label:SetTextColor(unpack(Colors.normal))
+				label:SetText(HUD_EDIT_MODE_NAME_LAYOUT_DIALOG_TITLE)
+				label:SetPoint("BOTTOM", editbox, "TOP", 0, 6)
+				label:SetJustifyH("LEFT")
+				label:SetJustifyV("BOTTOM")
+
+				popup.Label = label
+
+				local accept = CreateFrame("Button", nil, popup, "UIPanelButtonTemplate")
+				accept:SetSize(160, 30)
+				accept:SetText(HUD_EDIT_MODE_SAVE_LAYOUT)
+				accept:SetPoint("BOTTOMLEFT", 20, 20)
+				accept:SetScript("OnClick", function(widget)
+					local layoutName = widget:GetParent().EditBox:GetText()
+					widget:GetParent():Hide()
+					if (layoutName and not self.layouts[layoutName]) then
+						self:RegisterPreset(layoutName)
+						self:ApplyPreset(layoutName)
+					end
+				end)
+
+				popup.AcceptButton = accept
+
+				local cancel = CreateFrame("Button", nil, popup, "UIPanelButtonTemplate")
+				cancel:SetSize(160, 30)
+				cancel:SetText(CANCEL)
+				cancel:SetPoint("BOTTOMRIGHT", -20, 20)
+				cancel:SetScript("OnClick", function(widget)
+					widget:GetParent():Hide()
+				end)
+
+				popup.CancelButton = cancel
+
+				self.DialogFrame = popup
+			end
+
+			-- Open name dialog
+			self.DialogFrame:Show()
+		end)
+		group:AddChild(button)
+		window.CreateLayoutButton = button
+
+		local button = AceGUI:Create("Button")
+		button:SetText(CALENDAR_COPY_EVENT)
+		button:SetRelativeWidth(.3)
+		button:SetDisabled(true)
+		button:SetCallback("OnClick", function()
+			-- Open name dialog
+			-- Copy preset
+			-- Fire anchor callback to let modules copy and save it
+			-- Add preset to list
+			-- Update managerframe
+		end)
+		group:AddChild(button)
+		window.CopyLayoutButton = button
+
+		local button = AceGUI:Create("Button")
+		button:SetText(CALENDAR_DELETE_EVENT)
+		button:SetRelativeWidth(.3)
+		button:SetDisabled(true)
+		button:SetCallback("OnClick", function()
+			-- Open confirmation dialog
+			-- Fire module callback to let modules clear the saved entry
+			self:DeletePreset(LAYOUT)
+		end)
+		group:AddChild(button)
+		window.DeleteLayoutButton = button
+
+		window:AddChild(group)
+
+		-- HUD Edit Mode Title
+		--------------------------------------------------
+		local group = AceGUI:Create("SimpleGroup")
+		group:SetLayout("Flow")
+		group:SetFullWidth(true)
+		group:SetAutoAdjustHeight(false)
+		group:SetHeight(20)
+
+		-- EditMode section title
+		local label = AceGUI:Create("Label")
+		label:SetText(HUD_EDIT_MODE_TITLE)
+		label:SetFontObject(GetFont(15, true))
+		label:SetColor(unpack(Colors.normal))
+		label:SetFullWidth(true)
+		group:AddChild(label)
+
+		window:AddChild(group)
+
+		-- HUD Edit Mode Reset
+		--------------------------------------------------
+		local group = AceGUI:Create("SimpleGroup")
+		group:SetLayout("Flow")
+		group:SetFullWidth(true)
+		group:SetAutoAdjustHeight(false)
+		group:SetHeight(80)
+
+		-- EditMode reset button description
+		local label = AceGUI:Create("Label")
+		label:SetText("Click the button below to reset the currently selected EditMode preset to positions matching the default AzeriteUI layout.")
+		label:SetFontObject(GetFont(13, true))
+		label:SetColor(unpack(Colors.offwhite))
+		label:SetRelativeWidth(.9)
+		group:AddChild(label)
+
+		local button = AceGUI:Create("Button")
+		button:SetText("Reset EditMode Layout")
+		button:SetFullWidth(true)
+		button:SetCallback("OnClick", function()
+			EMP:ApplySystems()
+		end)
+		window.ResetEditModeLayoutButton = button
+
+		group:AddChild(button)
+
+		window:AddChild(group)
+
+		-- HUD Edit Mode Azerite Preset
+		--------------------------------------------------
+		local group = AceGUI:Create("SimpleGroup")
+		group:SetLayout("Flow")
+		group:SetFullWidth(true)
+		group:SetAutoAdjustHeight(true)
+		--group:SetHeight(60)
+
+		-- EditMode reset button description
+		local label = AceGUI:Create("Label")
+		label:SetText("Click the button below to create an EditMode preset named 'Azerite'.")
+		label:SetFontObject(GetFont(13, true))
+		label:SetColor(unpack(Colors.offwhite))
+		label:SetRelativeWidth(.9)
+		group:AddChild(label)
+
+		local button = AceGUI:Create("Button")
+		button:SetText("Create EditMode Layout")
+		button:SetFullWidth(true)
+		button:SetDisabled(true)
+		button:SetCallback("OnClick", function()
+			EMP:ResetLayouts()
+		end)
+		window.CreateEditModeLayoutButton = button
+
+		group:AddChild(button)
+
+		window:AddChild(group)
+
+	end
+
+	return self.frame
+end
+
+MovableFramesManager.ForAllAnchors = function(self, callback, layoutName)
+	for anchor in next,AnchorData do
+		if (anchor.Callback) then
+			anchor:Callback(callback, layoutName)
+			anchor:OnShow()
 		end
+	end
+end
+
+MovableFramesManager.ForAllVisibleAnchors = function(self, callback, layoutName)
+	for anchor in next,AnchorData do
+		if (anchor.Callback) then
+			if (anchor:IsShown()) then
+				anchor:Callback(callback, layoutName)
+			end
+		end
+	end
+end
+
+MovableFramesManager.OnEvent = function(self, event, ...)
+	if (event == "PLAYER_REGEN_DISABLED") then
+
+		self.incombat = true
+		self:ForAllVisibleAnchors("CombatStart", LAYOUT)
+
 
 	elseif (event == "PLAYER_REGEN_ENABLED") then
-		if (InCombatLockdown()) then return end
 
-		for anchor in next,AnchorData do
-			if (anchor.Callback) then
-				if (anchor:IsShown()) then
-					anchor:Callback("CombatEnd", LAYOUT)
-				end
-			end
+		if (not InCombatLockdown()) then
+			self.incombat = nil
+			self:ForAllVisibleAnchors("CombatEnd", LAYOUT)
 		end
 
+	else
+		if (event == "PLAYER_LOGIN") then
+			return EMP:LoadLayouts()
+		end
+
+		if (event == "PLAYER_ENTERING_WORLD") then
+			local isInitialLogin, isReloadingUi = ...
+			if (isInitialLogin or isReloadingUi) then
+				self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
+			end
+			self.incombat = InCombatLockdown()
+		end
+
+		if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
+			EMP:LoadLayouts()
+		end
+
+		self:ForAllAnchors("LayoutsUpdated", LAYOUT)
 	end
-end)
 
-hooksecurefunc(EditModeManagerFrame, "EnterEditMode", function()
-	Widgets:UpdateMovableFrameAnchors(true)
-	managerFrame:Show()
-end)
+	self:UpdateMFMFrame()
+end
 
-hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
-	Widgets:HideMovableFrameAnchors(true)
-	managerFrame:Hide()
-end)
+MovableFramesManager.OnInitialize = function(self)
+	self.db = ns.db:RegisterNamespace("MovableFrames", defaults)
+	--self.db:SetProfile("Default")
+	self.db.profile = nil
 
-hooksecurefunc(EditModeManagerFrame, "OnAccountSettingChanged", function() Widgets:UpdateMovableFrameAnchors() end )
+	self.layouts = {}
 
-hooksecurefunc(EditModeManagerFrame, "OnEvent", function(self, event, ...)
-	if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
-		managerFrame:GetScript("OnEvent")(managerFrame, event, ...)
-	end
-end)
+	LAYOUT = self.db.char.layout
+
+	-- Hook our anchor frame's visibility to the editmode.
+	-- Note that we cannot simply parent it to the editmode manager,
+	-- as that will break the resizing and functionality of the editmode manager.
+	self:SecureHook(EditModeManagerFrame, "EnterEditMode", "OnEnterEditMode")
+	self:SecureHook(EditModeManagerFrame, "ExitEditMode", "OnExitEditMode")
+
+	-- Update our anchors on editmode changes,
+	-- since they might be related to anchor visibility.
+	self:SecureHook(EditModeManagerFrame, "OnEvent", "UpdateMovableFrameAnchors")
+	self:SecureHook(EditModeManagerFrame, "OnAccountSettingChanged", "UpdateMovableFrameAnchors")
+
+	-- Hook our anchor visibility updates to our managerframe visibility.
+	self:SecureHook(self:GetMFMFrame(), "Show", "UpdateMovableFrameAnchors")
+	self:SecureHook(self:GetMFMFrame(), "Hide", "HideMovableFrameAnchors")
+
+	self:RegisterEvent("PLAYER_LOGIN", "OnEvent")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+end

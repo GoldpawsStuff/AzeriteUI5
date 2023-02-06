@@ -27,6 +27,7 @@ local Addon, ns = ...
 local oUF = ns.oUF
 
 local TargetFrameMod = ns:Merge(ns:NewModule("TargetFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
+local MFM = ns:GetModule("MovableFramesManager", true)
 
 -- Lua API
 local next = next
@@ -1234,7 +1235,7 @@ TargetFrameMod.Spawn = function(self)
 
 	-- Movable Frame Anchor
 	---------------------------------------------------
-	local anchor = ns.Widgets.RequestMovableFrameAnchor()
+	local anchor = MFM:RequestAnchor()
 	anchor:SetTitle(HUD_EDIT_MODE_TARGET_FRAME_LABEL)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
@@ -1253,7 +1254,16 @@ end
 
 TargetFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("TargetFrame", defaults)
+	--self.db:SetProfile("Default")
+
 	self:SetEnabledState(self.db.profile.enabled)
 
+	-- Register the available layout names
+	-- with the movable frames manager.
+	if (MFM) then
+		MFM:RegisterPresets(self.db.profile.savedPosition)
+	end
+
+	-- Disable Blizzard target frame.
 	oUF:DisableBlizzard("target")
 end

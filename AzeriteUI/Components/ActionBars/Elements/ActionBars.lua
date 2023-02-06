@@ -27,6 +27,7 @@ local Addon, ns = ...
 
 local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "LibFadingFrames-1.0", "AceConsole-3.0", "AceTimer-3.0")
 local LAB = LibStub("LibActionButton-1.0-GE")
+local MFM = ns:GetModule("MovableFramesManager", true)
 
 -- Lua API
 local next = next
@@ -120,7 +121,6 @@ local defaults = { profile = ns:Merge({
 				growthVertical = "DOWN",
 			},
 			savedPosition = {
-				breakpoint = 6,
 				Azerite = {
 					scale = 1,
 					[1] = "RIGHT",
@@ -600,7 +600,12 @@ ActionBarMod.OnAnchorUpdate = function(self, bar, reason, layoutName, ...)
 
 	local anchor = bar.anchor
 
-	if (reason == "LayoutsUpdated") then
+	if (reason == "LayoutDeleted") then
+		if (savedPositions[layoutName]) then
+			savedPositions[layoutName] = nil
+		end
+
+	elseif (reason == "LayoutsUpdated") then
 
 		if (savedPositions[layoutName]) then
 
@@ -637,22 +642,6 @@ ActionBarMod.OnAnchorUpdate = function(self, bar, reason, layoutName, ...)
 		end
 
 		bar.currentLayout = layoutName
-
-		-- Purge layouts not matching editmode themes or our defaults.
-		for name in pairs(savedPositions) do
-			if (not defaultPositions[name] and name ~= "Modern" and name ~= "Classic") then
-				local found
-				for lname in pairs(C_EditMode.GetLayouts().layouts) do
-					if (lname == name) then
-						found = true
-						break
-					end
-				end
-				if (not found) then
-					savedPositions[name] = nil
-				end
-			end
-		end
 
 		self:UpdatePositionAndScale(bar)
 
@@ -861,6 +850,8 @@ end
 
 ActionBarMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ActionBars", defaults)
+	--self.db:SetProfile("Default")
+
 	self.bars = {}
 	self.buttons = {}
 
@@ -870,6 +861,12 @@ ActionBarMod.OnInitialize = function(self)
 
 		local config = self.db.profile.bars[i]
 		local bar = ns.ActionBar:Create(BAR_TO_ID[i], config, ns.Prefix.."ActionBar"..i)
+
+		-- Register the available layout names
+		-- with the movable frames manager.
+		if (MFM) then
+			MFM:RegisterPresets(self.db.profile.bars[i].savedPosition)
+		end
 
 		-- Set an initial size and point before button updates,
 		-- since mapped buttons (like the primary and secondary bars have)
@@ -938,7 +935,7 @@ ActionBarMod.OnInitialize = function(self)
 
 		end
 
-		local anchor = ns.Widgets.RequestMovableFrameAnchor()
+		local anchor = MFM:RequestAnchor()
 		anchor:SetTitle(self:GetBarDisplayName(i))
 		anchor:SetScalable(true)
 		anchor:SetMinMaxScale(.75, 1.25, .05)

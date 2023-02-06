@@ -67,9 +67,12 @@ affect the UI outside of edit mode.
 
 ## Layout management
 
-### `LibEditModeOverride:AddLayout(layoutName)`
+### `LibEditModeOverride:AddLayout(layoutType, layoutName)`
 
 Create a new layout called `layoutName`. This name must not already be in use.
+Set `layoutType` to `Enum.EditModeLayoutType.Account` or
+`Enum.EditModeLayoutType.Character` depending on where you want the layout to be
+saved.
 
 ### `LibEditModeOverride:DeleteLayout(layoutName)`
 

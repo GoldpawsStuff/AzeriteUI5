@@ -27,6 +27,7 @@ local Addon, ns = ...
 local oUF = ns.oUF
 
 local PartyFrameMod = ns:Merge(ns:NewModule("PartyFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
+local MFM = ns:GetModule("MovableFramesManager", true)
 
 -- Lua API
 local string_gsub = string.gsub
@@ -873,7 +874,7 @@ PartyFrameMod.Spawn = function(self)
 
 	-- Movable Frame Anchor
 	---------------------------------------------------
-	local anchor = ns.Widgets.RequestMovableFrameAnchor()
+	local anchor = MFM:RequestAnchor()
 	anchor:SetTitle(PARTY)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
@@ -891,8 +892,17 @@ end
 
 PartyFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PartyFrames", defaults)
+	--self.db:SetProfile("Default")
+
 	self:SetEnabledState(self.db.profile.enabled)
 
+	-- Register the available layout names
+	-- with the movable frames manager.
+	if (MFM) then
+		MFM:RegisterPresets(self.db.profile.savedPosition)
+	end
+
+	-- Disable Blizzard party frames
 	for i = 1, MEMBERS_PER_RAID_GROUP do
 		oUF:DisableBlizzard("party"..i)
 	end

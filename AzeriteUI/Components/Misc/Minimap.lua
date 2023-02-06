@@ -82,6 +82,7 @@ local CURRENT_THEME = DEFAULT_THEME
 
 local Elements = {}
 
+-- Minimap objects available for restyling.
 local Objects = {
 	BorderTop = MinimapCluster.BorderTop,
 	Calendar = GameTimeFrame,
@@ -89,13 +90,14 @@ local Objects = {
 	Compass = MinimapCompassTexture,
 	Difficulty = MinimapCluster.InstanceDifficulty,
 	Expansion = ExpansionLandingPageMinimapButton,
-	Mail = MinimapCluster.MailFrame,
+	Mail = MinimapCluster.IndicatorFrame.MailFrame,
 	Tracking = MinimapCluster.Tracking,
 	Zone = MinimapCluster.ZoneTextButton,
 	ZoomIn = Minimap.ZoomIn,
 	ZoomOut = Minimap.ZoomOut
 }
 
+-- Object parents when using blizzard theme.
 local ObjectOwners = {
 	BorderTop = MinimapCluster,
 	Calendar = MinimapCluster,
@@ -103,11 +105,27 @@ local ObjectOwners = {
 	Compass = MinimapBackdrop,
 	Difficulty = MinimapCluster,
 	Expansion = MinimapBackdrop,
-	Mail = MinimapCluster,
+	Mail = MinimapCluster.IndicatorFrame,
 	Tracking = MinimapCluster,
 	Zone = MinimapCluster,
 	ZoomIn = Minimap,
 	ZoomOut = Minimap
+}
+
+-- Snippets to be run upon blizzard object enabling/disabling.
+local ObjectSnippets = {
+	Mail = {
+		Enable = function(object)
+			object:OnLoad()
+			object:SetScript("OnEvent", object.OnEvent)
+		end,
+		Disable = function(object)
+			object:SetScript("OnEvent", nil)
+		end,
+		Update = function(object)
+			object:OnEvent("UPDATE_PENDING_MAIL")
+		end
+	}
 }
 
 local ElementTypes = {
@@ -243,13 +261,27 @@ Prototype.SetTheme = function(self, requestedTheme)
 		for element,data in next,current.Elements do
 			if (not new.Elements or not new.Elements[element]) then
 				Elements[element]:SetParent(UIHider)
+				if (ObjectSnippets[element]) then
+					ObjectSnippets[element].Disable(Objects[element])
+				end
 			end
 		end
 	end
 
 	-- Update Blizzard element visibility.
 	for element,object in next,Objects do
-		object:SetParent(new.HideElements and new.HideElements[element] and UIHider or ObjectOwners[element])
+		if (new.HideElements and new.HideElements[element]) then
+			object:SetParent(UIHider)
+			if (ObjectSnippets[element]) then
+				ObjectSnippets[element].Disable(object)
+			end
+		else
+			object:SetParent(ObjectOwners[element])
+			if (ObjectSnippets[element]) then
+				ObjectSnippets[element].Enable(object)
+				ObjectSnippets[element].Update(object)
+			end
+		end
 	end
 
 	local mask = new.Shape and Shapes[new.Shape] or Shapes.Round
@@ -889,6 +921,8 @@ end
 
 MinimapMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("Minimap", defaults)
+	--self.db:SetProfile("Default")
+
 	self:SetEnabledState(self.db.profile.enabled)
 	self:Embed()
 	self:CreateCustomElements()

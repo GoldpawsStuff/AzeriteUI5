@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.29-RC] 2023-02-06 (Dragonflight)
+- Updated for WoW client patch 10.0.5.
+- Introduced our new movable frame system.
+
+### Added
+- Added a separate profiling system for our own movable frames. Their anchors and preset window appear alongside the blizzard editmode window. Our movable frames presets are no longer locked to the current editmode preset. Instead we now have an additional separate window showing when the editmode is active, handling the presets of our own "green" frames. Also, in the preset window for our own "green" frames, you can find buttons to reset or create an editmode preset named "Azerite" with a setup ideal for the AzeriteUI default layout.
+- Added a welcome message with the ability to reset or create an editmode preset named "Azerite" where the blizzard frames are in the default positions for AzeriteUI. To get the intended overall scale for the user interface as well, use the chat command `/resetscale`. If you accidentally click cancel and wish to see the tutorials again, use the `/resettutorials` command.
+
+### Changed
+- Introduced our new movable frame system. This forces a one-time settings reset upon the first login of each character. After this characters should be able to share movable frame presets between them, yet have their current preset choice saved separately to each character.
+
+### Fixed
+- Shouldn't be a weird, hovering mail icon next to the minimap anymore.
+- Fixed a font related issue that sometimes would cause a bug when temporary (whisper) chat windows were opened.
+
+### Removed
+- Removed the previous chat command to reset the current editmode layout. It has been replaced by a new intro tutorial and a new editmode integration, explained above.
+
 ## [5.0.28-RC] 2023-01-23 (Dragonflight)
 ### Changed
 - Party frames should once again be right-clickable.

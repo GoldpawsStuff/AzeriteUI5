@@ -663,6 +663,8 @@ end
 
 Tracker.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ObjectivesTracker", defaults)
+	--self.db:SetProfile("Default")
+
 	self:SetEnabledState(self.db.profile.enabled)
 	self:HookTracker()
 	self:RegisterChatCommand("settrackertheme", "SetObjectivesTrackerTheme")

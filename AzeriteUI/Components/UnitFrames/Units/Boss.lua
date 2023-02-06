@@ -27,6 +27,7 @@ local Addon, ns = ...
 local oUF = ns.oUF
 
 local BossFrameMod = ns:Merge(ns:NewModule("BossFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
+local MFM = ns:GetModule("MovableFramesManager", true)
 
 -- Lua API
 local string_gsub = string.gsub
@@ -610,7 +611,7 @@ BossFrameMod.Spawn = function(self)
 
 	-- Movable Frame Anchor
 	---------------------------------------------------
-	local anchor = ns.Widgets.RequestMovableFrameAnchor()
+	local anchor = MFM:RequestAnchor()
 	anchor:SetTitle(BOSSES)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
@@ -628,8 +629,17 @@ end
 
 BossFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("BossFrames", defaults)
+	--self.db:SetProfile("Default")
+
 	self:SetEnabledState(self.db.profile.enabled)
 
+	-- Register the available layout names
+	-- with the movable frames manager.
+	if (MFM) then
+		MFM:RegisterPresets(self.db.profile.savedPosition)
+	end
+
+	-- Disable Blizzard boss frames.
 	for i = 1, MAX_BOSS_FRAMES do
 		oUF:DisableBlizzard("boss"..i)
 	end

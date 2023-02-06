@@ -154,41 +154,76 @@ local layouts = {
 	defaultLayout = "Azerite",
 	{
 		layoutName = "Azerite",
-		layoutType = Enum.EditModeLayoutType.Account,
+		layoutType = Enum.EditModeLayoutType.Account, -- Character
 		systems = azeriteSystems
 	}
 }
 
-EditMode.RestoreLayouts = function(self, forced)
+EditMode.CanEditActiveLayout = function(self)
+	LEMO:LoadLayouts()
+	return self.loaded and LEMO:CanEditActiveLayout() -- bugs out before initial editmode event
+end
+
+EditMode.DoesDefaultLayoutExist = function(self)
+	LEMO:LoadLayouts()
+	return LEMO:DoesLayoutExist(layouts.defaultLayout)
+end
+
+EditMode.SetToDefaultLayout = function(self)
 	if (InCombatLockdown()) then return end
-	if (not LEMO:AreLayoutsLoaded()) then return end
+	LEMO:LoadLayouts()
+	if (not LEMO:DoesLayoutExist(layouts.defaultLayout)) then return end
+	-- Set the active layout.
+	LEMO:SetActiveLayout(layouts.defaultLayout)
+	LEMO:ApplyChanges()
+end
 
-	-- Create and reset our custom layouts, if they don't exist.
-	for _,layoutInfo in ipairs(layouts) do
-		if (not LEMO:DoesLayoutExist(layoutInfo.layoutName) and (forced or not self.db.profile.layoutsCreated)) then
-			LEMO:AddLayout(layoutInfo.layoutType, layoutInfo.layoutName)
-			LEMO:SetActiveLayout(layoutInfo.layoutName)
-			LEMO:ApplyChanges()
+-- Reset the currently selected EditMode layout
+-- to AzeriteUI defaults for selected frames.
+EditMode.ApplySystems = function(self, systems)
+	if (InCombatLockdown()) then return end
+	if (not self:CanEditActiveLayout()) then return end
 
-			for system,systemInfo in pairs(layoutInfo.systems) do
-				local systemFrame = EditModeManagerFrame:GetRegisteredSystemFrame(system)
-				LEMO:ReanchorFrame(systemFrame, systemInfo.anchorInfo.point, systemInfo.anchorInfo.relativeTo, systemInfo.anchorInfo.relativePoint, systemInfo.anchorInfo.offsetX, systemInfo.anchorInfo.offsetY)
-
-				for setting,value in ipairs(systemInfo.settings) do
-					LEMO:SetFrameSetting(systemFrame, setting, value)
-				end
-
-				LEMO:ApplyChanges()
+	-- Get default systems.
+	-- *This whole thing is redundant,
+	--  but working on the assumption I'll
+	--  be adding multiple systems in the future.
+	if (not systems) then
+		for _,layoutInfo in ipairs(layouts) do
+			if (layoutInfo.layoutName == layouts.defaultLayout) then
+				systems = layoutInfo.systems
+				break
 			end
 		end
 	end
+	if (systems) then
 
-	self.db.profile.layoutsCreated = true
+		-- Apply default systems to current layout.
+		for system,systemInfo in pairs(systems) do
+
+			-- Retrieve the system frame.
+			local systemFrame = EditModeManagerFrame:GetRegisteredSystemFrame(system)
+
+			-- Reposition the system frame.
+			LEMO:ReanchorFrame(systemFrame, systemInfo.anchorInfo.point, systemInfo.anchorInfo.relativeTo, systemInfo.anchorInfo.relativePoint, systemInfo.anchorInfo.offsetX, systemInfo.anchorInfo.offsetY)
+
+			-- Apply the system frame settings.
+			for setting,value in ipairs(systemInfo.settings) do
+				LEMO:SetFrameSetting(systemFrame, setting, value)
+			end
+		end
+
+		-- Save the settings.
+		LEMO:ApplyChanges()
+	end
+
 end
 
+-- Reset our custom layouts to AzeriteUI defaults.
+-- *currently just a single one.
 EditMode.ResetLayouts = function(self)
 	if (InCombatLockdown()) then return end
-	if (not LEMO:AreLayoutsLoaded()) then return end
+	LEMO:LoadLayouts()
 
 	-- Delete all existing layouts, in case they are of the wrong type.
 	for _,layoutInfo in ipairs(layouts) do
@@ -199,68 +234,36 @@ EditMode.ResetLayouts = function(self)
 	end
 
 	-- Create and reset our custom layouts.
-	self:RestoreLayouts(true)
+	for _,layoutInfo in ipairs(layouts) do
+		LEMO:AddLayout(layoutInfo.layoutType, layoutInfo.layoutName)
+		LEMO:SetActiveLayout(layoutInfo.layoutName)
+		LEMO:ApplyChanges()
+		self:ApplySystems(layoutInfo.systems)
+	end
 
-	LEMO:SetActiveLayout(layouts.defaultLayout)
-	LEMO:ApplyChanges()
+	-- Set the active layout.
+	self:SetToDefaultLayout()
 end
 
-EditMode.TriggerPresetChange = function(self)
-	LEMO:SetActiveLayout(layouts.defaultLayout)
-	LEMO:ApplyChanges()
-	-- Keep triggering until it works
-	if (LEMO:GetActiveLayout() ~= layouts.defaultLayout) then
-		return self:TriggerPresetChange("TriggerPresetChange", 1)
-	end
-	self.TriggerPresetChange = ns.Noop
-end
-
-EditMode.TriggerEditModeReset = function(self, event, ...)
-	if (event == "PLAYER_ENTERING_WORLD") then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	end
-	-- Keep triggering until it works
+EditMode.LoadLayouts = function(self)
 	LEMO:LoadLayouts()
-	if (not LEMO:AreLayoutsLoaded()) then
-		return self:ScheduleTimer("TriggerEditModeReset", 1)
-	end
-	-- Reset layouts.
-	self:ResetLayouts()
-	self:TriggerPresetChange()
-	self.TriggerEditModeReset = ns.Noop
 end
 
-EditMode.OnEvent = function(self, event, ...)
-	if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
-		self:UnregisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent") -- would be an endless loop otherwise.
-		LEMO:LoadLayouts()
-	end
-	if (not LEMO:AreLayoutsLoaded()) then return end
-
-	-- Restore our custom layouts if they have been deleted.
-	if (not self.db.profile.layoutsCreated) then
-		self:RestoreLayouts() -- this trigger the event that got us here.
-	end
+EditMode.AreLayoutsLoaded = function(self)
+	return self.loaded and LEMO:AreLayoutsLoaded()
 end
 
--- Proxy this by secure hooks to make sure our code is run after.
-EditMode.OnEditModeManagerEvent = function(self, event, ...)
+EditMode.OnEvent = function(self)
 	if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
-		self:OnEvent(event, ...)
+		self.loaded = true
 	end
 end
 
 EditMode.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("EditMode", defaults)
+	--self.db:SetProfile("Default")
 
-	-- Cannot register for this in OnEnable, that's too late.
-	--self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
+	self.db.profile.layoutsCreated = nil
 
-	--self:SecureHook(EditModeManagerFrame, "OnEvent", "OnEditModeManagerEvent")
-
-	--if (ns.triggerEditModeReset) then
-	--	self:RegisterEvent("PLAYER_ENTERING_WORLD", "TriggerEditModeReset")
-	--end
-
-	self:RegisterChatCommand("resetlayout", "ResetLayouts")
+	self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
 end

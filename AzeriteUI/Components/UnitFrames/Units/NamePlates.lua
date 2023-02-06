@@ -990,6 +990,8 @@ NamePlatesMod.OnInitialize = function(self)
 	if (self:CheckForConflicts()) then return self:Disable() end
 
 	self.db = ns.db:RegisterNamespace("NamePlates", defaults)
+	--self.db:SetProfile("Default")
+
 	self:SetEnabledState(self.db.profile.enabled)
 
 	oUF:RegisterStyle(ns.Prefix.."NamePlates", style)

@@ -25,6 +25,7 @@
 --]]
 local Addon, ns = ...
 local RaidBossEmotes = ns:NewModule("RaidBossEmotes", "LibMoreEvents-1.0", "AceHook-3.0")
+local MFM = ns:GetModule("MovableFramesManager", true)
 
 -- Lua API
 local pairs, unpack = pairs, unpack
@@ -75,7 +76,7 @@ end
 
 RaidBossEmotes.InitializeMovableFrameAnchor = function(self)
 
-	local anchor = ns.Widgets.RequestMovableFrameAnchor()
+	local anchor = MFM:RequestAnchor()
 	anchor:SetTitle(CHAT_MSG_RAID_BOSS_EMOTE)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
@@ -126,7 +127,12 @@ RaidBossEmotes.OnAnchorUpdate = function(self, reason, layoutName, ...)
 	local savedPosition = self.db.profile.savedPosition
 	local lockdown = InCombatLockdown()
 
-	if (reason == "LayoutsUpdated") then
+	if (reason == "LayoutDeleted") then
+		if (savedPosition[layoutName]) then
+			savedPosition[layoutName] = nil
+		end
+
+	elseif (reason == "LayoutsUpdated") then
 
 		if (savedPosition[layoutName]) then
 
@@ -165,22 +171,6 @@ RaidBossEmotes.OnAnchorUpdate = function(self, reason, layoutName, ...)
 
 		self.currentLayout = layoutName
 
-		-- Purge layouts not matching editmode themes or our defaults.
-		for name in pairs(savedPosition) do
-			if (not defaults.profile.savedPosition[name] and name ~= "Modern" and name ~= "Classic") then
-				local found
-				for lname in pairs(C_EditMode.GetLayouts().layouts) do
-					if (lname == name) then
-						found = true
-						break
-					end
-				end
-				if (not found) then
-					savedPosition[name] = nil
-				end
-			end
-		end
-
 		self:UpdatePositionAndScale()
 
 	elseif (reason == "PositionUpdated") then
@@ -218,7 +208,15 @@ end
 
 RaidBossEmotes.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("RaidBossEmotes", defaults)
+	--self.db:SetProfile("Default")
+
 	self:SetEnabledState(self.db.profile.enabled)
+
+	-- Register the available layout names
+	-- with the movable frames manager.
+	if (MFM) then
+		MFM:RegisterPresets(self.db.profile.savedPosition)
+	end
 
 	self:InitializeRaidBossEmoteFrame()
 	self:InitializeMovableFrameAnchor()

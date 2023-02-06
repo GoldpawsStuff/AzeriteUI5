@@ -30,8 +30,7 @@ ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false)
 ns.Hider = CreateFrame("Frame"); ns.Hider:Hide()
 ns.Noop = function() end
 
-ns.EDIT_MODE_VERSION = -9999
-ns.SETTINGS_VERSION = -9999
+ns.SETTINGS_VERSION = 13
 
 _G[Addon] = ns
 
@@ -89,8 +88,7 @@ end
 
 ns.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
-		print("Type |cff4488ff/resetlayout|r to reset the AzeriteUI editmode profile!")
-		print("Type |cff4488ff/resetscale|r to set the ui scale to AzeriteUI default.")
+		--print("Type |cff4488ff/resetscale|r to set the ui scale to AzeriteUI default.")
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent") -- once is enough.
 	end
 end
@@ -100,24 +98,22 @@ ns.OnInitialize = function(self)
 	self.db = LibStub("AceDB-3.0"):New("AzeriteUI5_DB", defaults, true)
 
 	-- Force a settings reset on backwards incompatible changes.
-	if (self.db.profile.version ~= ns.SETTINGS_VERSION) then
+	if (self.db.global.version ~= ns.SETTINGS_VERSION) then
+		--local profiles, count = self.db:GetProfiles()
+		--local current = self.db:GetCurrentProfile()
 		self.db:ResetDB() -- Full db reset of all profiles. Destructive operation.
-		self.db.profile.version = ns.SETTINGS_VERSION -- Store version in default profile.
-		self.triggerProfileReset = true -- Tell modules about it, the simple way.
+		self.db.global.version = ns.SETTINGS_VERSION -- Store version in default profile.
 	end
 
-	-- Force a settings reset on layout updates or fixes.
-	if (self.db.profile.layoutversion ~= ns.EDIT_MODE_VERSION) then
-		self.db.profile.layoutversion = ns.EDIT_MODE_VERSION
-		self.triggerEditModeReset = true -- Tell modules about it, the simple way.
-	end
+	self.db:SetProfile("Azerite")
+	self.db.profile.layoutversion = nil
+
 
 	self.db.RegisterCallback(self, "OnProfileChanged", "UpdateSettings")
 	self.db.RegisterCallback(self, "OnProfileCopied", "UpdateSettings")
 	self.db.RegisterCallback(self, "OnProfileReset", "UpdateSettings")
 
 	self:RegisterChatCommand("resetscale", "ResetBlizzardScale")
-
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 
 end

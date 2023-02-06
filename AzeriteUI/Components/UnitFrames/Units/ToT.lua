@@ -27,6 +27,7 @@ local Addon, ns = ...
 local oUF = ns.oUF
 
 local ToTFrameMod = ns:Merge(ns:NewModule("ToTFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
+local MFM = ns:GetModule("MovableFramesManager", true)
 
 -- Lua API
 local unpack = unpack
@@ -488,7 +489,7 @@ ToTFrameMod.Spawn = function(self)
 
 	-- Movable Frame Anchor
 	---------------------------------------------------
-	local anchor = ns.Widgets.RequestMovableFrameAnchor()
+	local anchor = MFM:RequestAnchor()
 	anchor:SetTitle(SHOW_TARGET_OF_TARGET_TEXT) -- crazy long
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
@@ -505,7 +506,16 @@ end
 
 ToTFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ToTFrame", defaults)
+	--self.db:SetProfile("Default")
+
 	self:SetEnabledState(self.db.profile.enabled)
 
+	-- Register the available layout names
+	-- with the movable frames manager.
+	if (MFM) then
+		MFM:RegisterPresets(self.db.profile.savedPosition)
+	end
+
+	-- Disable Blizzard tot frame.
 	oUF:DisableBlizzard("targettarget")
 end

@@ -147,7 +147,12 @@ ns.UnitFrame.modulePrototype = {
 		local defaultPositions = self.db.defaults.profile.savedPosition
 		local lockdown = InCombatLockdown()
 
-		if (reason == "LayoutsUpdated") then
+		if (reason == "LayoutDeleted") then
+			if (savedPositions[layoutName]) then
+				savedPositions[layoutName] = nil
+			end
+
+		elseif (reason == "LayoutsUpdated") then
 
 			if (savedPositions[layoutName]) then
 
@@ -184,22 +189,6 @@ ns.UnitFrame.modulePrototype = {
 			end
 
 			self.currentLayout = layoutName
-
-			-- Purge layouts not matching editmode themes or our defaults.
-			for name in pairs(savedPositions) do
-				if (not defaultPositions[name] and name ~= "Modern" and name ~= "Classic") then
-					local found
-					for lname in pairs(C_EditMode.GetLayouts().layouts) do
-						if (lname == name) then
-							found = true
-							break
-						end
-					end
-					if (not found) then
-						savedPositions[name] = nil
-					end
-				end
-			end
 
 			self:UpdatePositionAndScale()
 

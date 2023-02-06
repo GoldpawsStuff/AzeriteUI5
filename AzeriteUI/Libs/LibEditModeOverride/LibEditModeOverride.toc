@@ -1,6 +1,6 @@
 ## Interface: 100000
 ## Title: LibEditModeOverride
-## Version: 1.0.10
+## Version: @project-version@
 ## Author: plusmouse
 ## OptionalDeps: LibStub
 

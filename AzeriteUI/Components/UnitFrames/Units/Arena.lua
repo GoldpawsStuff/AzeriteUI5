@@ -31,6 +31,7 @@ local ArenaFrameMod = ns:Merge(ns:NewModule("ArenaFrames", "LibMoreEvents-1.0"),
 
 ArenaFrameMod.OnInitialize = function(self)
 
+	-- Disable Blizzard arena enemy frames.
 	for i = 1, MAX_ARENA_ENEMIES do
 		oUF:DisableBlizzard("arena"..i)
 	end

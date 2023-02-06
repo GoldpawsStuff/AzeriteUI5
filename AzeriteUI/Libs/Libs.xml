@@ -26,7 +26,7 @@
 
 	<!-- EditMode Integration -->
 	<Include file="LibDropDown\embed.xml"/>
-	<Include file="LibEditMode\embed.xml"/>
+	<!--<Include file="LibEditMode\embed.xml"/>-->
 	<Include file="LibEditModeOverride\LibEditModeOverride.xml"/>
 
 	<!-- My Custom Libraries -->

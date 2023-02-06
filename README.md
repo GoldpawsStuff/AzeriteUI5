@@ -17,9 +17,10 @@ AzeriteUI5 is a custom user interface for World of Warcraft Dragonflight. Issues
 ## Chat Commands
 Note that the following commands do NOT work while engaged in combat. All settings are stored in the addons saved settings.
 
-### Layout & Scaling
-- **/resetscale** - Resets the user interface scale to what the UI was designed for.
-- **/resetlayout** - Resets our custom EditMode preset "Azerite" to the default settings fitting the UI.
+### Scaling & Positioning
+- **/resetscale** - Resets the blizzard user interface scale to what the UI was designed for. Note that individual AzeriteUI frames can be scaled with the mousewheel from within the editmode while hovering over our green frame anchors.
+- **/resettutorials** - Resets the completed status of our tutorials (currently only a fast setup tutorial) and shows them.
+- **/runtutorials** - Runs any uncompleted tutorials which you chose to hide on login.
 
 ### Action Bars
 Change actionbar settings like enabled bars, number of buttons and fading.
