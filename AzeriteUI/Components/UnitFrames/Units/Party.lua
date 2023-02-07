@@ -892,7 +892,6 @@ end
 
 PartyFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PartyFrames", defaults)
-	--self.db:SetProfile("Default")
 
 	self:SetEnabledState(self.db.profile.enabled)
 

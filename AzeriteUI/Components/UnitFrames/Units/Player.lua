@@ -1138,7 +1138,6 @@ end
 
 PlayerFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PlayerFrame", defaults)
-	--self.db:SetProfile("Default")
 
 	self:SetEnabledState(self.db.profile.enabled)
 

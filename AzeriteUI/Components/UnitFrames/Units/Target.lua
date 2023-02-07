@@ -1254,7 +1254,6 @@ end
 
 TargetFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("TargetFrame", defaults)
-	--self.db:SetProfile("Default")
 
 	self:SetEnabledState(self.db.profile.enabled)
 

@@ -20,6 +20,7 @@
 	<Script file="Elements\PetBar.lua"/>
 	<Script file="Elements\StatusBars.lua"/>
 	<Script file="Elements\ExtraButtons.lua"/>
+	<Script file="Elements\VehicleExit.lua"/>
 	<Script file="Elements\MicroMenu.lua"/>
 
 </Ui>

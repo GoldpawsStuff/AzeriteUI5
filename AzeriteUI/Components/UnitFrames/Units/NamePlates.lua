@@ -480,6 +480,11 @@ local Auras_PostUpdate = function(element, unit)
 	NamePlate_PostUpdatePositions(element.__owner)
 end
 
+local Castbar_PostUpdateInterruptable = function(element, unit)
+	element.Backdrop:SetShown(not self.isPRD and not element.notInterruptible)
+	element.Shield:SetShown(not self.isPRD and element.notInterruptible)
+end
+
 -- Callback that handles positions of elements
 -- that change position within their frame.
 local NamePlate_PostUpdateElements = function(self, event, unit, ...)
@@ -492,6 +497,15 @@ local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 		if (self:IsElementEnabled("Auras")) then
 			self:DisableElement("Auras")
 		end
+		self.Castbar:SetSize(unpack(config.HealthBarSize))
+		self.Castbar:ClearAllPoints()
+		self.Castbar:SetAllPoints(self.Health)
+		self.Castbar:SetSparkMap(config.HealthBarSparkMap)
+		self.Castbar:SetStatusBarTexture(config.HealthBarTexture)
+		self.Castbar:SetStatusBarColor(unpack(config.HealthCastOverlayColor))
+		self.Castbar:SetTexCoord(unpack(config.HealthBarTexCoord))
+		self.Castbar.Backdrop:Hide()
+		self.Castbar.Text:Hide()
 	else
 		if (not self:IsElementEnabled("Auras")) then
 			self:EnableElement("Auras")
@@ -512,6 +526,15 @@ local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 			self.Health.Value:Hide()
 			self.Name:Hide()
 		end
+		self.Castbar:SetSize(unpack(config.CastBarSize))
+		self.Castbar:ClearAllPoints()
+		self.Castbar:SetPoint(unpack(config.CastBarPosition))
+		self.Castbar:SetSparkMap(config.CastBarSparkMap)
+		self.Castbar:SetStatusBarTexture(config.CastBarTexture)
+		self.Castbar:SetStatusBarColor(unpack(config.CastBarColor))
+		self.Castbar:SetTexCoord(unpack(config.CastBarTexCoord))
+		self.Castbar.Backdrop:Show()
+		self.Castbar.Text:Show()
 	end
 
 	NamePlate_PostUpdatePositions(self)
@@ -688,18 +711,46 @@ local style = function(self, unit, id)
 	self.HealthPrediction = healPredict
 	self.HealthPrediction.PostUpdate = HealPredict_PostUpdate
 
-	-- Cast Overlay
+	-- Castbar
 	--------------------------------------------
 	local castbar = self:CreateBar()
-	castbar:SetAllPoints(health)
 	castbar:SetFrameLevel(self:GetFrameLevel() + 5)
-	castbar:SetSparkMap(db.HealthBarSparkMap)
-	castbar:SetStatusBarTexture(db.HealthBarTexture)
-	castbar:SetStatusBarColor(unpack(db.HealthCastOverlayColor))
-	castbar:SetTexCoord(unpack(db.HealthBarTexCoord))
+	castbar:SetSize(unpack(db.CastBarSize))
+	castbar:SetPoint(unpack(db.CastBarPosition))
+	castbar:SetSparkMap(db.CastBarSparkMap)
+	castbar:SetStatusBarTexture(db.CastBarTexture)
+	castbar:SetStatusBarColor(unpack(db.CastBarColor))
+	castbar:SetTexCoord(unpack(db.CastBarTexCoord))
 	castbar:DisableSmoothing(true)
 
 	self.Castbar = castbar
+	self.Castbar.PostCastUpdate = Castbar_PostUpdateInterruptable
+	self.Castbar.PostCastInterruptible = Castbar_PostUpdateInterruptable
+
+	local castBackdrop = castbar:CreateTexture(nil, "BACKGROUND", nil, -1)
+	castBackdrop:SetSize(unpack(db.CastBarBackdropSize))
+	castBackdrop:SetPoint(unpack(db.CastBarBackdropPosition))
+	castBackdrop:SetTexture(db.CastBarBackdropTexture)
+
+	self.Castbar.Backdrop = castBackdrop
+
+	local castShield = castbar:CreateTexture(nil, "BACKGROUND", nil, -1)
+	castShield:Hide()
+	castShield:SetSize(unpack(db.CastBarShieldSize))
+	castShield:SetPoint(unpack(db.CastBarShieldPosition))
+	castShield:SetTexture(db.CastBarShieldTexture)
+	castShield:SetVertexColor(unpack(db.CastBarShieldColor))
+
+	self.Castbar.Shield = castShield
+
+	local castText = castbar:CreateFontString(nil, "OVERLAY", nil, 1)
+	castText:SetPoint(unpack(db.CastBarNamePosition))
+	castText:SetJustifyH(db.CastBarNameJustifyH)
+	castText:SetJustifyV(db.CastBarNameJustifyV)
+	castText:SetFontObject(db.CastBarNameFont)
+	castText:SetTextColor(unpack(db.CastBarNameColor))
+
+	self.Castbar.Text = castText
 
 	-- Health Value
 	--------------------------------------------
@@ -990,7 +1041,6 @@ NamePlatesMod.OnInitialize = function(self)
 	if (self:CheckForConflicts()) then return self:Disable() end
 
 	self.db = ns.db:RegisterNamespace("NamePlates", defaults)
-	--self.db:SetProfile("Default")
 
 	self:SetEnabledState(self.db.profile.enabled)
 

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.30-RC] 2023-02-07 (Dragonflight)
+### Added
+- Added castbars for nameplates. Does not apply to the personal resource display.
+- Added a taxi exit / vehicle exit / dismount button to the minimap.
+
 ## [5.0.29-RC] 2023-02-06 (Dragonflight)
 - Updated for WoW client patch 10.0.5.
 - Introduced our new movable frame system.

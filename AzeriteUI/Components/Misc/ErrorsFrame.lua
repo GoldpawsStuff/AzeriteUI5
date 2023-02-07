@@ -303,7 +303,6 @@ end
 
 ErrorsFrame.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ErrorsFrame", defaults)
-	--self.db:SetProfile("Default")
 
 	self:SetEnabledState(self.db.profile.enabled)
 

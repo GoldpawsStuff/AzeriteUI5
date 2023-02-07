@@ -339,7 +339,6 @@ end
 
 Tutorials.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("Tutorials", defaults)
-	--self.db:SetProfile("Default")
 
 	self.tutorials = {}
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")

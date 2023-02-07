@@ -1077,7 +1077,6 @@ end
 
 MovableFramesManager.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("MovableFrames", defaults)
-	--self.db:SetProfile("Default")
 	self.db.profile = nil
 
 	self.layouts = {}

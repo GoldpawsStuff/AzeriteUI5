@@ -921,7 +921,6 @@ end
 
 MinimapMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("Minimap", defaults)
-	--self.db:SetProfile("Default")
 
 	self:SetEnabledState(self.db.profile.enabled)
 	self:Embed()

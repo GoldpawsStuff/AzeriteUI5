@@ -208,7 +208,6 @@ end
 
 RaidBossEmotes.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("RaidBossEmotes", defaults)
-	--self.db:SetProfile("Default")
 
 	self:SetEnabledState(self.db.profile.enabled)
 

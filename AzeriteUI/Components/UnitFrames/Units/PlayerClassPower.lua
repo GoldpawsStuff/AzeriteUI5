@@ -600,7 +600,6 @@ end
 
 ClassPowerMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PlayerClassPowerFrame", defaults)
-	--self.db:SetProfile("Default")
 
 	self:SetEnabledState(self.db.profile.enabled)
 

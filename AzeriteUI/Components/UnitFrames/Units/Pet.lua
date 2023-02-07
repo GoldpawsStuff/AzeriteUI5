@@ -468,7 +468,6 @@ end
 
 PetFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PetFrame", defaults)
-	--self.db:SetProfile("Default")
 
 	self:SetEnabledState(self.db.profile.enabled)
 

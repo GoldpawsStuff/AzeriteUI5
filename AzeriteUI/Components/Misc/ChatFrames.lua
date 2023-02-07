@@ -535,7 +535,6 @@ end
 
 ChatFrames.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ChatFrames", defaults)
-	--self.db:SetProfile("Default")
 
 	self:SetEnabledState(not IsAddOnEnabled("Prat-3.0") and not IsAddOnEnabled("ls_Glass") and self.db.profile.enabled)
 

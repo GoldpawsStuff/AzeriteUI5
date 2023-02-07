@@ -273,7 +273,6 @@ CastBarMod.OnInitialize = function(self)
 	end
 
 	self.db = ns.db:RegisterNamespace("PlayerCastBarFrame", defaults)
-	--self.db:SetProfile("Default")
 
 	self:SetEnabledState(self.db.profile.enabled)
 

@@ -850,7 +850,6 @@ end
 
 ActionBarMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ActionBars", defaults)
-	--self.db:SetProfile("Default")
 
 	self.bars = {}
 	self.buttons = {}

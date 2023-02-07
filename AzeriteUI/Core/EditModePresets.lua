@@ -261,7 +261,6 @@ end
 
 EditMode.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("EditMode", defaults)
-	--self.db:SetProfile("Default")
 
 	self.db.profile.layoutsCreated = nil
 
