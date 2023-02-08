@@ -481,8 +481,8 @@ local Auras_PostUpdate = function(element, unit)
 end
 
 local Castbar_PostUpdateInterruptable = function(element, unit)
-	element.Backdrop:SetShown(not self.isPRD and not element.notInterruptible)
-	element.Shield:SetShown(not self.isPRD and element.notInterruptible)
+	element.Backdrop:SetShown(not element.__owner.isPRD and not element.notInterruptible)
+	element.Shield:SetShown(not element.__owner.isPRD and element.notInterruptible)
 end
 
 -- Callback that handles positions of elements
