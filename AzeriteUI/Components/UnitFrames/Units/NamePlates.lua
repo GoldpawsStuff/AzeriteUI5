@@ -102,12 +102,15 @@ local config = {
 	CastBarPosition = { "TOP", 0, -20 },
 	CastBarPositionPlayer = { "TOP", 0, -(2 + 18 + 18) },
 	CastBarSize = { 84, 14 },
+	CastBarProtectedSize = { 84*.25, 14*.25 },
+	CastBarProtectedPosition = { "TOP", 0, -(20 + 14*.25/2) },
 	CastBarSparkMap = barSparkMap,
 	CastBarOrientation = "LEFT",
 	CastBarOrientationPlayer = "RIGHT",
 	CastBarTexture = GetMedia("nameplate_bar"),
 	CastBarTexCoord = { 14/256,(256-14)/256,14/64,(64-14)/64 },
-	CastBarColor = { Colors.cast[1], Colors.cast[2], Colors.cast[3], 1 },
+	CastBarColor = { Colors.normal[1], Colors.normal[2], Colors.normal[3], 1 },
+	--CastBarColor = { Colors.cast[1], Colors.cast[2], Colors.cast[3], 1 },
 
 	CastBarBackdropPosition = { "CENTER", 0, 0 },
 	CastBarBackdropSize = { 84*256/(256-28), 14*64/(64-28) },
@@ -481,8 +484,9 @@ local Auras_PostUpdate = function(element, unit)
 end
 
 local Castbar_PostUpdateInterruptable = function(element, unit)
-	element.Backdrop:SetShown(not element.__owner.isPRD and not element.notInterruptible)
-	element.Shield:SetShown(not element.__owner.isPRD and element.notInterruptible)
+	local r, g, b = unpack(element.notInterruptible and Colors.title or config.CastBarNameColor)
+	element.Text:SetTextColor(r, g, b, 1)
+	element:SetStatusBarColor(unpack(element.__owner.isPRD and config.HealthCastOverlayColor or element.notInterruptible and Colors.red or config.CastBarColor))
 end
 
 -- Callback that handles positions of elements
@@ -497,15 +501,15 @@ local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 		if (self:IsElementEnabled("Auras")) then
 			self:DisableElement("Auras")
 		end
+
 		self.Castbar:SetSize(unpack(config.HealthBarSize))
 		self.Castbar:ClearAllPoints()
 		self.Castbar:SetAllPoints(self.Health)
 		self.Castbar:SetSparkMap(config.HealthBarSparkMap)
 		self.Castbar:SetStatusBarTexture(config.HealthBarTexture)
-		self.Castbar:SetStatusBarColor(unpack(config.HealthCastOverlayColor))
 		self.Castbar:SetTexCoord(unpack(config.HealthBarTexCoord))
-		self.Castbar.Backdrop:Hide()
-		self.Castbar.Text:Hide()
+
+		Castbar_PostUpdateInterruptable(self.Castbar)
 	else
 		if (not self:IsElementEnabled("Auras")) then
 			self:EnableElement("Auras")
@@ -526,15 +530,15 @@ local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 			self.Health.Value:Hide()
 			self.Name:Hide()
 		end
+
 		self.Castbar:SetSize(unpack(config.CastBarSize))
 		self.Castbar:ClearAllPoints()
 		self.Castbar:SetPoint(unpack(config.CastBarPosition))
 		self.Castbar:SetSparkMap(config.CastBarSparkMap)
 		self.Castbar:SetStatusBarTexture(config.CastBarTexture)
-		self.Castbar:SetStatusBarColor(unpack(config.CastBarColor))
 		self.Castbar:SetTexCoord(unpack(config.CastBarTexCoord))
-		self.Castbar.Backdrop:Show()
-		self.Castbar.Text:Show()
+
+		Castbar_PostUpdateInterruptable(self.Castbar)
 	end
 
 	NamePlate_PostUpdatePositions(self)
@@ -639,6 +643,7 @@ local style = function(self, unit, id)
 
 	self:SetPoint("CENTER",0,0)
 	self:SetSize(unpack(db.Size))
+	self:SetScale(ns.API.GetDefaultBlizzardScale())
 	self:SetFrameLevel(self:GetFrameLevel() + 2)
 
 	self:SetScript("OnHide", NamePlate_OnHide)
@@ -724,6 +729,7 @@ local style = function(self, unit, id)
 	castbar:DisableSmoothing(true)
 
 	self.Castbar = castbar
+	self.Castbar.PostCastStart = Castbar_PostUpdateInterruptable
 	self.Castbar.PostCastUpdate = Castbar_PostUpdateInterruptable
 	self.Castbar.PostCastInterruptible = Castbar_PostUpdateInterruptable
 
@@ -734,14 +740,14 @@ local style = function(self, unit, id)
 
 	self.Castbar.Backdrop = castBackdrop
 
-	local castShield = castbar:CreateTexture(nil, "BACKGROUND", nil, -1)
-	castShield:Hide()
-	castShield:SetSize(unpack(db.CastBarShieldSize))
-	castShield:SetPoint(unpack(db.CastBarShieldPosition))
-	castShield:SetTexture(db.CastBarShieldTexture)
-	castShield:SetVertexColor(unpack(db.CastBarShieldColor))
+	--local castShield = castbar:CreateTexture(nil, "BACKGROUND", nil, -1)
+	--castShield:Hide()
+	--castShield:SetSize(unpack(db.CastBarShieldSize))
+	--castShield:SetPoint(unpack(db.CastBarShieldPosition))
+	--castShield:SetTexture(db.CastBarShieldTexture)
+	--castShield:SetVertexColor(unpack(db.CastBarShieldColor))
 
-	self.Castbar.Shield = castShield
+	--self.Castbar.Shield = castShield
 
 	local castText = castbar:CreateFontString(nil, "OVERLAY", nil, 1)
 	castText:SetPoint(unpack(db.CastBarNamePosition))
@@ -940,7 +946,7 @@ local cvars = {
 	["nameplateOtherAtBase"] = 0,
 
 	-- Scale and Alpha of the selected nameplate (current target,
-	["nameplateSelectedScale"] = 1, -- 1.2
+	["nameplateSelectedScale"] = 1.2, -- 1.2
 
 	-- The max distance to show nameplates.
 	--["nameplateMaxDistance"] = 60, -- 20 is classic upper limit, 60 is BfA default

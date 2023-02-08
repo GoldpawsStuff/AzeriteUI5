@@ -91,11 +91,12 @@ VehicleExit.OnInitialize = function(self)
 	button:SetFrameLevel(100)
 	button:SetPoint(unpack(db.VehicleExitButtonPosition))
 	button:SetSize(unpack(db.VehicleExitButtonSize))
-	button:SetAttribute("type", "macro")
 	button:SetScript("OnEnter", ExitButton_OnEnter)
 	button:SetScript("OnLeave", ExitButton_OnLeave)
 	button:SetScript("PostClick", ExitButton_PostClick)
+	button:SetAttribute("type", "macro")
 	button:SetAttribute("macrotext", "/leavevehicle [@vehicle,exists,canexitvehicle]\n/dismount [mounted]")
+	button:RegisterForClicks("AnyUp", "AnyDown") -- required in 10.0.0
 
 	RegisterStateDriver(button, "visibility", "[@vehicle,exists,canexitvehicle][possessbar][mounted]show;hide")
 

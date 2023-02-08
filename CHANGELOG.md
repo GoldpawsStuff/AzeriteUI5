@@ -4,9 +4,16 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-02-08 (Dragonflight)
+## [5.0.31-RC] 2023-02-09 (Dragonflight)
+### Changed
+- Retribution paladins now have a crystal instead of an orb. No magic crystal ball for them. They're just too violent.
+
 ### Fixed
 - Fixed a wrong upvalue in the nameplate castbar element resulting in a bug when a cast changed its protected status.
+- Fixed an issue preventing the taxi exit / vehicle exit / dismount button functioning properly in 10.0.0 and higher.
+- The power crystal shouldn't randomly disappear when entering various vehicle like situations anymore.
+- Nameplate protected casts should now be much easier to identify.
+- Nameplate scales should be back to their previous size matching AzeriteUI4 and AzeriteUI3 again. Sorry folks that loved the larger ones!
 
 ## [5.0.30-RC] 2023-02-07 (Dragonflight)
 ### Added
