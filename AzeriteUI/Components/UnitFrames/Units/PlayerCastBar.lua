@@ -267,6 +267,22 @@ CastBarMod.Spawn = function(self)
 	self.anchor = anchor
 end
 
+CastBarMod.UpdateVisibility = function(self, event, ...)
+	if (not self.frame) then return end
+	if (InCombatLockdown()) then
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateVisibility")
+		return
+	end
+	if (event == "PLAYER_REGEN_ENABLED") then
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "UpdateVisibility")
+	end
+	if (GetCVarBool("nameplateShowSelf")) then
+		self:Disable()
+	else
+		self:Enable()
+	end
+end
+
 CastBarMod.OnInitialize = function(self)
 	if (IsAddOnEnabled("Quartz")) then
 		return self:Disable()
@@ -293,5 +309,8 @@ CastBarMod.OnInitialize = function(self)
 	PetCastingBarFrame:SetUnit(nil)
 	PetCastingBarFrame:UnregisterEvent("UNIT_PET")
 	PetCastingBarFrame:Hide()
+
+	self:RegisterEvent("CVAR_UPDATE", "UpdateVisibility")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateVisibility")
 
 end

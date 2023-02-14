@@ -107,6 +107,7 @@ local config = {
 	CastBarSparkMap = barSparkMap,
 	CastBarOrientation = "LEFT",
 	CastBarOrientationPlayer = "RIGHT",
+	CastBarTimeToHoldFailed = .5,
 	CastBarTexture = GetMedia("nameplate_bar"),
 	CastBarTexCoord = { 14/256,(256-14)/256,14/64,(64-14)/64 },
 	CastBarColor = { Colors.normal[1], Colors.normal[2], Colors.normal[3], 1 },
@@ -122,6 +123,7 @@ local config = {
 	CastBarShieldColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 
 	CastBarNamePosition = { "TOP", 0, -18 },
+	CastBarNamePositionPlayer = { "TOP", 0, -(18 + 18) },
 	CastBarNameJustifyH = "CENTER",
 	CastBarNameJustifyV = "MIDDLE",
 	CastBarNameFont = GetFont(12, true),
@@ -486,7 +488,9 @@ end
 local Castbar_PostUpdateInterruptable = function(element, unit)
 	local r, g, b = unpack(element.notInterruptible and Colors.title or config.CastBarNameColor)
 	element.Text:SetTextColor(r, g, b, 1)
-	element:SetStatusBarColor(unpack(element.__owner.isPRD and config.HealthCastOverlayColor or element.notInterruptible and Colors.red or config.CastBarColor))
+
+	local r, g, b, a = unpack(element.__owner.isPRD and config.HealthCastOverlayColor or element.notInterruptible and Colors.tapped or config.CastBarColor)
+	element:SetStatusBarColor(r, g, b, a or 1)
 end
 
 -- Callback that handles positions of elements
@@ -508,6 +512,9 @@ local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 		self.Castbar:SetSparkMap(config.HealthBarSparkMap)
 		self.Castbar:SetStatusBarTexture(config.HealthBarTexture)
 		self.Castbar:SetTexCoord(unpack(config.HealthBarTexCoord))
+		self.Castbar.Backdrop:Hide()
+		self.Castbar.Text:ClearAllPoints()
+		self.Castbar.Text:SetPoint(unpack(config.CastBarNamePositionPlayer))
 
 		Castbar_PostUpdateInterruptable(self.Castbar)
 	else
@@ -537,6 +544,9 @@ local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 		self.Castbar:SetSparkMap(config.CastBarSparkMap)
 		self.Castbar:SetStatusBarTexture(config.CastBarTexture)
 		self.Castbar:SetTexCoord(unpack(config.CastBarTexCoord))
+		self.Castbar.Backdrop:Show()
+		self.Castbar.Text:ClearAllPoints()
+		self.Castbar.Text:SetPoint(unpack(config.CastBarNamePosition))
 
 		Castbar_PostUpdateInterruptable(self.Castbar)
 	end
@@ -727,6 +737,7 @@ local style = function(self, unit, id)
 	castbar:SetStatusBarColor(unpack(db.CastBarColor))
 	castbar:SetTexCoord(unpack(db.CastBarTexCoord))
 	castbar:DisableSmoothing(true)
+	castbar.timeToHold = db.CastBarTimeToHoldFailed
 
 	self.Castbar = castbar
 	self.Castbar.PostCastStart = Castbar_PostUpdateInterruptable
@@ -1010,28 +1021,30 @@ end
 
 NamePlatesMod.HookNamePlates = function(self)
 
-	local classNameplateManaBar = NamePlateDriverFrame.classNamePlatePowerBar
-	if (classNameplateManaBar) then
-		classNameplateManaBar:Hide()
-		classNameplateManaBar:UnregisterAllEvents()
-	end
+	local clearClutter = function(frame)
+		local classNameplateManaBar = frame.classNamePlatePowerBar
+		if (classNameplateManaBar) then
+			classNameplateManaBar:SetAlpha(0)
+			classNameplateManaBar:Hide()
+			classNameplateManaBar:UnregisterAllEvents()
+		end
 
-	local classNamePlateMechanicFrame = NamePlateDriverFrame.classNamePlateMechanicFrame
-	if (classNamePlateMechanicFrame) then
-		classNamePlateMechanicFrame:Hide()
+		local classNamePlateMechanicFrame = frame.classNamePlateMechanicFrame
+		if (classNamePlateMechanicFrame) then
+			classNamePlateMechanicFrame:SetAlpha(0)
+			classNamePlateMechanicFrame:Hide()
+		end
+
+		local personalFriendlyBuffFrame = frame.personalFriendlyBuffFrame
+		if (personalFriendlyBuffFrame) then
+			personalFriendlyBuffFrame:SetAlpha(0)
+			personalFriendlyBuffFrame:Hide()
+		end
 	end
 
 	hooksecurefunc(NamePlateDriverFrame, "SetupClassNameplateBars", function(frame)
-		if (not frame or frame:IsForbidden()) then
-			return
-		end
-		if (frame.classNamePlateMechanicFrame) then
-			frame.classNamePlateMechanicFrame:Hide()
-		end
-		if (frame.classNamePlatePowerBar) then
-			frame.classNamePlatePowerBar:Hide()
-			frame.classNamePlatePowerBar:UnregisterAllEvents()
-		end
+		if (not frame or frame:IsForbidden()) then return end
+		clearClutter(frame)
 	end)
 
 	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", function()
@@ -1040,6 +1053,8 @@ NamePlatesMod.HookNamePlates = function(self)
 		C_NamePlate.SetNamePlateEnemySize(unpack(config.Size))
 		C_NamePlate.SetNamePlateSelfSize(unpack(config.Size))
 	end)
+
+	clearClutter(NamePlateDriverFrame)
 
 end
 
