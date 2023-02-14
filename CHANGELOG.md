@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.32-RC] 2023-02-14 (Dragonflight)
+### Changed
+- Nameplate castbars should now linger for half a second after interrupted or failed casts.
+- Nameplate castbars are now colored gray for protected casts, to better mimic the default blizzard coloring.
+- The floating player castbar will now disable itself when the personal resource display is enabled.
+
+### Fixed
+- The personal resource display castbar should no longer block out the health bar.
+- The personal resource display castbar text should no longer collide with the power bar.
+
 ## [5.0.31-RC] 2023-02-09 (Dragonflight)
 ### Changed
 - Retribution paladins now have a crystal instead of an orb. No magic crystal ball for them. They're just too violent.
