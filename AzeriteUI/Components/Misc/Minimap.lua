@@ -584,7 +584,7 @@ MinimapMod.UpdateTimers = function(self)
 	-- *Also, we know there is an API call for it. We like ours better.
 	IN_TORGHAST = (not IsResting()) and (GetRealZoneText() == GetRealZoneText(TORGHAST_ZONE_ID))
 
-	self.rotateMinimap = GetCVar("rotateMinimap") == "1"
+	self.rotateMinimap = GetCVarBool("rotateMinimap")
 	if (self.rotateMinimap) then
 		if (not self.compassTimer) then
 			self.compassTimer = self:ScheduleRepeatingTimer("UpdateCompass", 1/60)
