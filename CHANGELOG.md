@@ -4,10 +4,17 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.33-RC] 2023-02-14 (Dragonflight)
+### Changed
+- Party frames now uses the same aura filter as the nameplates, they previously used the same filter as the target frame.
+
+### Fixed
+- Nameplate health values should no longer overlap the nameplate castbars.
+
 ## [5.0.32-RC] 2023-02-14 (Dragonflight)
 ### Changed
 - Nameplate castbars should now linger for half a second after interrupted or failed casts.
-- Nameplate castbars are now colored gray for protected casts, to better mimic the default blizzard coloring.
+- Nameplate castbars are now colored yellow for interruptable casts and gray for protected casts, to better mimic the default blizzard coloring.
 - The floating player castbar will now disable itself when the personal resource display is enabled.
 
 ### Fixed

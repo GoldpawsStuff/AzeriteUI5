@@ -771,7 +771,7 @@ local style = function(self, unit)
 	auras.reanchorIfVisibleChanged = true
 	auras.CreateButton = ns.AuraStyles.CreateButton
 	auras.PostUpdateButton = ns.AuraStyles.TargetPostUpdateButton
-	auras.CustomFilter = ns.AuraFilters.TargetAuraFilter
+	auras.CustomFilter = ns.AuraFilters.NameplateAuraFilter
 	auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
 	auras.SortAuras = ns.AuraSorts.DefaultFunction -- only in retail
 

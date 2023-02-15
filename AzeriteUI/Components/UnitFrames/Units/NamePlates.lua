@@ -117,11 +117,6 @@ local config = {
 	CastBarBackdropSize = { 84*256/(256-28), 14*64/(64-28) },
 	CastBarBackdropTexture = GetMedia("nameplate_backdrop"),
 
-	CastBarShieldPosition = { "CENTER", 0, -1 },
-	CastBarShieldSize = { 124, 69 },
-	CastBarShieldTexture = GetMedia("cast_back_spiked"),
-	CastBarShieldColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
-
 	CastBarNamePosition = { "TOP", 0, -18 },
 	CastBarNamePositionPlayer = { "TOP", 0, -(18 + 18) },
 	CastBarNameJustifyH = "CENTER",
@@ -480,17 +475,44 @@ local NamePlate_PostUpdatePositions = function(self)
 	end
 end
 
+local NamePlate_PostUpdateHoverElements = function(self)
+	if (self.isPRD) then
+		self.Health.Value:Hide()
+		self.Name:Hide()
+	else
+		if (self.isMouseOver or self.isTarget or self.inCombat) then
+			if (self.isTarget) then
+				self.Health.Value:Hide()
+				self.Name:Hide()
+			else
+				local castbar = self.Castbar
+				if (castbar.casting or castbar.channeling or castbar.empowering) then
+					self.Health.Value:Hide()
+				else
+					self.Health.Value:Show()
+				end
+				self.Name:Show()
+			end
+		else
+			self.Health.Value:Hide()
+			self.Name:Hide()
+		end
+	end
+end
+
 -- Element proxy for the position updater above.
 local Auras_PostUpdate = function(element, unit)
 	NamePlate_PostUpdatePositions(element.__owner)
 end
 
-local Castbar_PostUpdateInterruptable = function(element, unit)
+local Castbar_PostUpdate = function(element, unit)
 	local r, g, b = unpack(element.notInterruptible and Colors.title or config.CastBarNameColor)
 	element.Text:SetTextColor(r, g, b, 1)
 
 	local r, g, b, a = unpack(element.__owner.isPRD and config.HealthCastOverlayColor or element.notInterruptible and Colors.tapped or config.CastBarColor)
 	element:SetStatusBarColor(r, g, b, a or 1)
+
+	NamePlate_PostUpdateHoverElements(element.__owner)
 end
 
 -- Callback that handles positions of elements
@@ -500,8 +522,6 @@ local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 
 	if (self.isPRD) then
 		self:SetIgnoreParentAlpha(false)
-		self.Health.Value:Hide()
-		self.Name:Hide()
 		if (self:IsElementEnabled("Auras")) then
 			self:DisableElement("Auras")
 		end
@@ -516,7 +536,6 @@ local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 		self.Castbar.Text:ClearAllPoints()
 		self.Castbar.Text:SetPoint(unpack(config.CastBarNamePositionPlayer))
 
-		Castbar_PostUpdateInterruptable(self.Castbar)
 	else
 		if (not self:IsElementEnabled("Auras")) then
 			self:EnableElement("Auras")
@@ -525,17 +544,8 @@ local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 		if (self.isMouseOver or self.isTarget or self.inCombat) then
 			-- SetIgnoreParentAlpha requires explicit true/false, or it'll bug out.
 			self:SetIgnoreParentAlpha((self.isMouseOver and not self.isTarget) and true or false)
-			if (self.isTarget) then
-				self.Health.Value:Hide()
-				self.Name:Hide()
-			else
-				self.Health.Value:Show()
-				self.Name:Show()
-			end
 		else
 			self:SetIgnoreParentAlpha(false)
-			self.Health.Value:Hide()
-			self.Name:Hide()
 		end
 
 		self.Castbar:SetSize(unpack(config.CastBarSize))
@@ -547,10 +557,9 @@ local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 		self.Castbar.Backdrop:Show()
 		self.Castbar.Text:ClearAllPoints()
 		self.Castbar.Text:SetPoint(unpack(config.CastBarNamePosition))
-
-		Castbar_PostUpdateInterruptable(self.Castbar)
 	end
 
+	Castbar_PostUpdate(self.Castbar)
 	NamePlate_PostUpdatePositions(self)
 end
 
@@ -740,9 +749,10 @@ local style = function(self, unit, id)
 	castbar.timeToHold = db.CastBarTimeToHoldFailed
 
 	self.Castbar = castbar
-	self.Castbar.PostCastStart = Castbar_PostUpdateInterruptable
-	self.Castbar.PostCastUpdate = Castbar_PostUpdateInterruptable
-	self.Castbar.PostCastInterruptible = Castbar_PostUpdateInterruptable
+	self.Castbar.PostCastStart = Castbar_PostUpdate
+	self.Castbar.PostCastUpdate = Castbar_PostUpdate
+	self.Castbar.PostCastStop = Castbar_PostUpdate
+	self.Castbar.PostCastInterruptible = Castbar_PostUpdate
 
 	local castBackdrop = castbar:CreateTexture(nil, "BACKGROUND", nil, -1)
 	castBackdrop:SetSize(unpack(db.CastBarBackdropSize))
@@ -750,15 +760,6 @@ local style = function(self, unit, id)
 	castBackdrop:SetTexture(db.CastBarBackdropTexture)
 
 	self.Castbar.Backdrop = castBackdrop
-
-	--local castShield = castbar:CreateTexture(nil, "BACKGROUND", nil, -1)
-	--castShield:Hide()
-	--castShield:SetSize(unpack(db.CastBarShieldSize))
-	--castShield:SetPoint(unpack(db.CastBarShieldPosition))
-	--castShield:SetTexture(db.CastBarShieldTexture)
-	--castShield:SetVertexColor(unpack(db.CastBarShieldColor))
-
-	--self.Castbar.Shield = castShield
 
 	local castText = castbar:CreateFontString(nil, "OVERLAY", nil, 1)
 	castText:SetPoint(unpack(db.CastBarNamePosition))
