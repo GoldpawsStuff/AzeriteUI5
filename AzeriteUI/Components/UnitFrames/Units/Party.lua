@@ -778,11 +778,12 @@ local style = function(self, unit)
 	self.Auras = auras
 
 	-- Range Alpha
-	--------------------------------------------
-	self.Range = {
-		insideAlpha = 1,
-		outsideAlpha = db.OutOfRangeAlpha,
-	}
+	-------------------------------------------
+	-- *looks really weird, going to drop it.
+	--self.Range = {
+	--	insideAlpha = 1,
+	--	outsideAlpha = db.OutOfRangeAlpha,
+	--}
 
 	-- Textures need an update when frame is displayed.
 	self.PostUpdate = UnitFrame_PostUpdate
