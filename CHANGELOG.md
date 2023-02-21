@@ -4,7 +4,18 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.0.33-RC] 2023-02-14 (Dragonflight)
+## [5.0.34-RC] 2023-02-21 (Dragonflight)
+### Added
+- Actionbuttons now have spell activation glows.
+- Actionbuttons now have differently colored spell activation glows when MaxDps is enabled.
+
+### Changed
+- Party frames will no longer be semi-transparent when the party member is out of range. Because it looked like shit.
+
+### Fixed
+- Fixed an issue with the color tables on protected casts on the target unit frame that would cause an error.
+
+## [5.0.33-RC] 2023-02-15 (Dragonflight)
 ### Changed
 - Party frames now uses the same aura filter as the nameplates, they previously used the same filter as the target frame.
 
