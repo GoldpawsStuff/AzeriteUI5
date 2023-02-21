@@ -26,7 +26,8 @@
 local Addon, ns = ...
 
 local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "LibFadingFrames-1.0", "AceConsole-3.0", "AceTimer-3.0")
-local LAB = LibStub("LibActionButton-1.0-GE")
+local LAB_Name = "LibActionButton-1.0-GE"
+local LAB, LAB_Version = LibStub(LAB_Name)
 local MFM = ns:GetModule("MovableFramesManager", true)
 
 -- Lua API
@@ -39,6 +40,7 @@ local tonumber = tonumber
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
+local IsAddOnEnabled = ns.API.IsAddOnEnabled
 local RegisterCooldown = ns.Widgets.RegisterCooldown
 local UIHider = ns.Hider
 local noop = ns.Noop
@@ -229,23 +231,23 @@ local config = {
 -- LAB Overrides & MaxDps Integration
 ---------------------------------------------
 local ShowMaxDps = function(self)
-	if (self.SpellHighlight) then
+	if (self.spellHighlight) then
 		if (self.maxDpsGlowColor) then
 			local r, g, b, a = unpack(self.maxDpsGlowColor)
-			self.SpellHighlight:SetVertexColor(r, g, b, a or .75)
+			self.spellHighlight:SetVertexColor(r, g, b, a or .75)
 		else
-			self.SpellHighlight:SetVertexColor(249/255, 188/255, 65/255, .75)
+			self.spellHighlight:SetVertexColor(249/255, 188/255, 65/255, .75)
 		end
-		self.SpellHighlight:Show()
-		LAB.callbacks:Fire("OnButtonShowOverlayGlow", self)
+		self.spellHighlight:Show()
+		--LAB.callbacks:Fire("OnButtonShowOverlayGlow", self)
 	end
 end
 
 local HideMaxDps = function(self)
-	if (self.SpellHighlight) then
+	if (self.spellHighlight) then
 		if (not self.maxDpsGlowShown) then
-			self.SpellHighlight:Hide()
-			LAB.callbacks:Fire("OnButtonHideOverlayGlow", self)
+			self.spellHighlight:Hide()
+			--LAB.callbacks:Fire("OnButtonHideOverlayGlow", self)
 		end
 	end
 end
@@ -254,15 +256,11 @@ local UpdateMaxDps = function(self)
 	if (self.maxDpsGlowShown) then
 		ShowMaxDps(self)
 	else
-		if (WoWWrath) then
-			HideMaxDps(self)
+		local spellId = self:GetSpellId()
+		if (spellId and IsSpellOverlayed(spellId)) then
+			ShowMaxDps(self)
 		else
-			local spellId = self:GetSpellId()
-			if (spellId and IsSpellOverlayed(spellId)) then
-				ShowMaxDps(self)
-			else
-				HideMaxDps(self)
-			end
+			HideMaxDps(self)
 		end
 	end
 end
@@ -324,6 +322,7 @@ end
 local style = function(button)
 
 	local db = config
+	local usingMaxDps = IsAddOnEnabled("MaxDps")
 
 	-- Clean up the button template
 	for _,i in next,{ "AutoCastShine", "Border", "Name", "NewActionTexture", "NormalTexture", "SpellHighlightAnim", "SpellHighlightTexture",
@@ -458,9 +457,10 @@ local style = function(button)
 
 	-- Custom spell highlight
 	local spellHighlight = overlay:CreateTexture(nil, "ARTWORK", nil, -7)
-	spellHighlight:SetTexture(db.ButtonSpellHighlightTexture)
 	spellHighlight:SetSize(unpack(db.ButtonSpellHighlightSize))
 	spellHighlight:SetPoint(unpack(db.ButtonSpellHighlightPosition))
+	spellHighlight:SetTexture(db.ButtonSpellHighlightTexture)
+	spellHighlight:SetVertexColor(249/255, 188/255, 65/255, .75)
 	spellHighlight:Hide()
 	button.spellHighlight = spellHighlight
 
@@ -550,6 +550,55 @@ local style = function(button)
 	button.MasqueSkinned = nil
 
 	return button
+end
+
+ActionBarMod.HandleMaxDps = function(self)
+
+	MaxDps:RegisterLibActionButton(LAB_Name) -- LAB_Version
+
+	-- This will hide the MaxDps overlays for the most part.
+	local MaxDps_GetTexture = MaxDps.GetTexture
+	MaxDps.GetTexture = function() end
+
+	local Glow = MaxDps.Glow
+	MaxDps.Glow = function(this, button, id, texture, type, color)
+		if (not self.buttons[button]) then
+			return Glow(this, button, id, texture, type, color)
+		end
+		local col = color and { color.r, color.g, color.b, color.a } or nil
+		if (not color) and (type) then
+			if (type == "normal") then
+				local c = this.db.global.highlightColor
+				col = { c.r, c.g, c.b, c.a }
+
+			elseif (type == "cooldown") then
+				local c = this.db.global.cooldownColor
+				col = { c.r, c.g, c.b, c.a }
+			end
+		end
+		button.maxDpsGlowColor = col
+		button.maxDpsGlowShown = true
+		UpdateMaxDps(button)
+	end
+
+	local HideGlow = MaxDps.HideGlow
+	MaxDps.HideGlow = function(this, button, id)
+		if (not self.buttons[button]) then
+			return HideGlow(this, button, id)
+		end
+		button.maxDpsGlowColor = nil
+		button.maxDpsGlowShown = nil
+		UpdateMaxDps(button)
+	end
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
+	self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", "OnEvent")
+	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM", "OnEvent")
+
+	LAB.RegisterCallback(self, "OnButtonShowOverlayGlow", "OnEvent")
+	LAB.RegisterCallback(self, "OnButtonHideOverlayGlow", "OnEvent")
+
+	self.MaxDps = true
 end
 
 ActionBarMod.UpdateBindings = function(self)
@@ -810,7 +859,26 @@ ActionBarMod.DisableBarFading = function(self)
 end
 
 ActionBarMod.OnEvent = function(self, event, ...)
-	if (event == "PLAYER_REGEN_ENABLED") then
+	if (event == "ADDON_LOADED") then
+		local addon = ...
+		if (addon == "MaxDps") then
+			self:UnregisterEvent("ADDON_LOADED", "OnEvent")
+			self:HandleMaxDps()
+		end
+	elseif (event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UPDATE_SHAPESHIFT_FORM") then
+
+		if (self.MaxDps) then
+			for button in next, LAB.activeButtons do
+				if (self.buttons[button]) then
+					if (button.maxDpsGlowShown) then
+						button.maxDpsGlowColor = nil
+						button.maxDpsGlowShown = nil
+						UpdateMaxDps(button)
+					end
+				end
+			end
+		end
+	elseif (event == "PLAYER_REGEN_ENABLED") then
 		if (InCombatLockdown()) then return end
 		self.incombat = nil
 		if (self.positionNeedsFix) then
@@ -836,6 +904,13 @@ ActionBarMod.OnEvent = function(self, event, ...)
 			end
 			button.icon:SetMask(config.ButtonMaskTexture)
 
+			local spellId = button:GetSpellId()
+			if spellId and IsSpellOverlayed(spellId) then
+				button.spellHighlight:Show()
+			else
+				button.spellHighlight:Hide()
+			end
+
 			-- The update function calls this for valid actions
 			UpdateUsable(button)
 		end
@@ -844,6 +919,37 @@ ActionBarMod.OnEvent = function(self, event, ...)
 		local button = ...
 		if (self.buttons[button]) then
 			UpdateUsable(button)
+		end
+	elseif (event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW") then
+		local arg1 = ...
+		for button in next, LAB.activeButtons do
+			local spellId = button:GetSpellId()
+			if (spellId and spellId == arg1) then
+				button.spellHighlight:Show()
+			else
+				if (button._state_type == "action") then
+					local actionType, id = GetActionInfo(button._state_action)
+					if (actionType == "flyout" and FlyoutHasSpell(id, arg1)) then
+						button.spellHighlight:Hide()
+					end
+				end
+			end
+		end
+
+	elseif (event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE") then
+		local arg1 = ...
+		for button in next, LAB.activeButtons do
+			local spellId = button:GetSpellId()
+			if (spellId and spellId == arg1) then
+				button.spellHighlight:Hide()
+			else
+				if (button._state_type == "action") then
+					local actionType, id = GetActionInfo(button._state_action)
+					if (actionType == "flyout" and FlyoutHasSpell(id, arg1)) then
+						button.spellHighlight:Hide()
+					end
+				end
+			end
 		end
 	end
 end
@@ -961,6 +1067,13 @@ ActionBarMod.OnInitialize = function(self)
 	self:RegisterChatCommand("disablebar", "DisableBar")
 	self:RegisterChatCommand("enablebarfade", "EnableBarFading")
 	self:RegisterChatCommand("disablebarfade", "DisableBarFading")
+
+	if (MaxDps) then
+		self:HandleMaxDps()
+	elseif (IsAddOnEnabled("MaxDps")) then
+		self:RegisterEvent("ADDON_LOADED", "OnEvent")
+	end
+
 end
 
 ActionBarMod.UpdateBarStates = function(self)
@@ -974,6 +1087,11 @@ ActionBarMod.OnEnable = function(self)
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterEvent("UPDATE_BINDINGS", "UpdateBindings")
+
+	if (not IsAddOnEnabled("MaxDps")) then
+		self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW", "OnEvent")
+		self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE", "OnEvent")
+	end
 
 	--if (not self.flightTimer) then
 	--	self:ScheduleRepeatingTimer("UpdateBarStates", 1/10)
