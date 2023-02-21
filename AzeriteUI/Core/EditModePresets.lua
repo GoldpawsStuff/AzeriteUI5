@@ -253,8 +253,20 @@ EditMode.AreLayoutsLoaded = function(self)
 	return self.loaded and LEMO:AreLayoutsLoaded()
 end
 
-EditMode.OnEvent = function(self)
-	if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
+EditMode.ConsiderLayoutsLoaded = function(self)
+	if (self.timer) then
+		self:CancelTimer(self.timer)
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD", "Onevent")
+		self.loaded = true
+	end
+end
+
+EditMode.OnEvent = function(self, event, ...)
+	if (event == "PLAYER_ENTERING_WORLD") then
+		if (not self.loaded) then
+			self.timer = self:ScheduleTimer("ConsiderLayoutsLoaded", 5)
+		end
+	elseif (event == "EDIT_MODE_LAYOUTS_UPDATED") then
 		self.loaded = true
 	end
 end
@@ -265,4 +277,5 @@ EditMode.OnInitialize = function(self)
 	self.db.profile.layoutsCreated = nil
 
 	self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 end
