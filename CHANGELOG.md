@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.35-RC] 2023-02-21 (Dragonflight)
+### Fixed
+- Fixed an issue that would prevent the button to reset the current EditMode preset to AzeriteUI defaults from working.
+
 ## [5.0.34-RC] 2023-02-21 (Dragonflight)
 ### Added
 - Actionbuttons now have spell activation glows.
