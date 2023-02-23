@@ -4,13 +4,15 @@ title: "[BUG] <title>"
 labels: [bug]
 assignees: Goldpaw
 body:
-- type: radio
+- type: dropdown
+  id: flavor
   attributes:
-    label: What version of the game is this an issue in?
+    label: What game version is this issue in?
     options:
-      one: Dragonflight
-      two: Wrath Classic
-      required: true
+      - Retail (Dragonflight)
+      - Wrath Classic
+  validations:
+    required: true
 - type: checkboxes
   attributes:
     label: Is there an existing issue for this?
