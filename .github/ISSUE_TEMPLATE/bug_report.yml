@@ -7,9 +7,11 @@ body:
 - type: dropdown
   id: flavor
   attributes:
-    label: What game version is this issue in?
+    label: Game Flavor
+    description: What game version is this issue in?
+    multiple: true
     options:
-      - Retail (Dragonflight)
+      - Dragonflight
       - Wrath Classic
   validations:
     required: true
