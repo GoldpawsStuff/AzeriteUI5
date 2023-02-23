@@ -4,12 +4,12 @@ title: "[BUG] <title>"
 labels: [bug]
 assignees: Goldpaw
 body:
-- type: checkboxes
+- type: radio
   attributes:
-    label: Is this issue for AzeriteUI for Dragonflight?
-    description: Please note that this is the issue tracker for the Dragonflight version of AzeriteUI. For the Wrath Classic version visit [https://github.com/GoldpawsStuff/AzeriteUI4/issues](../../AzeriteUI4/issues)
+    label: What version of the game is this an issue in?
     options:
-    - label: Yes, I understand. This is for Dragonflight.
+      one: Dragonflight
+      two: Wrath Classic
       required: true
 - type: checkboxes
   attributes:
