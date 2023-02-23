@@ -4,13 +4,17 @@ title: "[Feature] <title>"
 labels: [enhancement]
 assignees: Goldpaw
 body:
-- type: checkboxes
+- type: dropdown
+  id: flavor
   attributes:
-    label: Is this feature request for AzeriteUI for Dragonflight?
-    description: Please note that this is the issue tracker for the Dragonflight version of AzeriteUI. For the Wrath Classic version visit [https://github.com/GoldpawsStuff/AzeriteUI4/issues](../../AzeriteUI4/issues)
+    label: Game Flavor
+    description: What game version is this issue in?
+    multiple: true
     options:
-    - label: Yes, I understand. This is for Dragonflight.
-      required: true
+      - Dragonflight
+      - Wrath Classic
+  validations:
+    required: true
 - type: checkboxes
   attributes:
     label: Is there an existing request for this?
