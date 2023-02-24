@@ -43,7 +43,7 @@ ns.AuraFilters.PlayerAuraFilter = function(button, unit, data)
 	if (UnitAffectingCombat("player")) then
 		return (not button.noDuration and data.duration < 301) or (button.timeLeft and button.timeLeft > 0 and button.timeLeft < 31) or (data.count > 1)
 	else
-		return (not button.noDuration) or (button.timeLeft and button.timeLeft > 0 and button.timeLeft < 31) or (data.count > 1)
+		return (not button.noDuration) or (button.timeLeft and button.timeLeft > 0 and button.timeLeft < 31) or (data.count and data.count > 1)
 	end
 
 end
@@ -62,9 +62,25 @@ ns.AuraFilters.TargetAuraFilter = function(button, unit, data)
 	end
 
 	if (UnitAffectingCombat("player")) then
-		return (not button.noDuration and duration < 301) or (count > 1)
+		return (not button.noDuration and duration < 301) or (data.count and count > 1)
 	else
-		return (not button.noDuration) or (count > 1)
+		return (not button.noDuration) or (data.count and count > 1)
+	end
+end
+
+ns.AuraFilters.PartyAuraFilter = function(button, unit, data)
+
+	button.spell = data.name
+	button.timeLeft = data.expiration and (data.expiration - GetTime())
+	button.expiration = data.expiration
+	button.duration = data.duration
+	button.noDuration = (not data.duration or data.duration == 0)
+	button.isPlayer = data.isPlayerAura
+
+	if (UnitAffectingCombat("player")) then
+		return (not button.noDuration and duration < 301) or (data.count and count > 1)
+	else
+		return (not button.noDuration) or (data.count and count > 1)
 	end
 end
 
@@ -85,9 +101,9 @@ ns.AuraFilters.NameplateAuraFilter = function(button, unit, data)
 		return true
 	elseif (data.nameplateShowSelf and button.isPlayer) then
 		if (button.isHarmful) then
-			return (not button.noDuration and data.duration < 61) or (data.count > 1)
+			return (not button.noDuration and data.duration < 61) or (data.count and data.count > 1)
 		else
-			return (not button.noDuration and data.duration < 31) or (data.count > 1)
+			return (not button.noDuration and data.duration < 31) or (data.count and data.count > 1)
 		end
 	end
 end
@@ -111,9 +127,9 @@ ns.AuraFilters.PlayerAuraFilter = function(element, unit, button, name, texture,
 	end
 
 	if (UnitAffectingCombat("player")) then
-		return (not button.noDuration and duration < 301) or (button.timeLeft and button.timeLeft > 0 and button.timeLeft < 31) or (count > 1)
+		return (not button.noDuration and duration < 301) or (button.timeLeft and button.timeLeft > 0 and button.timeLeft < 31) or (count and count > 1)
 	else
-		return (not button.noDuration) or (button.timeLeft and button.timeLeft > 0 and button.timeLeft < 31) or (count > 1)
+		return (not button.noDuration) or (button.timeLeft and button.timeLeft > 0 and button.timeLeft < 31) or (count and count > 1)
 	end
 
 end
@@ -135,9 +151,31 @@ ns.AuraFilters.TargetAuraFilter = function(element, unit, button, name, texture,
 	end
 
 	if (UnitAffectingCombat("player")) then
-		return (not button.noDuration) or (count > 1)
+		return (not button.noDuration) or (count and count > 1)
 	else
-		return (not button.noDuration and duration < 301) or (count > 1)
+		return (not button.noDuration and duration < 301) or (count and count > 1)
+	end
+end
+
+ns.AuraFilters.PartyAuraFilter = function(element, unit, button, name, texture,
+	count, debuffType, duration, expiration, caster, isStealable, nameplateShowSelf, spellID,
+	canApply, isBossDebuff, casterIsPlayer, nameplateShowAll, timeMod, effect1, effect2, effect3)
+
+	button.spell = name
+	button.timeLeft = expiration and (expiration - GetTime())
+	button.expiration = expiration
+	button.duration = duration
+	button.noDuration = (not duration or duration == 0)
+	button.isPlayer = caster == "player" or caster == "vehicle"
+
+	if (isBossDebuff) then
+		return true
+	end
+
+	if (UnitAffectingCombat("player")) then
+		return (not button.noDuration) or (count and count > 1)
+	else
+		return (not button.noDuration and duration < 301) or (count and count > 1)
 	end
 end
 

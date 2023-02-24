@@ -259,7 +259,7 @@ Tutorials.ShowEditModeTutorial = function(self)
 	self.tutorials.editmode:Show()
 end
 
-Tutorials.ShowScaleTutorial = function(self)
+Tutorials.ShowWrathSetupTutorial = function(self)
 	if (not self.tutorials.scale) then
 		local db = self.db.char.tutorials.scale
 		if (not db) then
@@ -361,6 +361,15 @@ Tutorials.ShowScaleTutorial = function(self)
 			-- change the game's interface scale
 			SetCVar("uiScale", ns.API.GetDefaultBlizzardScale())
 
+			-- setup chat frames
+			ChatFrame1:SetUserPlaced(true)
+			ChatFrame1:ClearAllPoints()
+			ChatFrame1:SetSize(499, 176)
+			ChatFrame1:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 85, 350)
+
+			-- save it
+			FCF_SavePositionAndDimensions(ChatFrame1)
+
 			-- mark as completed
 			self.db.char.tutorials.scale.completed = true
 
@@ -397,7 +406,7 @@ Tutorials.ShowScaleTutorial = function(self)
 
 		frame:SetScript("OnShow", function(frame)
 
-			frame.Message:SetText(string_format("You are now running AzeriteUI for Wrath Classic!|n|nTo set the game's general interface scale to AzeriteUI defaults, click the '|cffffd200%s|r' button. To hide this window for now, click the '|cffffd200%s|r' button. To cancel this tutorial and handle interface scaling yourself, click the '|cffffd200%s|r' button.", APPLY, HIDE, CANCEL))
+			frame.Message:SetText(string_format("You are now running AzeriteUI for Wrath Classic!|n|nTo set the game's general interface scale to AzeriteUI defaults and position the chat frames to match, click the '|cffffd200%s|r' button. To hide this window for now, click the '|cffffd200%s|r' button. To cancel this tutorial and handle interface scaling yourself, click the '|cffffd200%s|r' button.", APPLY, HIDE, CANCEL))
 
 			-- calculate frame size
 			local top = frame.Heading:GetTop()
@@ -420,7 +429,7 @@ Tutorials.RunTutorial = function(self, tutorial)
 	if (tutorial == "editmode") then
 		self:ShowEditModeTutorial()
 	elseif (tutorial == "scale") then
-		self:ShowScaleTutorial()
+		self:ShowWrathSetupTutorial()
 	end
 end
 

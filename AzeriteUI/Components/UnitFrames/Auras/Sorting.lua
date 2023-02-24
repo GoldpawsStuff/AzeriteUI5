@@ -33,14 +33,14 @@ local table_sort = table.sort
 -- https://wowpedia.fandom.com/wiki/API_C_UnitAuras.GetAuraDataByAuraInstanceID
 local Aura_Sort = function(a, b)
 
-	-- Player first, includes procs and zone buffs.
-	if (a.isPlayerAura ~= b.isPlayerAura) then
-		return a.isPlayerAura
-	end
-
 	-- Player first, those we can apply.
 	if (a.canApplyAura ~= b.canApplyAura) then
 		return a.canApplyAura
+	end
+
+	-- Player first, includes procs and zone buffs.
+	if (a.isPlayerAura ~= b.isPlayerAura) then
+		return a.isPlayerAura
 	end
 
 	-- No duration last, short times first.
