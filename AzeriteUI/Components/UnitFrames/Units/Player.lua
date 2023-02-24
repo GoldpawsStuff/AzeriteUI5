@@ -810,6 +810,9 @@ local UnitFrame_OnEvent = function(self, event, unit, ...)
 		self.Power:ForceUpdate()
 		self.AdditionalPower:ForceUpdate()
 
+	elseif (event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_REGEN_DISABLED") then
+		self.Auras:ForceUpdate()
+
 	elseif (event == "ENABLE_XP_GAIN") then
 		playerXPDisabled = nil
 
@@ -1087,7 +1090,7 @@ local style = function(self, unit)
 	auras.reanchorIfVisibleChanged = true
 	auras.PostUpdateButton = ns.AuraStyles.PlayerPostUpdateButton
 	auras.CustomFilter = ns.AuraFilters.PlayerAuraFilter
-	--auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
+	auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
 	auras.SortAuras = ns.AuraSorts.DefaultFunction -- only in retail
 	auras.showDebuffType = true
 
@@ -1128,6 +1131,11 @@ local style = function(self, unit)
 	self:RegisterEvent("ENABLE_XP_GAIN", UnitFrame_OnEvent, true)
 	self:RegisterEvent("PLAYER_LEVEL_UP", UnitFrame_OnEvent, true)
 	self:RegisterEvent("PLAYER_XP_UPDATE", UnitFrame_OnEvent, true)
+
+	if (ns.IsWrath) then
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", UnitFrame_OnEvent, true)
+		self:RegisterEvent("PLAYER_REGEN_DISABLED", UnitFrame_OnEvent, true)
+	end
 
 	if (playerClass == "PALADIN") then
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", UnitFrame_OnEvent)

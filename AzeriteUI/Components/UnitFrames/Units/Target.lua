@@ -869,6 +869,9 @@ local UnitFrame_OnEvent = function(self, event, unit, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		playerLevel = UnitLevel("player")
 
+	elseif (event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_REGEN_DISABLED") then
+		self.Auras:ForceUpdate()
+
 	elseif (event == "PLAYER_LEVEL_UP") then
 		local level = ...
 		if (level and (level ~= playerLevel)) then
@@ -1222,6 +1225,11 @@ local style = function(self, unit, id)
 	self:RegisterEvent("PLAYER_LEVEL_UP", UnitFrame_OnEvent, true)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", UnitFrame_OnEvent, true)
 	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", UnitFrame_OnEvent)
+
+	if (ns.IsWrath) then
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", UnitFrame_OnEvent, true)
+		self:RegisterEvent("PLAYER_REGEN_DISABLED", UnitFrame_OnEvent, true)
+	end
 
 	-- Toggle name size based on ToT frame.
 	ns.RegisterCallback(self, "UnitFrame_ToT_Updated", Name_PostUpdate)
