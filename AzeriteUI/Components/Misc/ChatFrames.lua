@@ -196,7 +196,7 @@ end
 
 -- Returns an iterator for the buttonframe textures
 ChatFrame.GetButtonFrameTextures = function(self)
-	local buttonFrame = self:GetButtonFrame()
+	local buttonFrame = ChatFrame.GetButtonFrame(self)
 	if (buttonFrame) then
 		local counter = 0
 		local numEntries = #TEXTURES.ButtonFrame
@@ -219,7 +219,7 @@ end
 
 -- Returns an iterator for the editbox textures
 ChatFrame.GetEditBoxTextures = function(self)
-	local editBox = self:GetEditBox()
+	local editBox = ChatFrame.GetEditBox(self)
 	if (editBox) then
 		local counter = 0
 		local numEntries = #TEXTURES.EditBox
@@ -242,7 +242,7 @@ end
 
 -- Returns an iterator for the tab textures
 ChatFrame.GetTabTextures = function(self)
-	local tab = self:GetTab()
+	local tab = ChatFrame.GetTab(self)
 	if (tab) then
 		local counter = 0
 		local numEntries = #TEXTURES.Tab
@@ -265,13 +265,18 @@ end
 
 -- Module API
 -------------------------------------------------------
+ChatFrames.Embed = function(self, frame)
+	for method,func in next,ChatFrame do
+		frame[method] = func
+	end
+end
+
+
 ChatFrames.StyleFrame = function(self, frame)
 	if (frame.isSkinned) then return end
 
 	-- Embed our API
-	for method,func in next,ChatFrame do
-		frame[method] = func
-	end
+	--self:Embed(frame)
 
 	-- Kill combatlog textures
 	if (frame:GetID() == 2) then
@@ -285,12 +290,12 @@ ChatFrames.StyleFrame = function(self, frame)
 	end
 
 	-- Kill frame textures.
-	for tex in frame:GetFrameTextures() do
+	for tex in ChatFrame.GetFrameTextures(frame) do
 		tex:SetTexture(nil)
 		tex:SetAlpha(0)
 	end
 
-	local buttonFrame = frame:GetButtonFrame()
+	local buttonFrame = ChatFrame.GetButtonFrame(frame)
 
 	-- Take control of the tab's alpha changes
 	-- and disable blizzard's own fading.
@@ -298,12 +303,12 @@ ChatFrames.StyleFrame = function(self, frame)
 	--buttonFrame.SetAlpha = UIFrameFadeRemoveFrame
 
 	-- Kill the button frame textures.
-	for tex in frame:GetButtonFrameTextures() do
+	for tex in ChatFrame.GetButtonFrameTextures(frame) do
 		tex:SetTexture(nil)
 		tex:SetAlpha(0)
 	end
 
-	local tab = frame:GetTab()
+	local tab = ChatFrame.GetTab(frame)
 	local fontObject = GetFont(15,true,"Chat")
 
 	-- Take control of the tab's alpha changes
@@ -312,17 +317,17 @@ ChatFrames.StyleFrame = function(self, frame)
 	--tab:SetAlpha(1)
 	--tab.SetAlpha = UIFrameFadeRemoveFrame
 
-	for tex in frame:GetTabTextures() do
+	for tex in ChatFrame.GetTabTextures(frame) do
 		tex:SetTexture(nil)
 		tex:SetAlpha(0)
 	end
 
-	local tabText = frame:GetTabText()
+	local tabText = ChatFrame.GetTabText(frame)
 	tabText:Hide()
 	tabText:SetAlpha(.5)
 	tabText:SetFontObject(fontObject)
 
-	local tabIcon = frame:GetTabIcon()
+	local tabIcon = ChatFrame.GetTabIcon(frame)
 	if (tabIcon) then
 		tabIcon:Hide()
 	end
@@ -331,8 +336,8 @@ ChatFrames.StyleFrame = function(self, frame)
 	tab:HookScript("OnEnter", Tab_PostEnter)
 	tab:HookScript("OnLeave", Tab_PostLeave)
 
-	local editBox = frame:GetEditBox()
-	for tex in frame:GetEditBoxTextures() do
+	local editBox = ChatFrame.GetEditBox(frame)
+	for tex in ChatFrame.GetEditBoxTextures(frame) do
 		tex:SetTexture(nil)
 		tex:SetAlpha(0)
 	end
@@ -358,7 +363,7 @@ end
 
 ChatFrames.UpdateTabAlpha = function(self, frame)
 	if (not frame.GetTab) then return end -- can fire for more frames than ours
-	local tab = frame:GetTab()
+	local tab = ChatFrame.GetTab(frame)
 	if (tab.noMouseAlpha == .4 or tab.noMouseAlpha == .2) then
 		tab:SetAlpha(0)
 		tab.noMouseAlpha = 0
@@ -383,7 +388,7 @@ ChatFrames.UpdateDockedChatTabs = function(self)
 			if (frame) then
 				local name, fontSize, r, g, b, a, shown, locked, docked, uninteractable = FCF_GetChatWindowInfo(frame:GetID())
 				if (docked and not frame.minimized) then
-					local tabText = frame:GetTabText()
+					local tabText = ChatFrame.GetTabText(frame)
 					if (tabText) then
 						tabText:Show()
 						if (shown) then
@@ -402,7 +407,7 @@ ChatFrames.UpdateDockedChatTabs = function(self)
 			if (frame) then
 				local name, fontSize, r, g, b, a, shown, locked, docked, uninteractable = FCF_GetChatWindowInfo(frame:GetID())
 				if (docked and not frame.minimized) then
-					local tabText = frame:GetTabText()
+					local tabText = ChatFrame.GetTabText(frame)
 					if (tabText) then tabText:Hide() end
 				end
 			end
@@ -433,19 +438,19 @@ ChatFrames.UpdateButtons = function(self, event, ...)
 
 				if (not Elements[frame].isMouseOver) then
 
-					local buttonFrame = frame:GetButtonFrame()
-					local up = frame:GetUpButton()
-					local down = frame:GetDownButton()
-					local bottom = frame:GetToBottomButton()
+					local buttonFrame = ChatFrame.GetButtonFrame(frame)
+					local up = ChatFrame.GetUpButton(frame)
+					local down = ChatFrame.GetDownButton(frame)
+					local bottom = ChatFrame.GetToBottomButton(frame)
 
 					if (up) then up:SetParent(buttonFrame) end
 					if (down) then down:SetParent(buttonFrame) end
 					if (bottom) then bottom:SetParent(buttonFrame) end
 
-					local tabText = frame:GetTabText()
+					local tabText = ChatFrame.GetTabText(frame)
 					tabText:Show()
 
-					if (frame:GetTab():IsMouseOver()) then
+					if (ChatFrame.GetTab(frame):IsMouseOver()) then
 						tabText:SetAlpha(.9)
 					else
 						tabText:SetAlpha(.5)
@@ -457,15 +462,15 @@ ChatFrames.UpdateButtons = function(self, event, ...)
 				-- Todo: check out what happens when minimized.
 				if (event == "PLAYER_ENTERING_WORLD") or (Elements[frame].isMouseOver) then
 
-					local up = frame:GetUpButton()
-					local down = frame:GetDownButton()
-					local bottom = frame:GetToBottomButton()
+					local up = ChatFrame.GetUpButton(frame)
+					local down = ChatFrame.GetDownButton(frame)
+					local bottom = ChatFrame.GetToBottomButton(frame)
 
 					if (up) then up:SetParent(UIHider) end
 					if (down) then down:SetParent(UIHider) end
 					if (bottom) then bottom:SetParent(UIHider) end
 
-					frame:GetTabText():Hide()
+					ChatFrame.GetTabText(frame):Hide()
 
 					Elements[frame].isMouseOver = false
 				end
