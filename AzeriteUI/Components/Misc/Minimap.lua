@@ -952,8 +952,9 @@ MinimapMod.UpdateCustomElements = function(self)
 	if (ns.IsWrath) then
 		self.widgetFrame:SetShown(self.anchor:IsInDefaultPosition(60))
 	else
+		local anchorInfo = ns:GetModule("EditMode"):GetDefaultSystems()[Enum.EditModeSystem.Minimap].anchorInfo
 		local point, anchor, rpoint, x, y = MinimapCluster:GetPoint()
-		local point2, x2, y2 = unpack(defaults.profile.savedPosition.Azerite)
+		local point2, x2, y2 = anchorInfo.point, anchorInfo.offsetX, anchorInfo.offsetY
 		self.widgetFrame:SetShown(((point == point2) and (math_abs(x - x2) < 60) and (math_abs(y - y2) < 60)))
 	end
 
