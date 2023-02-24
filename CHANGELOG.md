@@ -7,13 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased] 2023-02-24
 ### Added
 - Added support for Wrath Classic to AzeriteUI5.
-- Added Wrath Classic totembar.
+- Added Wrath Classic totembar. (Untested)
 - Added chat bubble styling in Wrath Classic.
 - Added combat feedback texts to most unitframes.
 
+### Changed
+- Aura filtering on the player- and target unit frames will now show longer duration buffs when not currently engaged in combat.
+
 ### Fixed
+- Changed how chat frames are handled, which should result in less tab text related bugs upon receiving whispers.
 - Slightly changed how actionbar paging works when a bonusbar is active. May or may not affect Retail dragonriding.
 - Fixed some issues with the opacity of empty actionbar slots when in vehicles, especially in Wrath.
+- Fixed an issue where some micro menu buttons would react to both downpress and release and thus instantly hide the window you were trying to open.
 - Fixed an issue where the minimap ring bars wouldn't instantly update when changing what reputation was tracked.
 - When resetting an editable editmode layout to AzeriteUI defaults, changes should now stick through relogs, instead of just reloads as previously.
 
