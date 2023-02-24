@@ -10,8 +10,6 @@ AzeriteUI5 is a custom user interface for World of Warcraft Dragonflight and Wra
 - Yes, the config menu will allow you to manually disable nearly every module in the UI.
 - Yes, I will be making raid- and arena frames.
 - Yes, there will be layout choices for the actionbars.
-- Yes, I will be adding classpowers and combo point systems.
-- Yes, we'll get the dragon riding bar working if it isn't.
 - Yes, I do accept donations and will love you for it. Links above.
 
 ## Chat Commands
