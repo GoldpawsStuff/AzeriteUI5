@@ -161,6 +161,10 @@ local layouts = {
 	}
 }
 
+EditMode.GetDefaultSystems = function(self)
+	return azeriteSystems
+end
+
 EditMode.CanEditActiveLayout = function(self)
 	self:LoadLayouts()
 	return self.loaded and LEMO:CanEditActiveLayout() -- bugs out before initial editmode event
