@@ -26,7 +26,7 @@
 local Addon, ns = ...
 
 local MovableFramesManager = ns:NewModule("MovableFramesManager", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
-local EMP = ns:GetModule("EditMode")
+local EMP = ns:GetModule("EditMode", true)
 local AceGUI = LibStub("AceGUI-3.0")
 
 -- Lua API
@@ -69,10 +69,10 @@ local compare = function(...)
 	local numArgs = select("#", ...)
 	if (numArgs == 2) then
 		local s, s2 = ...
-		return (math_abs(s - s2) < 0.01)
+		return (math_abs(s - s2) < (diff or 0.01))
 	else
-		local point, x, y, point2, x2, y2 = ...
-		return (point == point2) and (math_abs(x - x2) < 0.01) and (math_abs(y - y2) < 0.01)
+		local point, x, y, point2, x2, y2, diff = ...
+		return (point == point2) and (math_abs(x - x2) < (diff or 0.01)) and (math_abs(y - y2) < (diff or 0.01))
 	end
 end
 
@@ -244,12 +244,12 @@ Anchor.SetEnabled = function(self, enable)
 end
 
 -- 'true' if the frame is in its default position and scale.
-Anchor.IsInDefaultPosition = function(self)
+Anchor.IsInDefaultPosition = function(self, diff)
 	local anchorData = AnchorData[self]
 	if (not anchorData.defaultPosition) then return end
 	local point, x, y = getPosition(self)
 	local point2, x2, y2 = unpack(anchorData.defaultPosition)
-	return compare(anchorData.scale, anchorData.defaultScale) and compare(point, x, y, point2, x2, y2)
+	return compare(anchorData.scale, anchorData.defaultScale) and compare(point, x, y, point2, x2, y2, diff)
 end
 
 -- 'true' if the frame can be scaled.
@@ -720,13 +720,13 @@ MovableFramesManager.UpdateMFMFrame = function(self)
 		end
 	end
 
-	if (not EMP:AreLayoutsLoaded()) then return end
-
 	-- Toggle button enabled status.
 	MFMFrame.DeleteLayoutButton:SetDisabled(LAYOUT == DEFAULTLAYOUT)
-	MFMFrame.ResetEditModeLayoutButton:SetDisabled(self.incombat or not EMP:CanEditActiveLayout())
-	MFMFrame.CreateEditModeLayoutButton:SetDisabled(self.incombat or EMP:DoesDefaultLayoutExist())
-
+	if (EMP) then
+		if (not EMP:AreLayoutsLoaded()) then return end
+		MFMFrame.ResetEditModeLayoutButton:SetDisabled(self.incombat or not EMP:CanEditActiveLayout())
+		MFMFrame.CreateEditModeLayoutButton:SetDisabled(self.incombat or EMP:DoesDefaultLayoutExist())
+	end
 end
 
 MovableFramesManager.UpdateMovableFrameAnchors = function(self, ...)
@@ -746,6 +746,15 @@ MovableFramesManager.OnExitEditMode = function(self)
 	self:GetMFMFrame():Hide()
 end
 
+MovableFramesManager.ToggleAnchors = function(self)
+	local MFMFrame = self:GetMFMFrame()
+	if (MFMFrame:IsShown()) then
+		MFMFrame:Hide()
+	else
+		MFMFrame:Show()
+	end
+end
+
 MovableFramesManager.GetMFMFrame = function(self)
 	if (not self.frame) then
 
@@ -754,8 +763,8 @@ MovableFramesManager.GetMFMFrame = function(self)
 		local window = AceGUI:Create("Frame")
 		window:Hide()
 		window:SetWidth(360)
-		window:SetHeight(366)
-		window:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -220, -260)
+		window:SetHeight(EMP and 366 or 166)
+		window:SetPoint(EMP and "TOPRIGHT" or "TOP", UIParent, EMP and "TOPRIGHT" or "TOP", EMP and -220 or 0, -260)
 		window:SetTitle(Addon)
 		window:SetStatusText(Addon .." ".. (ns.IsDevelopment and "Git Version" or ns.Version))
 		window:SetLayout("Flow")
@@ -779,7 +788,7 @@ MovableFramesManager.GetMFMFrame = function(self)
 
 		-- Dropdown label
 		local label = AceGUI:Create("Label")
-		label:SetText(HUD_EDIT_MODE_LAYOUT)
+		label:SetText(HUD_EDIT_MODE_LAYOUT or "Layout:")
 		label:SetFontObject(GetFont(13, true))
 		label:SetColor(unpack(Colors.normal))
 		label:SetFullWidth(true)
@@ -870,7 +879,7 @@ MovableFramesManager.GetMFMFrame = function(self)
 				local label = popup:CreateFontString(nil, "OVERLAY")
 				label:SetFontObject(GetFont(13, true))
 				label:SetTextColor(unpack(Colors.normal))
-				label:SetText(HUD_EDIT_MODE_NAME_LAYOUT_DIALOG_TITLE)
+				label:SetText(HUD_EDIT_MODE_NAME_LAYOUT_DIALOG_TITLE or "Name the New Layout")
 				label:SetPoint("BOTTOM", editbox, "TOP", 0, 6)
 				label:SetJustifyH("LEFT")
 				label:SetJustifyV("BOTTOM")
@@ -879,7 +888,7 @@ MovableFramesManager.GetMFMFrame = function(self)
 
 				local accept = CreateFrame("Button", nil, popup, "UIPanelButtonTemplate")
 				accept:SetSize(160, 30)
-				accept:SetText(HUD_EDIT_MODE_SAVE_LAYOUT)
+				accept:SetText(HUD_EDIT_MODE_SAVE_LAYOUT or SAVE)
 				accept:SetPoint("BOTTOMLEFT", 20, 20)
 				accept:SetScript("OnClick", function(widget)
 					local layoutName = widget:GetParent().EditBox:GetText()
@@ -939,81 +948,83 @@ MovableFramesManager.GetMFMFrame = function(self)
 
 		window:AddChild(group)
 
-		-- HUD Edit Mode Title
-		--------------------------------------------------
-		local group = AceGUI:Create("SimpleGroup")
-		group:SetLayout("Flow")
-		group:SetFullWidth(true)
-		group:SetAutoAdjustHeight(false)
-		group:SetHeight(20)
+		if (EMP) then
 
-		-- EditMode section title
-		local label = AceGUI:Create("Label")
-		label:SetText(HUD_EDIT_MODE_TITLE)
-		label:SetFontObject(GetFont(15, true))
-		label:SetColor(unpack(Colors.normal))
-		label:SetFullWidth(true)
-		group:AddChild(label)
+			-- HUD Edit Mode Title
+			--------------------------------------------------
+			local group = AceGUI:Create("SimpleGroup")
+			group:SetLayout("Flow")
+			group:SetFullWidth(true)
+			group:SetAutoAdjustHeight(false)
+			group:SetHeight(20)
 
-		window:AddChild(group)
+			-- EditMode section title
+			local label = AceGUI:Create("Label")
+			label:SetText(HUD_EDIT_MODE_TITLE)
+			label:SetFontObject(GetFont(15, true))
+			label:SetColor(unpack(Colors.normal))
+			label:SetFullWidth(true)
+			group:AddChild(label)
 
-		-- HUD Edit Mode Reset
-		--------------------------------------------------
-		local group = AceGUI:Create("SimpleGroup")
-		group:SetLayout("Flow")
-		group:SetFullWidth(true)
-		group:SetAutoAdjustHeight(false)
-		group:SetHeight(80)
+			window:AddChild(group)
 
-		-- EditMode reset button description
-		local label = AceGUI:Create("Label")
-		label:SetText("Click the button below to reset the currently selected EditMode preset to positions matching the default AzeriteUI layout.")
-		label:SetFontObject(GetFont(13, true))
-		label:SetColor(unpack(Colors.offwhite))
-		label:SetRelativeWidth(.9)
-		group:AddChild(label)
+			-- HUD Edit Mode Reset
+			--------------------------------------------------
+			local group = AceGUI:Create("SimpleGroup")
+			group:SetLayout("Flow")
+			group:SetFullWidth(true)
+			group:SetAutoAdjustHeight(false)
+			group:SetHeight(80)
 
-		local button = AceGUI:Create("Button")
-		button:SetText("Reset EditMode Layout")
-		button:SetFullWidth(true)
-		button:SetCallback("OnClick", function()
-			EMP:ApplySystems()
-		end)
-		window.ResetEditModeLayoutButton = button
+			-- EditMode reset button description
+			local label = AceGUI:Create("Label")
+			label:SetText("Click the button below to reset the currently selected EditMode preset to positions matching the default AzeriteUI layout.")
+			label:SetFontObject(GetFont(13, true))
+			label:SetColor(unpack(Colors.offwhite))
+			label:SetRelativeWidth(.9)
+			group:AddChild(label)
 
-		group:AddChild(button)
+			local button = AceGUI:Create("Button")
+			button:SetText("Reset EditMode Layout")
+			button:SetFullWidth(true)
+			button:SetCallback("OnClick", function()
+				EMP:ApplySystems() -- saves through reloads, not relogs
+			end)
+			window.ResetEditModeLayoutButton = button
 
-		window:AddChild(group)
+			group:AddChild(button)
 
-		-- HUD Edit Mode Azerite Preset
-		--------------------------------------------------
-		local group = AceGUI:Create("SimpleGroup")
-		group:SetLayout("Flow")
-		group:SetFullWidth(true)
-		group:SetAutoAdjustHeight(true)
-		--group:SetHeight(60)
+			window:AddChild(group)
 
-		-- EditMode reset button description
-		local label = AceGUI:Create("Label")
-		label:SetText("Click the button below to create an EditMode preset named 'Azerite'.")
-		label:SetFontObject(GetFont(13, true))
-		label:SetColor(unpack(Colors.offwhite))
-		label:SetRelativeWidth(.9)
-		group:AddChild(label)
+			-- HUD Edit Mode Azerite Preset
+			--------------------------------------------------
+			local group = AceGUI:Create("SimpleGroup")
+			group:SetLayout("Flow")
+			group:SetFullWidth(true)
+			group:SetAutoAdjustHeight(true)
+			--group:SetHeight(60)
 
-		local button = AceGUI:Create("Button")
-		button:SetText("Create EditMode Layout")
-		button:SetFullWidth(true)
-		button:SetDisabled(true)
-		button:SetCallback("OnClick", function()
-			EMP:ResetLayouts()
-		end)
-		window.CreateEditModeLayoutButton = button
+			-- EditMode reset button description
+			local label = AceGUI:Create("Label")
+			label:SetText("Click the button below to create an EditMode preset named 'Azerite'.")
+			label:SetFontObject(GetFont(13, true))
+			label:SetColor(unpack(Colors.offwhite))
+			label:SetRelativeWidth(.9)
+			group:AddChild(label)
 
-		group:AddChild(button)
+			local button = AceGUI:Create("Button")
+			button:SetText("Create EditMode Layout")
+			button:SetFullWidth(true)
+			button:SetDisabled(true)
+			button:SetCallback("OnClick", function()
+				EMP:ResetLayouts()
+			end)
+			window.CreateEditModeLayoutButton = button
 
-		window:AddChild(group)
+			group:AddChild(button)
 
+			window:AddChild(group)
+		end
 	end
 
 	return self.frame
@@ -1054,7 +1065,9 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 
 	else
 		if (event == "PLAYER_LOGIN") then
-			return EMP:LoadLayouts()
+			if (EMP) then
+				return EMP:LoadLayouts()
+			end
 		end
 
 		if (event == "PLAYER_ENTERING_WORLD") then
@@ -1066,7 +1079,12 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 		end
 
 		if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
-			EMP:LoadLayouts()
+			local layoutInfo, fromServer = ...
+			if (fromServer) then
+				if (EMP) then
+					EMP:LoadLayouts()
+				end
+			end
 		end
 
 		self:ForAllAnchors("LayoutsUpdated", LAYOUT)
@@ -1083,16 +1101,21 @@ MovableFramesManager.OnInitialize = function(self)
 
 	LAYOUT = self.db.char.layout
 
-	-- Hook our anchor frame's visibility to the editmode.
-	-- Note that we cannot simply parent it to the editmode manager,
-	-- as that will break the resizing and functionality of the editmode manager.
-	self:SecureHook(EditModeManagerFrame, "EnterEditMode", "OnEnterEditMode")
-	self:SecureHook(EditModeManagerFrame, "ExitEditMode", "OnExitEditMode")
+	if (EMP) then
+		-- Hook our anchor frame's visibility to the editmode.
+		-- Note that we cannot simply parent it to the editmode manager,
+		-- as that will break the resizing and functionality of the editmode manager.
+		self:SecureHook(EditModeManagerFrame, "EnterEditMode", "OnEnterEditMode")
+		self:SecureHook(EditModeManagerFrame, "ExitEditMode", "OnExitEditMode")
 
-	-- Update our anchors on editmode changes,
-	-- since they might be related to anchor visibility.
-	self:SecureHook(EditModeManagerFrame, "OnEvent", "UpdateMovableFrameAnchors")
-	self:SecureHook(EditModeManagerFrame, "OnAccountSettingChanged", "UpdateMovableFrameAnchors")
+		-- Update our anchors on editmode changes,
+		-- since they might be related to anchor visibility.
+		self:SecureHook(EditModeManagerFrame, "OnEvent", "UpdateMovableFrameAnchors")
+		self:SecureHook(EditModeManagerFrame, "OnAccountSettingChanged", "UpdateMovableFrameAnchors")
+
+	else
+		self:RegisterChatCommand("lock", "ToggleAnchors")
+	end
 
 	-- Hook our anchor visibility updates to our managerframe visibility.
 	self:SecureHook(self:GetMFMFrame(), "Show", "UpdateMovableFrameAnchors")

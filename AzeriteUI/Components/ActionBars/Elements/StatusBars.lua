@@ -97,7 +97,7 @@ local playerLevel = UnitLevel("player")
 local config = {
 
 	-- Toggle Button
-	ButtonPosition = { "CENTER", Minimap, "BOTTOM", 2, -6 },
+	ButtonPosition = ns.IsWrath and { "CENTER", Minimap, "BOTTOM", 2, 1 } or { "CENTER", Minimap, "BOTTOM", 2, -6 },
 	ButtonSize = { 56, 56 },
 	ButtonTexturePosition = { "CENTER", 0, 0 },
 	ButtonTextureSize = { 100, 100 },
@@ -420,8 +420,8 @@ StatusBars.UpdateBars = function(self, event, ...)
 				bar:SetMinMaxValues(0, 1, forced)
 				bar:SetValue(1, forced)
 			else
-				bar:SetMinMaxValues(0, max-min, forced)
-				bar:SetValue(current-min, forced)
+				bar:SetMinMaxValues(0, barMax, forced)
+				bar:SetValue(barValue, forced)
 			end
 
 			local r, g, b = unpack(Colors[isFriend and "friendship" or "reaction"][standingID])

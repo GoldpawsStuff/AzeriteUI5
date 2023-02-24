@@ -28,9 +28,11 @@ local Addon, ns = ...
 LoadAddOn("Blizzard_TimeManager")
 
 local MinimapMod = ns:NewModule("Minimap", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0", "AceConsole-3.0")
+local MFM = ns:GetModule("MovableFramesManager", true)
 
 -- Lua API
 local ipairs = ipairs
+local math_abs = math.abs
 local math_cos = math.cos
 local math_floor = math.floor
 local math_pi = math.pi
@@ -76,6 +78,16 @@ local defaults = { profile = ns:Merge({
 	useServerTime = false,
 
 }, ns.moduleDefaults) }
+if (ns.IsWrath) then
+	defaults.profile.savedPosition = {
+		Azerite = {
+			scale = 1,
+			[1] = "BOTTOMRIGHT",
+			[2] = -20,
+			[3] = 20
+		}
+	}
+end
 
 local DEFAULT_THEME = "Blizzard"
 local CURRENT_THEME = DEFAULT_THEME
@@ -83,34 +95,59 @@ local CURRENT_THEME = DEFAULT_THEME
 local Elements = {}
 
 -- Minimap objects available for restyling.
-local Objects = {
-	BorderTop = MinimapCluster.BorderTop,
-	Calendar = GameTimeFrame,
-	Clock = TimeManagerClockButton,
-	Compass = MinimapCompassTexture,
-	Difficulty = MinimapCluster.InstanceDifficulty,
-	Expansion = ExpansionLandingPageMinimapButton,
-	Mail = MinimapCluster.IndicatorFrame.MailFrame,
-	Tracking = MinimapCluster.Tracking,
-	Zone = MinimapCluster.ZoneTextButton,
-	ZoomIn = Minimap.ZoomIn,
-	ZoomOut = Minimap.ZoomOut
-}
+local Objects = { Calendar = GameTimeFrame, Clock = TimeManagerClockButton, Compass = MinimapCompassTexture }
+if (ns.IsRetail) then
+	Objects.BorderTop = MinimapCluster.BorderTop
+	Objects.Difficulty = MinimapCluster.InstanceDifficulty
+	Objects.Expansion = ExpansionLandingPageMinimapButton
+	Objects.Mail = MinimapCluster.IndicatorFrame.MailFrame
+	Objects.Tracking = MinimapCluster.Tracking
+	Objects.Zone = MinimapCluster.ZoneTextButton
+	Objects.ZoomIn = Minimap.ZoomIn
+	Objects.ZoomOut = Minimap.ZoomOut
+end
+if (ns.IsWrath) then
+	Objects.BorderTop = MinimapBorderTop
+	Objects.BorderClassic = MinimapBorder
+	Objects.Difficulty = MiniMapInstanceDifficulty
+	Objects.Mail = MiniMapMailFrame
+	Objects.Tracking = MiniMapTracking
+	Objects.Zone = MinimapZoneTextButton
+	Objects.ZoomIn = MinimapZoomIn
+	Objects.ZoomOut = MinimapZoomOut
+	Objects.WorldMap = MiniMapWorldMapButton
+end
 
 -- Object parents when using blizzard theme.
-local ObjectOwners = {
-	BorderTop = MinimapCluster,
-	Calendar = MinimapCluster,
-	Clock = MinimapCluster,
-	Compass = MinimapBackdrop,
-	Difficulty = MinimapCluster,
-	Expansion = MinimapBackdrop,
-	Mail = MinimapCluster.IndicatorFrame,
-	Tracking = MinimapCluster,
-	Zone = MinimapCluster,
-	ZoomIn = Minimap,
-	ZoomOut = Minimap
-}
+local ObjectOwners = {}
+if (ns.IsRetail) then
+	ObjectOwners.BorderTop = MinimapCluster
+	ObjectOwners.Calendar = MinimapCluster
+	ObjectOwners.Clock = MinimapCluster
+	ObjectOwners.Compass = MinimapBackdrop
+	ObjectOwners.Difficulty = MinimapCluster
+	ObjectOwners.Expansion = MinimapBackdrop
+	ObjectOwners.Mail = MinimapCluster.IndicatorFrame
+	ObjectOwners.Tracking = MinimapCluster
+	ObjectOwners.Zone = MinimapCluster
+	ObjectOwners.ZoomIn = Minimap
+	ObjectOwners.ZoomOut = Minimap
+end
+if (ns.IsWrath) then
+	ObjectOwners.BorderTop = MinimapCluster
+	ObjectOwners.BorderClassic = MinimapBackdrop
+	ObjectOwners.Calendar = MinimapCluster
+	ObjectOwners.Clock = MinimapCluster
+	ObjectOwners.Compass = MinimapBackdrop
+	ObjectOwners.Difficulty = MinimapCluster
+	ObjectOwners.Expansion = MinimapBackdrop
+	ObjectOwners.Mail = Minimap
+	ObjectOwners.Tracking = MinimapCluster
+	ObjectOwners.Zone = MinimapCluster
+	ObjectOwners.ZoomIn = Minimap
+	ObjectOwners.ZoomOut = Minimap
+	ObjectOwners.WorldMap = MinimapBackdrop
+end
 
 -- Snippets to be run upon blizzard object enabling/disabling.
 local ObjectSnippets = {
@@ -148,16 +185,18 @@ local Skins = {
 		Shape = "RoundTransparent",
 		HideElements = {
 			BorderTop = true,
+			BorderClassic = true, -- wrath
 			Calendar = true,
 			Clock = true,
 			Compass = true,
 			Difficulty = true,
-			Expansion = true,
+			Expansion = true, -- retail
 			Mail = true,
 			Tracking = true,
 			Zone = true,
 			ZoomIn = true,
-			ZoomOut = true
+			ZoomOut = true,
+			WorldMap = true -- wrath
 		},
 		Elements = {
 			Backdrop = {
@@ -359,12 +398,10 @@ end
 
 local Minimap_OnMouseUp = function(self, button)
 	if (button == "RightButton") then
-		if (ns.IsWrath) then
-			ToggleDropDownMenu(1, nil, MiniMapTrackingDropDown, "MiniMapTracking", 8, 5)
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "SFX")
-		else
-			MinimapCluster.Tracking.Button:OnMouseDown()
-		end
+
+		ToggleDropDownMenu(1, nil, _G[ns.Prefix.."MiniMapTrackingDropDown"], "cursor")
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "SFX")
+
 	elseif (button == "MiddleButton" and ns.IsRetail) then
 		local GLP = GarrisonLandingPageMinimapButton or ExpansionLandingPageMinimapButton
 		if (GLP and GLP:IsShown()) and (not InCombatLockdown()) then
@@ -748,7 +785,11 @@ end
 -- Theme API
 --------------------------------------------
 MinimapMod.SetMinimapTheme = function(self, input)
-	Minimap:SetTheme((self:GetArgs(string.lower(input))))
+	local theme = self:GetArgs(string.lower(input))
+	if (ns.IsWrath and theme == "Blizzard") then
+		theme = "Azerite"
+	end
+	Minimap:SetTheme(theme)
 end
 
 MinimapMod.SetClock = function(self, input)
@@ -764,6 +805,19 @@ MinimapMod.SetClock = function(self, input)
 			self.db.profile.useServerTime = false
 		end
 	end
+end
+
+MinimapMod.UpdatePosition = function(self)
+	if (not ns.IsWrath) then return end
+	--Minimap:SetParent(PetHider)
+	--Minimap:ClearAllPoints()
+	--Minimap:SetPoint("CENTER", UIParent)
+	Minimap:SetMovable(true)
+end
+
+MinimapMod.UpdateSize = function(self)
+	if (not ns.IsWrath) then return end
+	Minimap:SetSize(213,213)
 end
 
 -- Create our custom elements
@@ -866,9 +920,22 @@ MinimapMod.CreateCustomElements = function(self)
 
 	self.mail = mail
 
-	self:SecureHook(EditModeManagerFrame, "EnterEditMode", "UpdateCustomElements")
-	self:SecureHook(EditModeManagerFrame, "ExitEditMode", "UpdateCustomElements")
-	self:SecureHook(EditModeManagerFrame, "OnAccountSettingChanged", "UpdateCustomElements")
+	local dropdown = CreateFrame("Frame", ns.Prefix.."MiniMapTrackingDropDown", UIParent, "UIDropDownMenuTemplate")
+	dropdown:SetID(1)
+	dropdown:SetClampedToScreen(true)
+	dropdown:Hide()
+
+	UIDropDownMenu_Initialize(dropdown, MiniMapTrackingDropDown_Initialize, "MENU")
+	dropdown.noResize = true
+
+	self.dropdown = dropdown
+
+	if (EditModeManagerFrame) then
+		self:SecureHook(EditModeManagerFrame, "EnterEditMode", "UpdateCustomElements")
+		self:SecureHook(EditModeManagerFrame, "ExitEditMode", "UpdateCustomElements")
+		self:SecureHook(EditModeManagerFrame, "OnAccountSettingChanged", "UpdateCustomElements")
+	end
+
 	self:UpdateCustomElements()
 	self.CreateCustomElements = noop
 
@@ -882,8 +949,14 @@ MinimapMod.UpdateCustomElements = function(self)
 		return self.widgetFrame:Hide()
 	end
 
-	local point, anchor, rpoint, x, y = MinimapCluster:GetPoint()
-	self.widgetFrame:SetShown(point == "BOTTOMRIGHT" and rpoint == "BOTTOMRIGHT" and x > -21 and y < 21)
+	if (ns.IsWrath) then
+		self.widgetFrame:SetShown(self.anchor:IsInDefaultPosition(60))
+	else
+		local point, anchor, rpoint, x, y = MinimapCluster:GetPoint()
+		local point2, x2, y2 = unpack(defaults.profile.savedPosition.Azerite)
+		self.widgetFrame:SetShown(((point == point2) and (math_abs(x - x2) < 60) and (math_abs(y - y2) < 60)))
+	end
+
 end
 
 MinimapMod.Embed = function(self)
@@ -898,12 +971,16 @@ end
 
 MinimapMod.OnEvent = function(self, event)
 	if (event == "PLAYER_ENTERING_WORLD") then
+		self:UpdateSize()
+		self:UpdatePosition()
 		self:UpdateZone()
 		self:UpdateMail()
 		self:UpdateTimers()
 		self:UpdateCustomElements()
 
 	elseif (event == "VARIABLES_LOADED") then
+		self:UpdateSize()
+		self:UpdatePosition()
 		self:UpdateTimers()
 		self:UpdateCustomElements()
 
@@ -915,16 +992,24 @@ MinimapMod.OnEvent = function(self, event)
 
 	elseif (event == "EDIT_MODE_LAYOUTS_UPDATED") then
 		self:UpdateCustomElements()
-
 	end
 end
 
 MinimapMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("Minimap", defaults)
 
+	-- This theme only works for retail currently.
+	if (ns.IsWrath and self.db.profile.theme == "Blizzard") then
+		self.db.profile.theme = "Azerite"
+	end
+
 	self:SetEnabledState(self.db.profile.enabled)
 	self:Embed()
 	self:CreateCustomElements()
+
+	if (self.InitializeMovableFrameAnchor) then
+		self:InitializeMovableFrameAnchor()
+	end
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("VARIABLES_LOADED", "OnEvent")
@@ -957,5 +1042,145 @@ MinimapMod.OnInitialize = function(self)
 end
 
 MinimapMod.OnEnable = function(self)
+	if (ns.IsWrath) then
+		self:UpdateSize()
+		self:UpdatePosition()
+	end
 	self:SetMinimapTheme(self.db.profile.theme)
+end
+
+if (ns.IsRetail) then return end
+
+MinimapMod.InitializeMovableFrameAnchor = function(self)
+
+	self.frame = Minimap
+
+	local anchor = MFM:RequestAnchor()
+	anchor:SetTitle(MINIMAP_LABEL)
+	anchor:SetScalable(true)
+	anchor:SetMinMaxScale(.75, 1.25, .05)
+	anchor:SetSize(240, 240)
+	anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
+	anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
+	anchor.frameOffsetX = 0
+	anchor.frameOffsetY = 0
+	anchor.framePoint = "CENTER"
+	anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
+
+	self.anchor = anchor
+
+end
+
+MinimapMod.UpdatePositionAndScale = function(self)
+
+	local savedPosition = self.currentLayout and self.db.profile.savedPosition[self.currentLayout]
+	if (savedPosition) then
+		local point, x, y = unpack(savedPosition)
+		local scale = savedPosition.scale
+		local frame = self.frame
+		local anchor = self.anchor
+
+		-- Set the scale before positioning,
+		-- or everything will be wonky.
+		frame:SetScale(scale * ns.API.GetDefaultElementScale())
+
+		if (anchor and anchor.framePoint) then
+			-- Position the frame at the anchor,
+			-- with the given point and offsets.
+			frame:ClearAllPoints()
+			frame:SetPoint(anchor.framePoint, anchor, anchor.framePoint, (anchor.frameOffsetX or 0)/scale, (anchor.frameOffsetY or 0)/scale)
+
+			-- Parse where this actually is relative to UIParent
+			local point, x, y = ns.API.GetPosition(frame)
+
+			-- Reposition the frame relative to UIParent,
+			-- to avoid it being hooked to our anchor in combat.
+			frame:ClearAllPoints()
+			frame:SetPoint(point, UIParent, point, x, y)
+		end
+	end
+	self:UpdateCustomElements()
+end
+
+MinimapMod.OnAnchorUpdate = function(self, reason, layoutName, ...)
+	local savedPosition = self.db.profile.savedPosition
+	local lockdown = InCombatLockdown()
+
+	if (reason == "LayoutDeleted") then
+		if (savedPosition[layoutName]) then
+			savedPosition[layoutName] = nil
+		end
+
+	elseif (reason == "LayoutsUpdated") then
+
+		if (savedPosition[layoutName]) then
+
+			self.anchor:SetScale(savedPosition[layoutName].scale or self.anchor:GetScale())
+			self.anchor:ClearAllPoints()
+			self.anchor:SetPoint(unpack(savedPosition[layoutName]))
+
+			local defaultPosition = defaults.profile.savedPosition[layoutName]
+			if (defaultPosition) then
+				self.anchor:SetDefaultPosition(unpack(defaultPosition))
+			end
+
+			self.initialPositionSet = true
+				--self.currentLayout = layoutName
+
+		else
+			-- The user is unlikely to have a preset with our name
+			-- on the first time logging in.
+			if (not self.initialPositionSet) then
+				--print("setting default position for", layoutName, self.frame:GetName())
+
+				local defaultPosition = defaults.profile.savedPosition.Azerite
+
+				self.anchor:SetScale(defaultPosition.scale)
+				self.anchor:ClearAllPoints()
+				self.anchor:SetPoint(unpack(defaultPosition))
+				self.anchor:SetDefaultPosition(unpack(defaultPosition))
+
+				self.initialPositionSet = true
+				--self.currentLayout = layoutName
+			end
+
+			savedPosition[layoutName] = { self.anchor:GetPosition() }
+			savedPosition[layoutName].scale = self.anchor:GetScale()
+		end
+
+		self.currentLayout = layoutName
+
+		self:UpdatePositionAndScale()
+
+	elseif (reason == "PositionUpdated") then
+		-- Fires when position has been changed.
+		local point, x, y = ...
+
+		savedPosition[layoutName] = { point, x, y }
+		savedPosition[layoutName].scale = self.anchor:GetScale()
+
+		self:UpdatePositionAndScale()
+
+	elseif (reason == "ScaleUpdated") then
+		-- Fires when scale has been mousewheel updated.
+		local scale = ...
+
+		savedPosition[layoutName].scale = scale
+
+		self:UpdatePositionAndScale()
+
+	elseif (reason == "Dragging") then
+		-- Fires on every drag update. Spammy.
+		--if (not self.incombat) then
+			self:OnAnchorUpdate("PositionUpdated", layoutName, ...)
+		--end
+
+	elseif (reason == "CombatStart") then
+		-- Fires right before combat lockdown for visible anchors.
+
+
+	elseif (reason == "CombatEnd") then
+		-- Fires when combat lockdown ends for visible anchors.
+
+	end
 end

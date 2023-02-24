@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibSpinBar-1.0"
-local MINOR_VERSION = 4
+local MINOR_VERSION = 5
 
 if (not LibStub) then
 	error(MAJOR_VERSION .. " requires LibStub.")
@@ -599,6 +599,7 @@ SpinBar.SetValue = function(self, value, overrideSmoothing)
 	end
 
 	if (data.smoothing or (data.barDisplayValue > min) or (data.barDisplayValue < max)) then
+		data.updatesRunning = true
 		if (not data.scaffold:GetScript("OnUpdate")) then
 			data.scaffold:SetScript("OnUpdate", OnUpdate)
 		end

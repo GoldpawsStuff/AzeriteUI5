@@ -662,7 +662,7 @@ local PvPIndicator_Override = function(self, event, unit)
 	if (factionGroup ~= "Neutral") then
 		if (UnitIsPVPFreeForAll(unit)) then
 		elseif (UnitIsPVP(unit)) then
-			if (unit == "player" and UnitIsMercenary(unit)) then
+			if (ns.IsRetail and unit == "player" and UnitIsMercenary(unit)) then
 				if (factionGroup == "Horde") then
 					factionGroup = "Alliance"
 				elseif (factionGroup == "Alliance") then
@@ -934,17 +934,23 @@ local style = function(self, unit)
 	healthValue:SetTextColor(unpack(db.HealthValueColor))
 	healthValue:SetJustifyH(db.HealthValueJustifyH)
 	healthValue:SetJustifyV(db.HealthValueJustifyV)
-	self:Tag(healthValue, prefix("[*:Health]  [*:Absorb]"))
+	if (ns.IsRetail) then
+		self:Tag(healthValue, prefix("[*:Health]  [*:Absorb]"))
+	else
+		self:Tag(healthValue, prefix("[*:Health]"))
+	end
 
 	self.Health.Value = healthValue
 
 	-- Absorb Bar
 	--------------------------------------------
-	local absorb = self:CreateBar()
-	absorb:SetAllPoints(health)
-	absorb:SetFrameLevel(health:GetFrameLevel() + 3)
+	if (ns.IsRetail) then
+		local absorb = self:CreateBar()
+		absorb:SetAllPoints(health)
+		absorb:SetFrameLevel(health:GetFrameLevel() + 3)
 
-	self.Health.Absorb = absorb
+		self.Health.Absorb = absorb
+	end
 
 	-- Power Crystal
 	--------------------------------------------
@@ -956,7 +962,7 @@ local style = function(self, unit)
 	self.Power = power
 	self.Power.Override = ns.API.UpdatePower
 	self.Power.PostUpdate = Power_UpdateVisibility
-	self.Power.PostUpdateColor = Power_PostUpdateColor
+	self.Power.PostUpdateColor = not ns.IsWrath and Power_PostUpdateColor
 
 	local powerBackdrop = power:CreateTexture(nil, "BACKGROUND", nil, -2)
 	local powerCase = power:CreateTexture(nil, "ARTWORK", nil, 1)
@@ -1143,7 +1149,7 @@ PlayerFrameMod.Spawn = function(self)
 	-- Movable Frame Anchor
 	---------------------------------------------------
 	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(HUD_EDIT_MODE_PLAYER_FRAME_LABEL)
+	anchor:SetTitle(HUD_EDIT_MODE_PLAYER_FRAME_LABEL or PLAYER)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
 	anchor:SetSize(560, 180)
@@ -1173,7 +1179,9 @@ PlayerFrameMod.OnInitialize = function(self)
 
 	-- Disable Blizzard player alternate power bar,
 	-- as we're integrating this into the standard power crystal.
-	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_SHOW")
-	PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_HIDE")
-	PlayerPowerBarAlt:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	if (PlayerPowerBarAlt) then
+		PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_SHOW")
+		PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_HIDE")
+		PlayerPowerBarAlt:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	end
 end

@@ -252,13 +252,13 @@ CastBarMod.Spawn = function(self)
 	-- Movable Frame Anchor
 	---------------------------------------------------
 	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(HUD_EDIT_MODE_CAST_BAR_LABEL)
+	anchor:SetTitle(HUD_EDIT_MODE_CAST_BAR_LABEL or SHOW_ARENA_ENEMY_CASTBAR_TEXT)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
 	anchor:SetSize(112 + 16, 11 + 16)
 	anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
 	anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
-	anchor:SetEditModeAccountSetting(Enum.EditModeAccountSetting.ShowCastBar)
+	anchor:SetEditModeAccountSetting(ns.IsRetail and Enum.EditModeAccountSetting.ShowCastBar)
 	anchor.frameOffsetX = 0
 	anchor.frameOffsetY = 0
 	anchor.framePoint = "TOPLEFT"
@@ -298,17 +298,19 @@ CastBarMod.OnInitialize = function(self)
 		MFM:RegisterPresets(self.db.profile.savedPosition)
 	end
 
-	-- How the fuck do I get this out of the editmode?
-	PlayerCastingBarFrame:SetParent(UIHider)
-	PlayerCastingBarFrame:UnregisterAllEvents()
-	PlayerCastingBarFrame:SetUnit(nil)
-	PlayerCastingBarFrame:Hide()
+	if (ns.IsRetail) then
+		-- How the fuck do I get this out of the editmode?
+		PlayerCastingBarFrame:SetParent(UIHider)
+		PlayerCastingBarFrame:UnregisterAllEvents()
+		PlayerCastingBarFrame:SetUnit(nil)
+		PlayerCastingBarFrame:Hide()
 
-	PetCastingBarFrame:SetParent(UIHider)
-	PetCastingBarFrame:UnregisterAllEvents()
-	PetCastingBarFrame:SetUnit(nil)
-	PetCastingBarFrame:UnregisterEvent("UNIT_PET")
-	PetCastingBarFrame:Hide()
+		PetCastingBarFrame:SetParent(UIHider)
+		PetCastingBarFrame:UnregisterAllEvents()
+		PetCastingBarFrame:SetUnit(nil)
+		PetCastingBarFrame:UnregisterEvent("UNIT_PET")
+		PetCastingBarFrame:Hide()
+	end
 
 	self:RegisterEvent("CVAR_UPDATE", "UpdateVisibility")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateVisibility")

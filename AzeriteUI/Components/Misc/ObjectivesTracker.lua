@@ -24,6 +24,7 @@
 
 --]]
 local Addon, ns = ...
+if (not ns.IsRetail) then return end
 
 LoadAddOn("Blizzard_ObjectiveTracker")
 

@@ -45,143 +45,152 @@ local RegisterCooldown = ns.Widgets.RegisterCooldown
 local UIHider = ns.Hider
 local noop = ns.Noop
 
+-- Just not there in Wrath
+local IsSpellOverlayed = IsSpellOverlayed or function() end
+
 -- Return blizzard barID by barnum.
 local BAR_TO_ID = {
 	[1] = 1,
 	[2] = BOTTOMLEFT_ACTIONBAR_PAGE,
 	[3] = BOTTOMRIGHT_ACTIONBAR_PAGE,
 	[4] = RIGHT_ACTIONBAR_PAGE,
-	[5] = LEFT_ACTIONBAR_PAGE,
-	[6] = MULTIBAR_5_ACTIONBAR_PAGE,
-	[7] = MULTIBAR_6_ACTIONBAR_PAGE,
-	[8] = MULTIBAR_7_ACTIONBAR_PAGE
+	[5] = LEFT_ACTIONBAR_PAGE
 }
+if (ns.IsRetail) then
+	BAR_TO_ID[6] = MULTIBAR_5_ACTIONBAR_PAGE
+	BAR_TO_ID[7] = MULTIBAR_6_ACTIONBAR_PAGE
+	BAR_TO_ID[8] = MULTIBAR_7_ACTIONBAR_PAGE
+end
 
 local ID_TO_BAR = {}
 for i,j in pairs(BAR_TO_ID) do ID_TO_BAR[j] = i end
 
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	enableBarFading = true,
-	bars = {
-		["**"] = ns:Merge({
-		}, ns.ActionBar.defaults),
-		[1] = { --[[ primary action bar ]]
-			layout = "map",
-			maptype = "azerite",
-			visibility = {
-				dragon = true,
-				possess = true,
-				overridebar = true,
-				vehicleui = true
-			},
-			savedPosition = {
-				Azerite = {
-					scale = 1,
-					[1] = "BOTTOMLEFT",
-					[2] = 60,
-					[3] = 42
-				}
-			}
+local barDefaults = {
+	["**"] = ns:Merge({
+	}, ns.ActionBar.defaults),
+	[1] = { --[[ primary action bar ]]
+		layout = "map",
+		maptype = "azerite",
+		visibility = {
+			dragon = true,
+			possess = true,
+			overridebar = true,
+			vehicleui = true
 		},
-		[2] = { --[[ bottomleft multibar ]]
-			enabled = false,
-			layout = "map",
-			maptype = "zigzag",
-			savedPosition = {
-				Azerite = {
-					scale = 1,
-					[1] = "BOTTOMLEFT",
-					[2] = 780,
-					[3] = 42
-				}
+		savedPosition = {
+			Azerite = {
+				scale = 1,
+				[1] = "BOTTOMLEFT",
+				[2] = 60,
+				[3] = 42
 			}
-		},
-		[3] = { --[[ bottomright multibar ]]
-			enabled = false,
-			grid = {
-				breakpoint = 6,
-				growth = "vertical",
-				growthHorizontal = "RIGHT",
-				growthVertical = "DOWN",
-			},
-			savedPosition = {
-				Azerite = {
-					scale = 1,
-					[1] = "RIGHT",
-					[2] = -40,
-					[3] = 0
-				}
+		}
+	},
+	[2] = { --[[ bottomleft multibar ]]
+		enabled = false,
+		layout = "map",
+		maptype = "zigzag",
+		savedPosition = {
+			Azerite = {
+				scale = 1,
+				[1] = "BOTTOMLEFT",
+				[2] = 780,
+				[3] = 42
 			}
+		}
+	},
+	[3] = { --[[ bottomright multibar ]]
+		enabled = false,
+		grid = {
+			breakpoint = 6,
+			growth = "vertical",
+			growthHorizontal = "RIGHT",
+			growthVertical = "DOWN",
 		},
-		[4] = { --[[ right multibar 1 ]]
-			enabled = false,
-			grid = {
-				breakpoint = 6,
-				growth = "vertical",
-				growthHorizontal = "RIGHT",
-				growthVertical = "DOWN",
-			},
-			savedPosition = {
-				Azerite = {
-					scale = 1,
-					[1] = "RIGHT",
-					[2] = -(40 + 10 + 72*2),
-					[3] = 0
-				}
+		savedPosition = {
+			Azerite = {
+				scale = 1,
+				[1] = "RIGHT",
+				[2] = -40,
+				[3] = 0
 			}
+		}
+	},
+	[4] = { --[[ right multibar 1 ]]
+		enabled = false,
+		grid = {
+			breakpoint = 6,
+			growth = "vertical",
+			growthHorizontal = "RIGHT",
+			growthVertical = "DOWN",
 		},
-		[5] = { --[[ right multibar 2 ]]
-			enabled = false,
-			grid = {
-				breakpoint = 6,
-				growth = "vertical",
-				growthHorizontal = "RIGHT",
-				growthVertical = "DOWN",
-			},
-			savedPosition = {
-				Azerite = {
-					scale = 1,
-					[1] = "RIGHT",
-					[2] = -(40 + 10 + 72*2 + 10 + 72*2),
-					[3] = 0
-				}
+		savedPosition = {
+			Azerite = {
+				scale = 1,
+				[1] = "RIGHT",
+				[2] = -(40 + 10 + 72*2),
+				[3] = 0
 			}
+		}
+	},
+	[5] = { --[[ right multibar 2 ]]
+		enabled = false,
+		grid = {
+			breakpoint = 6,
+			growth = "vertical",
+			growthHorizontal = "RIGHT",
+			growthVertical = "DOWN",
 		},
-		[6] = { --[[]]
-			enabled = false,
-			savedPosition = {
-				Azerite = {
-					scale = 1,
-					[1] = "CENTER",
-					[2] = 0,
-					[3] = 72 + 10
-				}
-			}
-		},
-		[7] = { --[[]]
-			enabled = false,
-			savedPosition = {
-				Azerite = {
-					scale = 1,
-					[1] = "CENTER",
-					[2] = 0,
-					[3] = 0
-				}
-			}
-		},
-		[8] = { --[[]]
-			enabled = false,
-			savedPosition = {
-				Azerite = {
-					scale = 1,
-					[1] = "CENTER",
-					[2] = 0,
-					[3] = -(72 + 10)
-				}
+		savedPosition = {
+			Azerite = {
+				scale = 1,
+				[1] = "RIGHT",
+				[2] = -(40 + 10 + 72*2 + 10 + 72*2),
+				[3] = 0
 			}
 		}
 	}
+}
+if (ns.IsRetail) then
+	barDefaults[6] = { --[[]]
+		enabled = false,
+		savedPosition = {
+			Azerite = {
+				scale = 1,
+				[1] = "CENTER",
+				[2] = 0,
+				[3] = 72 + 10
+			}
+		}
+	}
+	barDefaults[7] = { --[[]]
+		enabled = false,
+		savedPosition = {
+			Azerite = {
+				scale = 1,
+				[1] = "CENTER",
+				[2] = 0,
+				[3] = 0
+			}
+		}
+	}
+	barDefaults[8] = { --[[]]
+		enabled = false,
+		savedPosition = {
+			Azerite = {
+				scale = 1,
+				[1] = "CENTER",
+				[2] = 0,
+				[3] = -(72 + 10)
+			}
+		}
+	}
+end
+
+local defaults = { profile = ns:Merge({
+	enabled = true,
+	enableBarFading = true,
+	bars = barDefaults
 }, ns.moduleDefaults) }
 
 local config = {
@@ -290,7 +299,7 @@ local UpdateUsable = function(self)
 		end
 	end
 
-	if (self._state_type == "action") then
+	if (C_LevelLink and self._state_type == "action") then
 		local isLevelLinkLocked = C_LevelLink.IsActionLocked(self._state_action)
 		if (not self.icon:IsDesaturated()) then
 			self.icon:SetDesaturated(isLevelLinkLocked)
@@ -365,8 +374,9 @@ local style = function(button)
 		button.icon:RemoveMaskTexture(button.icon:GetMaskTexture(i))
 		i = i + 1
 	end
-
-	icon:RemoveMaskTexture(button.IconMask)
+	if (button.IconMask) then
+		icon:RemoveMaskTexture(button.IconMask)
+	end
 	icon:SetMask(m)
 
 	-- Custom icon darkener
@@ -727,7 +737,8 @@ ActionBarMod.GetBarDisplayName = function(self, id)
 	elseif (barID == LEFT_ACTIONBAR_PAGE) then
 		return SHOW_MULTIBAR4_TEXT -- "Right Action Bar 2"
 	else
-		return HUD_EDIT_MODE_ACTION_BAR_LABEL:format(barID) -- "Action Bar %d"
+		return ITEM_SUFFIX_TEMPLATE:format(BINDING_HEADER_ACTIONBAR, barID)
+		--return HUD_EDIT_MODE_ACTION_BAR_LABEL:format(barID) -- "Action Bar %d"
 	end
 end
 
@@ -962,7 +973,7 @@ ActionBarMod.OnInitialize = function(self)
 
 	self:SetEnabledState(self.db.profile.enabled)
 
-	for i = 1,8 do
+	for i = 1,#BAR_TO_ID do
 
 		local config = self.db.profile.bars[i]
 		local bar = ns.ActionBar:Create(BAR_TO_ID[i], config, ns.Prefix.."ActionBar"..i)
@@ -1093,10 +1104,6 @@ ActionBarMod.OnEnable = function(self)
 		self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE", "OnEvent")
 	end
 
-	--if (not self.flightTimer) then
-	--	self:ScheduleRepeatingTimer("UpdateBarStates", 1/10)
-	--end
-
 	LAB.RegisterCallback(self, "OnButtonUpdate", "OnEvent")
 	LAB.RegisterCallback(self, "OnButtonUsable", "OnEvent")
 
@@ -1110,10 +1117,6 @@ ActionBarMod.OnDisable = function(self)
 	self:UnregisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:UnregisterEvent("UPDATE_BINDINGS", "UpdateBindings")
-
-	--if (self.flightTimer) then
-	--	self:CancelTimer(self.flightTimer)
-	--end
 
 	LAB.UnregisterCallback(self, "OnButtonUpdate")
 	LAB.UnregisterCallback(self, "OnButtonUsable")

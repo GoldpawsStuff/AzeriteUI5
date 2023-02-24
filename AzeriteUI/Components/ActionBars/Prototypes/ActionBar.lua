@@ -40,11 +40,13 @@ local BINDTEMPLATE_BY_ID = {
 	[BOTTOMLEFT_ACTIONBAR_PAGE] = "MULTIACTIONBAR1BUTTON%d",
 	[BOTTOMRIGHT_ACTIONBAR_PAGE] = "MULTIACTIONBAR2BUTTON%d",
 	[RIGHT_ACTIONBAR_PAGE] = "MULTIACTIONBAR3BUTTON%d",
-	[LEFT_ACTIONBAR_PAGE] = "MULTIACTIONBAR4BUTTON%d",
-	[MULTIBAR_5_ACTIONBAR_PAGE] = "MULTIACTIONBAR5BUTTON%d",
-	[MULTIBAR_6_ACTIONBAR_PAGE] = "MULTIACTIONBAR6BUTTON%d",
-	[MULTIBAR_7_ACTIONBAR_PAGE] = "MULTIACTIONBAR7BUTTON%d"
+	[LEFT_ACTIONBAR_PAGE] = "MULTIACTIONBAR4BUTTON%d"
 }
+if (ns.IsRetail) then
+	BINDTEMPLATE_BY_ID[MULTIBAR_5_ACTIONBAR_PAGE] = "MULTIACTIONBAR5BUTTON%d"
+	BINDTEMPLATE_BY_ID[MULTIBAR_6_ACTIONBAR_PAGE] = "MULTIACTIONBAR6BUTTON%d"
+	BINDTEMPLATE_BY_ID[MULTIBAR_7_ACTIONBAR_PAGE] = "MULTIACTIONBAR7BUTTON%d"
+end
 
 local defaults = ns:Merge({
 	visibility = {
@@ -95,7 +97,7 @@ ns.ActionBar.Create = function(self, id, config, name)
 				newstate = GetOverrideBarIndex()
 			elseif HasTempShapeshiftActionBar() then
 				newstate = GetTempShapeshiftBarIndex()
-			elseif HasBonusActionBar() and GetActionBarPage() == 1 then
+			elseif HasBonusActionBar() then
 				newstate = GetBonusBarIndex()
 			else
 				newstate = nil
@@ -110,10 +112,6 @@ ns.ActionBar.Create = function(self, id, config, name)
 
 	bar:UpdateButtons()
 	bar:UpdateVisibilityDriver()
-
-	--if (not bar.config.enabled) then
-	--	bar:Disable()
-	--end
 
 	return bar
 end
@@ -209,14 +207,26 @@ ActionBar.UpdateStateDriver = function(self)
 
 	local statedriver
 	if (self.id == 1) then
-		statedriver = "[overridebar][possessbar][shapeshift]possess; [bonusbar:5]dragon; [form,noform] 0; [bar:2]2; [bar:3]3; [bar:4]4; [bar:5]5; [bar:6]6"
+		statedriver = "[overridebar] possess; [possessbar] possess; [shapeshift] possess; [bonusbar:5] dragon; [form,noform] 0; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6"
 
 		if (playerClass == "DRUID") then
 			statedriver = statedriver .. "; [bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10"
+
 		elseif (playerClass == "MONK") then
 			statedriver = statedriver .. "; [bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9"
+
 		elseif (playerClass == "ROGUE") then
-			statedriver = statedriver .. "; [bonusbar:1] 7"
+			if (ns.IsWrath) then
+				statedriver = statedriver .. "; [bonusbar:1] 7 [bonusbar:2] 8" -- Shadowdance
+			else
+				statedriver = statedriver .. "; [bonusbar:1] 7"
+			end
+
+		elseif (ns.IsWrath and playerClass == "PRIEST") then
+			statedriver = statedriver .. "; [bonusbar:1] 7" -- Shadowform
+
+		elseif (ns.IsWrath and playerClass == "WARRIOR") then
+			statedriver = statedriver .. "; [bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9"
 		end
 
 		statedriver = statedriver .. "; 1"

@@ -84,26 +84,29 @@ end
 
 VehicleExit.OnInitialize = function(self)
 
-	local db = config
-
 	local button = CreateFrame("CheckButton", ns.Prefix.."VehicleExitButton", UIParent, "SecureActionButtonTemplate")
 	button:SetFrameStrata("MEDIUM")
 	button:SetFrameLevel(100)
-	button:SetPoint(unpack(db.VehicleExitButtonPosition))
-	button:SetSize(unpack(db.VehicleExitButtonSize))
+	button:SetPoint(unpack(config.VehicleExitButtonPosition))
+	button:SetSize(unpack(config.VehicleExitButtonSize))
 	button:SetScript("OnEnter", ExitButton_OnEnter)
 	button:SetScript("OnLeave", ExitButton_OnLeave)
 	button:SetScript("PostClick", ExitButton_PostClick)
 	button:SetAttribute("type", "macro")
-	button:SetAttribute("macrotext", "/leavevehicle [@vehicle,exists,canexitvehicle]\n/dismount [mounted]")
-	button:RegisterForClicks("AnyUp", "AnyDown") -- required in 10.0.0
 
-	RegisterStateDriver(button, "visibility", "[@vehicle,exists,canexitvehicle][possessbar][mounted]show;hide")
+	if (ns.IsWrath) then
+		button:SetAttribute("macrotext", "/dismount [mounted]\n/run if CanExitVehicle() then VehicleExit() end")
+		RegisterStateDriver(button, "visibility", "[@vehicle,canexitvehicle][possessbar][mounted]show;hide")
+	else
+		button:SetAttribute("macrotext", "/leavevehicle [@vehicle,exists,canexitvehicle]\n/dismount [mounted]")
+		button:RegisterForClicks("AnyUp", "AnyDown") -- required in 10.0.0
+		RegisterStateDriver(button, "visibility", "[@vehicle,exists,canexitvehicle][possessbar][mounted]show;hide")
+	end
 
 	local texture = button:CreateTexture(nil, "ARTWORK", nil, 1)
-	texture:SetPoint(unpack(db.VehicleExitButtonTexturePosition))
-	texture:SetSize(unpack(db.VehicleExitButtonTextureSize))
-	texture:SetTexture(db.VehicleExitButtonTexture)
+	texture:SetPoint(unpack(config.VehicleExitButtonTexturePosition))
+	texture:SetSize(unpack(config.VehicleExitButtonTextureSize))
+	texture:SetTexture(config.VehicleExitButtonTexture)
 
 	button.Texture = texture
 

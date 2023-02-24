@@ -26,7 +26,9 @@
 local Addon, ns = ...
 ns.AuraFilters = ns.AuraFilters or {}
 
-ns.AuraFilters.PlayerAuraFilter = function(element, unit, data)
+if (ns.IsWrath) then return end
+
+ns.AuraFilters.PlayerAuraFilter = function(button, unit, data)
 
 	--button.unitIsCaster = unit and caster and UnitIsUnit(unit, caster)
 	button.spell = data.name
@@ -43,7 +45,7 @@ ns.AuraFilters.PlayerAuraFilter = function(element, unit, data)
 	return (not button.noDuration and data.duration < 301) or (button.timeLeft and button.timeLeft > 0 and button.timeLeft < 31) or (data.count > 1)
 end
 
-ns.AuraFilters.TargetAuraFilter = function(element, unit, data)
+ns.AuraFilters.TargetAuraFilter = function(button, unit, data)
 
 	button.spell = data.name
 	button.timeLeft = data.expiration and (data.expiration - GetTime())
@@ -59,7 +61,7 @@ ns.AuraFilters.TargetAuraFilter = function(element, unit, data)
 	return (not button.noDuration and duration < 301) or (count > 1)
 end
 
-ns.AuraFilters.NameplateAuraFilter = function(element, unit, data)
+ns.AuraFilters.NameplateAuraFilter = function(button, unit, data)
 
 	button.spell = data.name
 	button.timeLeft = data.expiration and (data.expiration - GetTime())

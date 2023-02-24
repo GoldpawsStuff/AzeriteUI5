@@ -273,6 +273,17 @@ ChatFrames.StyleFrame = function(self, frame)
 		frame[method] = func
 	end
 
+	-- Kill combatlog textures
+	if (frame:GetID() == 2) then
+		local buttonframe = CombatLogQuickButtonFrame_Custom
+		for i = 1, buttonframe:GetNumRegions() do
+			local region = select(i, buttonframe:GetRegions())
+			if (region and region:GetObjectType() == "Texture") then
+				region:SetTexture(nil)
+			end
+		end
+	end
+
 	-- Kill frame textures.
 	for tex in frame:GetFrameTextures() do
 		tex:SetTexture(nil)
@@ -518,17 +529,21 @@ ChatFrames.OnEvent = function(self, event, ...)
 				self:StyleFrame(frame)
 			end
 
+			self:UpdateButtons(event, ...)
+
 			self:SecureHook("FCF_OpenTemporaryWindow", "StyleTempFrame")
 			self:SecureHook("FCFTab_UpdateAlpha", "UpdateTabAlpha")
 			self:SecureHook("FCF_DockUpdate","UpdateClutter")
 
 			self:ScheduleRepeatingTimer("UpdateClutter", 1/10)
 
-			QuickJoinToastButton:UnregisterAllEvents()
-			QuickJoinToastButton:SetParent(UIHider)
-			QuickJoinToastButton:Hide()
+			if (QuickJoinToastButton) then
+				QuickJoinToastButton:UnregisterAllEvents()
+				QuickJoinToastButton:SetParent(UIHider)
+				QuickJoinToastButton:Hide()
+			end
 
-			--ChatFrame1:Clear()
+			ChatFrame1:Clear()
 		end
 	end
 end

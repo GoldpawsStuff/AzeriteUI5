@@ -1,0 +1,27 @@
+## Interface: 30401
+
+## Title: |TInterface\Addons\AzeriteUI\Assets\power-crystal-ice-icon.tga:16:16:0:0:512:512:70:442:40:472|t |cff4488bbAzerite|r |cfffafafaUI|r |cffcccccc5.0|r
+## Notes: Custom user graphical interface.|n|nDesign by Daniel Troko and Lars Norberg.|nCode by Lars Norberg.|n|n|cff4488ffPayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/GoldpawsStuff|r|n|n|cff4488ffPatreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/GoldpawsStuff|r
+## Version: @project-version@
+## Author: Daniel Troko, Lars Norberg
+
+## X-Category: Interface Enhancements
+## X-Curse-Project-ID: 298648
+## X-Wago-ID: R4N2PZKL
+## X-License: Custom
+
+## SavedVariables: AzeriteUI5_DB, AzeriteUI4_DB
+## OptionalDeps: Ace3, Clique, LibKeyBound-1.0
+
+# TaintLess [22-11-27]
+# https://www.townlong-yak.com/addons/taintless
+TaintLess.xml
+
+# Libraries
+Libs\Libs_Wrath.xml
+
+# Addon core
+Core\Core.xml
+
+# Addon components
+Components\Components.xml

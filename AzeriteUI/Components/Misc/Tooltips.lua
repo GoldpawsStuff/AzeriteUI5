@@ -25,6 +25,7 @@
 --]]
 local Addon, ns = ...
 local Tooltips = ns:NewModule("Tooltips", "LibMoreEvents-1.0", "AceHook-3.0")
+local MFM = ns:GetModule("MovableFramesManager", true)
 
 -- Lua API
 local _G = _G
@@ -56,6 +57,20 @@ local Backdrops = setmetatable({}, { __index = function(t,k)
 	rawset(t,k,bg)
 	return bg
 end })
+
+local defaults = { profile = ns:Merge({
+	enabled = true
+}, ns.moduleDefaults) }
+if (ns.IsWrath) then
+	defaults.profile.savedPosition = {
+		Azerite = {
+			scale = 1,
+			[1] = "BOTTOMRIGHT",
+			[2] = -319,
+			[3] = 166
+		}
+	}
+end
 
 Tooltips.SetBackdropStyle = function(self, tooltip)
 	if (not tooltip) or (tooltip.IsEmbedded) or (tooltip:IsForbidden()) then return end
@@ -180,11 +195,13 @@ Tooltips.StyleTooltips = function(self, event, ...)
 		_G.ShoppingTooltip1,
 		_G.ShoppingTooltip2,
 		_G.QuickKeybindTooltip,
-		_G.QuestScrollFrame.StoryTooltip,
-		_G.QuestScrollFrame.CampaignTooltip,
+		_G.QuestScrollFrame and _G.QuestScrollFrame.StoryTooltip,
+		_G.QuestScrollFrame and _G.QuestScrollFrame.CampaignTooltip,
 		_G.NarciGameTooltip
 	}) do
-		self:SetBackdropStyle(tooltip)
+		if (tooltip) then
+			self:SetBackdropStyle(tooltip)
+		end
 	end
 
 end
@@ -305,6 +322,13 @@ Tooltips.OnCompareItemShow = function(self, tooltip)
 	end
 end
 
+Tooltips.SetDefaultAnchor = function(self, tooltip, parent)
+	if (not tooltip) or (tooltip:IsForbidden()) then return end
+
+	tooltip:SetOwner(parent, "ANCHOR_NONE")
+	tooltip:SetPoint(unpack(self.db.profile.savedPosition.Azerite))
+end
+
 Tooltips.SetUnitColor = function(self, unit)
 	local color = GetUnitColor(unit) or Colors.reaction[5]
 	if (color) then
@@ -318,8 +342,13 @@ Tooltips.SetHooks = function(self)
 	self:SecureHook("GameTooltip_UnitColor", "SetUnitColor")
 	self:SecureHook("GameTooltip_ShowCompareItem", "OnCompareItemShow")
 
+	if (ns.IsWrath) then
+		self:SecureHook("GameTooltip_SetDefaultAnchor", "SetDefaultAnchor")
+	end
+
 	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "OnTooltipCleared")
 
+	-- Works in Wrath, but not currently needed since we're not doing anything.
 	--self:SecureHookScript(GameTooltip, "OnTooltipSetSpell", "OnTooltipSetSpell")
 	--self:SecureHookScript(GameTooltip, "OnTooltipSetItem", "OnTooltipSetItem")
 	--self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "OnTooltipSetUnit")
@@ -329,12 +358,171 @@ Tooltips.SetHooks = function(self)
 end
 
 Tooltips.OnInitialize = function(self)
+	self.db = ns.db:RegisterNamespace("Tooltips", defaults)
 
 	self:StyleStatusBar()
 	self:StyleTooltips()
 	self:SetHooks()
+
+	if (self.InitializeMovableFrameAnchor) then
+		self:InitializeMovableFrameAnchor()
+	end
 end
 
 Tooltips.OnEnable = function(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "StyleTooltips")
+end
+
+if (ns.IsRetail) then return end
+
+Tooltips.InitializeMovableFrameAnchor = function(self)
+
+	local frame = CreateFrame("Frame", nil, UIParent)
+	frame:SetSize(250,120)
+	frame:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
+
+	self.frame = frame
+
+	-- Faking a global string for the label here.
+	-- We're assuming the common word in those
+	-- two strings is what we're looking for.
+	local words1 = { string.split(" ", USE_UBERTOOLTIPS) }
+	local words2 = { string.split(" ", SHOW_NEWBIE_TIPS_TEXT) }
+	local label
+	for _,word1 in ipairs(words1) do
+		for _,word2 in ipairs(words1) do
+			if (word1 == word2) then
+				label = word1
+				break
+			end
+		end
+	end
+
+	local anchor = MFM:RequestAnchor()
+	anchor:SetTitle(label or USE_UBERTOOLTIPS)
+	anchor:SetScalable(false)
+	anchor:SetMinMaxScale(.75, 1.25, .05)
+	anchor:SetSize(250, 120)
+	anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
+	anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
+	anchor.frameOffsetX = 0
+	anchor.frameOffsetY = 0
+	anchor.framePoint = "BOTTOMRIGHT"
+	anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
+
+	self.anchor = anchor
+
+end
+
+Tooltips.UpdatePositionAndScale = function(self)
+
+	local savedPosition = self.currentLayout and self.db.profile.savedPosition[self.currentLayout]
+	if (savedPosition) then
+		local point, x, y = unpack(savedPosition)
+		local scale = savedPosition.scale
+		local frame = self.frame
+		local anchor = self.anchor
+
+		-- Set the scale before positioning,
+		-- or everything will be wonky.
+		frame:SetScale(scale * ns.API.GetDefaultElementScale())
+
+		if (anchor and anchor.framePoint) then
+			-- Position the frame at the anchor,
+			-- with the given point and offsets.
+			frame:ClearAllPoints()
+			frame:SetPoint(anchor.framePoint, anchor, anchor.framePoint, (anchor.frameOffsetX or 0)/scale, (anchor.frameOffsetY or 0)/scale)
+
+			-- Parse where this actually is relative to UIParent
+			local point, x, y = ns.API.GetPosition(frame)
+
+			-- Reposition the frame relative to UIParent,
+			-- to avoid it being hooked to our anchor in combat.
+			frame:ClearAllPoints()
+			frame:SetPoint(point, UIParent, point, x, y)
+		end
+	end
+end
+
+Tooltips.OnAnchorUpdate = function(self, reason, layoutName, ...)
+	local savedPosition = self.db.profile.savedPosition
+	local lockdown = InCombatLockdown()
+
+	if (reason == "LayoutDeleted") then
+		if (savedPosition[layoutName]) then
+			savedPosition[layoutName] = nil
+		end
+
+	elseif (reason == "LayoutsUpdated") then
+
+		if (savedPosition[layoutName]) then
+
+			self.anchor:SetScale(savedPosition[layoutName].scale or self.anchor:GetScale())
+			self.anchor:ClearAllPoints()
+			self.anchor:SetPoint(unpack(savedPosition[layoutName]))
+
+			local defaultPosition = defaults.profile.savedPosition[layoutName]
+			if (defaultPosition) then
+				self.anchor:SetDefaultPosition(unpack(defaultPosition))
+			end
+
+			self.initialPositionSet = true
+				--self.currentLayout = layoutName
+
+		else
+			-- The user is unlikely to have a preset with our name
+			-- on the first time logging in.
+			if (not self.initialPositionSet) then
+				--print("setting default position for", layoutName, self.frame:GetName())
+
+				local defaultPosition = defaults.profile.savedPosition.Azerite
+
+				self.anchor:SetScale(defaultPosition.scale)
+				self.anchor:ClearAllPoints()
+				self.anchor:SetPoint(unpack(defaultPosition))
+				self.anchor:SetDefaultPosition(unpack(defaultPosition))
+
+				self.initialPositionSet = true
+				--self.currentLayout = layoutName
+			end
+
+			savedPosition[layoutName] = { self.anchor:GetPosition() }
+			savedPosition[layoutName].scale = self.anchor:GetScale()
+		end
+
+		self.currentLayout = layoutName
+
+		self:UpdatePositionAndScale()
+
+	elseif (reason == "PositionUpdated") then
+		-- Fires when position has been changed.
+		local point, x, y = ...
+
+		savedPosition[layoutName] = { point, x, y }
+		savedPosition[layoutName].scale = self.anchor:GetScale()
+
+		self:UpdatePositionAndScale()
+
+	elseif (reason == "ScaleUpdated") then
+		-- Fires when scale has been mousewheel updated.
+		local scale = ...
+
+		savedPosition[layoutName].scale = scale
+
+		self:UpdatePositionAndScale()
+
+	elseif (reason == "Dragging") then
+		-- Fires on every drag update. Spammy.
+		--if (not self.incombat) then
+			self:OnAnchorUpdate("PositionUpdated", layoutName, ...)
+		--end
+
+	elseif (reason == "CombatStart") then
+		-- Fires right before combat lockdown for visible anchors.
+
+
+	elseif (reason == "CombatEnd") then
+		-- Fires when combat lockdown ends for visible anchors.
+
+	end
 end

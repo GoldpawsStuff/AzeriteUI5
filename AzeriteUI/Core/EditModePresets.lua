@@ -24,6 +24,7 @@
 
 --]]
 local Addon, ns = ...
+if (not EditModeManagerFrame) then return end
 
 local EditMode = ns:NewModule("EditMode", "LibMoreEvents-1.0", "AceConsole-3.0", "AceTimer-3.0", "AceHook-3.0")
 local LEMO = LibStub("LibEditModeOverride-1.0")
@@ -154,24 +155,30 @@ local layouts = {
 	defaultLayout = "Azerite",
 	{
 		layoutName = "Azerite",
-		layoutType = Enum.EditModeLayoutType.Account, -- Character
+		--layoutType = Enum.EditModeLayoutType.Character,
+		layoutType = Enum.EditModeLayoutType.Account,
 		systems = azeriteSystems
 	}
 }
 
 EditMode.CanEditActiveLayout = function(self)
-	LEMO:LoadLayouts()
+	self:LoadLayouts()
 	return self.loaded and LEMO:CanEditActiveLayout() -- bugs out before initial editmode event
 end
 
 EditMode.DoesDefaultLayoutExist = function(self)
-	LEMO:LoadLayouts()
+	self:LoadLayouts()
 	return LEMO:DoesLayoutExist(layouts.defaultLayout)
+end
+
+EditMode.UpdateActiveLayout = function(self)
+	LEMO:SetActiveLayout(LEMO:GetActiveLayout())
+	LEMO:ApplyChanges()
 end
 
 EditMode.SetToDefaultLayout = function(self)
 	if (InCombatLockdown()) then return end
-	LEMO:LoadLayouts()
+	self:LoadLayouts()
 	if (not LEMO:DoesLayoutExist(layouts.defaultLayout)) then return end
 	-- Set the active layout.
 	LEMO:SetActiveLayout(layouts.defaultLayout)
@@ -211,10 +218,12 @@ EditMode.ApplySystems = function(self, systems)
 			for setting,value in ipairs(systemInfo.settings) do
 				LEMO:SetFrameSetting(systemFrame, setting, value)
 			end
+
+			-- Save the settings.
+			LEMO:ApplyChanges()
+
 		end
 
-		-- Save the settings.
-		LEMO:ApplyChanges()
 	end
 
 end
@@ -223,7 +232,7 @@ end
 -- *currently just a single one.
 EditMode.ResetLayouts = function(self)
 	if (InCombatLockdown()) then return end
-	LEMO:LoadLayouts()
+	self:LoadLayouts()
 
 	-- Delete all existing layouts, in case they are of the wrong type.
 	for _,layoutInfo in ipairs(layouts) do
@@ -267,7 +276,10 @@ EditMode.OnEvent = function(self, event, ...)
 			self.timer = self:ScheduleTimer("ConsiderLayoutsLoaded", 5)
 		end
 	elseif (event == "EDIT_MODE_LAYOUTS_UPDATED") then
-		self.loaded = true
+		local layoutInfo, fromServer = ...
+		if (fromServer) then
+			self.loaded = true
+		end
 	end
 end
 

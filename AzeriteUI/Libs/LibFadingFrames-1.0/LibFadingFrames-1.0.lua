@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 3
+local MINOR_VERSION = 4
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -64,7 +64,7 @@ local setAlpha = getmetatable(CreateFrame("Frame")).__index.SetAlpha
 lib.UpdateFadeFrame = function(self, frame)
 
 	local isActionButton = self.fadeFrameType[frame] == "actionbutton"
-	if (isActionButton and (self.inCombat and frame:HasAction()) or (self.gridCounter >= 1)) then
+	if (isActionButton and (self.inCombat and frame:GetTexture()) or (self.gridCounter >= 1)) then
 		setAlpha(frame, 1)
 		return
 	end
@@ -72,7 +72,7 @@ lib.UpdateFadeFrame = function(self, frame)
 	if (not self.enableFading) then
 		if (isActionButton) then
 			-- The frame has an action or grid set to visible.
-			if (frame:HasAction()) or (frame.config and frame.config.showGrid) or (frame.parent and frame.parent.config.showGrid) then
+			if (frame:GetTexture()) or (frame.config and frame.config.showGrid) or (frame.parent and frame.parent.config.showGrid) then
 				setAlpha(frame, 1)
 			else
 				setAlpha(frame, 0)
@@ -85,7 +85,7 @@ lib.UpdateFadeFrame = function(self, frame)
 		if (self.hoverCount[self.fadeFrames[frame]] > 0) then
 			if (isActionButton) then
 				-- The frame has an action or grid set to visible.
-				if (frame:HasAction()) or (frame.config and frame.config.showGrid) or (frame.parent and frame.parent.config.showGrid) then
+				if (frame:GetTexture()) or (frame.config and frame.config.showGrid) or (frame.parent and frame.parent.config.showGrid) then
 					setAlpha(frame, 1)
 				else
 					setAlpha(frame, 0)

@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ]]
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 105
+local MINOR_VERSION = 106
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -1499,7 +1499,7 @@ function HideGrid()
 	end
 	if gridCounter == 0 then
 		for button in next, ButtonRegistry do
-			if button:IsShown() and not button:HasAction() and not button.config.showGrid then
+			if button:IsShown() and not button:GetTexture()--[[button:HasAction()]] and not button.config.showGrid then
 				button:SetAlpha(0.0)
 			end
 		end
@@ -1509,7 +1509,7 @@ end
 function UpdateGrid(self)
 	if self.config.showGrid then
 		self:SetAlpha(1.0)
-	elseif gridCounter == 0 and self:IsShown() and not self:HasAction() then
+	elseif gridCounter == 0 and self:IsShown() and not self:GetTexture()--[[self:HasAction()]] then
 		self:SetAlpha(0.0)
 	end
 end
@@ -1597,7 +1597,7 @@ function Generic:UpdateAction(force)
 end
 
 function Update(self)
-	if self:HasAction() then
+	if self:GetTexture()--[[self:HasAction()]] then
 		ActiveButtons[self] = true
 		if self._state_type == "action" then
 			ActionButtons[self] = true

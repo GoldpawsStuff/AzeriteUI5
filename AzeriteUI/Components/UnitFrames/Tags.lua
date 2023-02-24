@@ -117,14 +117,16 @@ end
 
 -- Tags
 ---------------------------------------------------------------------
-Events[prefix("*:Absorb")] = "UNIT_ABSORB_AMOUNT_CHANGED"
-Methods[prefix("*:Absorb")] = function(unit)
-	if (UnitIsDeadOrGhost(unit)) then
-		return
-	else
-		local absorb = UnitGetTotalAbsorbs(unit) or 0
-		if (absorb > 0) then
-			return c_gray.." ("..r..c_normal..absorb..r..c_gray..")"..r
+if (ns.IsRetail) then
+	Events[prefix("*:Absorb")] = "UNIT_ABSORB_AMOUNT_CHANGED"
+	Methods[prefix("*:Absorb")] = function(unit)
+		if (UnitIsDeadOrGhost(unit)) then
+			return
+		else
+			local absorb = UnitGetTotalAbsorbs(unit) or 0
+			if (absorb > 0) then
+				return c_gray.." ("..r..c_normal..absorb..r..c_gray..")"..r
+			end
 		end
 	end
 end

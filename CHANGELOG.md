@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-02-24
+### Added
+- Added support for Wrath Classic to AzeriteUI5.
+- Added Wrath Classic totembar.
+- Added chat bubble styling in Wrath Classic.
+- Added combat feedback texts to most unitframes.
+
+### Fixed
+- Slightly changed how actionbar paging works when a bonusbar is active. May or may not affect Retail dragonriding.
+- Fixed some issues with the opacity of empty actionbar slots when in vehicles, especially in Wrath.
+- Fixed an issue where the minimap ring bars wouldn't instantly update when changing what reputation was tracked.
+- When resetting an editable editmode layout to AzeriteUI defaults, changes should now stick through relogs, instead of just reloads as previously.
+
 ## [5.0.35-RC] 2023-02-21 (Dragonflight)
 ### Fixed
 - Fixed an issue that would prevent the button to reset the current EditMode preset to AzeriteUI defaults from working.

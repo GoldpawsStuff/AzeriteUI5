@@ -123,7 +123,9 @@ BlizzardABDisabler.HideBlizzard = function(self)
 
 	ActionBarController:UnregisterAllEvents()
 	ActionBarController:RegisterEvent("SETTINGS_LOADED") -- needed to update paging
-	ActionBarController:RegisterEvent("UPDATE_EXTRA_ACTIONBAR") -- needed to update extrabuttons
+	if (ns.IsRetail) then
+		ActionBarController:RegisterEvent("UPDATE_EXTRA_ACTIONBAR") -- needed to update extrabuttons
+	end
 
 	if IsAddOnLoaded("Blizzard_NewPlayerExperience") then
 		self:NPE_LoadUI()

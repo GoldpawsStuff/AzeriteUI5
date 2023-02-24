@@ -23,6 +23,7 @@
 
 	<!-- UnitFrame Library -->
 	<Include file="oUF\oUF.xml"/>
+	<Include file="oUF_Plugins\oUF_Plugins.xml"/>
 
 	<!-- EditMode Integration -->
 	<Include file="LibDropDown\embed.xml"/>

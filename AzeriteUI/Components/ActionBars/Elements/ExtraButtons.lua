@@ -24,6 +24,8 @@
 
 --]]
 local Addon, ns = ...
+if (not ns.IsRetail) then return end
+
 local ExtraButtons = ns:NewModule("ExtraActionButtons", "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Lua API
@@ -35,7 +37,6 @@ local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 local RegisterCooldown = ns.Widgets.RegisterCooldown
-local SetObjectScale = ns.API.SetObjectScale
 local noop = ns.Noop
 
 local config = {

@@ -22,5 +22,6 @@
 	<Script file="Elements\ExtraButtons.lua"/>
 	<Script file="Elements\VehicleExit.lua"/>
 	<Script file="Elements\MicroMenu.lua"/>
+	<Script file="Elements\MultiCast.lua"/>
 
 </Ui>

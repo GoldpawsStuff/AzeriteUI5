@@ -473,7 +473,7 @@ FocusFrameMod.Spawn = function(self)
 	anchor:SetSize(136, 47)
 	anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
 	anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
-	anchor:SetEditModeAccountSetting(Enum.EditModeAccountSetting.ShowTargetAndFocus)
+	anchor:SetEditModeAccountSetting(ns.IsRetail and Enum.EditModeAccountSetting.ShowTargetAndFocus)
 	anchor.frameOffsetX = 0
 	anchor.frameOffsetY = 0
 	anchor.framePoint = "BOTTOMLEFT"

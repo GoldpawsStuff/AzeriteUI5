@@ -721,7 +721,7 @@ local PvPIndicator_Override = function(self, event, unit)
 	if (factionGroup ~= "Neutral") then
 		if (UnitIsPVPFreeForAll(unit)) then
 		elseif (UnitIsPVP(unit)) then
-			if (UnitIsMercenary(unit)) then
+			if (ns.IsRetail and UnitIsMercenary(unit)) then
 				if (factionGroup == "Horde") then
 					factionGroup = "Alliance"
 				elseif (factionGroup == "Alliance") then
@@ -996,7 +996,11 @@ local style = function(self, unit, id)
 	healthValue:SetTextColor(unpack(db.HealthValueColor))
 	healthValue:SetJustifyH(db.HealthValueJustifyH)
 	healthValue:SetJustifyV(db.HealthValueJustifyV)
-	self:Tag(healthValue, prefix("[*:Health]  [*:Absorb]"))
+	if (ns.IsRetail) then
+		self:Tag(healthValue, prefix("[*:Health]  [*:Absorb]"))
+	else
+		self:Tag(healthValue, prefix("[*:Health]"))
+	end
 
 	self.Health.Value = healthValue
 
@@ -1014,11 +1018,13 @@ local style = function(self, unit, id)
 
 	-- Absorb Bar
 	--------------------------------------------
-	local absorb = self:CreateBar()
-	absorb:SetAllPoints(health)
-	absorb:SetFrameLevel(health:GetFrameLevel() + 3)
+	if (ns.IsRetail) then
+		local absorb = self:CreateBar()
+		absorb:SetAllPoints(health)
+		absorb:SetFrameLevel(health:GetFrameLevel() + 3)
 
-	self.Health.Absorb = absorb
+		self.Health.Absorb = absorb
+	end
 
 	-- Portrait
 	--------------------------------------------
@@ -1236,13 +1242,13 @@ TargetFrameMod.Spawn = function(self)
 	-- Movable Frame Anchor
 	---------------------------------------------------
 	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(HUD_EDIT_MODE_TARGET_FRAME_LABEL)
+	anchor:SetTitle(HUD_EDIT_MODE_TARGET_FRAME_LABEL or TARGET)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
 	anchor:SetSize(550, 210)
 	anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
 	anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
-	anchor:SetEditModeAccountSetting(Enum.EditModeAccountSetting.ShowTargetAndFocus)
+	anchor:SetEditModeAccountSetting(ns.IsRetail and Enum.EditModeAccountSetting.ShowTargetAndFocus)
 	anchor.frameOffsetX = -113
 	anchor.frameOffsetY = -39
 	anchor.framePoint = "TOPRIGHT"

@@ -54,7 +54,57 @@ local Aura_Sort = function(a, b)
 	return a.auraInstanceID < b.auraInstanceID
 end
 
-ns.AuraSorts.DefaultFunction = Aura_Sort
+local Aura_Sort_Classic = function(a, b)
+	if (a and b) then
+		if (a:IsShown() and b:IsShown()) then
+
+			-- These flags are supplied by the aura filters
+			local aPlayer = a.isPlayer or false
+			local bPlayer = b.isPlayer or false
+
+			if (aPlayer == bPlayer) then
+
+				local aTime = a.noDuration and math_huge or a.expiration or -1
+				local bTime = b.noDuration and math_huge or b.expiration or -1
+				if (aTime == bTime) then
+
+					local aName = a.spell or ""
+					local bName = b.spell or ""
+					if (aName and bName) then
+						local sortDirection = a:GetParent().sortDirection
+						if (sortDirection == "DESCENDING") then
+							return (aName < bName)
+						else
+							return (aName > bName)
+						end
+					end
+
+				elseif (aTime and bTime) then
+					local sortDirection = a:GetParent().sortDirection
+					if (sortDirection == "DESCENDING") then
+						return (aTime < bTime)
+					else
+						return (aTime > bTime)
+					end
+				else
+					return (aTime) and true or false
+				end
+
+			else
+				local sortDirection = a:GetParent().sortDirection
+				if (sortDirection == "DESCENDING") then
+					return (not aPlayer and bPlayer)
+				else
+					return (aPlayer and not bPlayer)
+				end
+			end
+		else
+			return (a:IsShown())
+		end
+	end
+end
+
+ns.AuraSorts.DefaultFunction = ns.IsWrath and Aura_Sort_Classic or Aura_Sort
 ns.AuraSorts.Default = function(element, max)
 	table_sort(element, ns.AuraSorts.DefaultFunction)
 	return 1, #element

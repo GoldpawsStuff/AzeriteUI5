@@ -33,3 +33,7 @@ if (BackdropTemplateMixin) then
 	_G[MixinGlobal] = CreateFromMixins(BackdropTemplateMixin) -- Usable in XML
 	ns.Private.BackdropTemplate = "BackdropTemplate" -- Usable in Lua
 end
+
+if (not _G.UnitEffectiveLevel) then
+	_G.UnitEffectiveLevel = UnitLevel
+end

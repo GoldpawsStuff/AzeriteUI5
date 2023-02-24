@@ -866,12 +866,14 @@ PartyFrameMod.Spawn = function(self)
 	end
 
 	-- Sometimes some elements are wrong or "get stuck" upon exiting the editmode.
-	hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
-		for i = 1, self.frame:GetNumChildren() do
-			local frame = select(i, self.frame:GetChildren())
-			frame:UpdateAllElements("RefreshUnit")
-		end
-	end)
+	if (EditModeManagerFrame) then
+		hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
+			for i = 1, self.frame:GetNumChildren() do
+				local frame = select(i, self.frame:GetChildren())
+				frame:UpdateAllElements("RefreshUnit")
+			end
+		end)
+	end
 
 	-- Movable Frame Anchor
 	---------------------------------------------------
@@ -882,7 +884,7 @@ PartyFrameMod.Spawn = function(self)
 	anchor:SetSize(130*4, 130)
 	anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
 	anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
-	anchor:SetEditModeAccountSetting(Enum.EditModeAccountSetting.ShowPartyFrames)
+	anchor:SetEditModeAccountSetting(ns.IsRetail and Enum.EditModeAccountSetting.ShowPartyFrames)
 	anchor.frameOffsetX = 0
 	anchor.frameOffsetY = 0
 	anchor.framePoint = "TOPLEFT"

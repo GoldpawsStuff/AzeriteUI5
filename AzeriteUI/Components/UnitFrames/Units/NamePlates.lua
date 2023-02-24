@@ -455,7 +455,7 @@ local NamePlate_PostUpdatePositions = function(self)
 			end
 		end
 
-		local numAuras = #auras.sortedBuffs + #auras.sortedDebuffs
+		local numAuras = ns.IsWrath and (auras.visibleBuffs + auras.visibleDebuffs) or #auras.sortedBuffs + #auras.sortedDebuffs
 		local numRows = (numAuras > 0) and (math_floor(numAuras / auras.numPerRow)) or 0
 
 		if (numRows ~= auras.numRows or hasName ~= auras.usingNameOffset or auras.usingNameOffset == nil) then
@@ -539,7 +539,9 @@ local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 	else
 		if (not self:IsElementEnabled("Auras")) then
 			self:EnableElement("Auras")
-			self.Auras:ForceUpdate()
+			if (self.Auras.ForceUpdate) then
+				self.Auras:ForceUpdate()
+			end
 		end
 		if (self.isMouseOver or self.isTarget or self.inCombat) then
 			-- SetIgnoreParentAlpha requires explicit true/false, or it'll bug out.
@@ -589,7 +591,7 @@ local NamePlate_PostUpdate = function(self, event, unit, ...)
 	self.Power:SetOrientation(main)
 	self.Health:SetOrientation(main)
 	self.Health.Preview:SetOrientation(main)
-	self.Health.Absorb:SetOrientation(reverse)
+	if (self.Health.Absorb) then self.Health.Absorb:SetOrientation(reverse) end
 
 	TargetHighlight_Update(self, event, unit, ...)
 	NamePlate_PostUpdateElements(self, event, unit, ...)
@@ -822,26 +824,28 @@ local style = function(self, unit, id)
 
 	-- Absorb Bar
 	--------------------------------------------
-	local absorb = self:CreateBar()
-	absorb:SetAllPoints(health)
-	absorb:SetFrameLevel(health:GetFrameLevel() + 3)
-	absorb:SetStatusBarTexture(db.HealthBarTexture)
-	absorb:SetStatusBarColor(unpack(db.HealthAbsorbColor))
-	absorb:SetSparkMap(db.HealthBarSparkMap)
+	if (ns.IsRetail) then
+		local absorb = self:CreateBar()
+		absorb:SetAllPoints(health)
+		absorb:SetFrameLevel(health:GetFrameLevel() + 3)
+		absorb:SetStatusBarTexture(db.HealthBarTexture)
+		absorb:SetStatusBarColor(unpack(db.HealthAbsorbColor))
+		absorb:SetSparkMap(db.HealthBarSparkMap)
 
-	local orientation
-	if (db.HealthBarOrientation == "UP") then
-		orientation = "DOWN"
-	elseif (db.HealthBarOrientation == "DOWN") then
-		orientation = "UP"
-	elseif (db.HealthBarOrientation == "LEFT") then
-		orientation = "RIGHT"
-	else
-		orientation = "LEFT"
+		local orientation
+		if (db.HealthBarOrientation == "UP") then
+			orientation = "DOWN"
+		elseif (db.HealthBarOrientation == "DOWN") then
+			orientation = "UP"
+		elseif (db.HealthBarOrientation == "LEFT") then
+			orientation = "RIGHT"
+		else
+			orientation = "LEFT"
+		end
+		absorb:SetOrientation(orientation)
+
+		self.Health.Absorb = absorb
 	end
-	absorb:SetOrientation(orientation)
-
-	self.Health.Absorb = absorb
 
 	-- Target Highlight
 	--------------------------------------------
@@ -1043,10 +1047,12 @@ NamePlatesMod.HookNamePlates = function(self)
 		end
 	end
 
-	hooksecurefunc(NamePlateDriverFrame, "SetupClassNameplateBars", function(frame)
-		if (not frame or frame:IsForbidden()) then return end
-		clearClutter(frame)
-	end)
+	if (NamePlateDriverFrame.SetupClassNameplateBars) then
+		hooksecurefunc(NamePlateDriverFrame, "SetupClassNameplateBars", function(frame)
+			if (not frame or frame:IsForbidden()) then return end
+			clearClutter(frame)
+		end)
+	end
 
 	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", function()
 		if (InCombatLockdown()) then return end

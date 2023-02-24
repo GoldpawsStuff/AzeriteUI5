@@ -46,9 +46,29 @@ MicroMenu.SpawnButtons = function(self)
 		StoreMicroButton = BLIZZARD_STORE,
 		MainMenuMicroButton = MAINMENU_BUTTON,
 	}
+	if (ns.IsWrath) then
+		labels = {
+			CharacterMicroButton = CHARACTER_BUTTON,
+			SpellbookMicroButton = SPELLBOOK_ABILITIES_BUTTON,
+			TalentMicroButton = TALENTS_BUTTON,
+			AchievementMicroButton = ACHIEVEMENT_BUTTON,
+			QuestLogMicroButton = QUESTLOG_BUTTON,
+			SocialsMicroButton = SOCIALS,
+			PVPMicroButton = PLAYER_V_PLAYER,
+			LFGMicroButton = DUNGEONS_BUTTON,
+			WorldMapMicroButton = WORLD_MAP,
+			GuildMicroButton = LOOKINGFORGUILD,
+			LFDMicroButton = DUNGEONS_BUTTON,
+			CollectionsMicroButton = COLLECTIONS,
+			EJMicroButton = ADVENTURE_JOURNAL or ENCOUNTER_JOURNAL,
+			StoreMicroButton = BLIZZARD_STORE,
+			MainMenuMicroButton = MAINMENU_BUTTON,
+			HelpMicroButton = HELP_BUTTON
+		}
+	end
 
 	local buttons = {
-		CharacterMicroButton, -- does not work
+		CharacterMicroButton,
 		SpellbookMicroButton,
 		TalentMicroButton,
 		AchievementMicroButton,
@@ -58,8 +78,22 @@ MicroMenu.SpawnButtons = function(self)
 		CollectionsMicroButton,
 		EJMicroButton,
 		StoreMicroButton,
-		MainMenuMicroButton -- does not work
+		MainMenuMicroButton
 	}
+	if (ns.IsWrath) then
+		buttons = {
+			CharacterMicroButton,
+			SpellbookMicroButton,
+			TalentMicroButton,
+			AchievementMicroButton,
+			QuestLogMicroButton,
+			SocialsMicroButton,
+			PVPMicroButton,
+			LFGMicroButton,
+			MainMenuMicroButton,
+			HelpMicroButton
+		}
+	end
 
 	self.buttons = {}
 
@@ -78,78 +112,89 @@ MicroMenu.SpawnButtons = function(self)
 	backdrop:SetBackdropColor(.05, .05, .05, .95)
 
 	for i,microButton in next,buttons do
+		if (microButton) then
+			local button = CreateFrame("Button", nil, bar, "SecureActionButtonTemplate")
+			button.ref = microButton
 
-		local button = CreateFrame("Button", nil, bar, "SecureActionButtonTemplate")
-		button.ref = microButton
-
-		if (microButton == CharacterMicroButton) then
-			button.nocombat = true
-			button:SetScript("OnClick", function(self)
-				if (InCombatLockdown()) then return end
-				ToggleCharacter("PaperDollFrame")
-			end)
-
-		elseif (microButton == MainMenuMicroButton) then
-			button.nocombat = true
-			button:SetScript("OnClick", function(self)
-				if (InCombatLockdown()) then return end
-				if (not GameMenuFrame:IsShown()) then
-					if (not AreAllPanelsDisallowed()) then
-						if (SettingsPanel:IsShown()) then
-							SettingsPanel:Close()
-						end
-						CloseMenus()
-						CloseAllWindows()
-						PlaySound(SOUNDKIT.IG_MAINMENU_OPEN)
-						ShowUIPanel(GameMenuFrame)
-					end
-				else
-					PlaySound(SOUNDKIT.IG_MAINMENU_QUIT)
-					HideUIPanel(GameMenuFrame)
-				end
-			end)
-		else
-			button:SetAttribute("type", "macro")
-			button:RegisterForClicks("AnyUp","AnyDown")
-			button:SetAttribute("click", "macro")
-			button:SetAttribute("macrotext", "/click "..microButton:GetName())
-			button:SetAttribute("pressAndHoldAction", true)
-		end
-		button:SetSize(200,30)
-		button:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 0, 0 + (i-1)*32)
-
-		local backdrop = button:CreateTexture(nil, "ARTWORK")
-		backdrop:SetPoint("TOPLEFT", 1,-1)
-		backdrop:SetPoint("BOTTOMRIGHT", -1,1)
-		backdrop:SetColorTexture(1,1,1,.9)
-		button.backdrop = backdrop
-
-		local text = button:CreateFontString(nil, "OVERLAY")
-		text:SetFontObject(GetFont(13,true))
-		text:SetText(labels[microButton:GetName()])
-		text:SetJustifyH("CENTER")
-		text:SetJustifyV("MIDDLE")
-		text:SetPoint("CENTER")
-		button.text = text
-
-		button:SetScript("OnEnter", function(self)
-			text:SetTextColor(unpack(Colors.highlight))
-			backdrop:SetVertexColor(.25,.25,.25)
-		end)
-
-		button:SetScript("OnLeave", function(self)
-			if (self:IsEnabled()) then
-				text:SetTextColor(unpack(Colors.offwhite))
+			if (ns.IsRetail) then
+				button:RegisterForClicks("AnyUp","AnyDown")
 			else
-				text:SetTextColor(unpack(Colors.gray))
+				button:RegisterForClicks("AnyUp")
 			end
-			backdrop:SetVertexColor(.1,.1,.1)
-		end)
 
-		button:GetScript("OnLeave")(button)
+			if (microButton == CharacterMicroButton) then
+				button.nocombat = true
+				button:SetScript("OnClick", function(self)
+					if (InCombatLockdown()) then return end
+					ToggleCharacter("PaperDollFrame")
+				end)
 
-		self.buttons[#self.buttons + 1] = button
+			elseif (microButton == MainMenuMicroButton) then
+				button.nocombat = true
+				button:SetScript("OnClick", function(self)
+					if (InCombatLockdown()) then return end
+					if (not GameMenuFrame:IsShown()) then
+						if (not AreAllPanelsDisallowed or not AreAllPanelsDisallowed()) then
+							if (SettingsPanel and SettingsPanel:IsShown()) then
+								SettingsPanel:Close()
+							end
+							CloseMenus()
+							CloseAllWindows()
+							PlaySound(SOUNDKIT.IG_MAINMENU_OPEN)
+							ShowUIPanel(GameMenuFrame)
+						end
+					else
+						PlaySound(SOUNDKIT.IG_MAINMENU_QUIT)
+						HideUIPanel(GameMenuFrame)
+					end
+				end)
+			elseif (ns.IsWrath and microButton == PVPMicroButton) then
+				button.nocombat = true
+				button:SetScript("OnClick", function(self)
+					if (InCombatLockdown()) then return end
+					TogglePVPFrame()
+				end)
+			else
+				button:SetAttribute("type", "macro")
+				button:SetAttribute("click", "macro")
+				button:SetAttribute("macrotext", "/click "..microButton:GetName())
+				button:SetAttribute("pressAndHoldAction", true)
+			end
+			button:SetSize(200,30)
+			button:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 0, 0 + #self.buttons*32)
 
+			local backdrop = button:CreateTexture(nil, "ARTWORK")
+			backdrop:SetPoint("TOPLEFT", 1,-1)
+			backdrop:SetPoint("BOTTOMRIGHT", -1,1)
+			backdrop:SetColorTexture(1,1,1,.9)
+			button.backdrop = backdrop
+
+			local text = button:CreateFontString(nil, "OVERLAY")
+			text:SetFontObject(GetFont(13,true))
+			text:SetText(labels[microButton:GetName()])
+			text:SetJustifyH("CENTER")
+			text:SetJustifyV("MIDDLE")
+			text:SetPoint("CENTER")
+			button.text = text
+
+			button:SetScript("OnEnter", function(self)
+				text:SetTextColor(unpack(Colors.highlight))
+				backdrop:SetVertexColor(.25,.25,.25)
+			end)
+
+			button:SetScript("OnLeave", function(self)
+				if (self:IsEnabled()) then
+					text:SetTextColor(unpack(Colors.offwhite))
+				else
+					text:SetTextColor(unpack(Colors.gray))
+				end
+				backdrop:SetVertexColor(.1,.1,.1)
+			end)
+
+			button:GetScript("OnLeave")(button)
+
+			self.buttons[#self.buttons + 1] = button
+		end
 	end
 
 	backdrop:SetPoint("RIGHT", self.buttons[1], "RIGHT", 10, 0)
