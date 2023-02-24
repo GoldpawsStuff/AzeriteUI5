@@ -124,15 +124,22 @@ MicroMenu.SpawnButtons = function(self)
 
 			if (microButton == CharacterMicroButton) then
 				button.nocombat = true
-				button:SetScript("OnClick", function(self)
+				button:SetScript("OnClick", function(self, button, down)
 					if (InCombatLockdown()) then return end
+					local castondown = GetCVarBool("ActionButtonUseKeyDown")
+					if (castondown and not down) or (not castondown and down) then return end
 					ToggleCharacter("PaperDollFrame")
 				end)
 
 			elseif (microButton == MainMenuMicroButton) then
 				button.nocombat = true
-				button:SetScript("OnClick", function(self)
+				--if (ns.IsRetail) then
+				--	button:RegisterForClicks("AnyDown") -- it reacts to both press and release in retail
+				--end
+				button:SetScript("OnClick", function(self, button, down)
 					if (InCombatLockdown()) then return end
+					local castondown = GetCVarBool("ActionButtonUseKeyDown")
+					if (castondown and not down) or (not castondown and down) then return end
 					if (not GameMenuFrame:IsShown()) then
 						if (not AreAllPanelsDisallowed or not AreAllPanelsDisallowed()) then
 							if (SettingsPanel and SettingsPanel:IsShown()) then
