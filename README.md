@@ -28,3 +28,6 @@ Change actionbar settings like enabled bars, number of buttons and fading.
 - **/disablebar \<barID\>** - Disable a bar. Valid barIDs are 1-8.
 - **/enablebarfade** - Enable bar fading.
 - **/disablebarfade** - Disable bar fading, keeping buttons with actions always visible.
+
+### Movable Frames
+- **/lock** - Toggles movable frame anchors. Only available in Wrath Classic, as this is tied to the EditMode in Retail.
