@@ -1131,11 +1131,8 @@ local style = function(self, unit)
 	self:RegisterEvent("ENABLE_XP_GAIN", UnitFrame_OnEvent, true)
 	self:RegisterEvent("PLAYER_LEVEL_UP", UnitFrame_OnEvent, true)
 	self:RegisterEvent("PLAYER_XP_UPDATE", UnitFrame_OnEvent, true)
-
-	if (ns.IsWrath) then
-		self:RegisterEvent("PLAYER_REGEN_ENABLED", UnitFrame_OnEvent, true)
-		self:RegisterEvent("PLAYER_REGEN_DISABLED", UnitFrame_OnEvent, true)
-	end
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", UnitFrame_OnEvent, true)
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", UnitFrame_OnEvent, true)
 
 	if (playerClass == "PALADIN") then
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", UnitFrame_OnEvent)

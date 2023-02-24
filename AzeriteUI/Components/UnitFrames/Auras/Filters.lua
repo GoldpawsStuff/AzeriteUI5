@@ -40,7 +40,12 @@ ns.AuraFilters.PlayerAuraFilter = function(button, unit, data)
 		return true
 	end
 
-	return (not button.noDuration and data.duration < 301) or (button.timeLeft and button.timeLeft > 0 and button.timeLeft < 31) or (data.count > 1)
+	if (UnitAffectingCombat("player")) then
+		return (not button.noDuration and data.duration < 301) or (button.timeLeft and button.timeLeft > 0 and button.timeLeft < 31) or (data.count > 1)
+	else
+		return (not button.noDuration) or (button.timeLeft and button.timeLeft > 0 and button.timeLeft < 31) or (data.count > 1)
+	end
+
 end
 
 ns.AuraFilters.TargetAuraFilter = function(button, unit, data)
@@ -56,7 +61,11 @@ ns.AuraFilters.TargetAuraFilter = function(button, unit, data)
 		return true
 	end
 
-	return (not button.noDuration and duration < 301) or (count > 1)
+	if (UnitAffectingCombat("player")) then
+		return (not button.noDuration and duration < 301) or (count > 1)
+	else
+		return (not button.noDuration) or (count > 1)
+	end
 end
 
 ns.AuraFilters.NameplateAuraFilter = function(button, unit, data)

@@ -1225,11 +1225,8 @@ local style = function(self, unit, id)
 	self:RegisterEvent("PLAYER_LEVEL_UP", UnitFrame_OnEvent, true)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", UnitFrame_OnEvent, true)
 	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", UnitFrame_OnEvent)
-
-	if (ns.IsWrath) then
-		self:RegisterEvent("PLAYER_REGEN_ENABLED", UnitFrame_OnEvent, true)
-		self:RegisterEvent("PLAYER_REGEN_DISABLED", UnitFrame_OnEvent, true)
-	end
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", UnitFrame_OnEvent, true)
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", UnitFrame_OnEvent, true)
 
 	-- Toggle name size based on ToT frame.
 	ns.RegisterCallback(self, "UnitFrame_ToT_Updated", Name_PostUpdate)
