@@ -153,7 +153,7 @@ local config = {
 	AurasNumPerRow = 3,
 	AurasDisableMouse = true,
 	AurasDisableCooldown = false,
-	AurasOnlyShowPlayer = true,
+	AurasOnlyShowPlayer = false, -- handle this in the filter instead
 	AurasShowStealableBuffs = false,
 	AurasInitialAnchor = "BOTTOMLEFT",
 	AurasSpacingX = 4,
@@ -919,15 +919,15 @@ local cvars = {
 	-- We create our own auras anyway, so we don't need these.
 	["nameplateShowDebuffsOnFriendly"] = 0,
 
-	["nameplateLargeTopInset"] = .15, -- default .1
-	["nameplateOtherTopInset"] = .15, -- default .08
-	["nameplateLargeBottomInset"] = .15, -- default .15
-	["nameplateOtherBottomInset"] = .15, -- default .1
+	["nameplateLargeTopInset"] = .1, -- default .1, diabolic .15
+	["nameplateOtherTopInset"] = .1, -- default .08, diabolic .15
+	["nameplateLargeBottomInset"] = .04, -- default .15, diabolic .15
+	["nameplateOtherBottomInset"] = .04, -- default .1, diabolic .15
 	["nameplateClassResourceTopInset"] = 0,
 
 	-- new CVar July 14th 2020. Wohoo! Thanks torhaala for telling me! :)
 	-- *has no effect in retail. probably for the classics only.
-	--["clampTargetNameplateToScreen"] = 1,
+	["clampTargetNameplateToScreen"] = 1,
 
 	-- Nameplate scale
 	["nameplateMinScale"] = .6, -- .8

@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.38-RC] 2023-02-27
+### Added
+- Added a general player buff display to the top right corner of the screen. It will mostly be visible when in a group, not currently engaged in combat and with no current target selected. Can also be made visible outside of groups when holding both ctrl and shift at the same time, as long as you're not engaged in combat or currently have a target selected.
+
+### Changed
+- Changed sorting, filtering and coloring of most unit auras. Auras applied by the player should now be easier to see, easier to track and better sorted than before.
+- The targeted nameplate will be clamped a bit closer to the edges of the screen now, and not forced so far towards the center as it previously was.
+
+### Fixed
+- Nameplates should once again have visible auras applied by the player. For the most part we're following the same visibility filters as blizzard, except for specifically showing auras labeled as boss auras and also some short duration beneficial buffs cast by the player, like most HoTs.
+
 ## [5.0.37-RC] 2023-02-27
 ### Fixed
 - You should no longer be spammed with error messages anytime a buff or debuff changes while in combat.

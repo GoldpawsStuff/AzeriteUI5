@@ -1,0 +1,19 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Button name="AzeriteAuraTemplate" inherits="SecureActionButtonTemplate" virtual="true">
+		<Size x="36" y="36"/>
+		<Attributes>
+			<Attribute name="type" value="cancelaura"/>
+		</Attributes>
+		<Scripts>
+			<OnLoad>
+				AzeriteUI:GetModule("Auras"):Embed(self)
+				self:OnInitialize()
+				if (self.IsRetail) then
+					self:RegisterForClicks("RightButtonDown","RightButtonUp")
+				else
+					self:RegisterForClicks("RightButtonUp")
+				end
+			</OnLoad>
+		</Scripts>
+	</Button>
+</Ui>

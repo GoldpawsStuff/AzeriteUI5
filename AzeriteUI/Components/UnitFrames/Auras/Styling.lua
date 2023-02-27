@@ -149,7 +149,7 @@ ns.AuraStyles.PlayerPostUpdateButton = function(element, button, unit, data, pos
 	end
 
 	-- Icon Coloring
-	if (data.isPlayerAura or button.isHarmful) then
+	if (button.isHarmful) or (data.isPlayerAura and (data.nameplateShowAll or data.nameplateShowPersonal)) or (not button.isHarmful and data.isPlayerAura and data.canApplyAura) then
 		button.Icon:SetDesaturated(false)
 		button.Icon:SetVertexColor(1, 1, 1)
 	else
@@ -177,7 +177,7 @@ ns.AuraStyles.TargetPostUpdateButton = function(element, button, unit, data, pos
 	end
 
 	-- Icon Coloring
-	if (data.isPlayerAura) then
+	if (data.isPlayerAura and (data.nameplateShowAll or data.nameplateShowPersonal)) or (not button.isHarmful and data.isPlayerAura and data.canApplyAura) then
 		button.Icon:SetDesaturated(false)
 		button.Icon:SetVertexColor(1, 1, 1)
 	else
@@ -190,8 +190,8 @@ end
 ns.AuraStyles.NameplatePostUpdateButton = function(element, button, unit, data, position)
 
 	-- Stealable buffs
-	if(not button.isHarmful and isStealable and element.showStealableBuffs and not UnitIsUnit("player", unit)) then
-	end
+	--if(not button.isHarmful and isStealable and element.showStealableBuffs and not UnitIsUnit("player", unit)) then
+	--end
 
 	-- Coloring
 	local color
