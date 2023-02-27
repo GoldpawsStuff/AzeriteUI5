@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.37-RC] 2023-02-27
+### Fixed
+- You should no longer be spammed with error messages anytime a buff or debuff changes while in combat.
+
 ## [5.0.36-RC] 2023-02-24
 ### Added
 - Added support for Wrath Classic to AzeriteUI5.
