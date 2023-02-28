@@ -510,7 +510,7 @@ Auras.SpawnAuras = function(self)
 		-----------------------------------------
 		-- The visibility driver used when visibility mode is set to auto.
 		local visdriver = "[petbattle]hide;[@target,exists]hide;" -- always hide when these are true
-		visdriver = visdriver .. "[group,nocombat]show;" -- show when buffing / before pulls
+		--visdriver = visdriver .. "[group,nocombat]show;" -- show when buffing / before pulls
 		visdriver = visdriver .. "[mod:ctrl+shift]show;" -- show when ctrl + shift is held
 		visdriver = visdriver .. "hide" -- hide otherwise
 
