@@ -54,6 +54,8 @@ MicroMenu.SpawnButtons = function(self)
 			AchievementMicroButton = ACHIEVEMENT_BUTTON,
 			QuestLogMicroButton = QUESTLOG_BUTTON,
 			SocialsMicroButton = SOCIALS,
+			PVPMicroButton = PLAYER_V_PLAYER,
+			LFGMicroButton = LFG_BUTTON,
 			MainMenuMicroButton = MAINMENU_BUTTON,
 			HelpMicroButton = HELP_BUTTON
 		}
@@ -143,7 +145,7 @@ MicroMenu.SpawnButtons = function(self)
 				button.nocombat = true
 				button:SetScript("OnClick", function(self, button, down)
 					if (InCombatLockdown()) then return end
-					if (not ns.IsClassic) then
+					if (ns.IsRetail) then
 						local castondown = GetCVarBool("ActionButtonUseKeyDown")
 						if (castondown and not down) or (not castondown and down) then return end
 					end
@@ -154,7 +156,7 @@ MicroMenu.SpawnButtons = function(self)
 				button.nocombat = true
 				button:SetScript("OnClick", function(self, button, down)
 					if (InCombatLockdown()) then return end
-					if (not ns.IsClassic) then
+					if (ns.IsRetail) then
 						local castondown = GetCVarBool("ActionButtonUseKeyDown")
 						if (castondown and not down) or (not castondown and down) then return end
 					end
