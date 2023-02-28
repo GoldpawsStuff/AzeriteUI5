@@ -6,9 +6,11 @@
 AzeriteUI5 is a custom user interface for World of Warcraft Dragonflight and Wrath Classic.
 
 ## FAQ
+- To remove abilities from the action bars, hold alt+ctrl+shift and drag.
+- To show a full buff display where you can right-click to cancel buffs, hold ctrl+shift while not being engaged in combat and not having a target currently selected.
 - Yes, I plan to make a config menu instead of these chat commands.
 - Yes, the config menu will allow you to manually disable nearly every module in the UI.
-- Yes, I will be making raid- and arena frames.
+- Yes, I will be making arena frames.
 - Yes, there will be layout choices for the actionbars.
 - Yes, I do accept donations and will love you for it. Links above.
 
