@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.39-RC] 2023-02-28
+### Changed
+- The full buff display now requires ctrl and shift to be held, in the addition to the previous limitations. They will no longer be visible when out of combat in groups, and it's not open for discussion.
+
 ## [5.0.38-RC] 2023-02-27
 ### Added
 - Added a general player buff display to the top right corner of the screen. It will mostly be visible when in a group, not currently engaged in combat and with no current target selected. Can also be made visible outside of groups when holding both ctrl and shift at the same time, as long as you're not engaged in combat or currently have a target selected.
