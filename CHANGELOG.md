@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-02-28
+### Added
+- Added name coloring of player characters to most unit tooltips that previously lacked this.
+- Added spellID and itemID to most tooltips.
+
 ## [5.0.40-RC] 2023-02-28
 ### Fixed
 - The Wrath Classic consolidated aura display available from the buff display visible when holding ctrl+shift while out of combat and with no target selected, *phew*, now extends the correct way and has a visible consolidation button.

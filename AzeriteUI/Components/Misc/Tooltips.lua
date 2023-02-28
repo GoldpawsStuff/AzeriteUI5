@@ -31,7 +31,12 @@ local MFM = ns:GetModule("MovableFramesManager", true)
 local _G = _G
 local ipairs = ipairs
 local select = select
+local string_find = string.find
 local string_format = string.format
+
+-- WoW API
+local TooltipDataType = Enum.TooltipDataType
+local AddTooltipPostCall = TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall
 
 -- Addon API
 local Colors = ns.Colors
@@ -294,19 +299,140 @@ Tooltips.OnTooltipCleared = function(self, tooltip)
 	end
 end
 
-Tooltips.OnTooltipSetSpell = function(self, tooltip)
+Tooltips.OnTooltipSetSpell = function(self, tooltip, data)
 	if (not tooltip) or (tooltip:IsForbidden()) then return end
+
+	local id = (data and data.id) or select(2, tooltip:GetSpell())
+	if (not id) then return end
+
+	local ID = string_format("|cFFCA3C3C%s|r %d", ID, id)
+
+	-- talent tooltips gets set twice, so let's avoid double ids
+	for i = 3, tooltip:NumLines() do
+		local line = _G[string_format("GameTooltipTextLeft%d", i)]
+		local text = line and line:GetText()
+		if (text and string_find(text, ID)) then
+			return
+		end
+	end
+
+	tooltip:AddLine(" ")
+	tooltip:AddLine(ID)
+	tooltip:Show()
+end
+
+Tooltips.OnTooltipSetItem = function(self, tooltip, data)
+	if (not tooltip) or (tooltip:IsForbidden()) then return end
+
+	local itemID
+
+	if (tooltip.GetItem) then -- Some tooltips don't have this func. Example - compare tooltip
+		local name, link = tooltip:GetItem()
+		itemID = string_format("|cFFCA3C3C%s|r %s", ID, (data and data.id) or string_match(link, ":(%w+)"))
+	else
+		local id = data and data.id
+		if (id) then
+			itemID = string_format("|cFFCA3C3C%s|r %s", ID, id)
+		end
+	end
+
+	if (itemID) then
+		tooltip:AddLine(" ")
+		tooltip:AddLine(itemID)
+		tooltip:Show()
+	end
 
 end
 
-Tooltips.OnTooltipSetItem = function(self, tooltip)
+Tooltips.OnTooltipSetUnit = function(self, tooltip, data)
 	if (not tooltip) or (tooltip:IsForbidden()) then return end
+
+	local _, unit = tooltip:GetUnit()
+	if not unit then
+		local GMF = GetMouseFocus()
+		local focusUnit = GMF and GMF.GetAttribute and GMF:GetAttribute("unit")
+		if focusUnit then unit = focusUnit end
+		if not unit or not UnitExists(unit) then
+			return
+		end
+	end
+
+	if (UnitIsPlayer(unit)) then
+		local color = GetUnitColor(unit)
+		if (color) then
+
+			local unitName, unitRealm = UnitName(unit)
+			local unitEffectiveLevel = UnitEffectiveLevel(unit)
+			local displayName = color.colorCode..unitName.."|r"
+			local gray = Colors.quest.gray.colorCode
+			local levelText
+
+			--if (unitEffectiveLevel and unitEffectiveLevel > 0) then
+			--	local r, g, b, colorCode = GetDifficultyColorByLevel(unitEffectiveLevel)
+			--	levelText = colorCode .. unitEffectiveLevel .. "|r"
+			--end
+			--if (not levelText) then
+			--	displayName = BOSS_TEXTURE .. " " .. displayName
+			--end
+
+
+			if (unitRealm and unitRealm ~= "") then
+
+				local relationship = UnitRealmRelationship(unit)
+				if (relationship == _G.LE_REALM_RELATION_COALESCED) then
+					displayName = displayName ..gray.. _G.FOREIGN_SERVER_LABEL .."|r"
+
+				elseif (relationship == _G.LE_REALM_RELATION_VIRTUAL) then
+					displayName = displayName ..gray..  _G.INTERACTIVE_SERVER_LABEL .."|r"
+				end
+			end
+
+			if (levelText) then
+				_G.GameTooltipTextLeft1:SetText(levelText .. gray .. ": |r" .. displayName)
+			else
+				_G.GameTooltipTextLeft1:SetText(displayName)
+			end
+
+		end
+
+	end
 
 end
 
-Tooltips.OnTooltipSetUnit = function(self, tooltip)
+Tooltips.SetUnitAura = function(self, tooltip, unit, index, filter)
 	if (not tooltip) or (tooltip:IsForbidden()) then return end
 
+	local name, _, _, _, _, _, source, _, _, spellID = UnitAura(unit, index, filter)
+	if (not name) then return end
+
+	if (source) then
+		local _, class = UnitClass(source)
+		local color = Colors.class[class or "PRIEST"]
+		tooltip:AddLine(" ")
+		tooltip:AddDoubleLine(string_format("|cFFCA3C3C%s|r %s", ID, spellID), string_format("%s%s|r", color.colorCode, UnitName(source) or UNKNOWN))
+	else
+		tooltip:AddLine(" ")
+		tooltip:AddLine(string_format("|cFFCA3C3C%s|r %s", ID, spellID))
+	end
+
+	tooltip:Show()
+end
+
+Tooltips.SetUnitAuraInstanceID = function(self, tooltip, unit, auraInstanceID)
+	local data = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, auraInstanceID)
+	if (not data or not data.name) then return end
+
+	if (data.sourceUnit) then
+		local _, class = UnitClass(data.sourceUnit)
+		local color = Colors.class[class or "PRIEST"]
+		tooltip:AddLine(" ")
+		tooltip:AddDoubleLine(string_format("|cFFCA3C3C%s|r %s", ID, data.spellId), string_format("%s%s|r", color.colorCode, UnitName(data.sourceUnit) or UNKNOWN))
+	else
+		tooltip:AddLine(" ")
+		tooltip:AddLine(string_format("|cFFCA3C3C%s|r %s", ID, data.spellId))
+	end
+
+	tooltip:Show()
 end
 
 Tooltips.OnCompareItemShow = function(self, tooltip)
@@ -346,12 +472,26 @@ Tooltips.SetHooks = function(self)
 		self:SecureHook("GameTooltip_SetDefaultAnchor", "SetDefaultAnchor")
 	end
 
-	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "OnTooltipCleared")
+	if (AddTooltipPostCall) then
+		AddTooltipPostCall(TooltipDataType.Spell, function(tooltip, ...) self:OnTooltipSetSpell(tooltip, ...) end)
+		AddTooltipPostCall(TooltipDataType.Item, function(tooltip, ...) self:OnTooltipSetItem(tooltip, ...) end)
+		AddTooltipPostCall(TooltipDataType.Unit, function(tooltip, ...) self:OnTooltipSetUnit(tooltip, ...) end)
+	else
+		self:SecureHookScript(GameTooltip, "OnTooltipSetSpell", "OnTooltipSetSpell")
+		self:SecureHookScript(GameTooltip, "OnTooltipSetItem", "OnTooltipSetItem")
+		self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "OnTooltipSetUnit")
+	end
 
-	-- Works in Wrath, but not currently needed since we're not doing anything.
-	--self:SecureHookScript(GameTooltip, "OnTooltipSetSpell", "OnTooltipSetSpell")
-	--self:SecureHookScript(GameTooltip, "OnTooltipSetItem", "OnTooltipSetItem")
-	--self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "OnTooltipSetUnit")
+	self:SecureHook(GameTooltip, "SetUnitAura", "SetUnitAura")
+	self:SecureHook(GameTooltip, "SetUnitBuff", "SetUnitAura")
+	self:SecureHook(GameTooltip, "SetUnitDebuff", "SetUnitAura")
+
+	if (ns.IsRetail) then
+		self:SecureHook(GameTooltip, "SetUnitBuffByAuraInstanceID", "SetUnitAuraInstanceID")
+		self:SecureHook(GameTooltip, "SetUnitDebuffByAuraInstanceID", "SetUnitAuraInstanceID")
+	end
+
+	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "OnTooltipCleared")
 
 	self:SecureHookScript(GameTooltip.StatusBar, "OnValueChanged", "OnValueChanged")
 
