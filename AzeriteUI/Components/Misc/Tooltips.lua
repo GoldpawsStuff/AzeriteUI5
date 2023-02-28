@@ -33,6 +33,7 @@ local ipairs = ipairs
 local select = select
 local string_find = string.find
 local string_format = string.format
+local string_match = string.match
 
 -- WoW API
 local TooltipDataType = Enum.TooltipDataType
