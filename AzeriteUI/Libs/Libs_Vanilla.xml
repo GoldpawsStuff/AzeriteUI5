@@ -21,11 +21,16 @@
 	<Script file="LibButtonGlow-1.0\LibButtonGlow-1.0.lua"/>
 	<Script file="LibActionButton-1.0-GE\LibActionButton-1.0-GE.lua"/>
 
+	<!-- Classic Aura Durations -->
+	<Include file="LibClassicDurations\LibClassicDurations.xml"/>
+	<Script file="LibAuraTypes\LibAuraTypes.lua"/>
+	<Script file="LibSpellLocks\LibSpellLocks.lua"/>
+
 	<!-- Classic Heal Predictions -->
 	<Include file="LibHealComm-4.0\LibHealComm-4.0.lua"/>
 
 	<!-- UnitFrame Library -->
-	<Include file="oUF_Classic\oUF_Wrath.xml"/>
+	<Include file="oUF_Classic\oUF_Vanilla.xml"/>
 	<Include file="oUF_Plugins\oUF_Plugins.xml"/>
 
 	<!-- My Custom Libraries -->

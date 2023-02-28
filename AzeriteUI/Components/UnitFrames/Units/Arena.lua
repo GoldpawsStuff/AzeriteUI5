@@ -24,6 +24,8 @@
 
 --]]
 local Addon, ns = ...
+if (ns.IsClassic) then return end
+
 local oUF = ns.oUF
 
 local ArenaFrameMod = ns:Merge(ns:NewModule("ArenaFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)

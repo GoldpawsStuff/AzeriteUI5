@@ -1073,7 +1073,9 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 		if (event == "PLAYER_ENTERING_WORLD") then
 			local isInitialLogin, isReloadingUi = ...
 			if (isInitialLogin or isReloadingUi) then
-				self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
+				if (EMP) then
+					self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
+				end
 			end
 			self.incombat = InCombatLockdown()
 		end

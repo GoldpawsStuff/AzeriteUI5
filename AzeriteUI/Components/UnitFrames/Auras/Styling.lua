@@ -207,7 +207,7 @@ ns.AuraStyles.NameplatePostUpdateButton = function(element, button, unit, data, 
 end
 
 -- Wrath overrides
-if (not ns.IsWrath) then return end
+if (ns.IsRetail) then return end
 
 UpdateTooltip = function(self)
 	if (GameTooltip:IsForbidden()) then return end

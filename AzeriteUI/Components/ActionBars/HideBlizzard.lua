@@ -24,6 +24,7 @@
 
 --]]
 local Addon, ns = ...
+if (ns.IsClassic) then return end
 
 local BlizzardABDisabler = ns:NewModule("BlizzardABDisabler", "LibMoreEvents-1.0", "AceHook-3.0")
 

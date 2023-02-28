@@ -24,6 +24,8 @@
 
 --]]
 local Addon, ns = ...
+if (not ns.IsRetail and not ns.IsWrath) then return end
+
 local VehicleSeat = ns:NewModule("VehicleSeat")
 local MFM = ns:GetModule("MovableFramesManager", true)
 

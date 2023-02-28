@@ -1064,9 +1064,11 @@ ActionBarMod.OnInitialize = function(self)
 		anchor.Callback = function(_,...) self:OnAnchorUpdate(bar, ...) end
 
 		-- do this on layout updates too
-		if (config.grid and config.grid.growth == "vertical") then
-			anchor.Text:SetRotation((-90 / 180) * math.pi)
-			anchor.Title:SetRotation((-90 / 180) * math.pi)
+		if (ns.IsWrath or ns.IsRetail) then
+			if (config.grid and config.grid.growth == "vertical") then
+				anchor.Text:SetRotation((-90 / 180) * math.pi)
+				anchor.Title:SetRotation((-90 / 180) * math.pi)
+			end
 		end
 
 		bar.anchor = anchor
@@ -1079,10 +1081,12 @@ ActionBarMod.OnInitialize = function(self)
 	self:RegisterChatCommand("enablebarfade", "EnableBarFading")
 	self:RegisterChatCommand("disablebarfade", "DisableBarFading")
 
-	if (MaxDps) then
-		self:HandleMaxDps()
-	elseif (IsAddOnEnabled("MaxDps")) then
-		self:RegisterEvent("ADDON_LOADED", "OnEvent")
+	if (ns.IsRetail) then
+		if (MaxDps) then
+			self:HandleMaxDps()
+		elseif (IsAddOnEnabled("MaxDps")) then
+			self:RegisterEvent("ADDON_LOADED", "OnEvent")
+		end
 	end
 
 end

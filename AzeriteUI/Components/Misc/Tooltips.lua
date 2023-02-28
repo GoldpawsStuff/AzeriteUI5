@@ -61,7 +61,7 @@ end })
 local defaults = { profile = ns:Merge({
 	enabled = true
 }, ns.moduleDefaults) }
-if (ns.IsWrath) then
+if (not ns.IsRetail) then
 	defaults.profile.savedPosition = {
 		Azerite = {
 			scale = 1,
@@ -342,7 +342,7 @@ Tooltips.SetHooks = function(self)
 	self:SecureHook("GameTooltip_UnitColor", "SetUnitColor")
 	self:SecureHook("GameTooltip_ShowCompareItem", "OnCompareItemShow")
 
-	if (ns.IsWrath) then
+	if (not ns.IsRetail) then
 		self:SecureHook("GameTooltip_SetDefaultAnchor", "SetDefaultAnchor")
 	end
 

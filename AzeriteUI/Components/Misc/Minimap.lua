@@ -78,7 +78,7 @@ local defaults = { profile = ns:Merge({
 	useServerTime = false,
 
 }, ns.moduleDefaults) }
-if (ns.IsWrath) then
+if (not ns.IsRetail) then
 	defaults.profile.savedPosition = {
 		Azerite = {
 			scale = 1,
@@ -106,12 +106,13 @@ if (ns.IsRetail) then
 	Objects.ZoomIn = Minimap.ZoomIn
 	Objects.ZoomOut = Minimap.ZoomOut
 end
-if (ns.IsWrath) then
+if (ns.IsWrath or ns.IsClassic) then
 	Objects.BorderTop = MinimapBorderTop
 	Objects.BorderClassic = MinimapBorder
 	Objects.Difficulty = MiniMapInstanceDifficulty
 	Objects.Mail = MiniMapMailFrame
-	Objects.Tracking = MiniMapTracking
+	Objects.ToggleButton = ns.IsClassic and MinimapToggleButton or nil
+	Objects.Tracking = ns.IsClassic and MiniMapTrackingFrame or MiniMapTracking
 	Objects.Zone = MinimapZoneTextButton
 	Objects.ZoomIn = MinimapZoomIn
 	Objects.ZoomOut = MinimapZoomOut
@@ -133,7 +134,7 @@ if (ns.IsRetail) then
 	ObjectOwners.ZoomIn = Minimap
 	ObjectOwners.ZoomOut = Minimap
 end
-if (ns.IsWrath) then
+if (ns.IsWrath or ns.IsClassic) then
 	ObjectOwners.BorderTop = MinimapCluster
 	ObjectOwners.BorderClassic = MinimapBackdrop
 	ObjectOwners.Calendar = MinimapCluster
@@ -142,7 +143,8 @@ if (ns.IsWrath) then
 	ObjectOwners.Difficulty = MinimapCluster
 	ObjectOwners.Expansion = MinimapBackdrop
 	ObjectOwners.Mail = Minimap
-	ObjectOwners.Tracking = MinimapCluster
+	ObjectOwners.ToggleButton = ns.IsClassic and MinimapCluster or nil
+	ObjectOwners.Tracking = ns.IsWrath and MinimapCluster or nil
 	ObjectOwners.Zone = MinimapCluster
 	ObjectOwners.ZoomIn = Minimap
 	ObjectOwners.ZoomOut = Minimap
@@ -193,6 +195,7 @@ local Skins = {
 			Expansion = true, -- retail
 			Mail = true,
 			Tracking = true,
+			ToggleButton = true, -- classic
 			Zone = true,
 			ZoomIn = true,
 			ZoomOut = true,
@@ -786,7 +789,7 @@ end
 --------------------------------------------
 MinimapMod.SetMinimapTheme = function(self, input)
 	local theme = self:GetArgs(string.lower(input))
-	if (ns.IsWrath and theme == "Blizzard") then
+	if (not ns.IsRetail and theme == "Blizzard") then
 		theme = "Azerite"
 	end
 	Minimap:SetTheme(theme)
@@ -808,7 +811,7 @@ MinimapMod.SetClock = function(self, input)
 end
 
 MinimapMod.UpdatePosition = function(self)
-	if (not ns.IsWrath) then return end
+	if (ns.IsRetail) then return end
 	--Minimap:SetParent(PetHider)
 	--Minimap:ClearAllPoints()
 	--Minimap:SetPoint("CENTER", UIParent)
@@ -816,7 +819,7 @@ MinimapMod.UpdatePosition = function(self)
 end
 
 MinimapMod.UpdateSize = function(self)
-	if (not ns.IsWrath) then return end
+	if (ns.IsRetail) then return end
 	Minimap:SetSize(213,213)
 end
 
@@ -949,7 +952,7 @@ MinimapMod.UpdateCustomElements = function(self)
 		return self.widgetFrame:Hide()
 	end
 
-	if (ns.IsWrath) then
+	if (not ns.IsRetail) then
 		self.widgetFrame:SetShown(self.anchor:IsInDefaultPosition(60))
 	else
 		local anchorInfo = ns:GetModule("EditMode"):GetDefaultSystems()[Enum.EditModeSystem.Minimap].anchorInfo
@@ -1000,7 +1003,7 @@ MinimapMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("Minimap", defaults)
 
 	-- This theme only works for retail currently.
-	if (ns.IsWrath and self.db.profile.theme == "Blizzard") then
+	if (not ns.IsRetail and self.db.profile.theme == "Blizzard") then
 		self.db.profile.theme = "Azerite"
 	end
 
@@ -1043,7 +1046,7 @@ MinimapMod.OnInitialize = function(self)
 end
 
 MinimapMod.OnEnable = function(self)
-	if (ns.IsWrath) then
+	if (not ns.IsRetail) then
 		self:UpdateSize()
 		self:UpdatePosition()
 	end

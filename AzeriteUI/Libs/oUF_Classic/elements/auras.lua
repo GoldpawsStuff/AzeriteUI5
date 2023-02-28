@@ -75,6 +75,17 @@ if (ns.oUF.isRetail) then
 	return
 end
 
+--local LCD = oUF.isClassic and LibStub('LibClassicDurations', true)
+-- Add in support for LibClassicDurations.
+local LCD
+if (oUF.isClassic) then
+	LCD = LibStub and LibStub("LibClassicDurations", true)
+	if (LCD) then
+		local ADDON, Private = ...
+		LCD:RegisterFrame(Private)
+	end
+end
+
 local VISIBLE = 1
 local HIDDEN = 0
 
@@ -157,7 +168,24 @@ end
 local function updateIcon(element, unit, index, offset, filter, isDebuff, visible)
 	local name, texture, count, debuffType, duration, expiration, caster, isStealable,
 		nameplateShowSelf, spellID, canApply, isBossDebuff, casterIsPlayer, nameplateShowAll,
+		timeMod, effect1, effect2, effect3
+
+	if (LCD and not UnitIsUnit("player", unit)) then
+		local durationNew, expirationTimeNew
+		name, texture, count, debuffType, duration, expiration, caster, isStealable, nameplateShowSelf, spellID, canApply, isBossDebuff, casterIsPlayer, nameplateShowAll, timeMod, effect1, effect2, effect3 = LCD:UnitAura(unit, index, filter)
+
+		if spellID then
+			durationNew, expirationTimeNew = LCD:GetAuraDurationByUnit(unit, spellID, caster, name)
+		end
+
+		if durationNew and durationNew > 0 then
+			duration, expiration = durationNew, expirationTimeNew
+		end
+	else
+		name, texture, count, debuffType, duration, expiration, caster, isStealable,
+		nameplateShowSelf, spellID, canApply, isBossDebuff, casterIsPlayer, nameplateShowAll,
 		timeMod, effect1, effect2, effect3 = UnitAura(unit, index, filter)
+	end
 
 	if(name) then
 		local position = visible + offset + 1

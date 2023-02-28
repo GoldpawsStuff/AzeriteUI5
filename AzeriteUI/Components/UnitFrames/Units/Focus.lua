@@ -24,6 +24,8 @@
 
 --]]
 local Addon, ns = ...
+if (ns.IsClassic) then return end
+
 local oUF = ns.oUF
 
 local FocusFrameMod = ns:Merge(ns:NewModule("FocusFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)

@@ -24,6 +24,8 @@
 
 --]]
 local Addon, ns = ...
+if (ns.IsClassic) then return end
+
 local ArcheologyBar = ns:NewModule("ArcheologyBar", "LibMoreEvents-1.0", "AceHook-3.0")
 local MFM = ns:GetModule("MovableFramesManager", true)
 

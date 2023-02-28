@@ -2,6 +2,7 @@
 
 	<!-- Compatibility -->
 	<Script file="HideBlizzard.lua"/>
+	<Script file="HideBlizzardClassic.lua"/>
 	<Script file="HandleBartender.lua"/>
 
 	<!-- Bar Prototypes -->

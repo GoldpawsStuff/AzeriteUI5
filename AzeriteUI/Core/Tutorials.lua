@@ -57,7 +57,7 @@ if (ns.IsRetail) then
 	})
 end
 
-if (ns.IsWrath) then
+if (not ns.IsRetail) then
 	table_insert(tutorials, {
 		name = "scale",
 		version = 1
@@ -406,7 +406,7 @@ Tutorials.ShowWrathSetupTutorial = function(self)
 
 		frame:SetScript("OnShow", function(frame)
 
-			frame.Message:SetText(string_format("You are now running AzeriteUI for Wrath Classic!|n|nTo set the game's general interface scale to AzeriteUI defaults and position the chat frames to match, click the '|cffffd200%s|r' button. To hide this window for now, click the '|cffffd200%s|r' button. To cancel this tutorial and handle interface scaling yourself, click the '|cffffd200%s|r' button.", APPLY, HIDE, CANCEL))
+			frame.Message:SetText(string_format("You are now running AzeriteUI for %s!|n|nTo set the game's general interface scale to AzeriteUI defaults and position the chat frames to match, click the '|cffffd200%s|r' button. To hide this window for now, click the '|cffffd200%s|r' button. To cancel this tutorial and handle interface scaling yourself, click the '|cffffd200%s|r' button.", expName, APPLY, HIDE, CANCEL))
 
 			-- calculate frame size
 			local top = frame.Heading:GetTop()

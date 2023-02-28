@@ -37,3 +37,13 @@ end
 if (not _G.UnitEffectiveLevel) then
 	_G.UnitEffectiveLevel = UnitLevel
 end
+
+for _,global in next,{
+	"IsXPUserDisabled",
+	"UnitHasVehicleUI"
+
+} do
+	if (not _G[global]) then
+		_G[global] = function() return false end
+	end
+end

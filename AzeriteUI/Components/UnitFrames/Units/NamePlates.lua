@@ -455,7 +455,7 @@ local NamePlate_PostUpdatePositions = function(self)
 			end
 		end
 
-		local numAuras = ns.IsWrath and (auras.visibleBuffs + auras.visibleDebuffs) or #auras.sortedBuffs + #auras.sortedDebuffs
+		local numAuras = (not ns.IsRetail) and (auras.visibleBuffs + auras.visibleDebuffs) or (#auras.sortedBuffs + #auras.sortedDebuffs)
 		local numRows = (numAuras > 0) and (math_floor(numAuras / auras.numPerRow)) or 0
 
 		if (numRows ~= auras.numRows or hasName ~= auras.usingNameOffset or auras.usingNameOffset == nil) then

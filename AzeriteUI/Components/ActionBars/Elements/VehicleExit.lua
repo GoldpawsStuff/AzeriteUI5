@@ -58,7 +58,7 @@ local ExitButton_OnEnter = function(self)
 		GameTooltip:AddLine(TAXI_CANCEL_DESCRIPTION, unpack(Colors.green))
 	elseif (IsMounted()) then
 		GameTooltip:AddLine(BINDING_NAME_DISMOUNT)
-	else
+	elseif (not ns.IsClassic) then
 		if (IsPossessBarVisible() and PetCanBeDismissed()) then
 			GameTooltip:AddLine(PET_DISMISS)
 			GameTooltip:AddLine(NEWBIE_TOOLTIP_UNIT_PET_DISMISS, unpack(Colors.green))
@@ -77,7 +77,7 @@ end
 local ExitButton_PostClick = function(self, button)
 	if (UnitOnTaxi("player") and (not InCombatLockdown())) then
 		TaxiRequestEarlyLanding()
-	elseif (IsPossessBarVisible() and PetCanBeDismissed()) then
+	elseif (not ns.IsClassic and IsPossessBarVisible() and PetCanBeDismissed()) then
 		PetDismiss()
 	end
 end
@@ -94,7 +94,10 @@ VehicleExit.OnInitialize = function(self)
 	button:SetScript("PostClick", ExitButton_PostClick)
 	button:SetAttribute("type", "macro")
 
-	if (ns.IsWrath) then
+	if (ns.IsClassic) then
+		button:SetAttribute("macrotext", "/dismount [mounted]\n")
+		RegisterStateDriver(button, "visibility", "[mounted]show;hide")
+	elseif (ns.IsWrath) then
 		button:SetAttribute("macrotext", "/dismount [mounted]\n/run if CanExitVehicle() then VehicleExit() end")
 		RegisterStateDriver(button, "visibility", "[@vehicle,canexitvehicle][possessbar][mounted]show;hide")
 	else

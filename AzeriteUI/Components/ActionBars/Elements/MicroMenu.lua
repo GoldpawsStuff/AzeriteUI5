@@ -54,14 +54,19 @@ MicroMenu.SpawnButtons = function(self)
 			AchievementMicroButton = ACHIEVEMENT_BUTTON,
 			QuestLogMicroButton = QUESTLOG_BUTTON,
 			SocialsMicroButton = SOCIALS,
-			PVPMicroButton = PLAYER_V_PLAYER,
-			LFGMicroButton = DUNGEONS_BUTTON,
-			WorldMapMicroButton = WORLD_MAP,
-			GuildMicroButton = LOOKINGFORGUILD,
-			LFDMicroButton = DUNGEONS_BUTTON,
-			CollectionsMicroButton = COLLECTIONS,
-			EJMicroButton = ADVENTURE_JOURNAL or ENCOUNTER_JOURNAL,
-			StoreMicroButton = BLIZZARD_STORE,
+			MainMenuMicroButton = MAINMENU_BUTTON,
+			HelpMicroButton = HELP_BUTTON
+		}
+	end
+	if (ns.IsClassic) then
+		labels = {
+			CharacterMicroButton = CHARACTER_BUTTON,
+			SpellbookMicroButton = SPELLBOOK_ABILITIES_BUTTON,
+			TalentMicroButton = TALENTS,
+			QuestLogMicroButton = QUESTLOG_BUTTON,
+			SocialsMicroButton = SOCIAL_BUTTON,
+			WorldMapMicroButton = WORLDMAP_BUTTON,
+			LFGMicroButton = LFG_BUTTON,
 			MainMenuMicroButton = MAINMENU_BUTTON,
 			HelpMicroButton = HELP_BUTTON
 		}
@@ -90,6 +95,18 @@ MicroMenu.SpawnButtons = function(self)
 			SocialsMicroButton,
 			PVPMicroButton,
 			LFGMicroButton,
+			MainMenuMicroButton,
+			HelpMicroButton
+		}
+	end
+	if (ns.IsClassic) then
+		buttons = {
+			CharacterMicroButton,
+			SpellbookMicroButton,
+			TalentMicroButton,
+			QuestLogMicroButton,
+			SocialsMicroButton,
+			WorldMapMicroButton,
 			MainMenuMicroButton,
 			HelpMicroButton
 		}
@@ -126,20 +143,21 @@ MicroMenu.SpawnButtons = function(self)
 				button.nocombat = true
 				button:SetScript("OnClick", function(self, button, down)
 					if (InCombatLockdown()) then return end
-					local castondown = GetCVarBool("ActionButtonUseKeyDown")
-					if (castondown and not down) or (not castondown and down) then return end
+					if (not ns.IsClassic) then
+						local castondown = GetCVarBool("ActionButtonUseKeyDown")
+						if (castondown and not down) or (not castondown and down) then return end
+					end
 					ToggleCharacter("PaperDollFrame")
 				end)
 
 			elseif (microButton == MainMenuMicroButton) then
 				button.nocombat = true
-				--if (ns.IsRetail) then
-				--	button:RegisterForClicks("AnyDown") -- it reacts to both press and release in retail
-				--end
 				button:SetScript("OnClick", function(self, button, down)
 					if (InCombatLockdown()) then return end
-					local castondown = GetCVarBool("ActionButtonUseKeyDown")
-					if (castondown and not down) or (not castondown and down) then return end
+					if (not ns.IsClassic) then
+						local castondown = GetCVarBool("ActionButtonUseKeyDown")
+						if (castondown and not down) or (not castondown and down) then return end
+					end
 					if (not GameMenuFrame:IsShown()) then
 						if (not AreAllPanelsDisallowed or not AreAllPanelsDisallowed()) then
 							if (SettingsPanel and SettingsPanel:IsShown()) then

@@ -77,6 +77,7 @@ end
 
 ns.ResetBlizzardScale = function(self)
 	if (InCombatLockdown()) then return end
+	SetCVar("useUIScale", 1)
 	SetCVar("uiScale", ns.API.GetDefaultBlizzardScale())
 	ReloadUI() -- need a reset as the above can taint
 end
