@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.40-RC] 2023-02-28
+### Fixed
+- The Wrath Classic consolidated aura display available from the buff display visible when holding ctrl+shift while out of combat and with no target selected, *phew*, now extends the correct way and has a visible consolidation button.
+
 ## [5.0.39-RC] 2023-02-28
 ### Changed
 - The full buff display now requires ctrl and shift to be held, in the addition to the previous limitations. They will no longer be visible when out of combat in groups, and it's not open for discussion.
