@@ -344,18 +344,18 @@ local config = {
 	Boss = {
 
 		-- Health Bar
-		HealthBarSize = { 533, 40 },
+		HealthBarSize = { 385, 37 },
 		HealthBarPosition = { "TOPRIGHT", -27, -27 },
-		HealthBarTexture = GetMedia("hp_boss_bar"),
+		HealthBarTexture = GetMedia("hp_cap_bar"),
 		HealthBarOrientation = "LEFT",
-		HealthBarSparkMap = bigBarSparkMap,
-		HealthBackdropSize = { 694, 190 },
-		HealthBackdropPosition = { "CENTER", -.5, 1 },
-		HealthBackdropTexture = GetMedia("hp_boss_case"),
+		HealthBarSparkMap = barSparkMap,
+		HealthBackdropSize = { 716, 188 },
+		HealthBackdropPosition = { "CENTER", -2, -1 },
+		HealthBackdropTexture = GetMedia("hp_cap_case"),
 		HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 		HealthAbsorbColor = { 1, 1, 1, .35 },
 		HealthCastOverlayColor = { 1, 1, 1, .35 },
-		HealthThreatTexture = GetMedia("hp_boss_case_glow"),
+		HealthThreatTexture = GetMedia("hp_cap_case_glow"),
 
 		-- Portrait
 		PortraitBorderTexture = GetMedia("portrait_frame_hi"),
