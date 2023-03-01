@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-03-01
+### Fixed
+- Fixed a graphical glitch with the spark of the minimap ring bars.
+
 ## [5.0.41-RC] 2023-02-28
 ### Added
 - Added name coloring of player characters to most unit tooltips that previously lacked this.

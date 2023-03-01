@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibSpinBar-1.0"
-local MINOR_VERSION = 5
+local MINOR_VERSION = 7
 
 if (not LibStub) then
 	error(MAJOR_VERSION .. " requires LibStub.")
@@ -255,7 +255,7 @@ Quadrant.RotateTexture = function(self, degrees)
 	local bar = data.statusbar
 	local spark = data.spark
 
-	if bar.showSpark then
+	if data.showSpark then
 
 		local width, height = data.statusbar:GetSize()
 
@@ -270,16 +270,15 @@ Quadrant.RotateTexture = function(self, degrees)
 		spark:SetPoint("CENTER", data.statusbar, "CENTER", x, y)
 
 		-- where's the center of it?
-		--[[
+		--[[--
 		if not spark.dummy then
 			spark.dummy = bar:CreateTexture()
 			spark.dummy:SetSize(2,2)
 			spark.dummy:SetColorTexture(1,1,1)
 		end
-
 		spark.dummy:ClearAllPoints()
 		spark.dummy:SetPoint("CENTER", spark, "CENTER", 0, 0)
-		]]
+		--]]--
 
 		if (not spark:IsShown()) then
 			spark:Show()
@@ -889,7 +888,6 @@ lib.CreateSpinBar = function(self, name, parent, template)
 	-- the spark texture
 	local spark = overlay:CreateTexture()
 	spark:SetDrawLayer("BORDER", 1)
-	spark:SetPoint("CENTER", bar, "CENTER", 0, 0)
 	spark:SetSize(16,32)
 	spark:SetAlpha(1)
 	spark:SetBlendMode("ADD")
@@ -974,6 +972,7 @@ lib.CreateSpinBar = function(self, name, parent, template)
 	-- This contains all the methods.
 	local statusbar = CreateFrame("Frame", nil, scaffold)
 	statusbar:SetAllPoints() -- lock down the points before we overwrite the methods
+	spark:SetPoint("CENTER", statusbar, "CENTER", 0, 0)
 
 	setmetatable(statusbar, SpinBar_MT)
 
