@@ -161,6 +161,7 @@ BlizzardABDisabler.HideBlizzard = function(self)
 	hideActionBarFrame(MainMenuExpBar, false, false, true)
 	hideActionBarFrame(ReputationWatchBar, false, false, true)
 	hideActionBarFrame(MainMenuBarMaxLevelBar, false, false, true)
+	hideActionBarFrame(MainMenuBarVehicleLeaveButton, false, false, true) -- Added in vanilla, for taxi exits
 
 	if (IsAddOnLoaded("Blizzard_NewPlayerExperience")) then
 		self:NPE_LoadUI()
