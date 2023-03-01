@@ -12,6 +12,7 @@
 	<Script file="Timers.lua"/>
 	<Script file="Tooltips.lua"/>
 	<Script file="Tutorials.lua"/>
+	<Script file="UIWidgets.lua"/>
 	<Script file="VehicleSeat.lua"/>
 	<Script file="WatchFrame.lua"/>
 
