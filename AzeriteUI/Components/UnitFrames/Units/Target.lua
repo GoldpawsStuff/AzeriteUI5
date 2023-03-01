@@ -209,7 +209,7 @@ local config = {
 
 	-- Auras
 	-----------------------------------------
-	AurasPosition = { "TOPRIGHT", -42, 34 },
+	AurasPosition = { "TOPRIGHT", -42, 36 },
 	AurasSize = { 40*6 - 4, 40*2 - 4 },
 	AurasSizeBoss = { 40*10 - 4, 40*2 - 4 },
 	AuraSize = 36,
