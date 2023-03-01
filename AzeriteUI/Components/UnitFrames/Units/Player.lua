@@ -45,7 +45,7 @@ local playerClass = ns.PlayerClass
 local playerLevel = UnitLevel("player")
 local playerXPDisabled = IsXPUserDisabled()
 local SPEC_PALADIN_RETRIBUTION = SPEC_PALADIN_RETRIBUTION or 3
-local playerIsRetribution = playerClass == "PALADIN" and GetSpecialization() == SPEC_PALADIN_RETRIBUTION
+local playerIsRetribution = playerClass == "PALADIN" and (ns.IsRetail and GetSpecialization() == SPEC_PALADIN_RETRIBUTION)
 
 local defaults = { profile = ns:Merge({
 	enabled = true,
@@ -798,14 +798,14 @@ local UnitFrame_OnEvent = function(self, event, unit, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		playerXPDisabled = IsXPUserDisabled()
 		playerLevel = UnitLevel("player")
-		playerIsRetribution = playerClass == "PALADIN" and GetSpecialization() == SPEC_PALADIN_RETRIBUTION
+		playerIsRetribution = playerClass == "PALADIN" and (ns.IsRetail and GetSpecialization() == SPEC_PALADIN_RETRIBUTION)
 
 		self.Power:ForceUpdate()
 		self.AdditionalPower:ForceUpdate()
 
 
 	elseif (event == "PLAYER_SPECIALIZATION_CHANGED") then
-		playerIsRetribution = playerClass == "PALADIN" and GetSpecialization() == SPEC_PALADIN_RETRIBUTION
+		playerIsRetribution = playerClass == "PALADIN" and (ns.IsRetail and GetSpecialization() == SPEC_PALADIN_RETRIBUTION)
 
 		self.Power:ForceUpdate()
 		self.AdditionalPower:ForceUpdate()
@@ -1135,7 +1135,7 @@ local style = function(self, unit)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", UnitFrame_OnEvent, true)
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", UnitFrame_OnEvent, true)
 
-	if (playerClass == "PALADIN") then
+	if (ns.IsRetail and playerClass == "PALADIN") then
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", UnitFrame_OnEvent)
 	end
 

@@ -4,8 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-03-01
+## [5.0.42-RC] 2023-03-01
 ### Fixed
+- The user interface should now also work for Paladins in Wrath Classic.
 - Fixed a graphical glitch with the spark of the minimap ring bars.
 
 ## [5.0.41-RC] 2023-02-28
