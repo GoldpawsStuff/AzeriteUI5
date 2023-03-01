@@ -34,9 +34,7 @@ local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 local IsAddOnEnabled = ns.API.IsAddOnEnabled
-local RegisterFrameForMovement = ns.Widgets.RegisterFrameForMovement
 local UIHider = ns.Hider
-local noop = ns.Noop
 
 local defaults = { profile = ns:Merge({
 	enabled = true,
