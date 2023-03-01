@@ -99,8 +99,8 @@ local config = {
 	HealthValueFont = GetFont(14, true),
 	HealthValueColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .75 },
 
-	NamePosition = { "BOTTOMLEFT", 12, 46 },
-	NameJustifyH = "LEFT",
+	NamePosition = { "CENTER", 0, 28 },
+	NameJustifyH = "CENTER",
 	NameJustifyV = "TOP",
 	NameFont = GetFont(14, true),
 	NameColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75 },
