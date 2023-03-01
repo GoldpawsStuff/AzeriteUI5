@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-03-01
+### Changed
+- Changed nameplate opacity-, scale- and range settings.
+- Made the hitbox of the player frame larger. It should now include the crystal/orb area too, as well as some of the space above the healthbar where buffs live.
+
 ## [5.0.42-RC] 2023-03-01
 ### Fixed
 - The user interface should now also work for Paladins in Wrath Classic.

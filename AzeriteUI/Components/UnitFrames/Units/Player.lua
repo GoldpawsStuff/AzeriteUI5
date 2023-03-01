@@ -93,7 +93,7 @@ local config = {
 	-----------------------------------------
 	Size = { 439, 93 },
 	--Position = { "BOTTOMLEFT", 167, 100 },
-	HitRectInsets = { 0, 0, 0, 6 },
+	HitRectInsets = { -110, 0, -60, 6 },
 
 	-- Health Value Text
 	HealthValuePosition = { "LEFT", 27, 4 },
