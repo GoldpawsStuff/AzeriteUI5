@@ -918,61 +918,53 @@ local cvars = {
 	-- This happens on specs that can dispel when hovering over nameplate auras.
 	-- We create our own auras anyway, so we don't need these.
 	["nameplateShowDebuffsOnFriendly"] = 0,
+	["nameplateResourceOnTarget"] = 0, -- Don't show this crap.
 
 	["nameplateLargeTopInset"] = .1, -- default .1, diabolic .15
 	["nameplateOtherTopInset"] = .1, -- default .08, diabolic .15
 	["nameplateLargeBottomInset"] = .04, -- default .15, diabolic .15
 	["nameplateOtherBottomInset"] = .04, -- default .1, diabolic .15
 	["nameplateClassResourceTopInset"] = 0,
+	["nameplateOtherAtBase"] = 0, -- Show nameplates above heads or at the base (0 or 2)
 
 	-- new CVar July 14th 2020. Wohoo! Thanks torhaala for telling me! :)
 	-- *has no effect in retail. probably for the classics only.
 	["clampTargetNameplateToScreen"] = 1,
 
 	-- Nameplate scale
-	["nameplateMinScale"] = .6, -- .8
-	["nameplateMaxScale"] = 1,
-	["nameplateLargerScale"] = 1, -- Scale modifier for large plates, used for important monsters
-	["nameplateGlobalScale"] = 1,
+	["nameplateGlobalScale"] = 1.1,
+	["nameplateLargerScale"] = 1,
 	["NamePlateHorizontalScale"] = 1,
 	["NamePlateVerticalScale"] = 1,
 
-	["nameplateOccludedAlphaMult"] = .15, -- .4
-	["nameplateSelectedAlpha"] = 1, -- 1
+	-- The max distance to show nameplates.
+	-- *this value can be set by the user, and all other values are relative to this one.
+	["nameplateMaxDistance"] = ns.IsRetail and 60 or ns.IsWrath and 40 or ns.IsClassic and 20,
 
-	-- The maximum distance from the camera where plates will still have max scale and alpha
-	["nameplateMaxScaleDistance"] = 10, -- 10
+	-- The maximum distance from the camera (not char) where plates will still have max scale
+	["nameplateMaxScaleDistance"] = 10,
 
 	-- The distance from the max distance that nameplates will reach their minimum scale.
-	-- *seems to be a limit on how big this can be, too big resets to 1 it seems?
-	["nameplateMinScaleDistance"] = 10, -- 10
+	["nameplateMinScaleDistance"] = 5,
 
-	-- The minimum alpha of nameplates.
-	["nameplateMinAlpha"] = .4, -- 0.6
-
-	-- The distance from the max distance that nameplates will reach their minimum alpha.
-	["nameplateMinAlphaDistance"] = 10, -- 10
-
-	-- 	The max alpha of nameplates.
-	["nameplateMaxAlpha"] = 1, -- 1
+	["nameplateMaxScale"] = 1, -- The max scale of nameplates.
+	["nameplateMinScale"] = .6, -- The minimum scale of nameplates.
+	["nameplateSelectedScale"] = 1.1, -- Scale of targeted nameplate
 
 	-- The distance from the camera that nameplates will reach their maximum alpha.
-	["nameplateMaxAlphaDistance"] = 30, -- 40
+	["nameplateMaxAlphaDistance"] = 10,
 
-	-- Show nameplates above heads or at the base (0 or 2,
-	["nameplateOtherAtBase"] = 0,
+	-- The distance from the max distance that nameplates will reach their minimum alpha.
+	["nameplateMinAlphaDistance"] = 5,
 
-	-- Scale and Alpha of the selected nameplate (current target,
-	["nameplateSelectedScale"] = 1.2, -- 1.2
-
-	-- The max distance to show nameplates.
-	--["nameplateMaxDistance"] = 60, -- 20 is classic upper limit, 60 is BfA default
+	["nameplateMaxAlpha"] = 1, -- The max alpha of nameplates.
+	["nameplateMinAlpha"] = .4, -- The minimum alpha of nameplates.
+	["nameplateOccludedAlphaMult"] = .15, -- Alpha multiplier of hidden plates
+	["nameplateSelectedAlpha"] = 1, -- Alpha multiplier of targeted nameplate
 
 	-- The max distance to show the target nameplate when the target is behind the camera.
 	["nameplateTargetBehindMaxDistance"] = 15, -- 15
 
-	-- Don't show this crap.
-	["nameplateResourceOnTarget"] = 0,
 }
 
 local callback = function(self, event, unit)
