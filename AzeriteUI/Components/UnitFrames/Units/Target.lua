@@ -163,7 +163,7 @@ local config = {
 	CombatFeedbackFontSmall = GetFont(18, true), -- glancing blow font
 
 	-- Unit Name
-	NamePosition = { "TOPRIGHT", -40, 18 },
+	NamePosition = { "BOTTOMRIGHT", -40, -12 },
 	NameSize = { 250, 18 },
 	NameJustifyH = "RIGHT",
 	NameJustifyV = "TOP",
@@ -209,7 +209,7 @@ local config = {
 
 	-- Auras
 	-----------------------------------------
-	AurasPosition = { "TOPRIGHT", -37, -87 },
+	AurasPosition = { "TOPRIGHT", -42, 34 },
 	AurasSize = { 40*6 - 4, 40*2 - 4 },
 	AurasSizeBoss = { 40*10 - 4, 40*2 - 4 },
 	AuraSize = 36,
@@ -224,7 +224,7 @@ local config = {
 	AurasSpacingX = 4,
 	AurasSpacingY = 4,
 	AurasGrowthX = "LEFT",
-	AurasGrowthY = "DOWN",
+	AurasGrowthY = "UP",
 	AurasTooltipAnchor = "ANCHOR_BOTTOMLEFT",
 	AurasSortMethod = "TIME_REMAINING",
 	AurasSortDirection = "DESCENDING",
