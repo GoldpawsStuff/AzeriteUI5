@@ -52,6 +52,20 @@ local maps = {
 		[11] = { "BOTTOMLEFT", 720, 0 }, -- bottom row
 		[12] = { "BOTTOMLEFT", 792, 0 } -- bottom row
 	},
+	horizontal = {
+		[1] = { "BOTTOMLEFT", 0, 0 }, -- bottom row
+		[2] = { "BOTTOMLEFT", 72, 0 }, -- bottom row
+		[3] = { "BOTTOMLEFT", 144, 0 }, -- bottom row
+		[4] = { "BOTTOMLEFT", 216, 0 }, -- bottom row
+		[5] = { "BOTTOMLEFT", 288, 0 }, -- bottom row
+		[6] = { "BOTTOMLEFT", 360, 0 }, -- bottom row
+		[7] = { "BOTTOMLEFT", 432, 0 }, -- bottom row
+		[8] = { "BOTTOMLEFT", 504, 0 }, -- bottom row
+		[9] = { "BOTTOMLEFT", 576, 0 }, -- bottom row
+		[10] = { "BOTTOMLEFT", 638, 0 }, -- bottom row
+		[11] = { "BOTTOMLEFT", 720, 0 }, -- bottom row
+		[12] = { "BOTTOMLEFT", 792, 0 } -- bottom row
+	},
 	zigzag = {
 		[1] = { "BOTTOMLEFT", -28, 72 }, -- top row
 		[2] = { "BOTTOMLEFT", 0, 0 }, -- bottom row
