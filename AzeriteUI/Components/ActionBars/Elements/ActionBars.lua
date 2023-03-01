@@ -69,6 +69,7 @@ local barDefaults = {
 	["**"] = ns:Merge({
 	}, ns.ActionBar.defaults),
 	[1] = { --[[ primary action bar ]]
+		numbuttons = 8,
 		layout = "map",
 		maptype = "azerite",
 		visibility = {
@@ -87,9 +88,10 @@ local barDefaults = {
 		}
 	},
 	[2] = { --[[ bottomleft multibar ]]
-		enabled = false,
+		enabled = enabled,
+		numbuttons = 8,
 		layout = "map",
-		maptype = "zigzag",
+		maptype = "horizontal",
 		savedPosition = {
 			Azerite = {
 				scale = 1,
@@ -100,13 +102,10 @@ local barDefaults = {
 		}
 	},
 	[3] = { --[[ bottomright multibar ]]
-		enabled = false,
-		grid = {
-			breakpoint = 6,
-			growth = "vertical",
-			growthHorizontal = "RIGHT",
-			growthVertical = "DOWN",
-		},
+		enabled = enabled,
+		numbuttons = 8,
+		layout = "map",
+		maptype = "horizontal",
 		savedPosition = {
 			Azerite = {
 				scale = 1,
@@ -117,13 +116,10 @@ local barDefaults = {
 		}
 	},
 	[4] = { --[[ right multibar 1 ]]
-		enabled = false,
-		grid = {
-			breakpoint = 6,
-			growth = "vertical",
-			growthHorizontal = "RIGHT",
-			growthVertical = "DOWN",
-		},
+		enabled = enabled,
+		numbuttons = 8,
+		layout = "map",
+		maptype = "horizontal",
 		savedPosition = {
 			Azerite = {
 				scale = 1,
@@ -189,7 +185,7 @@ end
 
 local defaults = { profile = ns:Merge({
 	enabled = true,
-	enableBarFading = true,
+	enableBarFading = false,
 	bars = barDefaults
 }, ns.moduleDefaults) }
 
