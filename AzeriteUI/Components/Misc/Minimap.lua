@@ -44,6 +44,7 @@ local string_format = string.format
 local string_lower = string.lower
 local string_match = string.match
 local string_upper = string.upper
+local table_insert = table.insert
 local unpack = unpack
 
 -- Addon API
@@ -108,15 +109,28 @@ if (ns.IsRetail) then
 	Objects.ZoomIn = Minimap.ZoomIn
 	Objects.ZoomOut = Minimap.ZoomOut
 end
-if (ns.IsWrath or ns.IsClassic) then
-	Objects.BattleField = MinimapBattleFieldFrame
+if (ns.IsWrath) then
 	Objects.BorderTop = MinimapBorderTop
 	Objects.BorderClassic = MinimapBorder
 	Objects.Difficulty = MiniMapInstanceDifficulty
 	Objects.Eye = MiniMapLFGFrame
+	Objects.EyeClassicPvP = MiniMapBattlefieldFrame
 	Objects.Mail = MiniMapMailFrame
-	Objects.ToggleButton = ns.IsClassic and MinimapToggleButton or Minimap
-	Objects.Tracking = ns.IsClassic and MiniMapTrackingFrame or MiniMapTracking
+	Objects.Tracking = MiniMapTracking
+	Objects.Zone = MinimapZoneTextButton
+	Objects.ZoomIn = MinimapZoomIn
+	Objects.ZoomOut = MinimapZoomOut
+	Objects.WorldMap = MiniMapWorldMapButton
+end
+if (ns.IsClassic) then
+	Objects.BorderTop = MinimapBorderTop
+	Objects.BorderClassic = MinimapBorder
+	Objects.Difficulty = MiniMapInstanceDifficulty
+	Objects.Eye = MiniMapLFGFrame
+	Objects.EyeClassicPvP = MiniMapBattlefieldFrame
+	Objects.Mail = MiniMapMailFrame
+	Objects.ToggleButton = MinimapToggleButton
+	Objects.Tracking = MiniMapTrackingFrame
 	Objects.Zone = MinimapZoneTextButton
 	Objects.ZoomIn = MinimapZoomIn
 	Objects.ZoomOut = MinimapZoomOut
@@ -140,8 +154,7 @@ if (ns.IsRetail) then
 	ObjectOwners.ZoomIn = Minimap
 	ObjectOwners.ZoomOut = Minimap
 end
-if (ns.IsWrath or ns.IsClassic) then
-	ObjectOwners.BattleField = Minimap
+if (ns.IsWrath) then
 	ObjectOwners.BorderTop = MinimapCluster
 	ObjectOwners.BorderClassic = MinimapBackdrop
 	ObjectOwners.Calendar = MinimapCluster
@@ -150,9 +163,27 @@ if (ns.IsWrath or ns.IsClassic) then
 	ObjectOwners.Difficulty = MinimapCluster
 	ObjectOwners.Expansion = MinimapBackdrop
 	ObjectOwners.Eye = MinimapBackdrop
+	ObjectOwners.EyeClassicPvP = Minimap
 	ObjectOwners.Mail = Minimap
-	ObjectOwners.ToggleButton = ns.IsClassic and MinimapCluster or Minimap
-	ObjectOwners.Tracking = ns.IsWrath and MinimapCluster or Minimap
+	ObjectOwners.Tracking = MinimapCluster
+	ObjectOwners.Zone = MinimapCluster
+	ObjectOwners.ZoomIn = Minimap
+	ObjectOwners.ZoomOut = Minimap
+	ObjectOwners.WorldMap = MinimapBackdrop
+end
+if (ns.IsClassic) then
+	ObjectOwners.BorderTop = MinimapCluster
+	ObjectOwners.BorderClassic = MinimapBackdrop
+	ObjectOwners.Calendar = MinimapCluster
+	ObjectOwners.Clock = MinimapCluster
+	ObjectOwners.Compass = MinimapBackdrop
+	ObjectOwners.Difficulty = MinimapCluster
+	ObjectOwners.Expansion = MinimapBackdrop
+	ObjectOwners.Eye = MinimapBackdrop
+	ObjectOwners.EyeClassicPvP = Minimap
+	ObjectOwners.Mail = Minimap
+	ObjectOwners.ToggleButton = MinimapCluster
+	ObjectOwners.Tracking = Minimap
 	ObjectOwners.Zone = MinimapCluster
 	ObjectOwners.ZoomIn = Minimap
 	ObjectOwners.ZoomOut = Minimap
@@ -177,24 +208,6 @@ local ObjectSnippets = {
 			object:OnEvent("UPDATE_PENDING_MAIL")
 		end
 	},
-	BattleField = {
-		Enable = function(object)
-			MiniMapBattlefieldIcon:Show()
-			MiniMapBattlefieldBorder:Show()
-			BattlefieldIconText:Show()
-			BattlegroundShine:Show()
-		end,
-		Disable = function(object)
-			MiniMapBattlefieldIcon:Hide()
-			MiniMapBattlefieldBorder:Hide()
-			BattlefieldIconText:Hide()
-			BattlegroundShine:Hide()
-		end,
-		Update = function(object)
-			PVPBattleground_UpdateQueueStatus()
-			BattlefieldFrame_UpdateStatus(false)
-		end
-	},
 	Eye = {
 		Enable = function(object)
 			if (ns.IsWrath) then
@@ -213,38 +226,41 @@ local ObjectSnippets = {
 			end
 		end
 	},
+	EyeClassicPvP = {
+		Enable = function(object)
+			MiniMapBattlefieldIcon:Show()
+			MiniMapBattlefieldBorder:Show()
+			BattlegroundShine:Show()
+			if (BattlefieldIconText) then BattlefieldIconText:Show() end
+		end,
+		Disable = function(object)
+			MiniMapBattlefieldIcon:Hide()
+			MiniMapBattlefieldBorder:Hide()
+			BattlegroundShine:Hide()
+			if (BattlefieldIconText) then BattlefieldIconText:Hide() end
+		end,
+		Update = function(object)
+			if (PVPBattleground_UpdateQueueStatus) then PVPBattleground_UpdateQueueStatus() end
+			BattlefieldFrame_UpdateStatus(false)
+		end
+	},
 
 	-- AzeriteUI Objects
 	------------------------------------------
-	PvP = {
-		Enable = function(object)
-			MiniMapBattlefieldFrame:ClearAllPoints()
-			MiniMapBattlefieldFrame:SetPoint("TOPRIGHT", Minimap, -4, -2)
-			MiniMapBattlefieldFrame:SetHitRectInsets(-8, -8, -8, -8)
-			MiniMapBattlefieldIcon:Hide()
-			MiniMapBattlefieldBorder:Hide()
-			BattlefieldIconText:Hide()
-			BattlegroundShine:Hide()
-		end,
-		Disable = function(object)
-			MiniMapBattlefieldFrame:ClearAllPoints()
-			MiniMapBattlefieldFrame:SetPoint("BOTTOMLEFT", Minimap, 13, -13)
-			MiniMapBattlefieldFrame:SetHitRectInsets(0, 0, 0, 0)
-			MiniMapBattlefieldIcon:Show()
-			MiniMapBattlefieldBorder:Show()
-			BattlefieldIconText:Show()
-			BattlegroundShine:Show()
-		end,
-		Update = function(object)
-		end
-	},
-	Dungeon = {
+	AzeriteEye = {
 		Enable = function(object)
 			if (ns.IsWrath) then
 				MiniMapLFGFrame:SetFrameLevel(100)
 				MiniMapLFGFrameBorder:Hide()
 				MiniMapLFGFrameIcon:Hide()
 			elseif (ns.IsRetail) then
+				QueueStatusButton:SetParent(Minimap)
+				QueueStatusButton:SetFrameLevel(100)
+				QueueStatusButton:ClearAllPoints()
+				QueueStatusButton:SetPoint("CENTER", Minimap, "CENTER", 82, 82)
+				QueueStatusButton:SetHitRectInsets(-8, -8, -8, -8)
+				QueueStatusButton.Eye:SetParent(UIHider)
+				QueueStatusButton.Highlight:SetParent(UIHider)
 			end
 		end,
 		Disable = function(object)
@@ -253,12 +269,39 @@ local ObjectSnippets = {
 				MiniMapLFGFrameBorder:Show()
 				MiniMapLFGFrameIcon:Show()
 			elseif (ns.IsRetail) then
+				QueueStatusButton:SetParent(ObjectOwners.Eye)
+				QueueStatusButton:SetFrameLevel(ObjectOwners.Eye:GetFrameLevel() + 1)
+				QueueStatusButton:ClearQueueStatus()
+				QueueStatusButton:SetPoint("BOTTOMLEFT", -45, 4)
+				QueueStatusButton:SetHitRectInsets(0, 0, 0, 0)
+				QueueStatusButton.Highlight:SetParent(QueueStatusButton)
+				QueueStatusButton.Eye:SetParent(QueueStatusButton)
+				QueueStatusButton.Eye:SetFrameLevel(QueueStatusButton:GetFrameLevel() - 1)
 			end
 		end,
 		Update = function(object)
-			if (ns.IsWrath) then
-			elseif (ns.IsRetail) then
-			end
+		end
+	},
+	AzeriteEyeClassicPvP = {
+		Enable = function(object)
+			MiniMapBattlefieldFrame:ClearAllPoints()
+			MiniMapBattlefieldFrame:SetPoint("TOPRIGHT", Minimap, -4, -2)
+			MiniMapBattlefieldFrame:SetHitRectInsets(-8, -8, -8, -8)
+			MiniMapBattlefieldIcon:Hide()
+			MiniMapBattlefieldBorder:Hide()
+			BattlegroundShine:Hide()
+			if (BattlefieldIconText) then BattlefieldIconText:Hide() end
+		end,
+		Disable = function(object)
+			MiniMapBattlefieldFrame:ClearAllPoints()
+			MiniMapBattlefieldFrame:SetPoint("BOTTOMLEFT", Minimap, 13, -13)
+			MiniMapBattlefieldFrame:SetHitRectInsets(0, 0, 0, 0)
+			MiniMapBattlefieldIcon:Show()
+			MiniMapBattlefieldBorder:Show()
+			BattlegroundShine:Show()
+			if (BattlefieldIconText) then BattlefieldIconText:Show() end
+		end,
+		Update = function(object)
 		end
 	}
 }
@@ -267,8 +310,8 @@ local ObjectSnippets = {
 local ElementTypes = {
 	Backdrop = "Texture",
 	Border = "Texture",
-	PvP = "Texture",
-	Dungeon = "Texture"
+	AzeriteEye = "Texture",
+	AzeriteEyeClassicPvP = "Texture"
 }
 
 -- Mask textures for the supported shapes.
@@ -323,20 +366,20 @@ local Skins = {
 				Point = { "CENTER", -1, 0 },
 				Color = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 			},
-			PvP = (ns.Classic or ns.Wrath) and {
-				Owner = "Battlefield",
-				DrawLayer = "BORDER",
-				DrawLevel = 2,
-				Path = GetMedia("group-finder-eye-orange"),
-				Size = { 64, 64 },
-				Point = { "CENTER", 0, 0 },
-				Color = { .90, .95, 1 }
-			},
-			Dungeon = {
+			AzeriteEye = {
 				Owner = "Eye",
 				DrawLayer = "BORDER",
 				DrawLevel = 2,
 				Path = GetMedia("group-finder-eye-green"),
+				Size = { 64, 64 },
+				Point = { "CENTER", 0, 0 },
+				Color = { .90, .95, 1 }
+			},
+			AzeriteEyeClassicPvP = (ns.IsClassic or ns.IsWrath) and {
+				Owner = "EyeClassicPvP",
+				DrawLayer = "BORDER",
+				DrawLevel = 2,
+				Path = GetMedia("group-finder-eye-orange"),
 				Size = { 64, 64 },
 				Point = { "CENTER", 0, 0 },
 				Color = { .90, .95, 1 }
@@ -458,11 +501,22 @@ Prototype.SetTheme = function(self, requestedTheme)
 		for element,data in next,new.Elements do
 
 			if (data) then
+
+				-- Retrieve the owner of the object
 				local owner = data and data.Owner and ObjectOwners[data.Owner] or Minimap
-				local object = Elements[element]
+
+				-- Retrieve the object
+				local object, objectParent = Elements[element]
+
+				-- If a custom object does not exist, create it.
 				if (not object) then
+
+					-- Figure out what our custom object should be parented to.
+					objectParent = data and data.Owner and Objects[data.Owner] or Minimap
+
+					-- Create!
 					if (ElementTypes[element] == "Texture") then
-						object = owner:CreateTexture()
+						object = objectParent:CreateTexture()
 						Elements[element] = object
 					end
 				end
@@ -470,7 +524,7 @@ Prototype.SetTheme = function(self, requestedTheme)
 				-- Silently ignore non-supported objects.
 				if (object) then
 
-					object:SetParent(owner)
+					object:SetParent(objectParent or owner)
 
 					if (data.Size) then
 						object:SetSize(unpack(data.Size))
@@ -493,9 +547,10 @@ Prototype.SetTheme = function(self, requestedTheme)
 						end
 					end
 
+					-- Run object callbacks.
 					if (ObjectSnippets[element]) then
-						ObjectSnippets[element].Disable(Enable[element])
-						ObjectSnippets[element].Update(Enable[element])
+						ObjectSnippets[element].Enable(Elements[element])
+						ObjectSnippets[element].Update(Elements[element])
 					end
 				end
 			end
@@ -531,10 +586,12 @@ end
 
 local Minimap_OnMouseUp = function(self, button)
 	if (button == "RightButton") then
-
-		ToggleDropDownMenu(1, nil, _G[ns.Prefix.."MiniMapTrackingDropDown"], "cursor")
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "SFX")
-
+		if (ns.IsClassic) then
+			MinimapMod:ShowMinimapTrackingMenu()
+		else
+			ToggleDropDownMenu(1, nil, _G[ns.Prefix.."MiniMapTrackingDropDown"], "cursor")
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "SFX")
+		end
 	elseif (button == "MiddleButton" and ns.IsRetail) then
 		local GLP = GarrisonLandingPageMinimapButton or ExpansionLandingPageMinimapButton
 		if (GLP and GLP:IsShown()) and (not InCombatLockdown()) then
@@ -1051,7 +1108,46 @@ MinimapMod.CreateCustomElements = function(self)
 	dropdown:SetClampedToScreen(true)
 	dropdown:Hide()
 
-	UIDropDownMenu_Initialize(dropdown, MiniMapTrackingDropDown_Initialize, "MENU")
+	if (ns.IsClassic) then
+		self.ShowMinimapTrackingMenu = function(self)
+			local hasTracking
+			local trackingMenu = { { text = TRACKING or "Select Tracking", isTitle = true } }
+			for _,spellID in ipairs({
+				1494, --Track Beasts
+				19883, --Track Humanoids
+				19884, --Track Undead
+				19885, --Track Hidden
+				19880, --Track Elementals
+				19878, --Track Demons
+				19882, --Track Giants
+				19879, --Track Dragonkin
+					5225, --Track Humanoids: Druid
+					5500, --Sense Demons
+					5502, --Sense Undead
+					2383, --Find Herbs
+					2580, --Find Minerals
+					2481  --Find Treasure
+			}) do
+				if (IsPlayerSpell(spellID)) then
+					hasTracking = true
+					local spellName = GetSpellInfo(spellID)
+					local spellTexture = GetSpellTexture(spellID)
+					table_insert(trackingMenu, {
+						text = spellName,
+						icon = spellTexture,
+						func = function() CastSpellByID(spellID) end
+					})
+				end
+			end
+			if (hasTracking) then
+				EasyMenu(trackingMenu, dropdown, "cursor", 0 , 0, "MENU")
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "SFX")
+			end
+		end
+	else
+		UIDropDownMenu_Initialize(dropdown, MiniMapTrackingDropDown_Initialize, "MENU")
+	end
+
 	dropdown.noResize = true
 
 	self.dropdown = dropdown
