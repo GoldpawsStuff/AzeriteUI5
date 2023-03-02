@@ -106,7 +106,7 @@ ErrorsFrame.InitializeErrorsFrame = function(self)
 	self.frame = UIErrorsFrame
 
 	UIErrorsFrame:UnregisterAllEvents()
-	UIErrorsFrame:SetFrameStrata("LOW")
+	UIErrorsFrame:SetFrameStrata("HIGH")
 	UIErrorsFrame:SetHeight(22)
 	UIErrorsFrame:SetAlpha(.75)
 	UIErrorsFrame:SetFontObject(GetFont(18, true))
@@ -286,7 +286,7 @@ ErrorsFrame.OnEvent = function(self, event, ...)
 				PlayVocalErrorSoundID(voiceID)
 			elseif (soundKitID) then
 				-- Blizzard sends this to the Master channel. We won't.
-				PlaySoundKitID(soundKitID, "Dialog")
+				PlaySound(soundKitID, "Dialog")
 			end
 		end
 
