@@ -34,14 +34,15 @@ if (BackdropTemplateMixin) then
 	ns.Private.BackdropTemplate = "BackdropTemplate" -- Usable in Lua
 end
 
+-- Create an alias for the classics.
 if (not _G.UnitEffectiveLevel) then
 	_G.UnitEffectiveLevel = UnitLevel
 end
 
+-- Functions that would always return false when not present.
 for _,global in next,{
 	"IsXPUserDisabled",
 	"UnitHasVehicleUI"
-
 } do
 	if (not _G[global]) then
 		_G[global] = function() return false end
