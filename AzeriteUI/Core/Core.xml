@@ -36,6 +36,7 @@
 	<Script file="MovableFrames.lua"/>
 	<Script file="Tutorials.lua"/>
 	<Script file="FixBlizzardBugs.lua"/>
+	<Script file="FixFlavorDifferences.lua"/>
 	<Script file="Development.lua"/>
 	<Script file="Debugging.lua"/>
 	<Script file="Experimental.lua"/>
