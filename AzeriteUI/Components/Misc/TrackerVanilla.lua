@@ -31,6 +31,9 @@ local MFM = ns:GetModule("MovableFramesManager", true)
 
 -- Lua
 local math_min = math.min
+local string_match = string.match
+local string_gsub = string.gsub
+local tonumber = tonumber
 local unpack = unpack
 
 -- Addon API
@@ -66,6 +69,8 @@ local config = {
 Tracker.InitializeTracker = function(self)
 
 	 local frame = CreateFrame("Frame", nil, UIParent)
+	 frame:SetSize(config.Size[1], config.TrackerHeight)
+	 frame:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
 	 self.frame = frame
 
 	-- Re-position after UIParent messes with it.
@@ -80,7 +85,7 @@ Tracker.InitializeTracker = function(self)
 		self:UpdateTrackerPosition()
 	end)
 
-	local dummyLine = tracker:CreateFontString()
+	local dummyLine = QuestWatchFrame:CreateFontString()
 	dummyLine:SetFontObject(config.FontObject)
 	dummyLine:SetWidth(config.TrackerWidth)
 	dummyLine:SetJustifyH("RIGHT")
@@ -92,7 +97,7 @@ Tracker.InitializeTracker = function(self)
 
 	local title = QuestWatchQuestName
 	title:ClearAllPoints()
-	title:SetPoint("TOPRIGHT", tracker, "TOPRIGHT", 0, 0)
+	title:SetPoint("TOPRIGHT", QuestWatchFrame, "TOPRIGHT", 0, 0)
 
 	-- Hook line styling
 	hooksecurefunc("QuestWatch_Update", function()
@@ -227,7 +232,7 @@ Tracker.InitializeTracker = function(self)
 		-- Avoid a nil bug that sometimes can happen with no objectives tracked,
 		-- in weird circumstances I have been unable to reproduce.
 		if (top and bottom) then
-			tracker:SetHeight(top - bottom)
+			QuestWatchFrame:SetHeight(top - bottom)
 		end
 
 	end)
@@ -257,7 +262,7 @@ Tracker.UpdateTrackerPosition = function(self)
 
 	QuestWatchFrame:SetParent(self.frame)
 	QuestWatchFrame:SetWidth(config.TrackerWidth)
-	QuestWatchFrame:SetHeight(math_min(UIParent:GetHeight() - config.BottomOffset - config.TopOffset, config.TrackerHeight))
+	--QuestWatchFrame:SetHeight(math_min(UIParent:GetHeight() - config.BottomOffset - config.TopOffset, config.TrackerHeight))
 	QuestWatchFrame:SetClampedToScreen(false)
 	QuestWatchFrame:SetAlpha(.9)
 	QuestWatchFrame:ClearAllPoints()
