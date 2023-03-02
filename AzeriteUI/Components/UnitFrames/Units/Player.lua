@@ -825,7 +825,7 @@ local UnitFrame_OnEvent = function(self, event, unit, ...)
 			playerLevel = level
 		else
 			local level = UnitLevel("player")
-			if (level ~= self.playerLevel) then
+			if (level ~= playerLevel) then
 				playerLevel = level
 			end
 		end
