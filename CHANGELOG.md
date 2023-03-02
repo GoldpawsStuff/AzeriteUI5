@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-03-02
+## [5.0.43-RC] 2023-03-02
 ### Added
 - Added support for Classic Era to AzeriteUI5.
 - Added styling of group finder finder icons in Wrath and Retail.
