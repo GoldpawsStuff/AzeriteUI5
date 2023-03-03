@@ -34,9 +34,7 @@ local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 local IsAddOnEnabled = ns.API.IsAddOnEnabled
-local RegisterFrameForMovement = ns.Widgets.RegisterFrameForMovement
 local UIHider = ns.Hider
-local noop = ns.Noop
 
 local defaults = { profile = ns:Merge({
 	enabled = true,
@@ -208,42 +206,6 @@ Tracker.InitializeWatchFrame = function(self)
 	self.frame = self.holder -- ?
 end
 
-Tracker.UpdateWatchFrame = function(self)
-	if (InCombatLockdown()) then
-		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-	end
-
-	SetCVar("watchFrameWidth", "1") -- 306 or 204
-
-	WatchFrame:SetFrameStrata("LOW")
-	WatchFrame:SetFrameLevel(50)
-	WatchFrame:SetClampedToScreen(false)
-	WatchFrame:ClearAllPoints()
-	WatchFrame:SetPoint("TOP", self.holder, "TOP")
-	WatchFrame:SetPoint("BOTTOM", self.holder, "TOP", 0, -config.TrackerHeight)
-
-	UpdateQuestItemButtons()
-	UpdateWatchFrameLines()
-end
-
-Tracker.OnEvent = function(self, event, ...)
-	if (event == "PLAYER_ENTERING_WORLD") then
-		WatchFrame:SetAlpha(.9)
-		if (self.queueImmersionHook) then
-			local frame = ImmersionFrame
-			if (frame) then
-				self.queueImmersionHook = nil
-				ImmersionFrame:HookScript("OnShow", function() WatchFrame:SetAlpha(0) end)
-				ImmersionFrame:HookScript("OnHide", function() WatchFrame:SetAlpha(.9) end)
-			end
-		end
-	elseif (event == "PLAYER_REGEN_ENABLED") then
-		if (InCombatLockdown()) then return end
-		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-	end
-	self:UpdateWatchFrame()
-end
-
 Tracker.InitializeMovableFrameAnchor = function(self)
 
 	local anchor = MFM:RequestAnchor()
@@ -260,6 +222,24 @@ Tracker.InitializeMovableFrameAnchor = function(self)
 
 	self.anchor = anchor
 
+end
+
+Tracker.UpdateWatchFrame = function(self)
+	if (InCombatLockdown()) then
+		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	end
+
+	SetCVar("watchFrameWidth", "1") -- 306 or 204
+
+	WatchFrame:SetFrameStrata("LOW")
+	WatchFrame:SetFrameLevel(50)
+	WatchFrame:SetClampedToScreen(false)
+	WatchFrame:ClearAllPoints()
+	WatchFrame:SetPoint("TOP", self.holder, "TOP")
+	WatchFrame:SetPoint("BOTTOM", self.holder, "TOP", 0, -config.TrackerHeight)
+
+	UpdateQuestItemButtons()
+	UpdateWatchFrameLines()
 end
 
 Tracker.UpdatePositionAndScale = function(self)
@@ -374,6 +354,24 @@ Tracker.OnAnchorUpdate = function(self, reason, layoutName, ...)
 		-- Fires when combat lockdown ends for visible anchors.
 
 	end
+end
+
+Tracker.OnEvent = function(self, event, ...)
+	if (event == "PLAYER_ENTERING_WORLD") then
+		WatchFrame:SetAlpha(.9)
+		if (self.queueImmersionHook) then
+			local frame = ImmersionFrame
+			if (frame) then
+				self.queueImmersionHook = nil
+				frame:HookScript("OnShow", function() WatchFrame:SetAlpha(0) end)
+				frame:HookScript("OnHide", function() WatchFrame:SetAlpha(.9) end)
+			end
+		end
+	elseif (event == "PLAYER_REGEN_ENABLED") then
+		if (InCombatLockdown()) then return end
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	end
+	self:UpdateWatchFrame()
 end
 
 Tracker.OnInitialize = function(self)

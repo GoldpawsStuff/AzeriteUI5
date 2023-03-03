@@ -6,13 +6,15 @@
 	<Script file="ChatFrames.lua"/>
 	<Script file="ErrorsFrame.lua"/>
 	<Script file="Minimap.lua"/>
-	<Script file="ObjectivesTracker.lua"/>
 	<Script file="RaidBossEmotes.lua"/>
 	<Script file="RaidWarnings.lua"/>
 	<Script file="Timers.lua"/>
 	<Script file="Tooltips.lua"/>
+	<Script file="Tracker.lua"/>
+	<Script file="TrackerVanilla.lua"/>
+	<Script file="TrackerWrath.lua"/>
 	<Script file="Tutorials.lua"/>
+	<Script file="UIWidgets.lua"/>
 	<Script file="VehicleSeat.lua"/>
-	<Script file="WatchFrame.lua"/>
 
 </Ui>

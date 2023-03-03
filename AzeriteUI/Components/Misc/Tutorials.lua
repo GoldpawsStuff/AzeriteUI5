@@ -26,7 +26,11 @@
 local Addon, ns = ...
 local BlizzTutorials = ns:NewModule("BlizzTutorials", "LibMoreEvents-1.0", "AceTimer-3.0", "AceHook-3.0")
 
+-- Addon API
+local IsAddOnEnabled = ns.API.IsAddOnEnabled
+
 BlizzTutorials.DisableHelpTip = function(self)
+	if (not HelpTip) then return end
 	local AcknowledgeTips = function()
 		local pool = HelpTip.framePool
 		if (not pool or not pool.EnumerateActive) then return end
@@ -36,8 +40,10 @@ BlizzTutorials.DisableHelpTip = function(self)
 			end
 		end
 	end
-	self:SecureHook(HelpTip, "Show", AcknowledgeTips)
-	self:ScheduleRepeatingTimer(AcknowledgeTips, 1)
+	if (not self:IsHooked(HelpTip, "Show")) then
+		self:SecureHook(HelpTip, "Show", AcknowledgeTips)
+	end
+	self:ScheduleTimer(AcknowledgeTips, 1)
 end
 
 BlizzTutorials.DisableNPE = function(self, event, ...)
@@ -56,12 +62,11 @@ BlizzTutorials.DisableTutorials = function(self)
 end
 
 BlizzTutorials.OnEvent = function(self, event, ...)
-	if (event == "SETTINGS_LOADED") then
-		if (InCombatLockdown()) then
-			return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-		end
+	if (InCombatLockdown()) then
+		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	end
 
-	elseif (event == "PLAYER_REGEN_ENABLED") then
+	if (event == "PLAYER_REGEN_ENABLED") then
 		if (InCombatLockdown()) then return end
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 
@@ -85,5 +90,9 @@ BlizzTutorials.OnEvent = function(self, event, ...)
 end
 
 BlizzTutorials.OnInitialize = function(self)
-	self:RegisterEvent("SETTINGS_LOADED", "OnEvent")
+	if (ns.IsClassic or ns.IsTBC) then
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
+	else
+		self:RegisterEvent("SETTINGS_LOADED", "OnEvent")
+	end
 end

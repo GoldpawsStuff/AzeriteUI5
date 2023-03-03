@@ -44,6 +44,7 @@ local string_format = string.format
 local string_lower = string.lower
 local string_match = string.match
 local string_upper = string.upper
+local table_insert = table.insert
 local unpack = unpack
 
 -- Addon API
@@ -95,24 +96,41 @@ local CURRENT_THEME = DEFAULT_THEME
 local Elements = {}
 
 -- Minimap objects available for restyling.
+----------------------------------------------------
 local Objects = { Calendar = GameTimeFrame, Clock = TimeManagerClockButton, Compass = MinimapCompassTexture }
 if (ns.IsRetail) then
 	Objects.BorderTop = MinimapCluster.BorderTop
 	Objects.Difficulty = MinimapCluster.InstanceDifficulty
 	Objects.Expansion = ExpansionLandingPageMinimapButton
+	Objects.Eye = QueueStatusButton
 	Objects.Mail = MinimapCluster.IndicatorFrame.MailFrame
 	Objects.Tracking = MinimapCluster.Tracking
 	Objects.Zone = MinimapCluster.ZoneTextButton
 	Objects.ZoomIn = Minimap.ZoomIn
 	Objects.ZoomOut = Minimap.ZoomOut
 end
-if (ns.IsWrath or ns.IsClassic) then
+if (ns.IsWrath) then
 	Objects.BorderTop = MinimapBorderTop
 	Objects.BorderClassic = MinimapBorder
 	Objects.Difficulty = MiniMapInstanceDifficulty
+	Objects.Eye = MiniMapLFGFrame
+	Objects.EyeClassicPvP = MiniMapBattlefieldFrame
 	Objects.Mail = MiniMapMailFrame
-	Objects.ToggleButton = ns.IsClassic and MinimapToggleButton or nil
-	Objects.Tracking = ns.IsClassic and MiniMapTrackingFrame or MiniMapTracking
+	Objects.Tracking = MiniMapTracking
+	Objects.Zone = MinimapZoneTextButton
+	Objects.ZoomIn = MinimapZoomIn
+	Objects.ZoomOut = MinimapZoomOut
+	Objects.WorldMap = MiniMapWorldMapButton
+end
+if (ns.IsClassic) then
+	Objects.BorderTop = MinimapBorderTop
+	Objects.BorderClassic = MinimapBorder
+	Objects.Difficulty = MiniMapInstanceDifficulty
+	Objects.Eye = MiniMapLFGFrame
+	Objects.EyeClassicPvP = MiniMapBattlefieldFrame
+	Objects.Mail = MiniMapMailFrame
+	Objects.ToggleButton = MinimapToggleButton
+	Objects.Tracking = MiniMapTrackingFrame
 	Objects.Zone = MinimapZoneTextButton
 	Objects.ZoomIn = MinimapZoomIn
 	Objects.ZoomOut = MinimapZoomOut
@@ -120,6 +138,7 @@ if (ns.IsWrath or ns.IsClassic) then
 end
 
 -- Object parents when using blizzard theme.
+----------------------------------------------------
 local ObjectOwners = {}
 if (ns.IsRetail) then
 	ObjectOwners.BorderTop = MinimapCluster
@@ -128,13 +147,14 @@ if (ns.IsRetail) then
 	ObjectOwners.Compass = MinimapBackdrop
 	ObjectOwners.Difficulty = MinimapCluster
 	ObjectOwners.Expansion = MinimapBackdrop
+	ObjectOwners.Eye = MicroButtonAndBagsBar
 	ObjectOwners.Mail = MinimapCluster.IndicatorFrame
 	ObjectOwners.Tracking = MinimapCluster
 	ObjectOwners.Zone = MinimapCluster
 	ObjectOwners.ZoomIn = Minimap
 	ObjectOwners.ZoomOut = Minimap
 end
-if (ns.IsWrath or ns.IsClassic) then
+if (ns.IsWrath) then
 	ObjectOwners.BorderTop = MinimapCluster
 	ObjectOwners.BorderClassic = MinimapBackdrop
 	ObjectOwners.Calendar = MinimapCluster
@@ -142,17 +162,40 @@ if (ns.IsWrath or ns.IsClassic) then
 	ObjectOwners.Compass = MinimapBackdrop
 	ObjectOwners.Difficulty = MinimapCluster
 	ObjectOwners.Expansion = MinimapBackdrop
+	ObjectOwners.Eye = MinimapBackdrop
+	ObjectOwners.EyeClassicPvP = Minimap
 	ObjectOwners.Mail = Minimap
-	ObjectOwners.ToggleButton = ns.IsClassic and MinimapCluster or nil
-	ObjectOwners.Tracking = ns.IsWrath and MinimapCluster or nil
+	ObjectOwners.Tracking = MinimapCluster
+	ObjectOwners.Zone = MinimapCluster
+	ObjectOwners.ZoomIn = Minimap
+	ObjectOwners.ZoomOut = Minimap
+	ObjectOwners.WorldMap = MinimapBackdrop
+end
+if (ns.IsClassic) then
+	ObjectOwners.BorderTop = MinimapCluster
+	ObjectOwners.BorderClassic = MinimapBackdrop
+	ObjectOwners.Calendar = MinimapCluster
+	ObjectOwners.Clock = MinimapCluster
+	ObjectOwners.Compass = MinimapBackdrop
+	ObjectOwners.Difficulty = MinimapCluster
+	ObjectOwners.Expansion = MinimapBackdrop
+	ObjectOwners.Eye = MinimapBackdrop
+	ObjectOwners.EyeClassicPvP = Minimap
+	ObjectOwners.Mail = Minimap
+	ObjectOwners.ToggleButton = MinimapCluster
+	ObjectOwners.Tracking = Minimap
 	ObjectOwners.Zone = MinimapCluster
 	ObjectOwners.ZoomIn = Minimap
 	ObjectOwners.ZoomOut = Minimap
 	ObjectOwners.WorldMap = MinimapBackdrop
 end
 
--- Snippets to be run upon blizzard object enabling/disabling.
+-- Snippets to be run upon object toggling.
+----------------------------------------------------
 local ObjectSnippets = {
+
+	-- Blizzard Objects
+	------------------------------------------
 	Mail = {
 		Enable = function(object)
 			object:OnLoad()
@@ -164,19 +207,120 @@ local ObjectSnippets = {
 		Update = function(object)
 			object:OnEvent("UPDATE_PENDING_MAIL")
 		end
+	},
+	Eye = {
+		Enable = function(object)
+			if (ns.IsWrath) then
+				object:SetFrameLevel(object:GetParent():GetFrameLevel() + 2)
+			elseif (ns.IsRetail) then
+			end
+		end,
+		Disable = function(object)
+			if (ns.IsWrath) then
+			elseif (ns.IsRetail) then
+			end
+		end,
+		Update = function(object)
+			if (ns.IsWrath) then
+			elseif (ns.IsRetail) then
+			end
+		end
+	},
+	EyeClassicPvP = {
+		Enable = function(object)
+			MiniMapBattlefieldIcon:Show()
+			MiniMapBattlefieldBorder:Show()
+			BattlegroundShine:Show()
+			if (BattlefieldIconText) then BattlefieldIconText:Show() end
+		end,
+		Disable = function(object)
+			MiniMapBattlefieldIcon:Hide()
+			MiniMapBattlefieldBorder:Hide()
+			BattlegroundShine:Hide()
+			if (BattlefieldIconText) then BattlefieldIconText:Hide() end
+		end,
+		Update = function(object)
+			if (PVPBattleground_UpdateQueueStatus) then PVPBattleground_UpdateQueueStatus() end
+			BattlefieldFrame_UpdateStatus(false)
+		end
+	},
+
+	-- AzeriteUI Objects
+	------------------------------------------
+	AzeriteEye = {
+		Enable = function(object)
+			if (ns.IsWrath) then
+				MiniMapLFGFrame:SetFrameLevel(100)
+				MiniMapLFGFrameBorder:Hide()
+				MiniMapLFGFrameIcon:Hide()
+			elseif (ns.IsRetail) then
+				QueueStatusButton:SetParent(Minimap)
+				QueueStatusButton:SetFrameLevel(100)
+				QueueStatusButton:ClearAllPoints()
+				QueueStatusButton:SetPoint("CENTER", Minimap, "CENTER", 82, 82)
+				QueueStatusButton:SetHitRectInsets(-8, -8, -8, -8)
+				QueueStatusButton.Eye:SetParent(UIHider)
+				QueueStatusButton.Highlight:SetParent(UIHider)
+			end
+		end,
+		Disable = function(object)
+			if (ns.IsWrath) then
+				MiniMapLFGFrame:SetFrameLevel(MinimapBackdrop:GetFrameLevel() + 2)
+				MiniMapLFGFrameBorder:Show()
+				MiniMapLFGFrameIcon:Show()
+			elseif (ns.IsRetail) then
+				QueueStatusButton:SetParent(ObjectOwners.Eye)
+				QueueStatusButton:SetFrameLevel(ObjectOwners.Eye:GetFrameLevel() + 1)
+				QueueStatusButton:ClearQueueStatus()
+				QueueStatusButton:SetPoint("BOTTOMLEFT", -45, 4)
+				QueueStatusButton:SetHitRectInsets(0, 0, 0, 0)
+				QueueStatusButton.Highlight:SetParent(QueueStatusButton)
+				QueueStatusButton.Eye:SetParent(QueueStatusButton)
+				QueueStatusButton.Eye:SetFrameLevel(QueueStatusButton:GetFrameLevel() - 1)
+			end
+		end,
+		Update = function(object)
+		end
+	},
+	AzeriteEyeClassicPvP = {
+		Enable = function(object)
+			MiniMapBattlefieldFrame:ClearAllPoints()
+			MiniMapBattlefieldFrame:SetPoint("TOPRIGHT", Minimap, -4, -2)
+			MiniMapBattlefieldFrame:SetHitRectInsets(-8, -8, -8, -8)
+			MiniMapBattlefieldIcon:Hide()
+			MiniMapBattlefieldBorder:Hide()
+			BattlegroundShine:Hide()
+			if (BattlefieldIconText) then BattlefieldIconText:Hide() end
+		end,
+		Disable = function(object)
+			MiniMapBattlefieldFrame:ClearAllPoints()
+			MiniMapBattlefieldFrame:SetPoint("BOTTOMLEFT", Minimap, 13, -13)
+			MiniMapBattlefieldFrame:SetHitRectInsets(0, 0, 0, 0)
+			MiniMapBattlefieldIcon:Show()
+			MiniMapBattlefieldBorder:Show()
+			BattlegroundShine:Show()
+			if (BattlefieldIconText) then BattlefieldIconText:Show() end
+		end,
+		Update = function(object)
+		end
 	}
 }
 
+-- Element type of custom elements.
 local ElementTypes = {
 	Backdrop = "Texture",
-	Border = "Texture"
+	Border = "Texture",
+	AzeriteEye = "Texture",
+	AzeriteEyeClassicPvP = "Texture"
 }
 
+-- Mask textures for the supported shapes.
 local Shapes = {
 	Round = GetMedia("minimap-mask-opaque"),
 	RoundTransparent = GetMedia("minimap-mask-transparent")
 }
 
+-- Our custom embedded skins.
 local Skins = {
 	Blizzard = {
 		Version = 1,
@@ -186,6 +330,7 @@ local Skins = {
 		Version = 1,
 		Shape = "RoundTransparent",
 		HideElements = {
+			BattleField = false, -- classic + wrath
 			BorderTop = true,
 			BorderClassic = true, -- wrath
 			Calendar = true,
@@ -193,6 +338,7 @@ local Skins = {
 			Compass = true,
 			Difficulty = true,
 			Expansion = true, -- retail
+			Eye = false, -- wrath + retail
 			Mail = true,
 			Tracking = true,
 			ToggleButton = true, -- classic
@@ -219,12 +365,31 @@ local Skins = {
 				Size = { 404, 404 },
 				Point = { "CENTER", -1, 0 },
 				Color = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
+			},
+			AzeriteEye = {
+				Owner = "Eye",
+				DrawLayer = "BORDER",
+				DrawLevel = 2,
+				Path = GetMedia("group-finder-eye-green"),
+				Size = { 64, 64 },
+				Point = { "CENTER", 0, 0 },
+				Color = { .90, .95, 1 }
+			},
+			AzeriteEyeClassicPvP = (ns.IsClassic or ns.IsWrath) and {
+				Owner = "EyeClassicPvP",
+				DrawLayer = "BORDER",
+				DrawLevel = 2,
+				Path = GetMedia("group-finder-eye-orange"),
+				Size = { 64, 64 },
+				Point = { "CENTER", 0, 0 },
+				Color = { .90, .95, 1 }
 			}
 		}
 	}
 }
 
--- Just a temporary measure
+-- Just a temporary measure,
+-- will eventually move all into the skins.
 local Unskinned = {
 
 	CompassInset = 14,
@@ -284,6 +449,7 @@ Prototype.RegisterTheme = function(self, name, skin)
 end
 
 Prototype.SetTheme = function(self, requestedTheme)
+	if (InCombatLockdown()) then return end
 
 	-- Theme names are case sensitive,
 	-- but we don't want the input to be.
@@ -298,10 +464,10 @@ Prototype.SetTheme = function(self, requestedTheme)
 
 	local current, new = Skins[CURRENT_THEME], Skins[name]
 
-	-- Disable unused elements.
+	-- Disable unused custom elements.
 	if (current.Elements) then
 		for element,data in next,current.Elements do
-			if (not new.Elements or not new.Elements[element]) then
+			if (data) and (not new.Elements or not new.Elements[element]) then
 				Elements[element]:SetParent(UIHider)
 				if (ObjectSnippets[element]) then
 					ObjectSnippets[element].Disable(Objects[element])
@@ -326,48 +492,67 @@ Prototype.SetTheme = function(self, requestedTheme)
 		end
 	end
 
+	-- Set the minimap mask for the new theme.
 	local mask = new.Shape and Shapes[new.Shape] or Shapes.Round
 	Minimap:SetMaskTexture(mask)
 
-	-- Show new theme's elements.
+	-- Enable new theme's custom elements.
 	if (new.Elements) then
 		for element,data in next,new.Elements do
 
-			local owner = data.Owner and ObjectOwners[data.Owner] or Minimap
-			local object = Elements[element]
-			if (not object) then
-				if (ElementTypes[element] == "Texture") then
-					object = owner:CreateTexture()
-					Elements[element] = object
-				end
-			end
+			if (data) then
 
-			-- Silently ignore non-supported objects.
-			if (object) then
+				-- Retrieve the owner of the object
+				local owner = data and data.Owner and ObjectOwners[data.Owner] or Minimap
 
-				object:SetParent(owner)
+				-- Retrieve the object
+				local object, objectParent = Elements[element]
 
-				if (data.Size) then
-					object:SetSize(unpack(data.Size))
-				else
-					object:SetSize(Minimap:GetSize())
-				end
+				-- If a custom object does not exist, create it.
+				if (not object) then
 
-				if (data.Point) then
-					object:ClearAllPoints()
-					object:SetPoint(unpack(data.Point))
-				end
+					-- Figure out what our custom object should be parented to.
+					objectParent = data and data.Owner and Objects[data.Owner] or Minimap
 
-				if (ElementTypes[element] == "Texture") then
-					object:SetTexture(data.Path)
-					object:SetDrawLayer(data.DrawLayer or "ARTWORK", data.DrawLevel or 0)
-					if (data.Color) then
-						object:SetVertexColor(unpack(data.Color))
-					else
-						object:SetVertexColor(1, 1, 1, 1)
+					-- Create!
+					if (ElementTypes[element] == "Texture") then
+						object = objectParent:CreateTexture()
+						Elements[element] = object
 					end
 				end
 
+				-- Silently ignore non-supported objects.
+				if (object) then
+
+					object:SetParent(objectParent or owner)
+
+					if (data.Size) then
+						object:SetSize(unpack(data.Size))
+					else
+						object:SetSize(Minimap:GetSize())
+					end
+
+					if (data.Point) then
+						object:ClearAllPoints()
+						object:SetPoint(unpack(data.Point))
+					end
+
+					if (ElementTypes[element] == "Texture") then
+						object:SetTexture(data.Path)
+						object:SetDrawLayer(data.DrawLayer or "ARTWORK", data.DrawLevel or 0)
+						if (data.Color) then
+							object:SetVertexColor(unpack(data.Color))
+						else
+							object:SetVertexColor(1, 1, 1, 1)
+						end
+					end
+
+					-- Run object callbacks.
+					if (ObjectSnippets[element]) then
+						ObjectSnippets[element].Enable(Elements[element])
+						ObjectSnippets[element].Update(Elements[element])
+					end
+				end
 			end
 		end
 	end
@@ -401,10 +586,12 @@ end
 
 local Minimap_OnMouseUp = function(self, button)
 	if (button == "RightButton") then
-
-		ToggleDropDownMenu(1, nil, _G[ns.Prefix.."MiniMapTrackingDropDown"], "cursor")
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "SFX")
-
+		if (ns.IsClassic) then
+			MinimapMod:ShowMinimapTrackingMenu()
+		else
+			ToggleDropDownMenu(1, nil, _G[ns.Prefix.."MiniMapTrackingDropDown"], "cursor")
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "SFX")
+		end
 	elseif (button == "MiddleButton" and ns.IsRetail) then
 		local GLP = GarrisonLandingPageMinimapButton or ExpansionLandingPageMinimapButton
 		if (GLP and GLP:IsShown()) and (not InCombatLockdown()) then
@@ -785,9 +972,10 @@ MinimapMod.InitializeAddon = function(self, addon, ...)
 	self.Addons[addon] = nil
 end
 
--- Theme API
+-- Module Theme API (really...?)
 --------------------------------------------
 MinimapMod.SetMinimapTheme = function(self, input)
+	if (InCombatLockdown()) then return end
 	local theme = self:GetArgs(string.lower(input))
 	if (not ns.IsRetail and theme == "Blizzard") then
 		theme = "Azerite"
@@ -795,6 +983,8 @@ MinimapMod.SetMinimapTheme = function(self, input)
 	Minimap:SetTheme(theme)
 end
 
+-- Minimap Widget Settings
+--------------------------------------------
 MinimapMod.SetClock = function(self, input)
 	local args = { self:GetArgs(string_lower(input)) }
 	for _,arg in ipairs(args) do
@@ -810,20 +1000,10 @@ MinimapMod.SetClock = function(self, input)
 	end
 end
 
-MinimapMod.UpdatePosition = function(self)
-	if (ns.IsRetail) then return end
-	--Minimap:SetParent(PetHider)
-	--Minimap:ClearAllPoints()
-	--Minimap:SetPoint("CENTER", UIParent)
-	Minimap:SetMovable(true)
-end
-
-MinimapMod.UpdateSize = function(self)
-	if (ns.IsRetail) then return end
-	Minimap:SetSize(213,213)
-end
-
 -- Create our custom elements
+-- *This is a temporary and clunky measure,
+--  eventually I want this baked into the themes,
+--  including the position based visibility.
 MinimapMod.CreateCustomElements = function(self)
 
 	local db = Unskinned
@@ -928,7 +1108,46 @@ MinimapMod.CreateCustomElements = function(self)
 	dropdown:SetClampedToScreen(true)
 	dropdown:Hide()
 
-	UIDropDownMenu_Initialize(dropdown, MiniMapTrackingDropDown_Initialize, "MENU")
+	if (ns.IsClassic) then
+		self.ShowMinimapTrackingMenu = function(self)
+			local hasTracking
+			local trackingMenu = { { text = TRACKING or "Select Tracking", isTitle = true } }
+			for _,spellID in ipairs({
+				1494, --Track Beasts
+				19883, --Track Humanoids
+				19884, --Track Undead
+				19885, --Track Hidden
+				19880, --Track Elementals
+				19878, --Track Demons
+				19882, --Track Giants
+				19879, --Track Dragonkin
+					5225, --Track Humanoids: Druid
+					5500, --Sense Demons
+					5502, --Sense Undead
+					2383, --Find Herbs
+					2580, --Find Minerals
+					2481  --Find Treasure
+			}) do
+				if (IsPlayerSpell(spellID)) then
+					hasTracking = true
+					local spellName = GetSpellInfo(spellID)
+					local spellTexture = GetSpellTexture(spellID)
+					table_insert(trackingMenu, {
+						text = spellName,
+						icon = spellTexture,
+						func = function() CastSpellByID(spellID) end
+					})
+				end
+			end
+			if (hasTracking) then
+				EasyMenu(trackingMenu, dropdown, "cursor", 0 , 0, "MENU")
+				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "SFX")
+			end
+		end
+	else
+		UIDropDownMenu_Initialize(dropdown, MiniMapTrackingDropDown_Initialize, "MENU")
+	end
+
 	dropdown.noResize = true
 
 	self.dropdown = dropdown
@@ -951,7 +1170,6 @@ MinimapMod.UpdateCustomElements = function(self)
 	if (CURRENT_THEME ~= "Azerite") then
 		return self.widgetFrame:Hide()
 	end
-
 	if (not ns.IsRetail) then
 		self.widgetFrame:SetShown(self.anchor:IsInDefaultPosition(60))
 	else
@@ -960,9 +1178,10 @@ MinimapMod.UpdateCustomElements = function(self)
 		local point2, x2, y2 = anchorInfo.point, anchorInfo.offsetX, anchorInfo.offsetY
 		self.widgetFrame:SetShown(((point == point2) and (math_abs(x - x2) < 60) and (math_abs(y - y2) < 60)))
 	end
-
 end
 
+-- Embed theme methods into the Minimap.
+-- *Might have to stop doing this if it taints.
 MinimapMod.Embed = function(self)
 	Minimap:EnableMouseWheel(true)
 	Minimap:SetScript("OnMouseWheel", Minimap_OnMouseWheel)
@@ -973,6 +1192,20 @@ MinimapMod.Embed = function(self)
 	end
 end
 
+-- Classic API
+--------------------------------------------
+MinimapMod.UpdatePosition = function(self)
+	if (ns.IsRetail) then return end
+	Minimap:SetMovable(true)
+end
+
+MinimapMod.UpdateSize = function(self)
+	if (ns.IsRetail) then return end
+	Minimap:SetSize(213,213)
+end
+
+-- Module Initialization & Events
+--------------------------------------------
 MinimapMod.OnEvent = function(self, event)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		self:UpdateSize()
@@ -1053,6 +1286,8 @@ MinimapMod.OnEnable = function(self)
 	self:SetMinimapTheme(self.db.profile.theme)
 end
 
+-- Movable Frames (Classics)
+--------------------------------------------
 if (ns.IsRetail) then return end
 
 MinimapMod.InitializeMovableFrameAnchor = function(self)

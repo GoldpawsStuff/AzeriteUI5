@@ -514,6 +514,8 @@ Tooltips.OnEnable = function(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "StyleTooltips")
 end
 
+-- Movable Frames (Classics)
+--------------------------------------------
 if (ns.IsRetail) then return end
 
 Tooltips.InitializeMovableFrameAnchor = function(self)

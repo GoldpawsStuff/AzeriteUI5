@@ -24,27 +24,21 @@
 
 --]]
 local Addon, ns = ...
+if (ns.IsRetail) then return end
 
--- Backdrop template for Lua and XML
--- Allows us to always set these templates, even in Classic.
-local MixinGlobal = Addon.."BackdropTemplateMixin"
-_G[MixinGlobal] = {}
-if (BackdropTemplateMixin) then
-	_G[MixinGlobal] = CreateFromMixins(BackdropTemplateMixin) -- Usable in XML
-	ns.Private.BackdropTemplate = "BackdropTemplate" -- Usable in Lua
+local UIWidgets = ns:NewModule("UIWidgets", "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
+
+local defaults = { profile = ns:Merge({
+	enabled = true,
+}, ns.moduleDefaults) }
+
+-- Addon API
+local GetMedia = ns.API.GetMedia
+
+UIWidgets.OnInitialize = function(self)
+	self.db = ns.db:RegisterNamespace("UIWidgets", defaults)
 end
 
--- Create an alias for the classics.
-if (not _G.UnitEffectiveLevel) then
-	_G.UnitEffectiveLevel = UnitLevel
-end
 
--- Functions that would always return false when not present.
-for _,global in next,{
-	"IsXPUserDisabled",
-	"UnitHasVehicleUI"
-} do
-	if (not _G[global]) then
-		_G[global] = function() return false end
-	end
+UIWidgets.OnEnable = function(self)
 end

@@ -4,10 +4,23 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-03-01
+## [5.0.43-RC] 2023-03-02
+### Added
+- Added support for Classic Era to AzeriteUI5.
+- Added styling of group finder finder icons in Wrath and Retail.
+- Added styling of PvP queue icons in Wrath and Classic.
+- Added the `/calendar` chat command to Wrath Classic, since it was missing it and the flavor has a calendar.
+
 ### Changed
 - Changed nameplate opacity-, scale- and range settings.
+- Raised the frame level of the red error text, the yellow objective update text and yellow system message text, as this sometimes would appear behind several other frames like the combo points and the worldmap.
+- Moved the delay text of the floating player castbar to the right of the castbar frame, to make it easier to read.
 - Made the hitbox of the player frame larger. It should now include the crystal/orb area too, as well as some of the space above the healthbar where buffs live.
+
+### Fixed
+- Fixed an issue where the wrong textures would be displayed on the player and target unitframes directly after leveling up.
+- Fixed an issue where some system error messages could cause a bug when error speech is enabled in the audio settings.
+- Fixed a bug where certain Blizzard tutorials sometimes would be attempted killed twice.
 
 ## [5.0.42-RC] 2023-03-01
 ### Fixed
