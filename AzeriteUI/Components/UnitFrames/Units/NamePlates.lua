@@ -166,7 +166,7 @@ local config = {
 
 	-- NPC Classification
 	-----------------------------------------
-	ClassificationPosition = { "RIGHT", 18, -1 },
+	ClassificationPosition = { "RIGHT", 18 + 2, -1 },
 	ClassificationSize = { 40, 40 },
 	ClassificationIndicatorBossTexture = GetMedia("icon_badges_boss"),
 	ClassificationIndicatorEliteTexture = GetMedia("icon_classification_elite"),
@@ -209,6 +209,61 @@ local Health_PostUpdate = function(element, unit, cur, max)
 	local predict = element.__owner.HealthPrediction
 	if (predict) then
 		predict:ForceUpdate()
+	end
+end
+
+local Health_UpdateColor = function(self, event, unit)
+	if(not unit or self.unit ~= unit) then return end
+	local element = self.Health
+
+	local r, g, b, color
+	if (element.colorDisconnected and not UnitIsConnected(unit)) then
+		color = self.colors.disconnected
+	elseif (element.colorTapping and not UnitPlayerControlled(unit) and UnitIsTapDenied(unit)) then
+		color = self.colors.tapped
+	elseif (element.colorThreat and not UnitPlayerControlled(unit) and UnitThreatSituation("player", unit)) then
+		color =  self.colors.threat[UnitThreatSituation("player", unit)]
+	elseif ((element.colorClass and UnitIsPlayer(unit)
+		or (element.colorClassNPC and not UnitIsPlayer(unit))
+		or (element.colorClassPet and UnitPlayerControlled(unit) and not UnitIsPlayer(unit)))
+		and not (element.colorClassHostileOnly and not UnitCanAttack("player", unit))) then
+		local _, class = UnitClass(unit)
+		color = self.colors.class[class]
+	elseif (element.colorSelection and unitSelectionType(unit, element.considerSelectionInCombatHostile)) then
+		color = self.colors.selection[unitSelectionType(unit, element.considerSelectionInCombatHostile)]
+	elseif (element.colorReaction and UnitReaction(unit, "player")) then
+		color = self.colors.reaction[UnitReaction(unit, "player")]
+	elseif (element.colorSmooth) then
+		r, g, b = self:ColorGradient(element.cur or 1, element.max or 1, unpack(element.smoothGradient or self.colors.smooth))
+	elseif (element.colorHealth) then
+		color = self.colors.health
+	end
+
+	if (color) then
+		r, g, b = color[1], color[2], color[3]
+	end
+
+	if (b) then
+		element:SetStatusBarColor(r, g, b)
+
+		local bg = element.bg
+		if (bg) then
+			local mu = bg.multiplier or 1
+			bg:SetVertexColor(r * mu, g * mu, b * mu)
+		end
+	end
+
+	--[[ Callback: Health:PostUpdateColor(unit, r, g, b)
+	Called after the element color has been updated.
+
+	* self - the Health element
+	* unit - the unit for which the update has been triggered (string)
+	* r    - the red component of the used color (number)[0-1]
+	* g    - the green component of the used color (number)[0-1]
+	* b    - the blue component of the used color (number)[0-1]
+	--]]
+	if (element.PostUpdateColor) then
+		element:PostUpdateColor(unit, r, g, b)
 	end
 end
 
@@ -421,6 +476,35 @@ local TargetHighlight_Update = function(self, event, unit, ...)
 	end
 end
 
+-- Update NPC classification badge for rares, elites and bosses.
+local Classification_Update = function(self, event, unit, ...)
+	if (unit and unit ~= self.unit) then return end
+
+	local element = self.Classification
+	unit = unit or self.unit
+
+	if (UnitIsPlayer(unit) or not UnitCanAttack("player", unit)) then
+		return element:Hide()
+	end
+
+	local l = UnitEffectiveLevel(unit)
+	local c = (l and l < 1) and "worldboss" or UnitClassification(unit)
+	if (c == "boss" or c == "worldboss") then
+		element:SetTexture(element.bossTexture)
+		element:Show()
+
+	elseif (c == "elite") then
+		element:SetTexture(element.eliteTexture)
+		element:Show()
+
+	elseif (c == "rare" or c == "rareelite") then
+		element:SetTexture(element.rareTexture)
+		element:Show()
+	else
+		element:Hide()
+	end
+end
+
 -- Messy callback that handles positions
 -- of elements above the health bar.
 local NamePlate_PostUpdatePositions = function(self)
@@ -593,6 +677,7 @@ local NamePlate_PostUpdate = function(self, event, unit, ...)
 	self.Health.Preview:SetOrientation(main)
 	if (self.Health.Absorb) then self.Health.Absorb:SetOrientation(reverse) end
 
+	Classification_Update(self, event, unit, ...)
 	TargetHighlight_Update(self, event, unit, ...)
 	NamePlate_PostUpdateElements(self, event, unit, ...)
 end
@@ -639,6 +724,7 @@ local NamePlate_OnEvent = function(self, event, unit, ...)
 	elseif (event == "PLAYER_TARGET_CHANGED") then
 		self.isTarget = UnitIsUnit(unit, "target")
 
+		Classification_Update(self, event, unit, ...)
 		TargetHighlight_Update(self, event, unit, ...)
 		NamePlate_PostUpdateElements(self, event, unit, ...)
 
@@ -647,6 +733,7 @@ local NamePlate_OnEvent = function(self, event, unit, ...)
 	elseif (event == "PLAYER_FOCUS_CHANGED") then
 		self.isFocus = UnitIsUnit(unit, "focus")
 
+		Classification_Update(self, event, unit, ...)
 		TargetHighlight_Update(self, event, unit, ...)
 		NamePlate_PostUpdateElements(self, event, unit, ...)
 
@@ -692,12 +779,14 @@ local style = function(self, unit, id)
 	health.colorThreat = true
 	health.colorClass = true
 	health.colorClassPet = true
+	health.colorClassHostileOnly = true
 	health.colorHappiness = true
 	health.colorReaction = true
 
 	self.Health = health
 	self.Health.Override = ns.API.UpdateHealth
 	self.Health.PostUpdate = Health_PostUpdate
+	self.Health.UpdateColor = Health_UpdateColor
 	self.Health.PostUpdateColor = Health_PostUpdateColor
 
 	local healthBackdrop = health:CreateTexture(nil, "BACKGROUND", nil, -1)
@@ -867,6 +956,17 @@ local style = function(self, unit, id)
 
 	self.RaidTargetIndicator = raidTarget
 
+	-- Classification Badge
+	--------------------------------------------
+	local classification = healthOverlay:CreateTexture(nil, "OVERLAY", nil, -2)
+	classification:SetSize(unpack(db.ClassificationSize))
+	classification:SetPoint(unpack(db.ClassificationPosition))
+	classification.bossTexture = db.ClassificationIndicatorBossTexture
+	classification.eliteTexture = db.ClassificationIndicatorEliteTexture
+	classification.rareTexture = db.ClassificationIndicatorRareTexture
+
+	self.Classification = classification
+
 	-- Auras
 	--------------------------------------------
 	local auras = CreateFrame("Frame", nil, self)
@@ -909,6 +1009,7 @@ local style = function(self, unit, id)
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED", NamePlate_OnEvent, true)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", NamePlate_OnEvent, true)
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", NamePlate_OnEvent, true)
+	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", NamePlate_OnEvent)
 
 end
 
