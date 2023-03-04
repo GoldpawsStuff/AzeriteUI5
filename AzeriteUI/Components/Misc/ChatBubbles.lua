@@ -425,6 +425,7 @@ ChatBubbles.OnInitialize = function(self)
 	self.fontSizeMax = 22
 	self.fontSizeDefault = 14
 	self.fontSize = select(2, ChatFrame1:GetFont()) or self.fontSizeDefault
+	self.fontObject = GetFont(self.fontSize, true, "Chat")
 
 	self.backdrop = {
 		bgFile = [[Interface\Tooltips\CHATBUBBLE-BACKGROUND]],
