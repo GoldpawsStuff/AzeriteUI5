@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.44-RC] 2023-03-04
+### Added
+- Added Elite, Rare and Boss indicators to hostile nameplates.
+
+### Fixed
+- Fixed an issue where Classic and Wrath chat bubbles sometimes would be shown before their font object had been set, which would cause an error.
+
 ## [5.0.43-RC] 2023-03-02
 ### Added
 - Added support for Classic Era to AzeriteUI5.
