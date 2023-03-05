@@ -36,6 +36,7 @@ Development.ToggleDevMode = function(self)
 	ReloadUI()
 end
 
+--[[
 Development.OnInitialize = function(self)
 
 	local showVersion = ns.db.profile.enableDevelopmentMode or ns.IsDevelopment or ns.IsAlpha or ns.IsBeta or ns.IsRC
@@ -75,3 +76,4 @@ Development.OnInitialize = function(self)
 
 	self:RegisterChatCommand("devmode", "ToggleDevMode")
 end
+--]]
