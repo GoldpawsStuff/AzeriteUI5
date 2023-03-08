@@ -250,7 +250,11 @@ local ObjectSnippets = {
 	AzeriteEye = {
 		Enable = function(object)
 			if (ns.IsWrath) then
+				MiniMapLFGFrame:SetParent(Minimap)
 				MiniMapLFGFrame:SetFrameLevel(100)
+				MiniMapLFGFrame:ClearAllPoints()
+				MiniMapLFGFrame:SetPoint("TOPRIGHT", Minimap, -4, -2)
+				MiniMapLFGFrame:SetHitRectInsets(-8, -8, -8, -8)
 				MiniMapLFGFrameBorder:Hide()
 				MiniMapLFGFrameIcon:Hide()
 			elseif (ns.IsRetail) then
@@ -265,13 +269,18 @@ local ObjectSnippets = {
 		end,
 		Disable = function(object)
 			if (ns.IsWrath) then
+				MiniMapLFGFrame:SetParent(ObjectOwners.Eye)
 				MiniMapLFGFrame:SetFrameLevel(MinimapBackdrop:GetFrameLevel() + 2)
+				MiniMapLFGFrame:ClearAllPoints()
+				MiniMapLFGFrame:SetPoint("TOPLEFT", 25, -100)
+				MiniMapLFGFrame:SetHitRectInsets(0, 0, 0, 0)
 				MiniMapLFGFrameBorder:Show()
 				MiniMapLFGFrameIcon:Show()
 			elseif (ns.IsRetail) then
 				QueueStatusButton:SetParent(ObjectOwners.Eye)
 				QueueStatusButton:SetFrameLevel(ObjectOwners.Eye:GetFrameLevel() + 1)
 				QueueStatusButton:ClearQueueStatus()
+				QueueStatusButton:ClearAllPoints()
 				QueueStatusButton:SetPoint("BOTTOMLEFT", -45, 4)
 				QueueStatusButton:SetHitRectInsets(0, 0, 0, 0)
 				QueueStatusButton.Highlight:SetParent(QueueStatusButton)
@@ -285,7 +294,7 @@ local ObjectSnippets = {
 	AzeriteEyeClassicPvP = {
 		Enable = function(object)
 			MiniMapBattlefieldFrame:ClearAllPoints()
-			MiniMapBattlefieldFrame:SetPoint("TOPRIGHT", Minimap, -4, -2)
+			MiniMapBattlefieldFrame:SetPoint("BOTTOMLEFT", Minimap, 4, 2)
 			MiniMapBattlefieldFrame:SetHitRectInsets(-8, -8, -8, -8)
 			MiniMapBattlefieldIcon:Hide()
 			MiniMapBattlefieldBorder:Hide()
