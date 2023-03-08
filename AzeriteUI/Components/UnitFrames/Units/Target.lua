@@ -210,11 +210,11 @@ local config = {
 	-- Auras
 	-----------------------------------------
 	AurasPosition = { "TOPRIGHT", -42, 36 },
-	AurasSize = { 40*6 - 4, 40*2 - 4 },
+	AurasSize = { 40*8 - 4, 40*2 - 4 },
 	AurasSizeBoss = { 40*10 - 4, 40*2 - 4 },
 	AuraSize = 36,
 	AuraSpacing = 4,
-	AurasNumTotal = 12,
+	AurasNumTotal = 16,
 	AurasNumTotalBoss = 20,
 	AurasDisableMouse = false,
 	AurasDisableCooldown = false,
