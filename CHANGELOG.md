@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-03-08
+### Fixed
+- The personal resource display once again shows your class color for your health bar.
+- The Wrath dungeon finder icon should now be placed on the Minimap where it belongs.
+
+## [5.0.45-RC] 2023-03-07
+### Changed
+- Increased number of visible auras on non-boss target frames to 16.
+
 ## [5.0.44-RC] 2023-03-04
 ### Added
 - Added Elite, Rare and Boss indicators to hostile nameplates.
