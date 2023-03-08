@@ -226,7 +226,7 @@ local Health_UpdateColor = function(self, event, unit)
 	elseif ((element.colorClass and UnitIsPlayer(unit)
 		or (element.colorClassNPC and not UnitIsPlayer(unit))
 		or (element.colorClassPet and UnitPlayerControlled(unit) and not UnitIsPlayer(unit)))
-		and not (element.colorClassHostileOnly and not UnitCanAttack("player", unit))) then
+		and not (not self.isPRD and element.colorClassHostileOnly and not UnitCanAttack("player", unit))) then
 		local _, class = UnitClass(unit)
 		color = self.colors.class[class]
 	elseif (element.colorSelection and unitSelectionType(unit, element.considerSelectionInCombatHostile)) then
