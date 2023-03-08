@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - The personal resource display once again shows your class color for your health bar.
 - The Wrath dungeon finder icon should now be placed on the Minimap where it belongs.
+- Fixed the sorting order of player cast auras in Wrath and Classic.
 
 ## [5.0.45-RC] 2023-03-07
 ### Changed
