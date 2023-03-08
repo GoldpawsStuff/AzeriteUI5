@@ -102,9 +102,9 @@ local Aura_Sort_Classic = function(a, b)
 			else
 				local sortDirection = a:GetParent().sortDirection
 				if (sortDirection == "DESCENDING") then
-					return (not aPlayer and bPlayer)
-				else
 					return (aPlayer and not bPlayer)
+				else
+					return (not aPlayer and bPlayer)
 				end
 			end
 		else
