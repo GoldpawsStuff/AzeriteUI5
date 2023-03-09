@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-03-08
+## [5.0.46-RC] 2023-03-09
 ### Fixed
 - The personal resource display once again shows your class color for your health bar.
 - The Wrath dungeon finder icon should now be placed on the Minimap where it belongs.
