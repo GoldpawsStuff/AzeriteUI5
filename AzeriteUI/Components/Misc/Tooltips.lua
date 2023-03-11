@@ -329,7 +329,9 @@ Tooltips.OnTooltipSetItem = function(self, tooltip, data)
 
 	if (tooltip.GetItem) then -- Some tooltips don't have this func. Example - compare tooltip
 		local name, link = tooltip:GetItem()
-		itemID = string_format("|cFFCA3C3C%s|r %s", ID, (data and data.id) or string_match(link, ":(%w+)"))
+		if (link) then
+			itemID = string_format("|cFFCA3C3C%s|r %s", ID, (data and data.id) or string_match(link, ":(%w+)"))
+		end
 	else
 		local id = data and data.id
 		if (id) then
