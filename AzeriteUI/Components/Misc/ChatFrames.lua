@@ -132,7 +132,7 @@ end
 
 ChatFrame.GetToBottomButton = function(self)
 	if (not Elements[self].scrollToBottomButton) then
-		Elements[self].scrollToBottomButton = _G[self:GetName().."ButtonFrameBottomButton"]
+		Elements[self].scrollToBottomButton = _G[self:GetName().."ButtonFrameBottomButton"] or self.ScrollToBottomButton
 	end
 	return Elements[self].scrollToBottomButton
 end
@@ -442,10 +442,12 @@ ChatFrames.UpdateButtons = function(self, event, ...)
 					local up = ChatFrame.GetUpButton(frame)
 					local down = ChatFrame.GetDownButton(frame)
 					local bottom = ChatFrame.GetToBottomButton(frame)
+					local scrollBar = ChatFrame.GetScrollBar(frame)
 
 					if (up) then up:SetParent(buttonFrame) end
 					if (down) then down:SetParent(buttonFrame) end
 					if (bottom) then bottom:SetParent(buttonFrame) end
+					if (scrollBar) then scrollBar:SetParent(buttonFrame) end
 
 					local tabText = ChatFrame.GetTabText(frame)
 					tabText:Show()
@@ -465,10 +467,12 @@ ChatFrames.UpdateButtons = function(self, event, ...)
 					local up = ChatFrame.GetUpButton(frame)
 					local down = ChatFrame.GetDownButton(frame)
 					local bottom = ChatFrame.GetToBottomButton(frame)
+					local scrollBar = ChatFrame.GetScrollBar(frame)
 
 					if (up) then up:SetParent(UIHider) end
 					if (down) then down:SetParent(UIHider) end
 					if (bottom) then bottom:SetParent(UIHider) end
+					if (scrollBar) then scrollBar:SetParent(UIHider) end
 
 					ChatFrame.GetTabText(frame):Hide()
 
