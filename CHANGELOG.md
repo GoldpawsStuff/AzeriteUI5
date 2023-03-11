@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-03-11
+## [5.0.47-RC] 2023-03-11
 ### Fixed
 - Fixed an issue where some addons would throw tooltip errors combined with our UI.
 
