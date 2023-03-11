@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-03-11
+### Fixed
+- The retail scroll to bottom button on the chat frames should no longer hover in mid air.
+- Added the new 10.1 chat frame scrollbar to elements that are only visible on mouseover.
+
 ## [5.0.47-RC] 2023-03-11
 ### Fixed
 - Fixed an issue where some addons would throw tooltip errors combined with our UI.
