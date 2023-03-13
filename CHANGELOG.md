@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-03-11
+## [5.0.48-RC] 2023-03-13
 ### Fixed
 - Fixed an issue with Monk Stagger post updates that would throw an endless amount of errors.
 - The retail scroll to bottom button on the chat frames should no longer hover in mid air.
