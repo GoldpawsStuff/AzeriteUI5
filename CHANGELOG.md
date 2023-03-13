@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-03-11
 ### Fixed
+- Fixed an issue with Monk Stagger post updates that would throw an endless amount of errors.
 - The retail scroll to bottom button on the chat frames should no longer hover in mid air.
 - Added the new 10.1 chat frame scrollbar to elements that are only visible on mouseover.
 
