@@ -430,15 +430,15 @@ local Stagger_PostUpdate = function(element, amount, maxHealth)
 	element[3].max = maxHealth
 
 	for i,point in next,element do
-		local value = (cur > point.max) and point.max or (cur < point.min) and point.min or cur
+		local value = (amount > point.max) and point.max or (amount < point.min) and point.min or amount
 
 		point:SetMinMaxValues(point.min, point.max)
 		point:SetValue(value)
 
 		if (element.inCombat) then
-			point:SetAlpha((cur == max) and 1 or (value < point.max) and .5 or 1)
+			point:SetAlpha((amount == max) and 1 or (value < point.max) and .5 or 1)
 		else
-			point:SetAlpha((cur == 0) and 0 or (value < point.max) and .5 or 1)
+			point:SetAlpha((amount == 0) and 0 or (value < point.max) and .5 or 1)
 		end
 	end
 end
