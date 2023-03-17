@@ -29,7 +29,6 @@ ns.AuraFilters = ns.AuraFilters or {}
 -- https://wowpedia.fandom.com/wiki/API_C_UnitAuras.GetAuraDataByAuraInstanceID
 ns.AuraFilters.PlayerAuraFilter = function(button, unit, data)
 
-	--button.unitIsCaster = unit and caster and UnitIsUnit(unit, caster)
 	button.spell = data.name
 	button.timeLeft = data.expirationTime - GetTime()
 	button.expiration = data.expirationTime
@@ -78,6 +77,11 @@ ns.AuraFilters.PartyAuraFilter = function(button, unit, data)
 	button.noDuration = not data.duration or data.duration == 0
 	button.isPlayer = data.isPlayerAura
 
+	-- Adding this for now
+	if (data.isBossDebuff) then
+		return true
+	end
+
 	if (UnitAffectingCombat("player")) then
 		return (not button.noDuration and data.duration < 301) or (data.applications > 1)
 	else
@@ -99,11 +103,7 @@ ns.AuraFilters.NameplateAuraFilter = function(button, unit, data)
 	elseif (data.isStealable) then
 		return true
 	elseif (data.isNameplateOnly or data.nameplateShowAll or (data.nameplateShowPersonal and button.isPlayer)) then
-		if (button.isHarmful) then
-			return (not button.noDuration and data.duration < 61) or (data.applications > 1)
-		else
-			return (not button.noDuration and data.duration < 31) or (data.applications > 1)
-		end
+		return true
 	else
 		if (not button.isHarmful and button.isPlayer and data.canApplyAura) then
 			return (not button.noDuration and data.duration < 31) or (data.applications > 1)
@@ -117,7 +117,6 @@ ns.AuraFilters.PlayerAuraFilter = function(element, unit, button, name, texture,
 	count, debuffType, duration, expiration, caster, isStealable, nameplateShowSelf, spellID,
 	canApply, isBossDebuff, casterIsPlayer, nameplateShowAll,timeMod, effect1, effect2, effect3)
 
-	--button.unitIsCaster = unit and caster and UnitIsUnit(unit, caster)
 	button.spell = name
 	button.timeLeft = expiration and (expiration - GetTime())
 	button.expiration = expiration
@@ -141,7 +140,6 @@ ns.AuraFilters.TargetAuraFilter = function(element, unit, button, name, texture,
 	count, debuffType, duration, expiration, caster, isStealable, nameplateShowSelf, spellID,
 	canApply, isBossDebuff, casterIsPlayer, nameplateShowAll,timeMod, effect1, effect2, effect3)
 
-	--button.unitIsCaster = unit and caster and UnitIsUnit(unit, caster)
 	button.spell = name
 	button.timeLeft = expiration and (expiration - GetTime())
 	button.expiration = expiration

@@ -33,18 +33,18 @@ local table_sort = table.sort
 -- https://wowpedia.fandom.com/wiki/API_C_UnitAuras.GetAuraDataByAuraInstanceID
 local Aura_Sort = function(a, b)
 
-	-- Playered applied debuffs that would display by default on nameplates
-	local aPlate = a.nameplateShowAll or (a.nameplateShowPersonal and a.isPlayerAura)
-	local bPlate = b.nameplateShowAll or (b.nameplateShowPersonal and b.isPlayerAura)
-	if (aPlate ~= bPlate) then
-		return aPlate
-	end
-
 	-- Player applied HoTs that we would display on nameplates
 	local aHoT = not a.isHarmful and a.isPlayerAura and a.canApplyAura
 	local bHoT = not b.isHarmful and b.isPlayerAura and b.canApplyAura
 	if (aHoT ~= bHoT) then
 		return aHoT
+	end
+
+	-- Playered applied debuffs that would display by default on nameplates
+	local aPlate = a.nameplateShowAll or (a.nameplateShowPersonal and a.isPlayerAura)
+	local bPlate = b.nameplateShowAll or (b.nameplateShowPersonal and b.isPlayerAura)
+	if (aPlate ~= bPlate) then
+		return aPlate
 	end
 
 	-- Player first, includes procs and zone buffs.

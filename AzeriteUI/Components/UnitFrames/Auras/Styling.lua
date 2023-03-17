@@ -149,21 +149,36 @@ ns.AuraStyles.PlayerPostUpdateButton = function(element, button, unit, data, pos
 	end
 
 	-- Icon Coloring
-	if (button.isHarmful) or (data.isPlayerAura and (data.nameplateShowAll or data.nameplateShowPersonal)) or (not button.isHarmful and data.isPlayerAura and data.canApplyAura) then
+	if (button.isHarmful)
+	or (data.nameplateShowAll or (data.nameplateShowPersonal and data.isPlayerAura))
+	or (not data.isHarmful and data.isPlayerAura and data.canApplyAura) then
 		button.Icon:SetDesaturated(false)
 		button.Icon:SetVertexColor(1, 1, 1)
+
+	elseif (data.isPlayerAura) then
+		button.Icon:SetDesaturated(false)
+		button.Icon:SetVertexColor(.3, .3, .3)
+
 	else
 		button.Icon:SetDesaturated(true)
 		button.Icon:SetVertexColor(.6, .6, .6)
 	end
+
+	--if (button.isHarmful) or (data.isPlayerAura and (data.nameplateShowAll or data.nameplateShowPersonal)) or (not button.isHarmful and data.isPlayerAura and data.canApplyAura) then
+	--	button.Icon:SetDesaturated(false)
+	--	button.Icon:SetVertexColor(1, 1, 1)
+	--else
+	--	button.Icon:SetDesaturated(true)
+	--	button.Icon:SetVertexColor(.6, .6, .6)
+	--end
 
 end
 
 ns.AuraStyles.TargetPostUpdateButton = function(element, button, unit, data, position)
 
 	-- Stealable buffs
-	if(not button.isHarmful and isStealable and element.showStealableBuffs and not UnitIsUnit("player", unit)) then
-	end
+	--if(not button.isHarmful and isStealable and element.showStealableBuffs and not UnitIsUnit("player", unit)) then
+	--end
 
 	-- Border Coloring
 	local color
@@ -177,9 +192,15 @@ ns.AuraStyles.TargetPostUpdateButton = function(element, button, unit, data, pos
 	end
 
 	-- Icon Coloring
-	if (data.isPlayerAura and (data.nameplateShowAll or data.nameplateShowPersonal)) or (not button.isHarmful and data.isPlayerAura and data.canApplyAura) then
+	if (data.nameplateShowAll or (data.nameplateShowPersonal and data.isPlayerAura))
+	or (not data.isHarmful and data.isPlayerAura and data.canApplyAura) then
 		button.Icon:SetDesaturated(false)
 		button.Icon:SetVertexColor(1, 1, 1)
+
+	elseif (data.isPlayerAura) then
+		button.Icon:SetDesaturated(false)
+		button.Icon:SetVertexColor(.3, .3, .3)
+
 	else
 		button.Icon:SetDesaturated(true)
 		button.Icon:SetVertexColor(.6, .6, .6)
