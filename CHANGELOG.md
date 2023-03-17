@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-03-17
+### Changed
+- Changed how nameplate auras are filtered in Retail.
+- Changed how auras are colored in retail to better differentiate between manually cast debuffs, procs and auras from other players or items.
+
 ## [5.0.48-RC] 2023-03-13
 ### Fixed
 - Fixed an issue with Monk Stagger post updates that would throw an endless amount of errors.
