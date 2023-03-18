@@ -26,7 +26,7 @@
 local Addon, ns = ...
 if (not ns.IsRetail and not ns.IsWrath) then return end
 
-local VehicleSeat = ns:NewModule("VehicleSeat")
+local VehicleSeat = ns:NewModule("VehicleSeat", "AceHook-3.0")
 local MFM = ns:GetModule("MovableFramesManager", true)
 
 -- Lua API
@@ -44,13 +44,27 @@ local defaults = { profile = ns:Merge({
 	}
 }, ns.moduleDefaults) }
 
+-- Frame Metamethods
+local clearAllPoints = getmetatable(CreateFrame("Frame")).__index.ClearAllPoints
+local setPoint = getmetatable(CreateFrame("Frame")).__index.SetPoint
+
+-- Utility
+local clearSetPoint = function(frame, ...)
+	clearAllPoints(frame)
+	setPoint(frame, ...)
+end
+
 VehicleSeat.InitializeVehicleSeatIndicator = function(self)
 
+	VehicleSeatIndicator:ClearAllPoints()
 	VehicleSeatIndicator:SetParent(UIParent)
 	VehicleSeatIndicator:SetFrameStrata("BACKGROUND")
 
-	-- This will block UIParent_ManageFramePositions() from being executed
+	-- This will prevent UIParent_ManageFramePositions() from being executed
+	-- *for some reason it's not working? Why not?
 	VehicleSeatIndicator.IsShown = function() return false end
+
+	self:SecureHook(VehicleSeatIndicator, "SetPoint", "UpdatePositionAndScale")
 
 	self.frame = VehicleSeatIndicator
 end
@@ -88,16 +102,14 @@ VehicleSeat.UpdatePositionAndScale = function(self)
 		if (anchor and anchor.framePoint) then
 			-- Position the frame at the anchor,
 			-- with the given point and offsets.
-			frame:ClearAllPoints()
-			frame:SetPoint(anchor.framePoint, anchor, anchor.framePoint, (anchor.frameOffsetX or 0)/scale, (anchor.frameOffsetY or 0)/scale)
+			clearSetPoint(frame, anchor.framePoint, anchor, anchor.framePoint, (anchor.frameOffsetX or 0)/scale, (anchor.frameOffsetY or 0)/scale)
 
 			-- Parse where this actually is relative to UIParent
 			local point, x, y = ns.API.GetPosition(frame)
 
 			-- Reposition the frame relative to UIParent,
 			-- to avoid it being hooked to our anchor in combat.
-			frame:ClearAllPoints()
-			frame:SetPoint(point, UIParent, point, x, y)
+			clearSetPoint(frame, point, UIParent, point, x, y)
 		end
 	end
 
