@@ -698,6 +698,7 @@ local UnitFrame_UpdateTextures = function(self)
 
 	local healthPreview = self.Health.Preview
 	healthPreview:SetStatusBarTexture(db.HealthBarTexture)
+	healthPreview:SetOrientation(db.HealthBarOrientation)
 
 	local healthBackdrop = self.Health.Backdrop
 	healthBackdrop:ClearAllPoints()
@@ -858,6 +859,7 @@ local style = function(self, unit)
 	self.Health = health
 	self.Health.Override = ns.API.UpdateHealth
 	self.Health.PostUpdate = Health_PostUpdate
+	self.Health.PostUpdateColor = Health_PostUpdateColor
 
 	local healthBackdrop = self:CreateTexture(nil, "BACKGROUND", nil, -1)
 

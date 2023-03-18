@@ -436,6 +436,7 @@ local HealPredict_PostUpdate = function(element, unit, myIncomingHeal, otherInco
 		local previewTexture = preview:GetStatusBarTexture()
 		local previewWidth, previewHeight = preview:GetSize()
 		local left, right, top, bottom = preview:GetTexCoord()
+		local isFlipped = preview:IsFlippedHorizontally()
 
 		if (growth == "RIGHT") then
 
@@ -782,7 +783,11 @@ local UnitFrame_UpdateTextures = function(self)
 	health:SetFlippedHorizontally(isFlipped)
 
 	local healthPreview = self.Health.Preview
+	--healthPreview:ClearAllPoints()
+	--healthPreview:SetPoint(unpack(db.HealthBarPosition))
+	--healthPreview:SetSize(unpack(db.HealthBarSize))
 	healthPreview:SetStatusBarTexture(db.HealthBarTexture)
+	healthPreview:SetOrientation(db.HealthBarOrientation)
 	healthPreview:SetFlippedHorizontally(isFlipped)
 
 	local healthBackdrop = self.Health.Backdrop
@@ -795,6 +800,7 @@ local UnitFrame_UpdateTextures = function(self)
 
 	local healPredict = self.HealthPrediction
 	healPredict:SetTexture(db.HealthBarTexture)
+	--healPredict:SetOrientation(db.HealthBarOrientation)
 
 	local absorb = self.Health.Absorb
 	if (absorb) then
@@ -921,7 +927,7 @@ local style = function(self, unit, id)
 	self.Health.PostUpdate = Health_PostUpdate
 	self.Health.PostUpdateColor = Health_PostUpdateColor
 
-	local healthBackdrop = health:CreateTexture(nil, "BACKGROUND", nil, -1)
+	local healthBackdrop = self:CreateTexture(nil, "BACKGROUND", nil, -1)
 
 	self.Health.Backdrop = healthBackdrop
 
