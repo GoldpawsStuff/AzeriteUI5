@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-03-18
+### Fixed
+- Fixed where and how the health prediction element was shown on the target unit frame.
+- Changed how the vehicle seat indicator is positioned, to avoid the mega stretched icon in Wrath.
+
 ## [5.0.49-RC] 2023-03-17
 ### Changed
 - Changed how nameplate auras are filtered in Retail.
