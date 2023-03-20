@@ -35,6 +35,7 @@ ns.SETTINGS_VERSION = 13
 _G[Addon] = ns
 
 local defaults = {
+	global = {},
 	profile = {
 		relativeScale = 1
 	}

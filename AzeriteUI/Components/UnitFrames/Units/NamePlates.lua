@@ -992,8 +992,14 @@ local style = function(self, unit, id)
 	auras.FilterAura = ns.AuraFilters.NameplateAuraFilter -- retail
 	auras.CreateButton = ns.AuraStyles.CreateSmallButton
 	auras.PostUpdateButton = ns.AuraStyles.NameplatePostUpdateButton
-	auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
-	auras.SortAuras = ns.AuraSorts.DefaultFunction -- only in retail
+
+	if (ns.db.global.disableAuraSorting) then
+		auras.PreSetPosition = ns.AuraSorts.Alternate -- only in classic
+		auras.SortAuras = ns.AuraSorts.AlternateFuncton -- only in retail
+	else
+		auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
+		auras.SortAuras = ns.AuraSorts.DefaultFunction -- only in retail
+	end
 
 	self.Auras = auras
 	self.Auras.PostUpdate = Auras_PostUpdate

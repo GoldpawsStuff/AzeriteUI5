@@ -81,6 +81,7 @@ oUF:RegisterMetaFunction("CreateBar", UnitFrame_CreateBar)
 oUF:RegisterMetaFunction("CreateRing", UnitFrame_CreateRing)
 oUF:RegisterMetaFunction("CreateOrb", UnitFrame_CreateOrb)
 
+ns.UnitFrames = {}
 ns.UnitFrame = {}
 ns.UnitFrame.defaults = defaults
 
@@ -101,6 +102,7 @@ ns.UnitFrame.Spawn = function(unit, overrideName, ...)
 	local frame = oUF:Spawn(unit, overrideName)
 
 	ns.UnitFrame.InitializeUnitFrame(frame)
+	ns.UnitFrames[frame] = true
 
 	return frame
 end

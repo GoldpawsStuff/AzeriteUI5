@@ -63,6 +63,38 @@ local Aura_Sort = function(a, b)
 	return a.auraInstanceID < b.auraInstanceID
 end
 
+local Aura_Sort_Alternate = function(a, b)
+
+	-- Player applied HoTs that we would display on nameplates
+	local aHoT = not a.isHarmful and a.isPlayerAura and a.canApplyAura
+	local bHoT = not b.isHarmful and b.isPlayerAura and b.canApplyAura
+	if (aHoT ~= bHoT) then
+		return aHoT
+	end
+
+	-- Playered applied debuffs that would display by default on nameplates
+	local aPlate = a.nameplateShowAll or (a.nameplateShowPersonal and a.isPlayerAura)
+	local bPlate = b.nameplateShowAll or (b.nameplateShowPersonal and b.isPlayerAura)
+	if (aPlate ~= bPlate) then
+		return aPlate
+	end
+
+	-- Player first, includes procs and zone buffs.
+	if (a.isPlayerAura ~= b.isPlayerAura) then
+		return a.isPlayerAura
+	end
+
+	-- No duration last, short times first.
+	--local aTime = (not a.duration or a.duration == 0) and math_huge or a.expirationTime or -1
+	--local bTime = (not b.duration or b.duration == 0) and math_huge or b.expirationTime or -1
+
+	--if (aTime ~= bTime) then
+	--	return aTime < bTime
+	--end
+
+	return a.auraInstanceID < b.auraInstanceID
+end
+
 local Aura_Sort_Classic = function(a, b)
 	if (a and b) then
 		if (a:IsShown() and b:IsShown()) then
@@ -111,6 +143,34 @@ local Aura_Sort_Classic = function(a, b)
 			return (a:IsShown())
 		end
 	end
+end
+
+local Aura_Sort_Alternate_Classic = function(a, b)
+	if (a and b) then
+		if (a:IsShown() and b:IsShown()) then
+
+			-- These flags are supplied by the aura filters
+			local aPlayer = a.isPlayer or false
+			local bPlayer = b.isPlayer or false
+
+			if (aPlayer ~= bPlayer) then
+				local sortDirection = a:GetParent().sortDirection
+				if (sortDirection == "DESCENDING") then
+					return (aPlayer and not bPlayer)
+				else
+					return (not aPlayer and bPlayer)
+				end
+			end
+		else
+			return (a:IsShown())
+		end
+	end
+end
+
+ns.AuraSorts.AlternateFuncton = ns.IsRetail and Aura_Sort_Alternate or Aura_Sort_Alternate_Classic
+ns.AuraSorts.Alternate = function(element, max)
+	table_sort(element, ns.AuraSorts.AlternateFuncton)
+	return 1, #element
 end
 
 ns.AuraSorts.DefaultFunction = ns.IsRetail and Aura_Sort or Aura_Sort_Classic

@@ -490,6 +490,7 @@ local style = function(self, unit)
 
 	-- Apply common scripts and member values.
 	ns.UnitFrame.InitializeUnitFrame(self)
+	ns.UnitFrames[self] = true -- add to our registry
 
 	-- Overlay for icons and text
 	--------------------------------------------
@@ -773,8 +774,14 @@ local style = function(self, unit)
 	auras.PostUpdateButton = ns.AuraStyles.TargetPostUpdateButton
 	auras.CustomFilter = ns.AuraFilters.PartyAuraFilter -- classic
 	auras.FilterAura = ns.AuraFilters.PartyAuraFilter -- retail
-	auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
-	auras.SortAuras = ns.AuraSorts.DefaultFunction -- only in retail
+
+	if (ns.db.global.disableAuraSorting) then
+		auras.PreSetPosition = ns.AuraSorts.Alternate -- only in classic
+		auras.SortAuras = ns.AuraSorts.AlternateFuncton -- only in retail
+	else
+		auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
+		auras.SortAuras = ns.AuraSorts.DefaultFunction -- only in retail
+	end
 
 	self.Auras = auras
 
@@ -792,6 +799,7 @@ local style = function(self, unit)
 	-- Register events to handle additional texture updates.
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", UnitFrame_OnEvent, true)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", UnitFrame_OnEvent, true)
+
 
 end
 
