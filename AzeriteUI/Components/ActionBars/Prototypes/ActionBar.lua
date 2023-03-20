@@ -225,8 +225,12 @@ ActionBar.UpdateStateDriver = function(self)
 		elseif (ns.IsWrath and playerClass == "PRIEST") then
 			statedriver = statedriver .. "; [bonusbar:1] 7" -- Shadowform
 
-		elseif (ns.IsWrath and playerClass == "WARRIOR") then
-			statedriver = statedriver .. "; [bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9"
+		elseif (playerClass == "WARRIOR") then
+			if (ns.IsWrath) then
+				statedriver = statedriver .. "; [bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9"
+			elseif (ns.IsClassic) then
+				statedriver = statedriver .. "; [bonusbar:1] 7; [bonusbar:2] 8"
+			end
 		end
 
 		statedriver = statedriver .. "; 1"
