@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-03-20
+## [5.0.51-RC] 2023-03-20
 ### Added
 - Added the chat commands `/disableaurasorting`and `/enableaurasorting` to toggle the time based display of auras. If you like your auras to stay more or less in the same place when you maintain a rotation, regardless of time left, you might want to try the first command. Applies to all unitframes including the nameplates.
 
