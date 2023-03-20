@@ -718,17 +718,7 @@ MinimapMod.UpdatePerformance = function(self)
 
 	local now = GetTime()
 	local fps = GetFramerate()
-	local world, home, _
-
-	if (not self.latency.nextUpdate) or (now >= self.latency.nextUpdate) then
-		-- latencyHome: chat, auction house, some addon data
-		-- latencyWorld: combat, data from people around you(specs, gear, enchants, etc.), NPCs, mobs, casting, professions
-		_, _, home, world = GetNetStats()
-		self.latency.nextUpdate = now + 30
-		self.latency.latencyWorld = world
-	else
-		world = self.latency.latencyWorld
-	end
+	local _, _, home, world = GetNetStats()
 
 	if (fps and fps > 0) then
 		self.fps:SetFormattedText("|cff888888%.0f %s|r", fps, L_FPS)
@@ -740,6 +730,8 @@ MinimapMod.UpdatePerformance = function(self)
 		self.latency:SetFormattedText("|cff888888%s|r %.0f - |cff888888%s|r %.0f", L_HOME, home, L_WORLD, world)
 	elseif (world and world > 0) then
 		self.latency:SetFormattedText("|cff888888%s|r %.0f", L_WORLD, world)
+	elseif (home and home > 0) then
+		self.latency:SetFormattedText("|cff888888%s|r %.0f", L_HOME, home)
 	else
 		self.latency:SetText("")
 	end

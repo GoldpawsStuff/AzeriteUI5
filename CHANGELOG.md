@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-03-20
+### Fixed
+- Latency display should be much more consistent and correct now.
+
 ## [5.0.50-RC] 2023-03-20
 ### Fixed
 - Changed how the vehicle seat indicator is positioned, to avoid the mega stretched icon in Wrath.
