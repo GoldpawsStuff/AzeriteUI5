@@ -33,12 +33,14 @@ local GetMedia = ns.API.GetMedia
 
 MicroMenu.SpawnButtons = function(self)
 
+	-- Retail
 	local labels = {
 		CharacterMicroButton = CHARACTER_BUTTON,
 		SpellbookMicroButton = SPELLBOOK_ABILITIES_BUTTON,
 		TalentMicroButton = TALENTS_BUTTON,
 		AchievementMicroButton = ACHIEVEMENT_BUTTON,
 		QuestLogMicroButton = QUESTLOG_BUTTON,
+		QuickJoinToastButton = SOCIALS,
 		GuildMicroButton = LOOKINGFORGUILD,
 		LFDMicroButton = DUNGEONS_BUTTON,
 		CollectionsMicroButton = COLLECTIONS,
@@ -46,6 +48,8 @@ MicroMenu.SpawnButtons = function(self)
 		StoreMicroButton = BLIZZARD_STORE,
 		MainMenuMicroButton = MAINMENU_BUTTON,
 	}
+
+	-- Wrath Classic
 	if (ns.IsWrath) then
 		labels = {
 			CharacterMicroButton = CHARACTER_BUTTON,
@@ -60,6 +64,8 @@ MicroMenu.SpawnButtons = function(self)
 			HelpMicroButton = HELP_BUTTON
 		}
 	end
+
+	-- Classic
 	if (ns.IsClassic) then
 		labels = {
 			CharacterMicroButton = CHARACTER_BUTTON,
@@ -74,12 +80,14 @@ MicroMenu.SpawnButtons = function(self)
 		}
 	end
 
+	-- Retail
 	local buttons = {
 		CharacterMicroButton,
 		SpellbookMicroButton,
 		TalentMicroButton,
 		AchievementMicroButton,
 		QuestLogMicroButton,
+		QuickJoinToastButton,
 		GuildMicroButton,
 		LFDMicroButton,
 		CollectionsMicroButton,
@@ -87,6 +95,9 @@ MicroMenu.SpawnButtons = function(self)
 		StoreMicroButton,
 		MainMenuMicroButton
 	}
+
+
+	-- Wrath Classic
 	if (ns.IsWrath) then
 		buttons = {
 			CharacterMicroButton,
@@ -101,6 +112,8 @@ MicroMenu.SpawnButtons = function(self)
 			HelpMicroButton
 		}
 	end
+
+	-- Classic
 	if (ns.IsClassic) then
 		buttons = {
 			CharacterMicroButton,

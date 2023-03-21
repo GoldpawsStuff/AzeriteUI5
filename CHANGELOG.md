@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-03-21
+### Added
+- Added the social/friends button from Retail to our cogwheel micro menu. You can now open your friends panel without a keybind.
+
 ## [5.0.52-RC] 2023-03-20
 ### Fixed
 - The backdrop alignment of the health bar on Boss- and Critter frames should once again be correct.
