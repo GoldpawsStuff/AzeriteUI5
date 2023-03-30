@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-03-30
 ### Changed
-- The actionbuttons should now obey the blizzard options to cast on focus- and mouseover targets. The latter only applies to Dragonflight, as the option only exists there. I might build it into Wrath and Classic too, though this takes a larger workaround as the game does not inherently support it there.
+- The actionbuttons should now obey the blizzard options to cast on focus- and mouseover unitframes. The latter only applies to Dragonflight, as the option only exists there. I might build it into Wrath and Classic too, though this takes a larger workaround as the game does not inherently support it there.
 
 ### Fixed
 - Added an extra callback to handle group member info being wrong after group leader changes in Wrath.
