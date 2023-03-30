@@ -55,6 +55,7 @@ local string_lower = string.lower
 local tonumber = tonumber
 
 -- Addon API
+local IsAddOnAvailable = ns.API.IsAddOnAvailable
 local SetRelativeScale = ns.API.SetRelativeScale
 local UpdateObjectScales = ns.API.UpdateObjectScales
 
@@ -83,6 +84,36 @@ ns.ResetBlizzardScale = function(self)
 	ReloadUI() -- need a reset as the above can taint
 end
 
+ns.SwitchUI = function(self, input)
+	if (not self._ui_list) then
+		-- Create a list of currently installed UIs.
+		self._ui_list = {}
+		for ui,cmds in next,{
+			["AzeriteUI"] = { "azerite", "azui" },
+			["DiabolicUI"] = { "diabolic", "diablo", "dui" }
+		} do
+			-- Only include existing UIs that can be switched to.
+			if (ui ~= Addon) and (IsAddOnAvailable(ui)) then
+				for _,cmd in next,cmds do
+					self._ui_list[cmd] = ui
+				end
+			end
+		end
+	end
+	local arg = self:GetArgs(string_lower(input))
+	local target = arg and self._ui_list[arg]
+	if (target) then
+		EnableAddOn(target) -- Enable the desired UI
+		for cmd,ui in next,self._ui_list do
+			if (ui and ui ~= target) then -- Don't disable target UI
+				DisableAddOn(ui) -- Disable all other UIs
+			end
+		end
+		DisableAddOn(Addon) -- Disable the current UI
+		ReloadUI() -- Reload interface to the selected UI
+	end
+end
+
 ns.UpdateSettings = function(self, event, ...)
 	-- Fire callbacks to submodules.
 	self.callbacks:Fire("Saved_Settings_Updated")
@@ -90,7 +121,6 @@ end
 
 ns.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
-		--print("Type |cff4488ff/resetscale|r to set the ui scale to AzeriteUI default.")
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent") -- once is enough.
 	end
 end
@@ -115,6 +145,7 @@ ns.OnInitialize = function(self)
 	self.db.RegisterCallback(self, "OnProfileCopied", "UpdateSettings")
 	self.db.RegisterCallback(self, "OnProfileReset", "UpdateSettings")
 
+	self:RegisterChatCommand("goto", "SwitchUI")
 	self:RegisterChatCommand("resetscale", "ResetBlizzardScale")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 
