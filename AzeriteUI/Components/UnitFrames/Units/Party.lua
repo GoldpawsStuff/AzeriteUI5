@@ -26,7 +26,7 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local PartyFrameMod = ns:Merge(ns:NewModule("PartyFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
+local PartyFrameMod = ns:Merge(ns:NewModule("PartyFrames", "LibMoreEvents-1.0", "AceHook-3.0"), ns.UnitFrame.modulePrototype)
 local MFM = ns:GetModule("MovableFramesManager", true)
 
 -- Lua API
@@ -840,7 +840,8 @@ end
 PartyFrameMod.GetPartyAttributes = function(self)
 	return ns.Prefix.."Party", nil,
 	--"custom [@player,exists,nogroup:party] show;[group:party,nogroup:raid] show;hide", "showPlayer", true, "showSolo", true,
-	"custom [group:party,nogroup:raid] show;hide", "showPlayer", false, "showSolo", false,
+	--"custom [group:party,nogroup:raid] show;hide", "showPlayer", false, "showSolo", false,
+	"custom [group,@raid6,noexists] show;hide", "showPlayer", false, "showSolo", false,
 	"oUF-initialConfigFunction", [[
 		local header = self:GetParent();
 		self:SetWidth(header:GetAttribute("initial-width"));
@@ -855,6 +856,14 @@ PartyFrameMod.GetPartyAttributes = function(self)
 	"yOffset", config.GrowthY,
 	"sortMethod", config.Sorting,
 	"sortDir", config.SortDirection
+end
+
+PartyFrameMod.UpdateAll = function(self)
+	if (not self.frame) then return end
+	for i = 1, self.frame:GetNumChildren() do
+		local frame = select(i, self.frame:GetChildren())
+		frame:UpdateAllElements("RefreshUnit")
+	end
 end
 
 PartyFrameMod.Spawn = function(self)
@@ -876,13 +885,19 @@ PartyFrameMod.Spawn = function(self)
 
 	-- Sometimes some elements are wrong or "get stuck" upon exiting the editmode.
 	if (EditModeManagerFrame) then
-		hooksecurefunc(EditModeManagerFrame, "ExitEditMode", function()
-			for i = 1, self.frame:GetNumChildren() do
-				local frame = select(i, self.frame:GetChildren())
-				frame:UpdateAllElements("RefreshUnit")
-			end
-		end)
+		self:SecureHook(EditModeManagerFrame, "ExitEditMode", "UpdateAll")
 	end
+
+	-- Sometimes when changing group leader, only the group leader is updated,
+	-- leaving other units with a lot of wrong information displayed.
+	-- Should think that GROUP_ROSTER_UPDATE handled this, but it doesn't.
+	-- *Only experienced this is Wrath.But adding it as a general update anyway.
+	self:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateAll")
+
+	-- Sometimes offline coloring remains when a member comes back online. Why?
+	-- Not sure if this is something we should force update as the health element
+	-- is already registered for this event. Leaving this comment here while I decide.
+
 
 	-- Movable Frame Anchor
 	---------------------------------------------------
