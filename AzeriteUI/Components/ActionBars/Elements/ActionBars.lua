@@ -973,6 +973,7 @@ ActionBarMod.OnInitialize = function(self)
 
 	self:SetEnabledState(self.db.profile.enabled)
 
+	-- Spawn all bars
 	for i = 1,#BAR_TO_ID do
 
 		local config = self.db.profile.bars[i]
@@ -1088,10 +1089,6 @@ ActionBarMod.OnInitialize = function(self)
 			self:RegisterEvent("ADDON_LOADED", "OnEvent")
 		end
 	end
-
-end
-
-ActionBarMod.UpdateBarStates = function(self)
 
 end
 

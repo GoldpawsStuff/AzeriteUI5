@@ -56,6 +56,9 @@ ns.ActionButton.defaults = defaults
 ns.ActionButton.Create = function(id, name, header, config)
 
 	local button = LAB:CreateButton(id, name, header, config)
+	button:SetAttribute("checkselfcast", true)
+	button:SetAttribute("checkfocuscast", true)
+	button:SetAttribute("checkmouseovercast", true)
 
 	ns.ActionButtons[button] = true
 
