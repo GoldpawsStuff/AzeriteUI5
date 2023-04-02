@@ -4,11 +4,16 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-03-30
+## [5.0.54-RC] 2023-04-02
+### Added
+- Added a crafting order notification to the new mail display. Removed the blizzard icon for the same.
+
 ### Changed
 - The actionbuttons should now obey the blizzard options to cast on focus- and mouseover unitframes. The latter only applies to Dragonflight, as the option only exists there. I might build it into Wrath and Classic too, though this takes a larger workaround as the game does not inherently support it there.
+- Actions that have more than one total charge should now also show the remaining charges when it's only one left, as to opposed to previously where it would only show the count if it was more than one charge remaining.
 
 ### Fixed
+- Temporary weapon enchant cooldowns in the aura frame should be slightly more readable now.
 - Added an extra callback to handle group member info being wrong after group leader changes in Wrath.
 - Fixed a typo in the unitframe xml file that may or may not have caused problems.
 
