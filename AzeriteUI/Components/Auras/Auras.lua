@@ -184,6 +184,13 @@ end
 Aura.UpdateTempEnchant = function(self, slot)
 	local enchant = (slot == 16 and 2) or 6
 	local expiration = select(enchant, GetWeaponEnchantInfo())
+	local remaining = expiration / 1e3
+
+	-- We can't really know the duration of temp enchants without huge lists,
+	-- so we sort of just make them up according to remaining time left.
+	-- Makes them easier to read.
+	local duration = (remaining <= 7200 and remaining > 3600) and 7200 or (remaining <= 3600 and remaining > 1800) and 3600 or (remaining <= 1800 and remaining > 600) and 1800 or 600
+
 	local icon = GetInventoryItemTexture("player", slot)
 
 	if (icon) then
@@ -198,7 +205,7 @@ Aura.UpdateTempEnchant = function(self, slot)
 
 	if (expiration) then
 		self.enchant = enchant
-		self.cd:SetCooldown(GetTime(), expiration / 1e3)
+		self.cd:SetCooldown(GetTime() - (duration - remaining), remaining)
 		self.cd:Show()
 		self:SetScript("OnUpdate", self.OnUpdate)
 	else
