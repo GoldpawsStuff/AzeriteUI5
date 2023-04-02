@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ]]
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 106
+local MINOR_VERSION = 107
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -1803,7 +1803,7 @@ function UpdateCount(self)
 	else
 		local charges, maxCharges, _chargeStart, _chargeDuration = self:GetCharges()
 		if charges and maxCharges and maxCharges > 1 then
-			self.Count:SetText(charges > 1 and charges or "") -- GE Fix: Hide when no stacks
+			self.Count:SetText(charges > 0 and charges or "") -- GE Fix: Hide when no stacks
 		else
 			self.Count:SetText("")
 		end
