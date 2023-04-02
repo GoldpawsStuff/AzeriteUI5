@@ -97,9 +97,13 @@ local Elements = {}
 
 -- Minimap objects available for restyling.
 ----------------------------------------------------
-local Objects = { Calendar = GameTimeFrame, Clock = TimeManagerClockButton, Compass = MinimapCompassTexture }
+local Objects = {}
 if (ns.IsRetail) then
 	Objects.BorderTop = MinimapCluster.BorderTop
+	Objects.Calendar = GameTimeFrame
+	Objects.Clock = TimeManagerClockButton
+	Objects.Compass = MinimapCompassTexture
+	Objects.Crafting = MinimapCluster.IndicatorFrame.CraftingOrderFrame
 	Objects.Difficulty = MinimapCluster.InstanceDifficulty
 	Objects.Expansion = ExpansionLandingPageMinimapButton
 	Objects.Eye = QueueStatusButton
@@ -112,6 +116,9 @@ end
 if (ns.IsWrath) then
 	Objects.BorderTop = MinimapBorderTop
 	Objects.BorderClassic = MinimapBorder
+	Objects.Calendar = GameTimeFrame
+	Objects.Clock = TimeManagerClockButton
+	Objects.Compass = MinimapCompassTexture
 	Objects.Difficulty = MiniMapInstanceDifficulty
 	Objects.Eye = MiniMapLFGFrame
 	Objects.EyeClassicPvP = MiniMapBattlefieldFrame
@@ -125,6 +132,9 @@ end
 if (ns.IsClassic) then
 	Objects.BorderTop = MinimapBorderTop
 	Objects.BorderClassic = MinimapBorder
+	Objects.Calendar = GameTimeFrame
+	Objects.Clock = TimeManagerClockButton
+	Objects.Compass = MinimapCompassTexture
 	Objects.Difficulty = MiniMapInstanceDifficulty
 	Objects.Eye = MiniMapLFGFrame
 	Objects.EyeClassicPvP = MiniMapBattlefieldFrame
@@ -145,6 +155,7 @@ if (ns.IsRetail) then
 	ObjectOwners.Calendar = MinimapCluster
 	ObjectOwners.Clock = MinimapCluster
 	ObjectOwners.Compass = MinimapBackdrop
+	ObjectOwners.Crafting = MinimapCluster.IndicatorFrame
 	ObjectOwners.Difficulty = MinimapCluster
 	ObjectOwners.Expansion = MinimapBackdrop
 	ObjectOwners.Eye = MicroButtonAndBagsBar
@@ -196,6 +207,18 @@ local ObjectSnippets = {
 
 	-- Blizzard Objects
 	------------------------------------------
+	Crafting = {
+		Enable = function(object)
+			object:OnLoad()
+			object:SetScript("OnEvent", object.OnEvent)
+		end,
+		Disable = function(object)
+			object:SetScript("OnEvent", nil)
+		end,
+		Update = function(object)
+			object:OnEvent("CRAFTINGORDERS_UPDATE_PERSONAL_ORDER_COUNTS")
+		end
+	},
 	Mail = {
 		Enable = function(object)
 			object:OnLoad()
@@ -345,6 +368,7 @@ local Skins = {
 			Calendar = true,
 			Clock = true,
 			Compass = true,
+			Crafting = true, -- retail
 			Difficulty = true,
 			Expansion = true, -- retail
 			Eye = false, -- wrath + retail
@@ -433,7 +457,7 @@ local Unskinned = {
 
 	MailPosition = { "BOTTOM", 0, 30 },
 	MailJustifyH = "CENTER",
-	MailJustifyV = "MIDDLE",
+	MailJustifyV = "BOTTOM",
 	MailFont = GetFont(15, true),
 	MailColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .85 },
 
@@ -623,6 +647,7 @@ local Mail_OnEnter = function(self)
 
 	GameTooltip_SetDefaultAnchor(GameTooltip, self)
 
+	-- Add unread mail notifier.
 	local sender1, sender2, sender3 = GetLatestThreeSenders()
 	if (sender1 or sender2 or sender3) then
 		GameTooltip:AddLine(L_HAVE_MAIL_FROM, unpack(Colors.highlight))
@@ -637,6 +662,15 @@ local Mail_OnEnter = function(self)
 		end
 	else
 		GameTooltip:AddLine(L_HAVE_MAIL, unpack(Colors.highlight))
+	end
+
+	-- Add crafting order notifier.
+	if (ns.IsRetail) and (self.countInfos and #self.countInfos > 0) then
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(MAILFRAME_CRAFTING_ORDERS_TOOLTIP_TITLE)
+		for _,countInfo in ipairs(mail.countInfos) do
+			GameTooltip:AddLine(string_format(PERSONAL_CRAFTING_ORDERS_AVAIL_FMT, countInfo.numPersonalOrders, countInfo.professionName))
+		end
 	end
 
 	GameTooltip:Show()
@@ -795,14 +829,39 @@ MinimapMod.UpdateMail = function(self)
 	if (not mail) then
 		return
 	end
+
 	local hasMail = HasNewMail()
-	if (hasMail) then
+	local hasCraftingOrder
+
+	if (ns.IsRetail) then
+		mail.countInfos = C_CraftingOrders.GetPersonalOrdersInfo()
+		hasCraftingOrder = mail.countInfos and #mail.countInfos > 0
+
+		local mailText = ""
+
+		if (hasCraftingOrder) then
+			mailText = mailText .. string_format("%s |cff888888(|r"..Colors.normal.colorCode..#mail.countInfos.."|r|cff888888)|r", PROFESSIONS_CRAFTING, L_MAIL, #mail.countInfos)
+		end
+
+		if (hasMail) then
+			if (hasCraftingOrder) then
+				mailText = string_format("%s %s", L_NEW, L_MAIL) .. "|n" .. mailText
+			else
+				mailText = string_format("%s %s", L_NEW, L_MAIL)
+			end
+		end
+
+		mail:SetText(mailText)
+	end
+
+	if (hasMail or hasCraftingOrder) then
 		mail:Show()
 		mail.frame:Show()
 	else
 		mail:Hide()
 		mail.frame:Hide()
 	end
+
 end
 
 MinimapMod.UpdateTimers = function(self)
@@ -1098,7 +1157,8 @@ MinimapMod.CreateCustomElements = function(self)
 	mail:SetTextColor(unpack(db.MailColor))
 	mail:SetJustifyH(db.MailJustifyH)
 	mail:SetJustifyV(db.MailJustifyV)
-	mail:SetFormattedText("%s %s", L_NEW, L_MAIL)
+	mail:SetFormattedText("%s", L_MAIL)
+	--mail:SetFormattedText("%s %s", L_NEW, L_MAIL)
 	mail:SetPoint(unpack(db.MailPosition))
 	mailFrame:SetAllPoints(mail)
 
@@ -1256,6 +1316,10 @@ MinimapMod.OnInitialize = function(self)
 	self:RegisterEvent("ZONE_CHANGED", "UpdateZone")
 	self:RegisterEvent("ZONE_CHANGED_INDOORS", "UpdateZone")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateZone")
+
+	if (ns.IsRetail) then
+		self:RegisterEvent("CRAFTINGORDERS_UPDATE_PERSONAL_ORDER_COUNTS", "UpdateMail")
+	end
 
 	self:RegisterChatCommand("setclock", "SetClock")
 	self:RegisterChatCommand("setminimaptheme", "SetMinimapTheme")
