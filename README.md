@@ -3,7 +3,7 @@
 [![discord](https://www.goldpawsstuff.com/shared/img/common/dd-button.png)](https://discord.gg/RwcSm8V3Dy)
 [![twitter](https://www.goldpawsstuff.com/shared/img/common/tw-button.png)](https://twitter.com/GoldpawsStuff)
 
-AzeriteUI5 is a custom user interface for World of Warcraft Dragonflight and Wrath Classic.
+AzeriteUI5 is a custom user interface for World of Warcraft Dragonflight, Wrath Classic and Classic Era.
 
 ## FAQ
 - To remove abilities from the action bars, hold alt+ctrl+shift and drag.
