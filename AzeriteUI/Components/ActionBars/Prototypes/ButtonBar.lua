@@ -122,7 +122,15 @@ ButtonBar.UpdateButtons = function(self)
 	end
 
 	for id,button in next,buttons do
-		button:SetEnabled(id <= numbuttons)
+		if (id <= numbuttons) then
+			button:SetEnabled(true)
+			button:Show()
+			button:SetAttribute("statehidden", nil)
+		else
+			button:SetEnabled(false)
+			button:Hide()
+			button:SetAttribute("statehidden", true)
+		end
 	end
 
 end

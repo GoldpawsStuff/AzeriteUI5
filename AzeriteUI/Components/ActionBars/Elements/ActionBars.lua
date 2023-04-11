@@ -33,7 +33,9 @@ local MFM = ns:GetModule("MovableFramesManager", true)
 -- Lua API
 local next = next
 local string_format = string.format
+local string_gsub = string.gsub
 local string_lower = string.lower
+local string_split = string.split
 local tonumber = tonumber
 
 -- Addon API
@@ -742,32 +744,6 @@ ActionBarMod.GetBarDisplayName = function(self, id)
 	end
 end
 
-ActionBarMod.EnableBar = function(self, input)
-	if (InCombatLockdown()) then return end
-
-	local db = self.db.profile.bars
-	local id = tonumber((self:GetArgs(string_lower(input))))
-
-	if (not id or not db[id]) then return end
-
-	db[id].enabled = true
-
-	self:UpdateSettings()
-end
-
-ActionBarMod.DisableBar = function(self, input)
-	if (InCombatLockdown()) then return end
-
-	local db = self.db.profile.bars
-	local id = tonumber((self:GetArgs(string_lower(input))))
-
-	if (not id or not db[id]) then return end
-
-	db[id].enabled = false
-
-	self:UpdateSettings()
-end
-
 -- fucking charge cooldown styling
 ActionBarMod.UpdateChargeCooldowns = function(self)
 	if (not self.chargeCooldowns) then
@@ -857,6 +833,89 @@ ActionBarMod.UpdateSettings = function(self)
 		end
 
 	end
+end
+
+-- Chat Commands
+-----------------------------------------------
+ActionBarMod.EnableBar = function(self, input)
+	if (InCombatLockdown()) then return end
+	if (not input) then return end
+
+	local db = self.db.profile.bars
+	local id = tonumber((self:GetArgs(string_lower(input))))
+
+	if (not id or not db[id]) then return end
+
+	db[id].enabled = true
+
+	self:UpdateSettings()
+end
+
+ActionBarMod.DisableBar = function(self, input)
+	if (InCombatLockdown()) then return end
+	if (not input) then return end
+
+	local db = self.db.profile.bars
+	local id = tonumber((self:GetArgs(string_lower(input))))
+
+	if (not id or not db[id]) then return end
+
+	db[id].enabled = false
+
+	self:UpdateSettings()
+end
+
+ActionBarMod.SetButtons = function(self, input)
+	if (InCombatLockdown()) then return end
+	if (not input) then return end
+
+	-- Strip superflous spaces from the input
+	input = string_gsub(input, "%s+", " ")
+
+	-- Parse arguments
+	local args = { string_split(" ", string_lower(input)) }
+
+	-- Retrieve the settings
+	local db = self.db.profile.bars -- get the saved bar settings
+	local id = tonumber(args[1]) -- get the barID
+
+	-- Retrieve the saved settings for the specified bar
+	local config = id and db[id]
+	if (not config) then return end
+
+	-- Set the number of buttons
+	local arg = tonumber(args[2]) or defaults.profile.bars[id].numbuttons or 12
+	config.numbuttons = (arg < 0) and 0 or (arg > 12) and 12 or arg
+
+	-- Update the bar!
+	self:UpdateSettings()
+end
+
+ActionBarMod.SetLayout = function(self, input)
+	if (InCombatLockdown()) then return end
+	if (not input) then return end
+
+	-- Strip superflous spaces from the input
+	input = string_gsub(input, "%s+", " ")
+
+	-- Parse arguments
+	local args = { string_split(" ", string_lower(input)) }
+
+	-- Retrieve the settings
+	local db = self.db.profile.bars -- get the saved bar settings
+	local id = tonumber(args[1]) -- get the barID
+
+	-- Retrieve the saved settings for the specified bar
+	local config = id and db[id]
+	if (not config) then return end
+
+	local layout, maptype = args[2], args[3]
+	if (layout == "map") then
+
+
+	elseif (layout == "grid") then
+	end
+
 end
 
 ActionBarMod.EnableBarFading = function(self)
@@ -1081,6 +1140,10 @@ ActionBarMod.OnInitialize = function(self)
 	self:RegisterChatCommand("disablebar", "DisableBar")
 	self:RegisterChatCommand("enablebarfade", "EnableBarFading")
 	self:RegisterChatCommand("disablebarfade", "DisableBarFading")
+
+	-- Experimental for the time being!
+	self:RegisterChatCommand("setbuttons", "SetButtons")
+	self:RegisterChatCommand("setlayout", "SetLayout")
 
 	if (ns.IsRetail) then
 		if (MaxDps) then
