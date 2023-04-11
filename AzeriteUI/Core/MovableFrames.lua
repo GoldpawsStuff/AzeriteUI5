@@ -47,8 +47,10 @@ local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 local UIHider = ns.Hider
 
+local SCALE = 1 -- current relative scale
 local DEFAULTLAYOUT = "Azerite" -- default layout name
 local LAYOUT = DEFAULTLAYOUT -- currently selected layout preset
+local CURRENT -- currently selected anchor frame
 
 -- Addon defaults. Don't change, does not affect what is saved.
 local defaults = {
@@ -56,8 +58,6 @@ local defaults = {
 		layout = DEFAULTLAYOUT
 	}
 }
-
-local CURRENT -- currently selected anchor frame
 
 -- Anchor cache
 local AnchorData = {}
@@ -384,6 +384,9 @@ end
 
 -- Anchor Setters
 --------------------------------------
+-- Link the visibility of the anchor to an editmode account setting.
+-- *The intention is to make anchors visible when the frame
+-- we have replaced is selected in the editmode.
 Anchor.SetEditModeAccountSetting = function(self, setting)
 	self.editModeAccountSetting = setting
 end
@@ -622,6 +625,12 @@ end
 
 -- Module API
 --------------------------------------
+MovableFramesManager.SetRelativeScale = function(self, scale)
+end
+
+MovableFramesManager.GetRelativeScale = function(self)
+end
+
 MovableFramesManager.RequestAnchor = function(self, ...)
 	return RequestMovableFrameAnchor(...)
 end
@@ -726,32 +735,6 @@ MovableFramesManager.UpdateMFMFrame = function(self)
 		if (not EMP:AreLayoutsLoaded()) then return end
 		MFMFrame.ResetEditModeLayoutButton:SetDisabled(self.incombat or not EMP:CanEditActiveLayout())
 		MFMFrame.CreateEditModeLayoutButton:SetDisabled(self.incombat or EMP:DoesDefaultLayoutExist())
-	end
-end
-
-MovableFramesManager.UpdateMovableFrameAnchors = function(self, ...)
-	UpdateMovableFrameAnchors()
-end
-
-MovableFramesManager.HideMovableFrameAnchors = function(self)
-	HideMovableFrameAnchors()
-end
-
-MovableFramesManager.OnEnterEditMode = function(self)
-	self:UpdateMFMFrame()
-	self:GetMFMFrame():Show()
-end
-
-MovableFramesManager.OnExitEditMode = function(self)
-	self:GetMFMFrame():Hide()
-end
-
-MovableFramesManager.ToggleAnchors = function(self)
-	local MFMFrame = self:GetMFMFrame()
-	if (MFMFrame:IsShown()) then
-		MFMFrame:Hide()
-	else
-		MFMFrame:Show()
 	end
 end
 
@@ -1030,6 +1013,23 @@ MovableFramesManager.GetMFMFrame = function(self)
 	return self.frame
 end
 
+MovableFramesManager.UpdateMovableFrameAnchors = function(self, ...)
+	UpdateMovableFrameAnchors()
+end
+
+MovableFramesManager.HideMovableFrameAnchors = function(self)
+	HideMovableFrameAnchors()
+end
+
+MovableFramesManager.ToggleAnchors = function(self)
+	local MFMFrame = self:GetMFMFrame()
+	if (MFMFrame:IsShown()) then
+		MFMFrame:Hide()
+	else
+		MFMFrame:Show()
+	end
+end
+
 MovableFramesManager.ForAllAnchors = function(self, callback, layoutName)
 	for anchor in next,AnchorData do
 		if (anchor.Callback) then
@@ -1047,6 +1047,15 @@ MovableFramesManager.ForAllVisibleAnchors = function(self, callback, layoutName)
 			end
 		end
 	end
+end
+
+MovableFramesManager.OnEnterEditMode = function(self)
+	self:UpdateMFMFrame()
+	self:GetMFMFrame():Show()
+end
+
+MovableFramesManager.OnExitEditMode = function(self)
+	self:GetMFMFrame():Hide()
 end
 
 MovableFramesManager.OnEvent = function(self, event, ...)
