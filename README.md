@@ -24,10 +24,11 @@ Note that the following commands do NOT work while engaged in combat. All settin
 
 ### Action Bars
 Change actionbar settings like enabled bars, number of buttons and fading.
-- **/enablebar \<barID\>** - Enable a bar. Valid barIDs are 1-8.
-- **/disablebar \<barID\>** - Disable a bar. Valid barIDs are 1-8.
+- **/enablebar n** - Enable bar `n`, Valid values are 1-5 in Classic, 1-8 in Retail.
+- **/disablebar n** - Disable bar `n`, Valid values are 1-5 in Classic, 1-8 in Retail.
 - **/enablebarfade** - Enable bar fading.
 - **/disablebarfade** - Disable bar fading, keeping buttons with actions always visible.
+- **/setbuttons x y** - Set number of buttons, `x`represent the bar number and `y` represents the number of buttons you wish that bar to have, from 1 to 12.
 
 ### Movable Frames
 - **/lock** - Toggles movable frame anchors. Only available in Wrath Classic, as this is tied to the EditMode in Retail.
