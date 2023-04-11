@@ -800,17 +800,23 @@ ActionBarMod.UpdateSettings = function(self)
 
 	for i,bar in next,self.bars do
 		local bardb = db.bars[i]
+		local enabled = bardb.enabled
+
+		-- Force disable bars if ConsolePort is loaded.
+		if (IsAddOnEnabled("ConsolePort_Bar")--[[ and (i == 1 or i == 2)]]) then
+			enabled = false
+		end
 
 		-- Update enabled bars.
 		-- Settings not there?
-		if (bardb.enabled) then
+		if (enabled) then
 			bar:Enable()
 		else
 			bar:Disable()
 		end
 
 		-- Update bar fading for enabled bars.
-		if (bardb.enabled and db.enableBarFading) then
+		if (enabled and db.enableBarFading) then
 			if (i == 1) then
 				if (bardb.layout == "map") then
 					for id = 8, #bar.buttons do
