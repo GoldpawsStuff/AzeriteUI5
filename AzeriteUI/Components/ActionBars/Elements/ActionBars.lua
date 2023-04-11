@@ -808,7 +808,6 @@ ActionBarMod.UpdateSettings = function(self)
 		end
 
 		-- Update enabled bars.
-		-- Settings not there?
 		if (enabled) then
 			bar:Enable()
 		else
