@@ -122,6 +122,7 @@ ChatBubbles.ShowBlizzardBubble = function(self, bubble)
 	customBubble.blizzardText:SetTextColor(unpack(customBubble.blizzardColor))
 
 	for region,texture in next,customBubble.blizzardRegions do
+		region:SetTexture(texture)
 		region:SetAlpha(1)
 	end
 
@@ -265,8 +266,10 @@ ChatBubbles.UpdateVisibility = function(self)
 		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	end
 
+	local forceHide = MovieFrame:IsShown() or CinematicFrame:IsShown() or not UIParent:IsShown()
 	local _, instanceType = IsInInstance()
-	if (instanceType == "none" and not MovieFrame:IsShown() and not CinematicFrame:IsShown() and UIParent:IsShown()) then
+
+	if (not forceHide) and (instanceType == "none" or instanceType == "pvp" or instanceType == "arena") then
 
 		if (not self.bubbleTimer) then
 			self.bubbleTimer = self:ScheduleRepeatingTimer("UpdateBubbles", 1/60)
@@ -282,6 +285,7 @@ ChatBubbles.UpdateVisibility = function(self)
 
 		if (self.bubbleTimer) then
 			self:CancelTimer(self.bubbleTimer)
+			self.bubbleTimer = nil
 		end
 
 		self.bubbleParent:Hide()
@@ -337,6 +341,7 @@ ChatBubbles.EnableBubbleStyling = function(self)
 	self:SecureHookScript(MovieFrame, "OnHide", "UpdateVisibility")
 	self:SecureHookScript(MovieFrame, "OnShow", "UpdateVisibility")
 
+	self:RegisterEvent("PLAYER_ENTERING_BATTLEGROUND", "OnEvent")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
@@ -355,6 +360,11 @@ ChatBubbles.DisableBubbleStyling = function(self)
 
 	if (self.bubbleTimer) then
 		self:CancelTimer(self.bubbleTimer)
+		self.bubbleTimer = nil
+	end
+
+	for blizzBubble,customBubble in next,self.customBubbles do
+		self:ShowBlizzardBubble(blizzBubble)
 	end
 
 	self.bubbleParent:Hide()
