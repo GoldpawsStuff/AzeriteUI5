@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-04-12
+## [5.0.55-RC] 2023-04-12
 ### Added
 - Added the chat command `/setbuttons x y`where `x`represent the bar number and `y` represents the number of buttons you wish that bar to have, from 1 to 12.
 
