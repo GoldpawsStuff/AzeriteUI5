@@ -172,8 +172,12 @@ ButtonBar.UpdateButtonLayout = function(self)
 
 		if (self.anchor) then
 			self.anchor:SetSize(width, height)
-			self.anchor.Text:SetRotation(0)
-			self.anchor.Title:SetRotation(0)
+
+			-- Text rotation is not available on Classic.
+			if (ns.IsWrath or ns.IsRetail) then
+				self.anchor.Text:SetRotation(0)
+				self.anchor.Title:SetRotation(0)
+			end
 		end
 
 		return
