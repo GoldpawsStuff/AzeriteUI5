@@ -4,12 +4,16 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-04-11
+## [Unreleased] 2023-04-12
 ### Added
 - Added the chat command `/setbuttons x y`where `x`represent the bar number and `y` represents the number of buttons you wish that bar to have, from 1 to 12.
 
 ### Changed
 - All primary actionbars will now be auto-disabled when ConsolePort's actionbar module is loaded.
+
+### Fixed
+- Fixed some inconsistencies in how and when custom chat bubbles was enabled and disabled in Wrath.
+- Fixed a bug in the actionbar layout method that would cause the two rows of six buttons in the sidebars to be displayed on top of each other.
 
 ## [5.0.54-RC] 2023-04-02
 ### Added
