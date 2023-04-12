@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.56-RC] 2023-04-12
+### Fixed
+- Fixed an issue where we attempted to rotate text in Classic, where it is not yet implemented in the WoW API.
+
 ## [5.0.55-RC] 2023-04-12
 ### Added
 - Added the chat command `/setbuttons x y`where `x`represent the bar number and `y` represents the number of buttons you wish that bar to have, from 1 to 12.
