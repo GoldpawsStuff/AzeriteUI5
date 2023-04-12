@@ -225,9 +225,9 @@ ButtonBar.UpdateButtonLayout = function(self)
 
 			elseif (grid.growth == "vertical") then
 				if (breakpoint) then
-					if (grid.growthHorizontal == "UP") then
+					if (grid.growthHorizontal == "RIGHT") then
 						offsetX = (buttonWidth + (grid.breakpadding or grid.padding)) * numbreaks
-					elseif (grid.growthHorizontal == "DOWN") then
+					elseif (grid.growthHorizontal == "LEFT") then
 						offsetX = -(buttonWidth + (grid.breakpadding or grid.padding)) * numbreaks
 					end
 					offsetY = 0
