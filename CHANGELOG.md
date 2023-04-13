@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.58-RC] 2023-04-13
+### Fixed
+- Buffs in the top right corner buff display visible while holding Ctrl + Shift can now properly be canceled when right-clicking on them also in Retail.
+
 ## [5.0.57-RC] 2023-04-13
 ### Fixed
 - Temporary weapon enchants should now show the correct tooltip.
