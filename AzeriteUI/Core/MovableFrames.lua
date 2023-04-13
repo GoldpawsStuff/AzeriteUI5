@@ -475,6 +475,10 @@ end
 -- Anchor Script Handlers
 --------------------------------------
 Anchor.OnClick = function(self, button)
+	if (self.PreClick) then
+		self:PreClick(button)
+	end
+
 	if (button == "LeftButton") then
 		if (CURRENT) then
 			CURRENT.isSelected = nil
@@ -489,11 +493,16 @@ Anchor.OnClick = function(self, button)
 		if (IsShiftKeyDown() and not self:IsInDefaultPosition()) then
 			self:ResetToDefault()
 		end
+
 	elseif (button == "RightButton") then
 		self:SetFrameLevel(40)
 		if (IsControlKeyDown() and self:HasMovedSinceLastUpdate()) then
 			self:ResetLastChange()
 		end
+	end
+
+	if (self.PostClick) then
+		self:PostClick(button)
 	end
 end
 
