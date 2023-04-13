@@ -8,7 +8,7 @@
 			<OnLoad>
 				AzeriteUI:GetModule("Auras"):Embed(self)
 				self:OnInitialize()
-				if (self.IsRetail) then
+				if (AzeriteUI.IsRetail) then
 					self:RegisterForClicks("RightButtonDown","RightButtonUp")
 				else
 					self:RegisterForClicks("RightButtonUp")
