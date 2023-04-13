@@ -103,6 +103,20 @@ Experimental.ToggleBlips = function(self)
 	self.BlibsBackdrop:SetShown(show)
 end
 
+Experimental.CreateBagCommands = function(self)
+	if (not C_Container) then return end
+
+	if (C_Container.SetSortBagsRightToLeft) then
+		self:RegisterChatCommand("sortbagsrtl", function() C_Container.SetSortBagsRightToLeft(true) end)
+		self:RegisterChatCommand("sortbagsltr", function() C_Container.SetSortBagsRightToLeft(false) end)
+	end
+
+	if (C_Container.SetInsertItemsLeftToRight) then
+		self:RegisterChatCommand("insertitemsltr", function() C_Container.SetInsertItemsLeftToRight(true) end)
+		self:RegisterChatCommand("insertitemsrtl", function() C_Container.SetInsertItemsLeftToRight(false) end)
+	end
+end
+
 Experimental.SpawnAuraSorting = function(self)
 
 	self:RegisterChatCommand("disableaurasorting", "SetDisableAuraSorting")
@@ -147,4 +161,5 @@ end
 Experimental.OnInitialize = function(self)
 	self:SpawnBlips()
 	self:SpawnAuraSorting()
+	self:CreateBagCommands()
 end
