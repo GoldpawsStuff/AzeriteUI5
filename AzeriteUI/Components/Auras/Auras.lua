@@ -221,7 +221,11 @@ end
 
 Aura.UpdateTooltip = function(self)
 	if (GameTooltip:IsForbidden()) then return end
-	GameTooltip:SetUnitAura(self:GetParent():GetAttribute("unit"), self:GetID(), self.filter)
+	if (self.enchant) then
+		GameTooltip:SetInventoryItem("player", self:GetID())
+	else
+		GameTooltip:SetUnitAura(self:GetParent():GetAttribute("unit"), self:GetID(), self.filter)
+	end
 end
 
 Aura.OnUpdate = function(self, elapsed)
