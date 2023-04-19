@@ -61,26 +61,59 @@ local Fonts = setmetatable({}, font_mt)
 -- Caches used for iterations
 local AllFonts, ChatFonts, NumberFonts, NormalFonts = {}, {}, {}, {}
 
+local locale = GetLocale()
+local SetFont = function(self, font --[[, size, style]])
+	local size, style = self.baseSize, self.baseStyle
+	if (locale == "ruRU") then
+		if (style == "OUTLINE") then
+			style = "THICKOUTLINE"
+		end
+	elseif (locale == "zhTW" or locale == "zhCN") then
+		if (size >= 28) then
+			size = size + 4
+		else
+			size = size + 2
+		end
+		if (style == "OUTLINE") then
+			style = "THICKOUTLINE"
+		end
+	end
+	self:SetFontBase(font, size, style)
+	self:SetShadowColor(0,0,0,0)
+	self:SetShadowOffset(0,0)
+end
+
 -- Return a font object, re-use existing ones that match.
 local GetFont = function(size, outline, type)
-	local inherit = type == "Chat" and _G.ChatFontNormal or type == "Number" and _G.NumberFont_Normal_Med or _G.Game16Font
+	local inherit = type == "Chat" and _G.ChatFontNormal or type == "Number" and _G.NumberFont_Normal_Med or _G.Game30Font --[[G.Game16Font]]
 	local fontObject = Fonts[type or "Normal"][outline and "Outline" or "None"][size]
+
 	if (fontObject:GetFontObject() ~= inherit) then
 		fontObject:SetFontObject(inherit)
-		fontObject:SetFont(fontObject:GetFont(), size, outline and "OUTLINE" or "")
-		fontObject:SetShadowColor(0,0,0,0)
-		fontObject:SetShadowOffset(0,0)
+		fontObject.baseType = type
+		fontObject.baseSize = size
+		fontObject.baseStyle = outline and "OUTLINE" or ""
 	end
+
 	local exists = AllFonts[fontObject]
 	if (not exists) then
 		AllFonts[fontObject] = true
 		ChatFonts[fontObject] = type == "Chat"
 		NumberFonts[fontObject] = type == "Number"
 		NormalFonts[fontObject] = type ~= "Chat" and type ~= "Number"
+
+		if (not fontObject.SetFontBase) then
+			fontObject.SetFontBase = fontObject.SetFont
+			fontObject.SetFont = SetFont
+		end
+
 		if (ns.callbacks) then
 			ns.callbacks:Fire("FontObject_Created", fontObject, type or "Normal")
 		end
 	end
+
+	fontObject:SetFont(fontObject:GetFont(), size, outline and "OUTLINE" or "")
+
 	return fontObject
 end
 
@@ -96,8 +129,7 @@ local SetFontObject = function(fontObject, font)
 	if (not fontObject) or (not AllFonts[fontObject]) then
 		return
 	end
-	local _,size,style = fontObject:GetFont()
-	fontObject:SetFont(fontObject:GetFont(), size, style)
+	fontObject:SetFont(fontObject:GetFont())
 end
 
 -- Add some aliases for blizzard artwork.
