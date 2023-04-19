@@ -17,6 +17,9 @@
 # https://www.townlong-yak.com/addons/taintless
 TaintLess.xml
 
+# Fontstyles
+Fontstyles_Wrath.xml
+
 # Libraries
 Libs\Libs_Vanilla.xml
 

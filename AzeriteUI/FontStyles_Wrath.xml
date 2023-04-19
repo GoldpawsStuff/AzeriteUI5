@@ -1,0 +1,1411 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<!-- Normal -->
+	<FontFamily name="AzeriteFont12" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="12">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="13">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="13">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="13">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="12">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<!-- Normal Outlined -->
+	<FontFamily name="AzeriteFont12Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="12" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="13" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="13" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="13" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="12" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont13Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="13" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="13" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="14" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="14" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="13" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont14Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="14" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="14" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="15" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="15" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="14" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont15Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="15" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="15" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="16" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="16" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="15" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont16Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="16" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="16" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="16" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="16" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="16" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont17Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="17" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="17" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="17" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="17" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="17" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont18Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="18" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="18" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="18" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="18" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="18" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont19Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="19" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="19" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="19" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="19" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="19" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont20Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="20" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="20" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="20" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="20" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="20" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont21Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="21" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="21" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="21" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="21" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="21" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont22Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="22" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="22" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="22" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="22" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="22" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont23Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="23" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="23" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="23" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="23" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="23" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont24Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="24" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="24" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="24" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="24" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="24" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont25Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="25" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="25" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="25" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="25" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="25" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont26Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="26" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="26" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="26" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="26" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="26" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont27Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="27" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="27" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="27" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="27" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="27" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont28Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="28" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="28" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="28" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="28" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="28" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont29Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="29" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="29" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="29" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="29" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="29" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont30Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="30" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="30" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="30" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="30" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="30" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont31Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="31" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="31" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="31" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="31" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="31" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont32Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="32" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="32" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="32" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="32" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="32" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont33Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="33" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="33" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="33" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="33" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="33" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFont34Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\FRIZQT__.TTF" height="34" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="34" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARKai_T.TTF" height="34" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\blei00d.TTF" height="34" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\FRIZQT___CYR.TTF" height="34" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<!-- Chat -->
+	<FontFamily name="AzeriteFontChat14" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="14">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="13" spacing="3">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="14">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="14">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="14">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<!-- Chat Outlined -->
+	<FontFamily name="AzeriteFontChat12Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="12" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="13" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="13" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="13" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="12" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat13Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="13" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="14" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="14" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="14" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="13" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat14Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="14" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="14" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="14" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="14" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="14" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat15Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="15" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="15" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="15" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="15" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="15" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat16Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="16" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="16" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="16" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="16" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="16" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat17Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="17" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="17" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="17" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="17" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="17" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat18Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="18" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="18" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="18" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="18" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="18" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat19Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="19" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="19" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="19" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="19" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="19" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat20Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="20" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="20" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="20" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="20" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="20" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat21Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="21" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="21" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="21" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="21" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="21" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat22Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="22" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="22" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="22" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="22" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="22" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat23Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="23" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="23" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="23" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="23" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="23" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat24Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="24" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="24" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="24" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="24" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="24" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat25Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="25" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="25" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="25" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="25" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="25" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat26Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="26" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="26" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="26" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="26" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="26" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat27Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="27" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="27" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="27" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="27" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="27" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat28Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="28" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="28" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="28" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="28" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="28" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat29Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="29" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="29" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="29" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="29" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="29" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat30Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="30" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="30" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="30" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="30" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="30" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat31Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="31" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="31" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="31" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="31" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="31" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat32Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="32" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="32" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="32" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="32" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="32" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat33Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="33" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="33" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="33" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="33" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="33" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontChat34Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="34" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="34" spacing="3" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\ARHei.ttf" height="34" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="34" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="34" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<!-- Number -->
+	<FontFamily name="AzeriteFontNumber12" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="12">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="11">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="11">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="11">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="12">
+				<Shadow>
+					<Offset>
+						<AbsDimension x="1" y="-1"/>
+					</Offset>
+					<Color r="0" g="0" b="0"/>
+				</Shadow>
+			</Font>
+		</Member>
+	</FontFamily>
+
+	<!-- Number Outlined -->
+	<FontFamily name="AzeriteFontNumber12Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="12" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="11" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="11" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="11" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="12" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber13Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="13" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="13" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="13" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="13" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="13" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber14Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="14" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="14" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="14" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="14" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="14" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber15Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="15" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="15" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="15" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="15" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="15" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber16Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="16" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="16" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="16" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="16" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="16" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber17Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="17" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="17" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="17" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="17" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="17" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber18Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="18" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="18" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="18" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="18" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="18" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber19Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="19" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="19" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="19" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="19" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="19" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber20Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="20" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="20" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="20" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="20" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="20" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber21Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="21" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="21" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="21" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="21" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="21" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber22Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="22" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="22" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="22" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="22" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="22" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber23Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="23" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="23" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="23" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="23" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="23" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber24Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="24" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="24" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="24" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="24" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="24" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber25Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="25" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="25" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="25" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="25" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="25" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber26Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="26" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="26" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="26" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="26" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="26" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber27Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="27" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="27" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="27" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="27" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="27" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber28Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="28" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="28" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="28" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="28" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="28" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber29Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="29" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="29" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="29" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="29" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="29" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber30Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="30" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="30" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="30" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="30" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="30" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber31Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="31" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="31" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="31" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="31" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="31" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber32Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="32" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="32" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="32" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="32" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="32" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber33Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="33" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="33" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="33" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="33" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="33" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+	<FontFamily name="AzeriteFontNumber34Outline" virtual="true">
+		<Member alphabet="roman">
+			<Font font="Fonts\ARIALN.TTF" height="34" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="korean">
+			<Font font="Fonts\2002.TTF" height="34" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="simplifiedchinese">
+			<Font font="Fonts\FRIZQT__.TTF" height="34" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="traditionalchinese">
+			<Font font="Fonts\bHEI01B.TTF" height="34" outline="NORMAL"/>
+		</Member>
+		<Member alphabet="russian">
+			<Font font="Fonts\ARIALN.TTF" height="34" outline="NORMAL"/>
+		</Member>
+	</FontFamily>
+
+</Ui>
