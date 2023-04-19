@@ -7,10 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased] 2023-04-19
 ### Changed
 - Debuffs should properly be sorted before buffs on most unit frames now.
-- Added some experimental changes to how font families and sizes are chosen in order to make Cyrillic and Chinese fonts more readable and correctly sized.
 
 ### Fixed
 - Fixed some inconsistencies in weapon enchant timer bars.
+- Added some experimental changes to how font families and sizes are chosen in order to make Cyrillic and Chinese fonts more readable and correctly sized.
 
 ## [5.0.59-RC] 2023-04-17
 ### Fixed
