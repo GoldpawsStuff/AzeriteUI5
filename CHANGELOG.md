@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-04-19
+### Changed
+- Added some experimental changes to how font families and sizes are chosen in order to make Cyrillic and Chinese fonts more readable.
+
 ### Fixed
 - Fixed some inconsistencies in weapon enchant timer bars.
 
