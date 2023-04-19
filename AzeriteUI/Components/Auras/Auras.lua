@@ -205,7 +205,7 @@ Aura.UpdateTempEnchant = function(self, slot)
 
 	if (expiration) then
 		self.enchant = enchant
-		self.cd:SetCooldown(GetTime() - (duration - remaining), remaining)
+		self.cd:SetCooldown(GetTime() + remaining - duration, duration)
 		self.cd:Show()
 		self:SetScript("OnUpdate", self.OnUpdate)
 	else
