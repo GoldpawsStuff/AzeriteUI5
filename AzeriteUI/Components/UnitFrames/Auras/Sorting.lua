@@ -33,6 +33,13 @@ local table_sort = table.sort
 -- https://wowpedia.fandom.com/wiki/API_C_UnitAuras.GetAuraDataByAuraInstanceID
 local Aura_Sort = function(a, b)
 
+	-- Debuffs first
+	local aHarm = a.isHarmful
+	local bHarm = b.isHarmful
+	if (aHarm ~= bHarm) then
+		return aHarm
+	end
+
 	-- Player applied HoTs that we would display on nameplates
 	local aHoT = not a.isHarmful and a.isPlayerAura and a.canApplyAura
 	local bHoT = not b.isHarmful and b.isPlayerAura and b.canApplyAura
@@ -98,6 +105,13 @@ end
 local Aura_Sort_Classic = function(a, b)
 	if (a and b) then
 		if (a:IsShown() and b:IsShown()) then
+
+			-- Debuffs first
+			local aHarm = a.isDebuff
+			local bHarm = b.isDebuff
+			if (aHarm ~= bHarm) then
+				return aHarm
+			end
 
 			-- These flags are supplied by the aura filters
 			local aPlayer = a.isPlayer or false
