@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-04-19
+### Fixed
+- Fixed some inconsistencies in weapon enchant timer bars.
+
 ## [5.0.59-RC] 2023-04-17
 ### Fixed
 - The nameplate module should now properly disable itself when a known nameplate addon like Plater or TidyPlates is loaded.
