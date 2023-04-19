@@ -73,15 +73,7 @@ local getargs = function(...)
 	local args = { ... }
 	for i,arg in ipairs(args) do
 		local num = tonumber(arg)
-		if (num) then
-			args[i] = num
-		elseif (arg == "true" or arg == true) then
-			args[i] = true
-		elseif (arg == "false") then
-			args[i] = false
-		elseif (arg == "nil") then
-			args[i] = false
-		end
+		args[i] = num or (arg == "true" or arg == true) and true or false
 	end
 	return unpack(args)
 end
@@ -161,14 +153,14 @@ else
 	end
 end
 
-Events[prefix("*:Health")] = "UNIT_HEALTH UNIT_MAXHEALTH PLAYER_FLAGS_CHANGED UNIT_CONNECTION"
+Events[prefix("*:Health")] = "UNIT_HEALTH UNIT_MAXHEALTH PLAYER_FLAGS_CHANGED UNIT_CONNECTION GROUP_ROSTER_UPDATE"
 Methods[prefix("*:Health")] = function(unit, realUnit, ...)
 	local useSmart, useFull, hideStatus, showAFK = getargs(...)
 	if (UnitIsDeadOrGhost(unit)) then
 		return not hideStatus and L_DEAD
-	elseif (not UnitIsConnected(unit)) then
+	elseif (not UnitIsConnected(realUnit or unit)) then
 		return not hideStatus and L_OFFLINE
-	elseif (showAFK and UnitIsAFK(unit)) then
+	elseif (showAFK and UnitIsAFK(realUnit or unit)) then
 		return L_AFK
 	else
 		local health, maxHealth = UnitHealth(unit), UnitHealthMax(unit)
