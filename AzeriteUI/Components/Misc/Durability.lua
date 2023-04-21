@@ -69,9 +69,9 @@ local inventorySlots = {
 }
 
 local inventoryColors = {
-	default = { 1, 1, 1, .5 },
-	[1] = { 1, .82, .18 },
-	[2] = { .93, .07, .07 }
+	default = { .6, .6, .6, .75 },
+	[1] = { 1, .7, .1 },
+	[2] = { .9, .3, .1 }
 }
 
 Durability.InitializeDurabilityFrame = function(self)
@@ -191,8 +191,8 @@ Durability.InitializeDurabilityFrame = function(self)
 
 	self.frame = frame
 
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateWidget")
-	self:RegisterEvent("UPDATE_INVENTORY_ALERTS", "UpdateWidget")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
+	self:RegisterEvent("UPDATE_INVENTORY_ALERTS", "OnEvent")
 
 end
 
@@ -221,7 +221,7 @@ Durability.UpdateWidget = function(self, forced)
 			color = inventoryColors.default
 		end
 		if (color) then
-			texture:SetVertexColor(color[1], color[2], color[3], 1.0)
+			texture:SetVertexColor(color[1], color[2], color[3], color[4] or 1)
 			if (value.showSeparate) then
 				if ((value.slot == "Shield") or (value.slot == "Ranged")) then
 					hasRight = true
@@ -234,7 +234,7 @@ Durability.UpdateWidget = function(self, forced)
 			end
 			numAlerts = numAlerts + 1
 		else
-			texture:SetVertexColor(1, 1, 1, .5)
+			texture:SetVertexColor(unpack(inventoryColors.default))
 			if (value.showSeparate) then
 				texture:Hide()
 			end
@@ -402,6 +402,10 @@ Durability.OnAnchorUpdate = function(self, reason, layoutName, ...)
 		-- Fires when combat lockdown ends for visible anchors.
 
 	end
+end
+
+Durability.OnEvent = function(self, event, ...)
+	self:UpdateWidget()
 end
 
 Durability.OnInitialize = function(self)
