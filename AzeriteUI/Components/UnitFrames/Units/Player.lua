@@ -684,6 +684,7 @@ end
 
 -- Update player frame based on player level.
 local UnitFrame_UpdateTextures = function(self)
+	local playerLevel = playerLevel or UnitLevel("player")
 	local key = (playerXPDisabled or IsLevelAtEffectiveMaxLevel(playerLevel)) and "Seasoned" or playerLevel < 10 and "Novice" or "Hardened"
 	local db = config[key]
 
@@ -793,6 +794,10 @@ local UnitFrame_UpdateTextures = function(self)
 
 end
 
+local UnitFrame_PostUpdate = function(self)
+	UnitFrame_UpdateTextures(self)
+end
+
 -- Frame Script Handlers
 --------------------------------------------
 local UnitFrame_OnEvent = function(self, event, unit, ...)
@@ -831,7 +836,7 @@ local UnitFrame_OnEvent = function(self, event, unit, ...)
 			end
 		end
 	end
-	UnitFrame_UpdateTextures(self)
+	UnitFrame_PostUpdate(self)
 end
 
 local style = function(self, unit)
@@ -1140,6 +1145,9 @@ local style = function(self, unit)
 	if (ns.IsRetail and playerClass == "PALADIN") then
 		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", UnitFrame_OnEvent)
 	end
+
+	-- Textures need an update when frame is displayed.
+	self.PostUpdate = UnitFrame_PostUpdate
 
 end
 
