@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Added a custom (yet identical to the default) durability widget, which is movable.
 
+### Fixed
+- Fixed an issue that caused the tooltip to appear in the game's default position when moved away from AzeriteUI's default position. This would primarily happen in Classic, but probably also in the other flavors sometimes too.
+
 ## [5.0.60-RC] 2023-04-20
 ### Changed
 - Debuffs should properly be sorted before buffs on most unit frames now.
