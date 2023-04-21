@@ -455,6 +455,7 @@ Tooltips.SetDefaultAnchor = function(self, tooltip, parent)
 	if (not tooltip) or (tooltip:IsForbidden()) then return end
 
 	tooltip:SetOwner(parent, "ANCHOR_NONE")
+	tooltip:ClearAllPoints()
 	tooltip:SetPoint(unpack(self.db.profile.savedPosition.Azerite))
 end
 
