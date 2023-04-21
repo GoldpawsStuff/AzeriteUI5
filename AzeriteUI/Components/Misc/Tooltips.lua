@@ -454,9 +454,11 @@ end
 Tooltips.SetDefaultAnchor = function(self, tooltip, parent)
 	if (not tooltip) or (tooltip:IsForbidden()) then return end
 
+	local point, x, y = unpack(self.db.profile.savedPosition.Azerite)
+
 	tooltip:SetOwner(parent, "ANCHOR_NONE")
 	tooltip:ClearAllPoints()
-	tooltip:SetPoint(unpack(self.db.profile.savedPosition.Azerite))
+	tooltip:SetPoint(point, self.frame, point)
 end
 
 Tooltips.SetUnitColor = function(self, unit)

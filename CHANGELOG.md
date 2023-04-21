@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.62-RC] 2023-04-22
+### Fixed
+- Fixed tooltip placement in Classic and Wrath further.
+
 ## [5.0.61-RC] 2023-04-21
 ### Added
 - Added a custom (yet identical to the default) durability widget, which is movable.
