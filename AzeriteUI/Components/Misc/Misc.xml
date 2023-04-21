@@ -4,6 +4,7 @@
 	<Script file="ArcheologyBar.lua"/>
 	<Script file="ChatBubbles.lua"/>
 	<Script file="ChatFrames.lua"/>
+	<Script file="Durability.lua"/>
 	<Script file="ErrorsFrame.lua"/>
 	<Script file="Minimap.lua"/>
 	<Script file="RaidBossEmotes.lua"/>
