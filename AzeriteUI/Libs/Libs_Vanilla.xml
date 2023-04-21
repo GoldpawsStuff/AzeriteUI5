@@ -33,6 +33,9 @@
 	<Include file="oUF_Classic\oUF_Vanilla.xml"/>
 	<Include file="oUF_Plugins\oUF_Plugins.xml"/>
 
+	<!-- DropDown Library -->
+	<Include file="LibUIDropDownMenu\LibUIDropDownMenu.xml"/>
+
 	<!-- My Custom Libraries -->
 	<Script file="LibMoreEvents-1.0\LibMoreEvents-1.0.lua"/>
 	<Script file="LibFadingFrames-1.0\LibFadingFrames-1.0.lua"/>
