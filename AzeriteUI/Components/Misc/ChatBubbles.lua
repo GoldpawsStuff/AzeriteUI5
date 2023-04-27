@@ -223,15 +223,7 @@ end
 
 -- Update all custom bubble fonts.
 ChatBubbles.UpdateBubbleFont = function(self)
-	local fontSize = select(2, ChatFrame1:GetFont())
-	if (fontSize) then
-		--local ourscale = self.bubbleParent:GetEffectiveScale()
-		--local chatscale = ChatFrame1:GetEffectiveScale()
-		--fontSize = math_floor(fontSize * (ourscale / chatscale) + 2.5)
-		--fontSize = math_floor(fontSize + 2.5)
-	else
-		fontSize = self.fontSizeDefault
-	end
+	local fontSize = select(2, ChatFrame1:GetFont()) or self.fontSizeDefault
 
 	if (fontSize > self.fontSizeMax) then
 		fontSize = self.fontSizeMax
@@ -239,7 +231,7 @@ ChatBubbles.UpdateBubbleFont = function(self)
 		fontSize = self.fontSizeMin
 	end
 
-	if (fontSize and fontSize ~= self.fontSize) then
+	if (fontSize ~= self.fontSize) then
 		self.fontsize = fontSize
 		self.fontObject = GetFont(fontSize, true, "Chat")
 
@@ -418,12 +410,14 @@ ChatBubbles.UpdateConsoleVars = function(self)
 end
 
 ChatBubbles.OnEvent = function(self, event, ...)
+	self:UpdateBubbleFont()
+
 	if (event == "UPDATE_CHAT_WINDOWS" or event == "UPDATE_FLOATING_CHAT_WINDOWS") then
-		self:UpdateBubbleFont()
-	else
-		self:UpdateConsoleVars()
-		self:UpdateVisibility()
+		return
 	end
+
+	self:UpdateConsoleVars()
+	self:UpdateVisibility()
 end
 
 ChatBubbles.OnInitialize = function(self)
