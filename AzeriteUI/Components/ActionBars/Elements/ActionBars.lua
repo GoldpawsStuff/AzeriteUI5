@@ -36,6 +36,7 @@ local string_format = string.format
 local string_gsub = string.gsub
 local string_lower = string.lower
 local string_split = string.split
+local string_upper = string.upper
 local tonumber = tonumber
 
 -- Addon API
@@ -914,13 +915,85 @@ ActionBarMod.SetLayout = function(self, input)
 	local config = id and db[id]
 	if (not config) then return end
 
-	local layout, maptype = args[2], args[3]
-	if (layout == "map") then
+	local layout = args[2]
+	if (layout == "map" or layout == "azerite" or layout == "zigzag") then
 
+		local maptype = args[3]
+		if (maptype == "azerite" or layout == "azerite") then
+			if (id == 1) then
+				config.layout = "map"
+				config.maptype = "azerite"
+				config.grid.growth = ns.ButtonBar.defaults.grid.growth
+				config.grid.growthHorizontal = ns.ButtonBar.defaults.grid.growthHorizontal
+				config.grid.growthVertical = ns.ButtonBar.defaults.grid.growthVertical
+				config.grid.breakpoint = ns.ButtonBar.defaults.grid.breakpoint
+				config.grid.breakpadding = ns.ButtonBar.defaults.grid.breakpadding
+				config.grid.padding = ns.ButtonBar.defaults.grid.padding
+			else
+				-- only supported for primary bar
+			end
 
-	elseif (layout == "grid") then
+		elseif (maptype == "zigzag" or layout == "zigzag") then
+			config.layout = "map"
+			config.maptype = "zigzag"
+			config.grid.growth = ns.ButtonBar.defaults.grid.growth
+			config.grid.growthHorizontal = ns.ButtonBar.defaults.grid.growthHorizontal
+			config.grid.growthVertical = ns.ButtonBar.defaults.grid.growthVertical
+			config.grid.breakpoint = ns.ButtonBar.defaults.grid.breakpoint
+			config.grid.breakpadding = ns.ButtonBar.defaults.grid.breakpadding
+			config.grid.padding = ns.ButtonBar.defaults.grid.padding
+
+		else
+			-- unknown maptype
+		end
+
+	elseif (layout == "grid" or layout == "right" or layout == "left" or layout == "up" or layout == "down") then
+
+		local growth, breakpoint, altgrowth
+
+		if (layout == "grid") then
+			growth, breakpoint, altgrowth = args[3], args[4], args[5]
+		else
+			growth, breakpoint, altgrowth = args[2], args[3], args[4]
+		end
+
+		if (growth ~= "left" and growth ~= "right" and growth ~= "up" and growth ~= "down") then
+			return -- invalid growth
+		end
+
+		if (breakpoint) then
+			breakpoint = tonumber(breakpoint)
+			if (breakpoint > 12) then breakpoint = 12 end
+			if (breakpoint < 1) then breakpoint = 1 end
+			if (altgrowth ~= "left" and altgrowth ~= "right" and altgrowth ~= "up" and altgrowth ~= "down") then
+				return -- invalid altgrowth
+			end
+		else
+			breakpoint = ns.ButtonBar.defaults.grid.breakpoint
+			altgrowth = (growth == "left" or growth == "right") and "up" or "left"
+		end
+
+		local growthKey = (growth == "left" or growth == "right") and "growthHorizontal" or "growthVertical"
+
+		local altgrowthKey = (altgrowth == "left" or altgrowth == "right") and "growthHorizontal" or "growthVertical"
+		if (growthKey == altgrowthKey) then
+			return -- invalid altgrowth, same direction as primary
+		end
+
+		-- Got so far, should be able to trust the input now.
+		config.layout = "grid"
+		config.maptype = nil
+		config.grid.growth = (growth == "left" or growth == "right") and "horizontal" or "vertical"
+		config.grid[growthKey] = string_upper(growth)
+		config.grid[altgrowthKey] = string_upper(altgrowth)
+		config.grid.breakpoint = breakpoint
+		config.grid.breakpadding = ns.ButtonBar.defaults.grid.breakpadding
+		config.grid.padding = ns.ButtonBar.defaults.grid.padding
+
 	end
 
+	-- Update the bar!
+	self:UpdateSettings()
 end
 
 ActionBarMod.EnableBarFading = function(self)
