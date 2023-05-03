@@ -61,15 +61,23 @@ RaidBossEmotes.InitializeRaidBossEmoteFrame = function(self)
 	RaidBossEmoteFrame.timings.RAID_NOTICE_SCALE_UP_TIME = 0
 	RaidBossEmoteFrame.timings.RAID_NOTICE_SCALE_DOWN_TIME = 0
 
-	RaidBossEmoteFrameSlot1:SetFontObject(GetFont(26, true, "Chat"))
-	RaidBossEmoteFrameSlot1:SetShadowColor(0, 0, 0, .5)
-	RaidBossEmoteFrameSlot1:SetWidth(760)
-	RaidBossEmoteFrameSlot1.SetTextHeight = function() end
+	-- WoW 10.1.0
+	local slot1 = RaidBossEmoteFrameSlot1 or RaidBossEmoteFrame.slot1
+	if (slot1) then
+		slot1:SetFontObject(GetFont(26, true, "Chat"))
+		slot1:SetShadowColor(0, 0, 0, .5)
+		slot1:SetWidth(760)
+		slot1.SetTextHeight = function() end
+	end
 
-	RaidBossEmoteFrameSlot2:SetFontObject(GetFont(26, true, "Chat"))
-	RaidBossEmoteFrameSlot2:SetShadowColor(0, 0, 0, .5)
-	RaidBossEmoteFrameSlot2:SetWidth(760)
-	RaidBossEmoteFrameSlot2.SetTextHeight = function() end
+	-- WoW 10.1.0
+	local slot2 = RaidBossEmoteFrameSlot2 or RaidBossEmoteFrame.slot2
+	if (slot2) then
+		slot2:SetFontObject(GetFont(26, true, "Chat"))
+		slot2:SetShadowColor(0, 0, 0, .5)
+		slot2:SetWidth(760)
+		slot2.SetTextHeight = function() end
+	end
 
 	self.frame = RaidBossEmoteFrame
 end
