@@ -4,9 +4,17 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-04-27
+## [5.0.63-RC] 2023-05-03
+- Bumped for WoW client patch 10.1.0.
+
 ### Added
 - Added a command to adjust the button layout of the actionbars.
+
+### Changed
+- Moved the addon's icon texture into the new field in the WoW 10.1.0 TOC structure.
+
+### Fixed
+- Fixed names for raid boss emote slots in WoW 10.1.0.
 
 ## [5.0.62-RC] 2023-04-22
 ### Fixed
