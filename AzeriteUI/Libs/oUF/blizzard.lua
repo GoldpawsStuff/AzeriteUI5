@@ -11,6 +11,7 @@ local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES or 5
 local MEMBERS_PER_RAID_GROUP = _G.MEMBERS_PER_RAID_GROUP or 5
 
 local hookedFrames = {}
+local hookedNameplates = {}
 local isArenaHooked = false
 local isBossHooked = false
 local isPartyHooked = false
@@ -19,7 +20,7 @@ local hiddenParent = CreateFrame('Frame', nil, UIParent)
 hiddenParent:SetAllPoints()
 hiddenParent:Hide()
 
-local function insecureOnShow(self)
+local function insecureHide(self)
 	self:Hide()
 end
 
@@ -155,15 +156,18 @@ function oUF:DisableBlizzard(unit)
 				handleFrame('ArenaEnemyPrepFrame' .. i, true)
 			end
 		end
-	elseif(unit:match('nameplate%d+$')) then
-		local frame = C_NamePlate.GetNamePlateForUnit(unit)
-		if(frame and frame.UnitFrame) then
-			if(not frame.UnitFrame.isHooked) then
-				frame.UnitFrame:HookScript('OnShow', insecureOnShow)
-				frame.UnitFrame.isHooked = true
-			end
-
-			handleFrame(frame.UnitFrame, true)
-		end
 	end
+end
+
+function oUF:DisableNamePlate(frame)
+	if(not(frame and frame.UnitFrame)) then return end
+	if(frame.UnitFrame:IsForbidden()) then return end
+
+	if(not hookedNameplates[frame]) then
+		frame.UnitFrame:HookScript('OnShow', insecureHide)
+
+		hookedNameplates[frame] = true
+	end
+
+	handleFrame(frame.UnitFrame, true)
 end

@@ -100,6 +100,7 @@ local Elements = {}
 ----------------------------------------------------
 local Objects = {}
 if (ns.IsRetail) then
+	Objects.Addons = AddonCompartmentFrame
 	Objects.BorderTop = MinimapCluster.BorderTop
 	Objects.Calendar = GameTimeFrame
 	Objects.Clock = TimeManagerClockButton
@@ -152,6 +153,7 @@ end
 ----------------------------------------------------
 local ObjectOwners = {}
 if (ns.IsRetail) then
+	ObjectOwners.Addons = MinimapCluster
 	ObjectOwners.BorderTop = MinimapCluster
 	ObjectOwners.Calendar = MinimapCluster
 	ObjectOwners.Clock = MinimapCluster
@@ -363,6 +365,7 @@ local Skins = {
 		Version = 1,
 		Shape = "RoundTransparent",
 		HideElements = {
+			Addons = true, -- retail
 			BattleField = false, -- classic + wrath
 			BorderTop = true,
 			BorderClassic = true, -- wrath
