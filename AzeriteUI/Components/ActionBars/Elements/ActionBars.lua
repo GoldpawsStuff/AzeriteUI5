@@ -962,7 +962,7 @@ ActionBarMod.SetLayout = function(self, input)
 		end
 
 		buttonpadding = tonumber(buttonpadding)
-		breakpadding = tonumber(breakpadding)
+		breakpadding = tonumber(breakpadding) or buttonpadding
 
 		if (breakpoint) then
 			breakpoint = tonumber(breakpoint)
