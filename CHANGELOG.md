@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-05-04
+### Changed
+- Added buttonPadding and breakPadding arguments to the yet undocumented `/setlayout` command. I'll be creating documentation for this and all other chat commands on the AzeriteUI github pages in the near future!
+
 ## [5.0.63-RC] 2023-05-03
 - Bumped for WoW client patch 10.1.0.
 
