@@ -952,14 +952,17 @@ ActionBarMod.SetLayout = function(self, input)
 		local growth, breakpoint, altgrowth
 
 		if (layout == "grid") then
-			growth, breakpoint, altgrowth = args[3], args[4], args[5]
+			growth, breakpoint, altgrowth, buttonpadding, breakpadding = args[3], args[4], args[5], args[6], args[7]
 		else
-			growth, breakpoint, altgrowth = args[2], args[3], args[4]
+			growth, breakpoint, altgrowth, buttonpadding, breakpadding = args[2], args[3], args[4], args[5], args[6]
 		end
 
 		if (growth ~= "left" and growth ~= "right" and growth ~= "up" and growth ~= "down") then
 			return -- invalid growth
 		end
+
+		buttonpadding = tonumber(buttonpadding)
+		breakpadding = tonumber(breakpadding)
 
 		if (breakpoint) then
 			breakpoint = tonumber(breakpoint)
@@ -987,8 +990,8 @@ ActionBarMod.SetLayout = function(self, input)
 		config.grid[growthKey] = string_upper(growth)
 		config.grid[altgrowthKey] = string_upper(altgrowth)
 		config.grid.breakpoint = breakpoint
-		config.grid.breakpadding = ns.ButtonBar.defaults.grid.breakpadding
-		config.grid.padding = ns.ButtonBar.defaults.grid.padding
+		config.grid.breakpadding = breakpadding or ns.ButtonBar.defaults.grid.breakpadding
+		config.grid.padding = buttonpadding or ns.ButtonBar.defaults.grid.padding
 
 	end
 
