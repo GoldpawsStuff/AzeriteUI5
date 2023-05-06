@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-05-06
+### Added
+- Reagent counts in Classic Era for spells like Slow Fall and Gift of the Wild should now properly show up on the action bars.
+
 ## [5.0.64-RC] 2023-05-04
 ### Changed
 - Updated retail version of the oUF unitframe library.

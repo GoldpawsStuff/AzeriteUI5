@@ -19,6 +19,7 @@
 	<!-- ActionButton Libraries -->
 	<Include file="LibKeyBound-1.0\lib.xml"/>
 	<Script file="LibButtonGlow-1.0\LibButtonGlow-1.0.lua"/>
+	<Script file="LibClassicSpellActionCount-1.0\LibClassicSpellActionCount-1.0.lua"/>
 	<Script file="LibActionButton-1.0-GE\LibActionButton-1.0-GE.lua"/>
 
 	<!-- Classic Aura Durations -->
