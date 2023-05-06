@@ -27,8 +27,11 @@
 	<Script file="LibAuraTypes\LibAuraTypes.lua"/>
 	<Script file="LibSpellLocks\LibSpellLocks.lua"/>
 
+	<!-- Classic Cast Bars -->
+	<Script file="LibClassicCasterino\LibClassicCasterino.lua"/>
+
 	<!-- Classic Heal Predictions -->
-	<Include file="LibHealComm-4.0\LibHealComm-4.0.lua"/>
+	<Script file="LibHealComm-4.0\LibHealComm-4.0.lua"/>
 
 	<!-- UnitFrame Library -->
 	<Include file="oUF_Classic\oUF_Vanilla.xml"/>
