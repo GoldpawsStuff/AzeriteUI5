@@ -55,9 +55,19 @@ ChatBubbles.CreateCustomBubble = function(self, blizzBubble)
 	customBubble:SetFrameStrata("BACKGROUND")
 	customBubble:SetPoint("BOTTOM", blizzBubble, "BOTTOM", 0, 0)
 	customBubble:SetFrameLevel(self.numBubbles%128 + 1) -- try to avoid overlapping bubbles blending into each other
-	customBubble:SetBackdrop(self.backdrop)
-	customBubble:SetBackdropColor(unpack(self.backdropColor))
-	customBubble:SetBackdropBorderColor(unpack(self.backdropBorderColor))
+	customBubble:SetBackdrop({
+		bgFile = [[Interface\Tooltips\CHATBUBBLE-BACKGROUND]],
+		edgeFile = [[Interface\Tooltips\CHATBUBBLE-BACKDROP]],
+		edgeSize = 12,
+		insets = {
+			left = 12,
+			right = 12,
+			top = 12,
+			bottom = 12
+		}
+	})
+	customBubble:SetBackdropColor(0, 0, 0, .5)
+	customBubble:SetBackdropBorderColor(0, 0, 0, .5)
 
 	customBubble.blizzardRegions = {}
 	customBubble.blizzardColor = { 1, 1, 1 }
@@ -69,7 +79,7 @@ ChatBubbles.CreateCustomBubble = function(self, blizzBubble)
 	end
 
 	customBubble.text = customBubble:CreateFontString()
-	customBubble.text:SetPoint("BOTTOMLEFT", self.backdropPadding*1.5, self.backdropPadding)
+	customBubble.text:SetPoint("BOTTOMLEFT", 12*1.5, 12)
 	customBubble.text:SetFontObject(self.fontObject)
 
 	for i = 1, blizzBubble:GetNumRegions() do
@@ -190,7 +200,7 @@ ChatBubbles.UpdateBubbles = function(self)
 					text:SetWidth(rawWidth > maxWidth and maxWidth or rawWidth)
 				end
 
-				customBubble:SetSize(text:GetWidth() + self.backdropPadding*3, text:GetHeight() + self.backdropPadding*2)
+				customBubble:SetSize(text:GetWidth() + 12*3, text:GetHeight() + 12*2)
 
 			else
 				if (customBubble:IsShown()) then
@@ -429,22 +439,14 @@ ChatBubbles.OnInitialize = function(self)
 	self.fontSizeMax = 22
 	self.fontSizeDefault = 14
 	self.fontSize = select(2, ChatFrame1:GetFont()) or self.fontSizeDefault
-	self.fontObject = GetFont(self.fontSize, true, "Chat")
 
-	self.backdrop = {
-		bgFile = [[Interface\Tooltips\CHATBUBBLE-BACKGROUND]],
-		edgeFile = [[Interface\Tooltips\CHATBUBBLE-BACKDROP]],
-		edgeSize = 12,
-		insets = {
-			left = 12,
-			right = 12,
-			top = 12,
-			bottom = 12
-		}
-	}
-	self.backdropColor = { 0, 0, 0, .5 }
-	self.backdropBorderColor = { 0, 0, 0, .5 }
-	self.backdropPadding = 12
+	if (self.fontSize > self.fontSizeMax) then
+		self.fontSize = self.fontSizeMax
+	elseif (self.fontSize < self.fontSizeMin) then
+		self.fontSize = self.fontSizeMin
+	end
+
+	self.fontObject = GetFont(self.fontSize, true, "Chat")
 
 	self:RegisterChatCommand("enablebubbles", "EnableBubbles")
 	self:RegisterChatCommand("disablebubbles", "DisableBubbles")
