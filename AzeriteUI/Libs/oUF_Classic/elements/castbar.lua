@@ -95,6 +95,11 @@ local FAILED = _G.FAILED or 'Failed'
 local INTERRUPTED = _G.INTERRUPTED or 'Interrupted'
 local CASTBAR_STAGE_DURATION_INVALID = -1 -- defined in FrameXML/CastingBarFrame.lua
 
+local LCC, EventFunctions = oUF.isClassic and LibStub('LibClassicCasterino', true), {}
+
+local UnitCastingInfo = UnitCastingInfo
+local UnitChannelInfo = UnitChannelInfo
+
 local function resetAttributes(self)
 	self.castID = nil
 	self.casting = nil
@@ -102,6 +107,7 @@ local function resetAttributes(self)
 	self.empowering = nil
 	self.notInterruptible = nil
 	self.spellID = nil
+	self.spellName = nil
 
 	for _, pip in next, self.Pips do
 		pip:Hide()
@@ -213,6 +219,7 @@ local function CastStart(self, event, unit)
 	element.holdTime = 0
 	element.castID = castID
 	element.spellID = spellID
+	element.spellName = name
 
 	if(element.channeling) then
 		element.duration = endTime - GetTime()
@@ -226,7 +233,7 @@ local function CastStart(self, event, unit)
 	if(element.Icon) then element.Icon:SetTexture(texture or FALLBACK_ICON) end
 	if(element.Shield) then element.Shield:SetShown(notInterruptible) end
 	if(element.Spark) then element.Spark:Show() end
-	if(element.Text) then element.Text:SetText(text) end
+	if(element.Text) then element.Text:SetText(text ~= '' and text or name) end
 	if(element.Time) then element.Time:SetText() end
 
 	local safeZone = element.SafeZone
@@ -477,14 +484,29 @@ local function Enable(self, unit)
 		element.__owner = self
 		element.ForceUpdate = ForceUpdate
 
-		self:RegisterEvent('UNIT_SPELLCAST_START', CastStart)
-		self:RegisterEvent('UNIT_SPELLCAST_CHANNEL_START', CastStart)
-		self:RegisterEvent('UNIT_SPELLCAST_STOP', CastStop)
-		self:RegisterEvent('UNIT_SPELLCAST_CHANNEL_STOP', CastStop)
-		self:RegisterEvent('UNIT_SPELLCAST_DELAYED', CastUpdate)
-		self:RegisterEvent('UNIT_SPELLCAST_CHANNEL_UPDATE', CastUpdate)
-		self:RegisterEvent('UNIT_SPELLCAST_FAILED', CastFail)
-		self:RegisterEvent('UNIT_SPELLCAST_INTERRUPTED', CastFail)
+		if(LCC) then
+			local CastbarEventHandler = function(event, ...)
+				return EventFunctions[event](self, event, ...)
+			end
+
+			LCC.RegisterCallback(self, 'UNIT_SPELLCAST_START', CastbarEventHandler)
+			LCC.RegisterCallback(self, 'UNIT_SPELLCAST_DELAYED', CastbarEventHandler)
+			LCC.RegisterCallback(self, 'UNIT_SPELLCAST_STOP', CastbarEventHandler)
+			LCC.RegisterCallback(self, 'UNIT_SPELLCAST_FAILED', CastbarEventHandler)
+			LCC.RegisterCallback(self, 'UNIT_SPELLCAST_INTERRUPTED', CastbarEventHandler)
+			LCC.RegisterCallback(self, 'UNIT_SPELLCAST_CHANNEL_START', CastbarEventHandler)
+			LCC.RegisterCallback(self, 'UNIT_SPELLCAST_CHANNEL_UPDATE', CastbarEventHandler)
+			LCC.RegisterCallback(self, 'UNIT_SPELLCAST_CHANNEL_STOP', CastbarEventHandler)
+		else
+			self:RegisterEvent('UNIT_SPELLCAST_START', CastStart)
+			self:RegisterEvent('UNIT_SPELLCAST_CHANNEL_START', CastStart)
+			self:RegisterEvent('UNIT_SPELLCAST_STOP', CastStop)
+			self:RegisterEvent('UNIT_SPELLCAST_CHANNEL_STOP', CastStop)
+			self:RegisterEvent('UNIT_SPELLCAST_DELAYED', CastUpdate)
+			self:RegisterEvent('UNIT_SPELLCAST_CHANNEL_UPDATE', CastUpdate)
+			self:RegisterEvent('UNIT_SPELLCAST_FAILED', CastFail)
+			self:RegisterEvent('UNIT_SPELLCAST_INTERRUPTED', CastFail)
+		end
 
 		if (oUF.isRetail) then
 			self:RegisterEvent('UNIT_SPELLCAST_INTERRUPTIBLE', CastInterruptible)
@@ -540,14 +562,25 @@ local function Disable(self)
 	if(element) then
 		element:Hide()
 
-		self:UnregisterEvent('UNIT_SPELLCAST_START', CastStart)
-		self:UnregisterEvent('UNIT_SPELLCAST_CHANNEL_START', CastStart)
-		self:UnregisterEvent('UNIT_SPELLCAST_STOP', CastStop)
-		self:UnregisterEvent('UNIT_SPELLCAST_CHANNEL_STOP', CastStop)
-		self:UnregisterEvent('UNIT_SPELLCAST_DELAYED', CastUpdate)
-		self:UnregisterEvent('UNIT_SPELLCAST_CHANNEL_UPDATE', CastUpdate)
-		self:UnregisterEvent('UNIT_SPELLCAST_FAILED', CastFail)
-		self:UnregisterEvent('UNIT_SPELLCAST_INTERRUPTED', CastFail)
+		if(LCC) then
+			LCC.UnregisterCallback(self, 'UNIT_SPELLCAST_START')
+			LCC.UnregisterCallback(self, 'UNIT_SPELLCAST_DELAYED')
+			LCC.UnregisterCallback(self, 'UNIT_SPELLCAST_STOP')
+			LCC.UnregisterCallback(self, 'UNIT_SPELLCAST_FAILED')
+			LCC.UnregisterCallback(self, 'UNIT_SPELLCAST_INTERRUPTED')
+			LCC.UnregisterCallback(self, 'UNIT_SPELLCAST_CHANNEL_START')
+			LCC.UnregisterCallback(self, 'UNIT_SPELLCAST_CHANNEL_UPDATE')
+			LCC.UnregisterCallback(self, 'UNIT_SPELLCAST_CHANNEL_STOP')
+		else
+			self:UnregisterEvent('UNIT_SPELLCAST_START', CastStart)
+			self:UnregisterEvent('UNIT_SPELLCAST_CHANNEL_START', CastStart)
+			self:UnregisterEvent('UNIT_SPELLCAST_STOP', CastStop)
+			self:UnregisterEvent('UNIT_SPELLCAST_CHANNEL_STOP', CastStop)
+			self:UnregisterEvent('UNIT_SPELLCAST_DELAYED', CastUpdate)
+			self:UnregisterEvent('UNIT_SPELLCAST_CHANNEL_UPDATE', CastUpdate)
+			self:UnregisterEvent('UNIT_SPELLCAST_FAILED', CastFail)
+			self:UnregisterEvent('UNIT_SPELLCAST_INTERRUPTED', CastFail)
+		end
 
 		if (oUF.isRetail) then
 			self:UnregisterEvent('UNIT_SPELLCAST_INTERRUPTIBLE', CastInterruptible)
@@ -569,6 +602,25 @@ local function Disable(self)
 			end
 		end
 	end
+end
+
+if (LCC) then
+	UnitCastingInfo = function(unit)
+		return LCC:UnitCastingInfo(unit)
+	end
+
+	UnitChannelInfo = function(unit)
+		return LCC:UnitChannelInfo(unit)
+	end
+
+	EventFunctions.UNIT_SPELLCAST_START = CastStart
+	EventFunctions.UNIT_SPELLCAST_FAILED = CastFail
+	EventFunctions.UNIT_SPELLCAST_INTERRUPTED = CastFail
+	EventFunctions.UNIT_SPELLCAST_DELAYED = CastUpdate
+	EventFunctions.UNIT_SPELLCAST_STOP = CastStop
+	EventFunctions.UNIT_SPELLCAST_CHANNEL_START = CastStart
+	EventFunctions.UNIT_SPELLCAST_CHANNEL_UPDATE = CastUpdate
+	EventFunctions.UNIT_SPELLCAST_CHANNEL_STOP = CastStop
 end
 
 oUF:AddElement('Castbar', Update, Enable, Disable)
