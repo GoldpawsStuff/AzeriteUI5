@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-05-06
-### Added
+### Fixed
+- Classic Era enemy castbars are once again working as intended.
 - Reagent counts in Classic Era for spells like Slow Fall and Gift of the Wild should now properly show up on the action bars.
 
 ## [5.0.64-RC] 2023-05-04
