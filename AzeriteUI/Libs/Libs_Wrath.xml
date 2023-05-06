@@ -22,7 +22,7 @@
 	<Script file="LibActionButton-1.0-GE\LibActionButton-1.0-GE.lua"/>
 
 	<!-- Classic Heal Predictions -->
-	<Include file="LibHealComm-4.0\LibHealComm-4.0.lua"/>
+	<Script file="LibHealComm-4.0\LibHealComm-4.0.lua"/>
 
 	<!-- UnitFrame Library -->
 	<Include file="oUF_Classic\oUF_Wrath.xml"/>
