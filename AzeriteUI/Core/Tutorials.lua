@@ -25,6 +25,8 @@
 --]]
 local Addon, ns = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
+
 local Tutorials = ns:NewModule("Tutorials", "LibMoreEvents-1.0", "AceConsole-3.0", "AceTimer-3.0")
 local EMP = ns:GetModule("EditMode", true)
 local MFM = ns:GetModule("MovableFramesManager")
@@ -152,7 +154,7 @@ Tutorials.ShowEditModeTutorial = function(self)
 		hide:SetNormalFontObject(GetFont(13,true))
 		hide:SetHighlightFontObject(GetFont(13,true))
 		hide:SetDisabledFontObject(GetFont(13,true))
-		hide:SetText(HIDE)
+		hide:SetText(L["Hide"])
 		hide:SetPoint("BOTTOM", 0, 20)
 		hide:SetScript("OnClick", function(widget)
 
@@ -173,7 +175,7 @@ Tutorials.ShowEditModeTutorial = function(self)
 		accept:SetNormalFontObject(GetFont(13,true))
 		accept:SetHighlightFontObject(GetFont(13,true))
 		accept:SetDisabledFontObject(GetFont(13,true))
-		accept:SetText(APPLY)
+		accept:SetText(L["Apply"])
 		accept:ClearAllPoints()
 		accept:SetPoint("RIGHT", hide, "LEFT", -10, 0)
 		accept:SetScript("OnClick", function(widget)
@@ -212,7 +214,7 @@ Tutorials.ShowEditModeTutorial = function(self)
 		cancel:SetNormalFontObject(GetFont(13,true))
 		cancel:SetHighlightFontObject(GetFont(13,true))
 		cancel:SetDisabledFontObject(GetFont(13,true))
-		cancel:SetText(CANCEL)
+		cancel:SetText(L["Cancel"])
 		cancel:SetPoint("LEFT", hide, "RIGHT", 10, 0)
 		cancel:SetScript("OnClick", function(widget)
 
@@ -237,7 +239,7 @@ Tutorials.ShowEditModeTutorial = function(self)
 			local acceptLabel = EMP:DoesDefaultLayoutExist() and RESET or APPLY
 
 			frame.AcceptButton:SetText(acceptLabel)
-			frame.Message:SetText(string_format("Congratulations, you are now running AzeriteUI for Retail!|n|nTo create or reset an editmode layout named 'Azerite' and switch to it, click the '|cffffd200%s|r' button. To hide this window for now, click the '|cffffd200%s|r' button. To cancel this tutorial, click the '|cffffd200%s|r' button.", acceptLabel, HIDE, CANCEL))
+			frame.Message:SetText(string_format(L["Congratulations, you are now running AzeriteUI for Retail!|n|nTo create or reset an editmode layout named 'Azerite' and switch to it, click the '|cffffd200%s|r' button. To hide this window for now, click the '|cffffd200%s|r' button. To cancel this tutorial, click the '|cffffd200%s|r' button."], acceptLabel, HIDE, CANCEL))
 
 			-- calculate frame size
 			local top = frame.Heading:GetTop()
@@ -293,7 +295,7 @@ Tutorials.ShowWrathSetupTutorial = function(self)
 		heading:SetPoint("RIGHT", frame, "RIGHT", -20, 0)
 		heading:SetFontObject(GetFont(26, true))
 		heading:SetJustifyH("CENTER")
-		heading:SetText("Welcome to "..addonName)
+		heading:SetText(string_format(L["Welcome to %s"], addonName))
 		heading:SetTextColor(unpack(Colors.offwhite))
 		frame.Heading = heading
 
@@ -328,7 +330,7 @@ Tutorials.ShowWrathSetupTutorial = function(self)
 		hide:SetNormalFontObject(GetFont(13,true))
 		hide:SetHighlightFontObject(GetFont(13,true))
 		hide:SetDisabledFontObject(GetFont(13,true))
-		hide:SetText(HIDE)
+		hide:SetText(L["Hide"])
 		hide:SetPoint("BOTTOM", 0, 20)
 		hide:SetScript("OnClick", function(widget)
 
@@ -349,7 +351,7 @@ Tutorials.ShowWrathSetupTutorial = function(self)
 		accept:SetNormalFontObject(GetFont(13,true))
 		accept:SetHighlightFontObject(GetFont(13,true))
 		accept:SetDisabledFontObject(GetFont(13,true))
-		accept:SetText(APPLY)
+		accept:SetText(L["Apply"])
 		accept:ClearAllPoints()
 		accept:SetPoint("RIGHT", hide, "LEFT", -10, 0)
 		accept:SetScript("OnClick", function(widget)
@@ -384,7 +386,7 @@ Tutorials.ShowWrathSetupTutorial = function(self)
 		cancel:SetNormalFontObject(GetFont(13,true))
 		cancel:SetHighlightFontObject(GetFont(13,true))
 		cancel:SetDisabledFontObject(GetFont(13,true))
-		cancel:SetText(CANCEL)
+		cancel:SetText(L["Cancel"])
 		cancel:SetPoint("LEFT", hide, "RIGHT", 10, 0)
 		cancel:SetScript("OnClick", function(widget)
 
@@ -406,7 +408,7 @@ Tutorials.ShowWrathSetupTutorial = function(self)
 
 		frame:SetScript("OnShow", function(frame)
 
-			frame.Message:SetText(string_format("You are now running AzeriteUI for %s!|n|nTo set the game's general interface scale to AzeriteUI defaults and position the chat frames to match, click the '|cffffd200%s|r' button. To hide this window for now, click the '|cffffd200%s|r' button. To cancel this tutorial and handle interface scaling yourself, click the '|cffffd200%s|r' button.", expName, APPLY, HIDE, CANCEL))
+			frame.Message:SetText(string_format(L["You are now running AzeriteUI for %s!|n|nTo set the game's general interface scale to AzeriteUI defaults and position the chat frames to match, click the '|cffffd200%s|r' button. To hide this window for now, click the '|cffffd200%s|r' button. To cancel this tutorial and handle interface scaling yourself, click the '|cffffd200%s|r' button."], expName, APPLY, HIDE, CANCEL))
 
 			-- calculate frame size
 			local top = frame.Heading:GetTop()

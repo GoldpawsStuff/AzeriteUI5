@@ -23,6 +23,9 @@ FontStyles_Classic.xml
 # Libraries
 Libs\Libs_Vanilla.xml
 
+# Addon localization
+Locale\Locale.xml
+
 # Addon core
 Core\Core.xml
 

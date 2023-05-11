@@ -24,6 +24,9 @@ Fontstyles.xml
 # Libraries
 Libs\Libs.xml
 
+# Addon localization
+Locale\Locale.xml
+
 # Addon core
 Core\Core.xml
 

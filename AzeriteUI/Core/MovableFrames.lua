@@ -25,6 +25,8 @@
 --]]
 local Addon, ns = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
+
 local MovableFramesManager = ns:NewModule("MovableFramesManager", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
 local EMP = ns:GetModule("EditMode", true)
 local AceGUI = LibStub("AceGUI-3.0")
@@ -317,15 +319,15 @@ Anchor.UpdateText = function(self)
 
 	if (self.isSelected) then -- self:IsMouseOver(20,-20,-20,20)
 		if (self:IsInDefaultPosition()) then
-			msg = msg .. Colors.green.colorCode.."\n<Left-Click and drag to move>|r"
+			msg = msg .. Colors.green.colorCode.."\n"..L["<Left-Click and drag to move>"].."|r"
 			if (self:IsScalable() and compare(anchorData.scale, anchorData.defaultScale)) then
-				msg = msg .. Colors.green.colorCode.."\n<MouseWheel to change scale>|r"
+				msg = msg .. Colors.green.colorCode.."\n"..L["<MouseWheel to change scale>"].."|r"
 			end
 		else
 			if (self:HasMovedSinceLastUpdate()) then
-				msg = msg .. Colors.green.colorCode.."\n<Ctrl and Right-Click to undo last change>|r"
+				msg = msg .. Colors.green.colorCode.."\n"..L["<Ctrl and Right-Click to undo last change>"].."|r"
 			end
-			msg = msg .. Colors.green.colorCode.."\n<Shift-Click to reset to default>|r"
+			msg = msg .. Colors.green.colorCode.."\n"..L["<Shift-Click to reset to default>"].."|r"
 		end
 		self.Title:Hide()
 		self.Text:Show()
@@ -780,7 +782,7 @@ MovableFramesManager.GetMFMFrame = function(self)
 
 		-- Dropdown label
 		local label = AceGUI:Create("Label")
-		label:SetText(HUD_EDIT_MODE_LAYOUT or "Layout:")
+		label:SetText(L["Layout:"])
 		label:SetFontObject(GetFont(13, true))
 		label:SetColor(unpack(Colors.normal))
 		label:SetFullWidth(true)
@@ -815,7 +817,7 @@ MovableFramesManager.GetMFMFrame = function(self)
 		group:SetHeight(60)
 
 		local button = AceGUI:Create("Button")
-		button:SetText(CALENDAR_CREATE)
+		button:SetText(L["Create"])
 		button:SetRelativeWidth(.3)
 		button:SetCallback("OnClick", function()
 
@@ -871,7 +873,7 @@ MovableFramesManager.GetMFMFrame = function(self)
 				local label = popup:CreateFontString(nil, "OVERLAY")
 				label:SetFontObject(GetFont(13, true))
 				label:SetTextColor(unpack(Colors.normal))
-				label:SetText(HUD_EDIT_MODE_NAME_LAYOUT_DIALOG_TITLE or "Name the New Layout")
+				label:SetText(L["Name the New Layout"])
 				label:SetPoint("BOTTOM", editbox, "TOP", 0, 6)
 				label:SetJustifyH("LEFT")
 				label:SetJustifyV("BOTTOM")
@@ -880,7 +882,7 @@ MovableFramesManager.GetMFMFrame = function(self)
 
 				local accept = CreateFrame("Button", nil, popup, "UIPanelButtonTemplate")
 				accept:SetSize(160, 30)
-				accept:SetText(HUD_EDIT_MODE_SAVE_LAYOUT or SAVE)
+				accept:SetText(L["Save"])
 				accept:SetPoint("BOTTOMLEFT", 20, 20)
 				accept:SetScript("OnClick", function(widget)
 					local layoutName = widget:GetParent().EditBox:GetText()
@@ -895,7 +897,7 @@ MovableFramesManager.GetMFMFrame = function(self)
 
 				local cancel = CreateFrame("Button", nil, popup, "UIPanelButtonTemplate")
 				cancel:SetSize(160, 30)
-				cancel:SetText(CANCEL)
+				cancel:SetText(L["Cancel"])
 				cancel:SetPoint("BOTTOMRIGHT", -20, 20)
 				cancel:SetScript("OnClick", function(widget)
 					widget:GetParent():Hide()
@@ -913,7 +915,7 @@ MovableFramesManager.GetMFMFrame = function(self)
 		window.CreateLayoutButton = button
 
 		local button = AceGUI:Create("Button")
-		button:SetText(CALENDAR_COPY_EVENT)
+		button:SetText(L["Copy"])
 		button:SetRelativeWidth(.3)
 		button:SetDisabled(true)
 		button:SetCallback("OnClick", function()
@@ -927,7 +929,7 @@ MovableFramesManager.GetMFMFrame = function(self)
 		window.CopyLayoutButton = button
 
 		local button = AceGUI:Create("Button")
-		button:SetText(CALENDAR_DELETE_EVENT)
+		button:SetText(L["Delete"])
 		button:SetRelativeWidth(.3)
 		button:SetDisabled(true)
 		button:SetCallback("OnClick", function()
@@ -952,7 +954,7 @@ MovableFramesManager.GetMFMFrame = function(self)
 
 			-- EditMode section title
 			local label = AceGUI:Create("Label")
-			label:SetText(HUD_EDIT_MODE_TITLE)
+			label:SetText(L["HUD Edit Mode"])
 			label:SetFontObject(GetFont(15, true))
 			label:SetColor(unpack(Colors.normal))
 			label:SetFullWidth(true)
@@ -970,17 +972,17 @@ MovableFramesManager.GetMFMFrame = function(self)
 
 			-- EditMode reset button description
 			local label = AceGUI:Create("Label")
-			label:SetText("Click the button below to reset the currently selected EditMode preset to positions matching the default AzeriteUI layout.")
+			label:SetText(L["Click the button below to reset the currently selected EditMode preset to positions matching the default AzeriteUI layout."])
 			label:SetFontObject(GetFont(13, true))
 			label:SetColor(unpack(Colors.offwhite))
 			label:SetRelativeWidth(.9)
 			group:AddChild(label)
 
 			local button = AceGUI:Create("Button")
-			button:SetText("Reset EditMode Layout")
+			button:SetText(L["Reset EditMode Layout"])
 			button:SetFullWidth(true)
 			button:SetCallback("OnClick", function()
-				EMP:ApplySystems() -- saves through reloads, not relogs
+				EMP:ApplySystems()
 			end)
 			window.ResetEditModeLayoutButton = button
 
@@ -998,14 +1000,14 @@ MovableFramesManager.GetMFMFrame = function(self)
 
 			-- EditMode reset button description
 			local label = AceGUI:Create("Label")
-			label:SetText("Click the button below to create an EditMode preset named 'Azerite'.")
+			label:SetText(L["Click the button below to create an EditMode preset named 'Azerite'."])
 			label:SetFontObject(GetFont(13, true))
 			label:SetColor(unpack(Colors.offwhite))
 			label:SetRelativeWidth(.9)
 			group:AddChild(label)
 
 			local button = AceGUI:Create("Button")
-			button:SetText("Create EditMode Layout")
+			button:SetText(L["Create EditMode Layout"])
 			button:SetFullWidth(true)
 			button:SetDisabled(true)
 			button:SetCallback("OnClick", function()

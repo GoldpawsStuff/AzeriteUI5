@@ -24,6 +24,9 @@
 
 --]]
 local Addon, ns = ...
+
+local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
+
 local FlavorDifferences = ns:NewModule("FlavorDifferences", "AceConsole-3.0", "LibMoreEvents-1.0")
 
 -- Lua API
@@ -131,7 +134,7 @@ FlavorDifferences.OnInitialize = function(self)
 		battleground:Hide()
 		battleground.Text = battleground:CreateFontString(nil, "OVERLAY")
 		battleground.Text:SetFontObject(GetFont(18,true))
-		battleground.Text:SetText("You can now enter a new battleground, right-click the eye icon on the minimap to enter or leave!")
+		battleground.Text:SetText(L["You can now enter a new battleground, right-click the eye icon on the minimap to enter or leave!"])
 		battleground.Text:SetPoint("TOP")
 		battleground.Text:SetJustifyH("CENTER")
 		battleground.Text:SetWidth(battleground:GetWidth())
