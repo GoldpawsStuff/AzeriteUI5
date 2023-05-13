@@ -1,9 +1,10 @@
-[![patreon](https://www.goldpawsstuff.com/shared/img/common/pa-button.png)](https://www.patreon.com/goldpawsstuff)
-[![paypal](https://www.goldpawsstuff.com/shared/img/common/pp-button.png)](https://www.paypal.me/goldpawsstuff)
-[![discord](https://www.goldpawsstuff.com/shared/img/common/dd-button.png)](https://discord.gg/RwcSm8V3Dy)
-[![twitter](https://www.goldpawsstuff.com/shared/img/common/tw-button.png)](https://twitter.com/GoldpawsStuff)
-
 AzeriteUI5 is a custom user interface for World of Warcraft Dragonflight, Wrath Classic and Classic Era.
+
+## Connect & Support
+- Patreon: [patreon.com/goldpawsstuff](https://www.patreon.com/goldpawsstuff)
+- Paypal: [paypal.me/goldpawsstuff](https://www.paypal.me/goldpawsstuff)
+- Discord: [discord.gg/RwcSm8V3Dy](https://discord.gg/RwcSm8V3Dy)
+- Twitter: [@goldpawsstuff](https://twitter.com/goldpawsstuff)
 
 ## FAQ
 - To remove abilities from the action bars, hold alt+ctrl+shift and drag.
