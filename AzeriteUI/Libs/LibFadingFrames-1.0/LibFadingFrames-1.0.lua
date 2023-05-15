@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 4
+local MINOR_VERSION = 5
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -229,6 +229,7 @@ lib.Disable = function(self)
 
 	if (self.checkTimer) then
 		self:CancelTimer(self.checkTimer)
+		self.checkTimer = nil
 	end
 
 	self:UpdateFadeFrames()
