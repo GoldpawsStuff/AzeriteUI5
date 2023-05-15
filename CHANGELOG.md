@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-05-15
+### Added
+- Added an options menu. The menu is accessible from the addon section of the interface options panels, or by typing `/azeriteui` or the shorthand `/az` from the command line. You can expand these commands with an optional submenu to go directly to a specific menu page. Example would be `/az bars`. Work in progress and more on this later!
+- Started working on proper localization for the addon. A lot of general phrases copied from blizzard are already in place, but some phrases and longer texts remains untranslated for non-English locales. Work in progress.
+
+### Fixed
+- Fixed an issue with the actionbar frame fading that would prevent mouseover from working if all bars were disabled and then any bar enabled again.
+
 ## [5.0.65-RC] 2023-05-06
 ### Fixed
 - Classic Era enemy castbars are once again working as intended.
