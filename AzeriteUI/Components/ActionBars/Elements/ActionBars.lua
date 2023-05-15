@@ -68,6 +68,9 @@ end
 local ID_TO_BAR = {}
 for i,j in pairs(BAR_TO_ID) do ID_TO_BAR[j] = i end
 
+-- TODO:
+-- Save layout, maptype and all bar options
+-- in the savePosition subtables to allow profiling of all options!
 local barDefaults = {
 	["**"] = ns:Merge({
 	}, ns.ActionBar.defaults),
