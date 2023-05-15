@@ -636,6 +636,10 @@ end
 
 Auras.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("Auras", defaults)
+	self:SetEnabledState(self.db.profile.enabled)
+
+	if (not self.db.profile.enabled) then return end
+
 	self:DisableBlizzard()
 	self:SpawnAuras()
 	self:RegisterChatCommand("auras", "OnChatCommand")
