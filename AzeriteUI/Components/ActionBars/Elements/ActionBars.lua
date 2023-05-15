@@ -797,6 +797,11 @@ ActionBarMod.UpdateChargeCooldowns = function(self)
 end
 
 ActionBarMod.UpdateSettings = function(self)
+	if (InCombatLockdown()) then
+		self.settingsNeedFix = true
+		return
+	end
+
 	local db = self.db.profile
 
 	for i,bar in next,self.bars do
@@ -817,15 +822,9 @@ ActionBarMod.UpdateSettings = function(self)
 
 		-- Update bar fading for enabled bars.
 		if (enabled and db.enableBarFading) then
-			if (i == 1) then
-				if (bardb.layout == "map") then
-					for id = 8, #bar.buttons do
-						self:RegisterFrameForFading(bar.buttons[id], "actionbuttons", unpack(config.ButtonHitRects))
-					end
-				else
-					for id, button in next,bar.buttons do
-						self:UnregisterFrameForFading(bar.buttons[id])
-					end
+			if (i == 1 and bardb.layout == "map" and bardb.maptype == "azerite") then
+				for id = 8, #bar.buttons do
+					self:RegisterFrameForFading(bar.buttons[id], "actionbuttons", unpack(config.ButtonHitRects))
 				end
 			else
 				for id, button in next,bar.buttons do
@@ -1034,6 +1033,9 @@ ActionBarMod.OnEvent = function(self, event, ...)
 		self.incombat = nil
 		if (self.positionNeedsFix) then
 			self:UpdatePositionAndScale()
+		end
+		if (self.settingsNeedFix) then
+			self:UpdateSettings()
 		end
 	elseif (event == "PLAYER_REGEN_DISABLED") then
 		self.incombat = true
