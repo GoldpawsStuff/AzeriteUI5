@@ -29,7 +29,7 @@ if (ns.IsClassic) then return end
 local oUF = ns.oUF
 
 local FocusFrameMod = ns:Merge(ns:NewModule("FocusFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
-local MFM = ns:GetModule("MovableFramesManager", true)
+local MFM = ns:GetModule("MovableFramesManager")
 
 -- Lua API
 local unpack = unpack

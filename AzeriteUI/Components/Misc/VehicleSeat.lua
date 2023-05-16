@@ -27,7 +27,7 @@ local Addon, ns = ...
 if (not ns.IsRetail and not ns.IsWrath) then return end
 
 local VehicleSeat = ns:NewModule("VehicleSeat", "AceHook-3.0")
-local MFM = ns:GetModule("MovableFramesManager", true)
+local MFM = ns:GetModule("MovableFramesManager")
 
 -- Lua API
 local pairs, unpack = pairs, unpack

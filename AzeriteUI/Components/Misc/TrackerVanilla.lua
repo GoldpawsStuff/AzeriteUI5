@@ -27,7 +27,7 @@ local Addon, ns = ...
 if (not ns.IsClassic) then return end
 
 local Tracker = ns:NewModule("Tracker", "LibMoreEvents-1.0", "AceHook-3.0")
-local MFM = ns:GetModule("MovableFramesManager", true)
+local MFM = ns:GetModule("MovableFramesManager")
 
 -- Lua
 local math_min = math.min

@@ -28,7 +28,7 @@ local Addon, ns = ...
 local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "LibFadingFrames-1.0", "AceConsole-3.0", "AceTimer-3.0")
 local LAB_Name = "LibActionButton-1.0-GE"
 local LAB, LAB_Version = LibStub(LAB_Name)
-local MFM = ns:GetModule("MovableFramesManager", true)
+local MFM = ns:GetModule("MovableFramesManager")
 
 -- Lua API
 local next = next
@@ -657,6 +657,8 @@ ActionBarMod.UpdatePositionAndScale = function(self, bar)
 		end
 	end
 
+	self.positionNeedsFix = nil
+	self:UpdateSettings()
 end
 
 ActionBarMod.OnAnchorUpdate = function(self, bar, reason, layoutName, ...)
@@ -841,6 +843,8 @@ ActionBarMod.UpdateSettings = function(self)
 		end
 
 	end
+
+	self.settingsNeedFix = nil
 end
 
 -- Chat Commands
@@ -916,6 +920,11 @@ ActionBarMod.SetLayout = function(self, input)
 	-- Retrieve the saved settings for the specified bar
 	local config = id and db[id]
 	if (not config) then return end
+
+	-- Migrate the layout data into the profiled saved positions.
+	local LAYOUT = MFM.db.char.layout
+	local profiles = config.savedPosition
+	local profile = LAYOUT and profile[LAYOUT]
 
 	local layout = args[2]
 	if (layout == "map" or layout == "azerite" or layout == "zigzag") then

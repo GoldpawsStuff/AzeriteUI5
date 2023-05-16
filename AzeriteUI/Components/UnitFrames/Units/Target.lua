@@ -27,7 +27,7 @@ local Addon, ns = ...
 local oUF = ns.oUF
 
 local TargetFrameMod = ns:Merge(ns:NewModule("TargetFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
-local MFM = ns:GetModule("MovableFramesManager", true)
+local MFM = ns:GetModule("MovableFramesManager")
 
 -- Lua API
 local next = next

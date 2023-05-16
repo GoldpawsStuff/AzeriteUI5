@@ -25,6 +25,8 @@
 --]]
 local Addon, ns = ...
 
+local MFM = ns:GetModule("MovableFramesManager")
+
 local Bar = ns.Bar.prototype
 
 local ButtonBar = setmetatable({}, { __index = Bar })
@@ -100,10 +102,10 @@ ns.ButtonBar.Create = function(self, id, config, name)
 	return bar
 end
 
-ButtonBar.CreateButton = function(self, config)
+ButtonBar.CreateButton = function(self, buttonConfig)
 
 	local id = #self.buttons + 1
-	local button = ns.ActionButton.Create(id, self:GetName().."Button"..id, self, config)
+	local button = ns.ActionButton.Create(id, self:GetName().."Button"..id, self, buttonConfig)
 
 	self:SetFrameRef("Button"..id, button)
 	self.buttons[id] = button
@@ -115,6 +117,9 @@ ButtonBar.UpdateButtons = function(self)
 	if (InCombatLockdown()) then return end
 
 	local buttons = self.buttons
+
+
+
 	local numbuttons = self.config.numbuttons
 
 	for id = #buttons + 1, numbuttons do
@@ -139,7 +144,7 @@ ButtonBar.UpdateButtonLayout = function(self)
 	if (InCombatLockdown()) then return end
 
 	local buttons = self.buttons
-	local numbuttons = self.numbuttons or #buttons
+	local numbuttons = self.config.numbuttons or #buttons
 
 	if (numbuttons == 0) then return end
 

@@ -25,7 +25,7 @@
 --]]
 local Addon, ns = ...
 local Tooltips = ns:NewModule("Tooltips", "LibMoreEvents-1.0", "AceHook-3.0")
-local MFM = ns:GetModule("MovableFramesManager", true)
+local MFM = ns:GetModule("MovableFramesManager")
 
 -- Lua API
 local _G = _G
@@ -65,7 +65,9 @@ local Backdrops = setmetatable({}, { __index = function(t,k)
 end })
 
 local defaults = { profile = ns:Merge({
-	enabled = true
+	enabled = true,
+	showItemID = true,
+	showSpellID = true
 }, ns.moduleDefaults) }
 if (not ns.IsRetail) then
 	defaults.profile.savedPosition = {
@@ -301,6 +303,8 @@ Tooltips.OnTooltipCleared = function(self, tooltip)
 end
 
 Tooltips.OnTooltipSetSpell = function(self, tooltip, data)
+	if (not self.db.profile.showSpellID) then return end
+
 	if (not tooltip) or (tooltip:IsForbidden()) then return end
 
 	local id = (data and data.id) or select(2, tooltip:GetSpell())
@@ -323,6 +327,8 @@ Tooltips.OnTooltipSetSpell = function(self, tooltip, data)
 end
 
 Tooltips.OnTooltipSetItem = function(self, tooltip, data)
+	if (not self.db.profile.showItemID) then return end
+
 	if (not tooltip) or (tooltip:IsForbidden()) then return end
 
 	local itemID
@@ -403,6 +409,8 @@ Tooltips.OnTooltipSetUnit = function(self, tooltip, data)
 end
 
 Tooltips.SetUnitAura = function(self, tooltip, unit, index, filter)
+	if (not self.db.profile.showSpellID) then return end
+
 	if (not tooltip) or (tooltip:IsForbidden()) then return end
 
 	local name, _, _, _, _, _, source, _, _, spellID = UnitAura(unit, index, filter)
@@ -422,6 +430,8 @@ Tooltips.SetUnitAura = function(self, tooltip, unit, index, filter)
 end
 
 Tooltips.SetUnitAuraInstanceID = function(self, tooltip, unit, auraInstanceID)
+	if (not self.db.profile.showSpellID) then return end
+
 	local data = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, auraInstanceID)
 	if (not data or not data.name) then return end
 
@@ -505,6 +515,9 @@ end
 
 Tooltips.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("Tooltips", defaults)
+
+	self:SetEnabledState(self.db.profile.enabled)
+	if (not self.db.profile.enabled) then return end
 
 	self:StyleStatusBar()
 	self:StyleTooltips()

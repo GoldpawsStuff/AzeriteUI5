@@ -28,7 +28,7 @@ local Addon, ns = ...
 LoadAddOn("Blizzard_TimeManager")
 
 local MinimapMod = ns:NewModule("Minimap", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0", "AceConsole-3.0")
-local MFM = ns:GetModule("MovableFramesManager", true)
+local MFM = ns:GetModule("MovableFramesManager")
 local LibDD = LibStub("LibUIDropDownMenu-4.0")
 
 -- Lua API

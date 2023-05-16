@@ -25,7 +25,7 @@
 --]]
 local Addon, ns = ...
 local RaidBossEmotes = ns:NewModule("RaidBossEmotes", "LibMoreEvents-1.0", "AceHook-3.0")
-local MFM = ns:GetModule("MovableFramesManager", true)
+local MFM = ns:GetModule("MovableFramesManager")
 
 -- Lua API
 local pairs, unpack = pairs, unpack

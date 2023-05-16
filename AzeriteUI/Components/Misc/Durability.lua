@@ -28,7 +28,7 @@ local Addon, ns = ...
 if (not DurabilityFrame or ns.IsRetail) then return end
 
 local Durability = ns:NewModule("Durability", "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
-local MFM = ns:GetModule("MovableFramesManager", true)
+local MFM = ns:GetModule("MovableFramesManager")
 
 -- Lua API
 local pairs, unpack = pairs, unpack
