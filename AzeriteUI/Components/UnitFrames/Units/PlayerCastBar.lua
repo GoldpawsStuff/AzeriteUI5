@@ -40,6 +40,7 @@ local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 local IsAddOnEnabled = ns.API.IsAddOnEnabled
+local UIHider = ns.Hider
 
 -- Constants
 local playerClass = ns.PlayerClass
@@ -294,16 +295,16 @@ CastBarMod.OnInitialize = function(self)
 
 	-- Register the available layout names
 	-- with the movable frames manager.
-	if (MFM) then
-		MFM:RegisterPresets(self.db.profile.savedPosition)
-	end
+	MFM:RegisterPresets(self.db.profile.savedPosition)
 
 	if (ns.IsRetail) then
+
 		-- How the fuck do I get this out of the editmode?
 		PlayerCastingBarFrame:SetParent(UIHider)
 		PlayerCastingBarFrame:UnregisterAllEvents()
 		PlayerCastingBarFrame:SetUnit(nil)
 		PlayerCastingBarFrame:Hide()
+		PlayerCastingBarFrame:SetAlpha(0) -- will this do it? anchor still there?
 
 		PetCastingBarFrame:SetParent(UIHider)
 		PetCastingBarFrame:UnregisterAllEvents()
