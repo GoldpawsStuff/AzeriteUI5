@@ -1135,9 +1135,7 @@ ActionBarMod.OnInitialize = function(self)
 
 		-- Register the available layout names
 		-- with the movable frames manager.
-		if (MFM) then
-			MFM:RegisterPresets(self.db.profile.bars[i].savedPosition)
-		end
+		MFM:RegisterPresets(self.db.profile.bars[i].savedPosition)
 
 		-- Set an initial size and point before button updates,
 		-- since mapped buttons (like the primary and secondary bars have)

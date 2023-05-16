@@ -381,9 +381,7 @@ Tracker.OnInitialize = function(self)
 
 	-- Register the available layout names
 	-- with the movable frames manager.
-	if (MFM) then
-		MFM:RegisterPresets(self.db.profile.savedPosition)
-	end
+	MFM:RegisterPresets(self.db.profile.savedPosition)
 
 	self:InitializeWatchFrame()
 	self:InitializeMovableFrameAnchor()
