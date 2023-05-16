@@ -53,6 +53,14 @@ L["Sets the number of action buttons on the action bar."] = true
 L["Unit Frames"] = true
 L["UnitFrame Settings"] = true
 
+-- Tooltip Settings
+L["Tooltips"] = true
+L["Tooltip Settings"] = true
+L["Show itemID"] = true
+L["Toggle whether to add itemID to item tooltips or not."] = true
+L["Show spellID"] = true
+L["Toggle whether to add spellIDs and auraIDs in tooltips containing actions, spells or auras."] = true
+
 -- Player Aura Settings
 L["Player Auras"] = true
 L["Aura Settings"] = true
