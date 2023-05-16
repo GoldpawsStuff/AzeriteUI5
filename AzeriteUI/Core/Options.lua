@@ -29,7 +29,7 @@ local AddonName = GetAddOnMetadata(Addon, "Title")
 local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
 
 local Options = ns:NewModule("Options", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
-local MFM = ns:GetModule("MovableFramesManager", true)
+local MFM = ns:GetModule("MovableFramesManager")
 local EMP = ns:GetModule("EditMode", true)
 
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
@@ -168,6 +168,46 @@ local generateUnitFrameOptions = function()
 	registerOptionsPanel(L["Unit Frames"], unitFrameOptions, Addon)
 end
 
+local generateTooltipOptions = function()
+	local subModName = AddonName.." - %s"
+	local tooltipMod = ns:GetModule("Tooltips")
+	local tooltipModEnabled = tooltipMod.db.profile.enabled
+	if (tooltipModEnabled) then
+
+		local setter = function(info,val)
+			tooltipMod.db.profile[info[#info]] = val
+		end
+
+		local getter = function(info)
+			return tooltipMod.db.profile[info[#info]]
+		end
+
+		local tooltipOptions = {
+			name = string_format(subModName, L["Tooltip Settings"]),
+			type = "group",
+			args = {
+				showItemID = {
+					name = L["Show itemID"],
+					desc = L["Toggle whether to add itemID to item tooltips or not."],
+					order = 1,
+					type = "toggle", width = "full",
+					set = setter,
+					get = getter
+				},
+				showSpellID = {
+					name = L["Show spellID"],
+					desc = L["Toggle whether to add spellIDs and auraIDs in tooltips containing actions, spells or auras."],
+					order = 2,
+					type = "toggle", width = "full",
+					set = setter,
+					get = getter
+				}
+			}
+		}
+		registerOptionsPanel(L["Tooltips"], tooltipOptions, Addon)
+	end
+end
+
 local generateAuraOptions = function()
 	local subModName = AddonName.." - %s"
 	local auraMod = ns:GetModule("Auras")
@@ -193,6 +233,7 @@ end
 local generateOptionsPages = function()
 	generateActionBarOptions()
 	--generateUnitFrameOptions()
+	generateTooltipOptions()
 	--generateAuraOptions()
 	--generateFadeOptions()
 end
