@@ -50,7 +50,7 @@ local playerXPDisabled = IsXPUserDisabled()
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
-		Azerite = {
+		[MFM:GetDefaultLayout()] = {
 			scale = 1,
 			[1] = "CENTER",
 			[2] = -(285 - 124/2),
@@ -449,7 +449,7 @@ end
 
 -- Frame Script Handlers
 --------------------------------------------
-local UnitFrame_OnEvent = function(self, event)
+local UnitFrame_OnEvent = function(self, event, ...)
 	if (event == "PLAYER_REGEN_DISABLED") then
 		local runes = self.Runes
 		if (runes and not runes.inCombat) then
@@ -592,12 +592,12 @@ ClassPowerMod.Spawn = function(self)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
 	anchor:SetSize(124, 168)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
-	anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
+	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
+	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
+	anchor.PreUpdate = function() self:UpdateAnchor() end
 	anchor.frameOffsetX = 0
 	anchor.frameOffsetY = 0
 	anchor.framePoint = "TOPLEFT"
-	anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
 
 	self.anchor = anchor
 end

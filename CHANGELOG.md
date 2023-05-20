@@ -4,13 +4,18 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-05-15
+## [Unreleased] 2023-05-20
+- This version is backwards incompatible and requires a full settings reset.
+
 ### Added
-- Added an options menu. The menu is accessible from the addon section of the interface options panels, or by typing `/azeriteui` or the shorthand `/az` from the command line. You can expand these commands with an optional submenu to go directly to a specific menu page. Example would be `/az bars`. Work in progress and more on this later!
+- Added an options menu. The menu is accessible from the addon section of the interface options panels.
 - Started working on proper localization for the addon. A lot of general phrases copied from blizzard are already in place, but some phrases and longer texts remains untranslated for non-English locales. Work in progress.
 
+### Changed
+- Redid how our movable frame system works in relation to saved settings. Most settings within modules like the actionbars should now be tied to the current movable frame profile. Meaning settings like enabled bars and bar layouts also change alongside the positioning profile.
+
 ### Fixed
-- Fixed an issue with the actionbar frame fading that would prevent mouseover from working if all bars were disabled and then any bar enabled again.
+- Fixed an issue with the actionbar frame fading that would prevent fading from working correctly after a settings change.
 
 ## [5.0.65-RC] 2023-05-06
 ### Fixed

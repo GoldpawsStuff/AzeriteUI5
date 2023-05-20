@@ -44,7 +44,7 @@ local playerClass = ns.PlayerClass
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
-		Azerite = {
+		[MFM:GetDefaultLayout()] = {
 			scale = 1,
 			[1] = "TOPRIGHT",
 			[2] = -64,
@@ -616,13 +616,13 @@ BossFrameMod.Spawn = function(self)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
 	anchor:SetSize(250, 485)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
-	anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
+	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
+	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
 	anchor:SetEditModeAccountSetting(ns.IsRetail and Enum.EditModeAccountSetting.ShowBossFrames)
+	anchor.PreUpdate = function() self:UpdateAnchor() end
 	anchor.frameOffsetX = 0
 	anchor.frameOffsetY = 0
 	anchor.framePoint = "TOPRIGHT"
-	anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
 
 	self.anchor = anchor
 end

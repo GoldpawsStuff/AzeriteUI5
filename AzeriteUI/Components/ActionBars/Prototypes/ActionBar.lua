@@ -30,6 +30,9 @@ local ButtonBar = ns.ButtonBar.prototype
 local ActionBar = setmetatable({}, { __index = ButtonBar })
 local ActionBar_MT = { __index = ActionBar }
 
+local LFF = LibStub("LibFadingFrames-1.0")
+local MFM = ns:GetModule("MovableFramesManager")
+
 local select, string_format = select, string.format
 
 local playerClass = ns.PlayerClass
@@ -48,13 +51,44 @@ if (ns.IsRetail) then
 	BINDTEMPLATE_BY_ID[MULTIBAR_7_ACTIONBAR_PAGE] = "MULTIACTIONBAR7BUTTON%d"
 end
 
+-- Exit button for Wrath & Retail
+local exitButton = {
+	func = function(button)
+		if (UnitExists("vehicle")) then
+			VehicleExit()
+		else
+			PetDismiss()
+		end
+	end,
+	tooltip = _G.LEAVE_VEHICLE,
+	texture = [[Interface\Icons\achievement_bg_kill_carrier_opposing_flagroom]]
+}
+
 local defaults = ns:Merge({
+	enabled = false,
+	enableBarFading = false, -- whether to enable non-combat/hover button fading
+	fadeFrom = 1, -- which button to start the button fading from
+	numbuttons = 12, -- total number of buttons on the bar
+	layout = "grid", -- currently applied layout type
+	startAt = 1, -- at which button the zigzag pattern should begin
+	growth = "horizontal", -- which direction the bar goes in
+	growthHorizontal = "RIGHT", -- the bar's horizontal growth direction
+	growthVertical = "UP", -- the bar's vertical growth direction
+	padding = 8, -- horizontal padding between the buttons
+	breakpadding = 8, -- vertical padding between the buttons
+	breakpoint = 12, -- when to start a new grid row
+	offset = 44/64, -- 44 -- relative offset in the growth direction for the alternate zigzag row as a fraction of button size.
+	hitrects = { -10, -10, -10, -10 },
 	visibility = {
 		dragon = false,
 		possess = false,
 		overridebar = false,
 		vehicleui = false
-	}
+	},
+	scale = 1,
+	[1] = "CENTER",
+	[2] = 0,
+	[3] = 0
 }, ns.ButtonBar.defaults)
 
 ns.ActionBar = {}
@@ -132,6 +166,12 @@ ActionBar.CreateButton = function(self, buttonConfig)
 	button:SetAttribute("statehidden", nil)
 	button:UpdateAction()
 
+	if ((ns.IsWrath or ns.IsRetail) and (self.id == 1 and button.id == 7)) then
+		button:SetState(16, "custom", exitButton)
+		button:SetState(17, "custom", exitButton)
+		button:SetState(18, "custom", exitButton)
+	end
+
 	local keyBoundTarget = string_format(BINDTEMPLATE_BY_ID[self.id], button.id)
 	button.keyBoundTarget = keyBoundTarget
 
@@ -142,43 +182,93 @@ ActionBar.CreateButton = function(self, buttonConfig)
 end
 
 ActionBar.Enable = function(self)
+	ButtonBar.Enable(self)
+	self:Update()
+end
+
+ActionBar.Disable = function(self)
+	ButtonBar.Disable(self)
+	self:Update()
+	--self:UpdateVisibilityDriver()
+end
+
+ActionBar.Update = function(self)
 	if (InCombatLockdown()) then return end
+	--if (not self.config.enabled) then
+	--	return self:UpdateVisibilityDriver()
+	--end
 
-	self.config.enabled = true
-
+	self:UpdatePosition()
 	self:UpdateButtons()
 	self:UpdateButtonLayout()
 	self:UpdateStateDriver()
 	self:UpdateVisibilityDriver()
 	self:UpdateBindings()
+	self:UpdateFading()
 end
 
-ActionBar.Disable = function(self)
-	if (InCombatLockdown()) then return end
-
-	self.config.enabled = false
-
-	self:UpdateVisibilityDriver()
-end
-
-ActionBar.SetEnabled = function(self, enable)
-	if (InCombatLockdown()) then return end
-
-	self.config.enabled = not not enable
-
-	if (self.config.enabled) then
-		self:Enable()
+ActionBar.UpdateFading = function(self)
+	if (self.config.enabled and self.config.enableBarFading) then
+		for id = 1, #self.buttons do
+			LFF:UnregisterFrameForFading(self.buttons[id])
+		end
+		for id = self.config.fadeFrom or 1, #self.buttons do
+			LFF:RegisterFrameForFading(self.buttons[id], "actionbuttons", unpack(self.config.hitrects))
+		end
 	else
-		self:Disable()
+		for id, button in next,self.buttons do
+			LFF:UnregisterFrameForFading(self.buttons[id])
+		end
 	end
 end
 
-ActionBar.IsEnabled = function(self)
-	return self.config.enabled
+ActionBar.UpdatePosition = function(self)
+	if (InCombatLockdown()) then return end
+
+	local point, x, y = unpack(self.config)
+	--print(self:GetName(), point, x, y)
+	--local scale = self.config.scale
+	--local anchor = self.anchor
+
+	-- Set the scale before positioning,
+	-- or everything will be wonky.
+	--self:SetScale(scale * ns.API.GetDefaultElementScale())
+	self:SetScale(self.config.scale * ns.API.GetDefaultElementScale())
+
+	--if (anchor and anchor.framePoint) then
+		-- Position the frame at the anchor,
+		-- with the given point and offsets.
+		--self:ClearAllPoints()
+		--self:SetPoint(anchor.framePoint, anchor, anchor.framePoint, (anchor.frameOffsetX or 0)/scale, (anchor.frameOffsetY or 0)/scale)
+
+		-- Parse where this actually is relative to UIParent
+		--local point, x, y = ns.API.GetPosition(self)
+		--local point, x, y = ns.API.GetPosition(anchor)
+
+		-- Reposition the frame relative to UIParent,
+		-- to avoid it being hooked to our anchor in combat.
+		self:ClearAllPoints()
+		self:SetPoint(point, UIParent, point, x, y)
+	--end
 end
 
-ActionBar.UpdateDragonRiding = function(self, isDragonRiding)
-	self.isDragonRiding = isDragonRiding
+ActionBar.UpdateAnchor = function(self)
+	if (self.anchor) then
+		self.anchor:SetSize(self:GetSize())
+		self.anchor:SetScale(self.config.scale)
+		self.anchor:ClearAllPoints()
+		self.anchor:SetPoint(unpack(self.config))
+	end
+end
+
+ActionBar.UpdateButtons = function(self)
+	ButtonBar.UpdateButtons(self)
+	--self:UpdateAnchor()
+end
+
+ActionBar.UpdateButtonLayout = function(self)
+	ButtonBar.UpdateButtonLayout(self)
+	--self:UpdateAnchor()
 end
 
 ActionBar.UpdateBindings = function(self)
@@ -288,4 +378,8 @@ ActionBar.UpdateVisibilityDriver = function(self)
 	UnregisterStateDriver(self, "vis")
 	self:SetAttribute("state-vis", "0")
 	RegisterStateDriver(self, "vis", visdriver or "hide")
+end
+
+ActionBar.UpdateDragonRiding = function(self, isDragonRiding)
+	self.isDragonRiding = isDragonRiding
 end

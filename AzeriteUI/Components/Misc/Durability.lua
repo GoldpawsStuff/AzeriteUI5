@@ -41,7 +41,7 @@ local GetMedia = ns.API.GetMedia
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
-		Azerite = {
+		[MFM:GetDefaultLayout()] = {
 			scale = 1,
 			[1] = "BOTTOMRIGHT",
 			[2] = -360 + 60/2,
@@ -49,10 +49,6 @@ local defaults = { profile = ns:Merge({
 		}
 	}
 }, ns.moduleDefaults) }
-
--- WoW API
-local GetInventoryAlertStatus = GetInventoryAlertStatus
-local OffhandHasWeapon = C_PaperDollInfo.OffhandHasWeapon
 
 -- Sourced from INVENTORY_ALERT_STATUS_SLOTS in FrameXML/DurabilityFrame.lua
 local inventorySlots = {
@@ -191,13 +187,45 @@ Durability.InitializeDurabilityFrame = function(self)
 	frame.Ranged:SetTexture(path)
 
 	self.frame = frame
+end
 
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	self:RegisterEvent("UPDATE_INVENTORY_ALERTS", "OnEvent")
+Durability.InitializeMovableFrameAnchor = function(self)
 
+	local anchor = MFM:RequestAnchor()
+	anchor:SetTitle(DURABILITY)
+	anchor:SetScalable(true)
+	anchor:SetMinMaxScale(.75, 1.25, .05)
+	anchor:SetSize(60 + 20 + 14, 75)
+	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
+	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
+	anchor.PreUpdate = function() self:UpdateAnchor() end
+	anchor.frameOffsetX = 0
+	anchor.frameOffsetY = 0
+	anchor.framePoint = "CENTER"
+
+	self.anchor = anchor
+end
+
+Durability.UpdatePositionAndScale = function(self)
+	if (not self.frame) then return end
+
+	local config = self.db.profile.savedPosition[MFM:GetLayout()]
+
+	self.frame:SetScale(config.scale * ns.API.GetDefaultElementScale())
+	self.frame:ClearAllPoints()
+	self.frame:SetPoint(config[1], UIParent, config[1], config[2], config[3])
+end
+
+Durability.UpdateAnchor = function(self)
+	local config = self.db.profile.savedPosition[MFM:GetLayout()]
+	self.anchor:SetScale(config.scale)
+	self.anchor:ClearAllPoints()
+	self.anchor:SetPoint(unpack(config))
 end
 
 Durability.UpdateWidget = function(self, forced)
+	if (not self.frame) then return end
+
 	local frame = self.frame
 
 	local numAlerts = 0
@@ -207,7 +235,7 @@ Durability.UpdateWidget = function(self, forced)
 	for index,value in pairs(inventorySlots) do
 		texture = frame[value.slot]
 		if (value.slot == "Shield") then
-			if (OffhandHasWeapon()) then
+			if (C_PaperDollInfo.OffhandHasWeapon()) then
 				frame.Shield:Hide()
 				texture = frame.OffHand
 			else
@@ -273,140 +301,67 @@ Durability.UpdateWidget = function(self, forced)
 
 end
 
-Durability.InitializeMovableFrameAnchor = function(self)
-
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(DURABILITY)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.75, 1.25, .05)
-	anchor:SetSize(60 + 20 + 14, 75)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
-	anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
-	anchor.frameOffsetX = 0
-	anchor.frameOffsetY = 0
-	anchor.framePoint = "CENTER"
-	anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
-
-	self.anchor = anchor
-
-end
-
-Durability.UpdatePositionAndScale = function(self)
-
-	local savedPosition = self.currentLayout and self.db.profile.savedPosition[self.currentLayout]
-	if (savedPosition) then
-		local point, x, y = unpack(savedPosition)
-		local scale = savedPosition.scale
-		local frame = self.frame
-		local anchor = self.anchor
-
-		-- Set the scale before positioning,
-		-- or everything will be wonky.
-		frame:SetScale(scale * ns.API.GetDefaultElementScale())
-
-		if (anchor and anchor.framePoint) then
-			-- Position the frame at the anchor,
-			-- with the given point and offsets.
-			frame:ClearAllPoints()
-			frame:SetPoint(anchor.framePoint, anchor, anchor.framePoint, (anchor.frameOffsetX or 0)/scale, (anchor.frameOffsetY or 0)/scale)
-
-			-- Parse where this actually is relative to UIParent
-			local point, x, y = ns.API.GetPosition(frame)
-
-			-- Reposition the frame relative to UIParent,
-			-- to avoid it being hooked to our anchor in combat.
-			frame:ClearAllPoints()
-			frame:SetPoint(point, UIParent, point, x, y)
-		end
-	end
-
-end
-
-Durability.OnAnchorUpdate = function(self, reason, layoutName, ...)
-	local savedPosition = self.db.profile.savedPosition
-	local lockdown = InCombatLockdown()
-
-	if (reason == "LayoutDeleted") then
-		if (savedPosition[layoutName]) then
-			savedPosition[layoutName] = nil
-		end
-
-	elseif (reason == "LayoutsUpdated") then
-
-		if (savedPosition[layoutName]) then
-
-			self.anchor:SetScale(savedPosition[layoutName].scale or self.anchor:GetScale())
-			self.anchor:ClearAllPoints()
-			self.anchor:SetPoint(unpack(savedPosition[layoutName]))
-
-			local defaultPosition = defaults.profile.savedPosition[layoutName]
-			if (defaultPosition) then
-				self.anchor:SetDefaultPosition(unpack(defaultPosition))
-			end
-
-			self.initialPositionSet = true
-				--self.currentLayout = layoutName
-
-		else
-			-- The user is unlikely to have a preset with our name
-			-- on the first time logging in.
-			if (not self.initialPositionSet) then
-				--print("setting default position for", layoutName, self.frame:GetName())
-
-				local defaultPosition = defaults.profile.savedPosition.Azerite
-
-				self.anchor:SetScale(defaultPosition.scale)
-				self.anchor:ClearAllPoints()
-				self.anchor:SetPoint(unpack(defaultPosition))
-				self.anchor:SetDefaultPosition(unpack(defaultPosition))
-
-				self.initialPositionSet = true
-				--self.currentLayout = layoutName
-			end
-
-			savedPosition[layoutName] = { self.anchor:GetPosition() }
-			savedPosition[layoutName].scale = self.anchor:GetScale()
-		end
-
-		self.currentLayout = layoutName
-
-		self:UpdatePositionAndScale()
-
-	elseif (reason == "PositionUpdated") then
-		-- Fires when position has been changed.
-		local point, x, y = ...
-
-		savedPosition[layoutName] = { point, x, y }
-		savedPosition[layoutName].scale = self.anchor:GetScale()
-
-		self:UpdatePositionAndScale()
-
-	elseif (reason == "ScaleUpdated") then
-		-- Fires when scale has been mousewheel updated.
-		local scale = ...
-
-		savedPosition[layoutName].scale = scale
-
-		self:UpdatePositionAndScale()
-
-	elseif (reason == "Dragging") then
-		-- Fires on every drag update. Spammy.
-		--if (not self.incombat) then
-			self:OnAnchorUpdate("PositionUpdated", layoutName, ...)
-		--end
-
-	elseif (reason == "CombatStart") then
-		-- Fires right before combat lockdown for visible anchors.
-
-
-	elseif (reason == "CombatEnd") then
-		-- Fires when combat lockdown ends for visible anchors.
-
-	end
-end
-
 Durability.OnEvent = function(self, event, ...)
-	self:UpdateWidget()
+	if (event == "UPDATE_INVENTORY_ALERTS") then
+		self:UpdateWidget()
+
+	elseif (event == "PLAYER_ENTERING_WORLD") then
+		self.incombat = nil
+		self:UpdateWidget()
+		self:UpdatePositionAndScale()
+
+	elseif (event == "PLAYER_REGEN_ENABLED") then
+		if (InCombatLockdown()) then return end
+		self.incombat = nil
+
+	elseif (event == "PLAYER_REGEN_DISABLED") then
+		self.incombat = true
+
+	elseif (event == "MFM_LayoutsUpdated") then
+		local LAYOUT = ...
+
+		if (not self.db.profile.savedPosition[LAYOUT]) then
+			self.db.profile.savedPosition[LAYOUT] = ns:Merge({}, defaults.profile.savedPosition[MFM:GetDefaultLayout()])
+		end
+
+		self:UpdatePositionAndScale()
+		self:UpdateAnchor()
+
+	elseif (event == "MFM_LayoutDeleted") then
+		local LAYOUT = ...
+
+		self.db.profile.savedPosition[LAYOUT] = nil
+
+	elseif (event == "MFM_PositionUpdated") then
+		local LAYOUT, anchor, point, x, y = ...
+
+		if (anchor ~= self.anchor) then return end
+
+		self.db.profile.savedPosition[LAYOUT][1] = point
+		self.db.profile.savedPosition[LAYOUT][2] = x
+		self.db.profile.savedPosition[LAYOUT][3] = y
+
+		self:UpdatePositionAndScale()
+
+	elseif (event == "MFM_AnchorShown") then
+		local LAYOUT, anchor, point, x, y = ...
+
+		if (anchor ~= self.anchor) then return end
+
+	elseif (event == "MFM_ScaleUpdated") then
+		local LAYOUT, bar, scale = ...
+
+		if (anchor ~= self.anchor) then return end
+
+		self:UpdatePositionAndScale()
+
+	elseif (event == "MFM_Dragging") then
+		if (not self.incombat) then
+			if (select(2, ...) ~= self.anchor) then return end
+
+			self:OnEvent("MFM_PositionUpdated", ...)
+		end
+	end
 end
 
 Durability.OnInitialize = function(self)
@@ -421,4 +376,17 @@ Durability.OnInitialize = function(self)
 
 	self:InitializeDurabilityFrame()
 	self:InitializeMovableFrameAnchor()
+end
+
+Durability.OnEnable = function(self)
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
+	self:RegisterEvent("UPDATE_INVENTORY_ALERTS", "OnEvent")
+
+	ns.RegisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
+	ns.RegisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
+	ns.RegisterCallback(self, "MFM_PositionUpdated", "OnEvent")
+	ns.RegisterCallback(self, "MFM_AnchorShown", "OnEvent")
+	ns.RegisterCallback(self, "MFM_ScaleUpdated", "OnEvent")
+	ns.RegisterCallback(self, "MFM_Dragging", "OnEvent")
 end

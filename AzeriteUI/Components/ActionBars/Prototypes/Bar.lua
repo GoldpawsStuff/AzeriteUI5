@@ -41,7 +41,35 @@ ns.Bar.Create = function(self, id, config, name)
 	local bar = setmetatable(CreateFrame("Frame", name, UIParent, "SecureHandlerStateTemplate"), Bar_MT)
 	bar.id = id
 	bar.name = name or id
-	bar.config = config
+	bar.config = config or ns:Merge({}, defaults)
 
 	return bar
+end
+
+Bar.Enable = function(self)
+	if (InCombatLockdown()) then return end
+
+	self.config.enabled = true
+end
+
+Bar.Disable = function(self)
+	if (InCombatLockdown()) then return end
+
+	self.config.enabled = false
+end
+
+Bar.SetEnabled = function(self, enable)
+	if (InCombatLockdown()) then return end
+
+	self.config.enabled = not not enable -- strict booleans
+
+	if (self.config.enabled) then
+		self:Enable()
+	else
+		self:Disable()
+	end
+end
+
+Bar.IsEnabled = function(self)
+	return self.config.enabled
 end

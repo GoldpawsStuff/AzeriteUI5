@@ -24,7 +24,9 @@
 
 --]]
 local Addon, ns = ...
+
 local Auras = ns:NewModule("Auras", "LibMoreEvents-1.0", "AceTimer-3.0", "AceHook-3.0", "AceConsole-3.0", "LibSmoothBar-1.0")
+local MFM = ns:GetModule("MovableFramesManager")
 
 -- Lua API
 local math_ceil = math.ceil
@@ -45,7 +47,7 @@ local RegisterCooldown = ns.Widgets.RegisterCooldown
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
-		Azerite = {
+		[MFM:GetDefaultLayout()] = {
 			scale = 1,
 			[1] = "TOPRIGHT",
 			[2] = -40,

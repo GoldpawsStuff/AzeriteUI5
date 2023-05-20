@@ -25,10 +25,15 @@
 --]]
 local Addon, ns = ...
 
-local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "LibFadingFrames-1.0", "AceConsole-3.0", "AceTimer-3.0")
+local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
 local LAB_Name = "LibActionButton-1.0-GE"
 local LAB, LAB_Version = LibStub(LAB_Name)
+
+local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "LibFadingFrames-1.0", "AceConsole-3.0", "AceTimer-3.0")
+
+local GUI = ns:GetModule("Options")
 local MFM = ns:GetModule("MovableFramesManager")
+local CPB = ns.API.IsAddOnEnabled("ConsolePort_Bar")
 
 -- Lua API
 local next = next
@@ -72,131 +77,153 @@ for i,j in pairs(BAR_TO_ID) do ID_TO_BAR[j] = i end
 -- Save layout, maptype and all bar options
 -- in the savePosition subtables to allow profiling of all options!
 local barDefaults = {
-	["**"] = ns:Merge({
-	}, ns.ActionBar.defaults),
 	[1] = { --[[ primary action bar ]]
-		layout = "map",
-		maptype = "azerite",
-		visibility = {
-			dragon = true,
-			possess = true,
-			overridebar = true,
-			vehicleui = true
-		},
 		savedPosition = {
-			Azerite = {
+			[MFM:GetDefaultLayout()] = ns:Merge({
+				enabled = true,
+				--enableBarFading = true,
+				fadeFrom = 8,
+				layout = "zigzag",
+				startAt = 9, -- at which button the zigzag pattern should begin
+				growth = "horizontal", -- which direction the bar goes in
+				growthHorizontal = "RIGHT", -- the bar's horizontal growth direction
+				growthVertical = "UP", -- the bar's vertical growth direction
+				visibility = {
+					dragon = true,
+					possess = true,
+					overridebar = true,
+					vehicleui = true
+				},
 				scale = 1,
 				[1] = "BOTTOMLEFT",
 				[2] = 60,
 				[3] = 42
-			}
+			}, ns.ActionBar.defaults)
 		}
 	},
 	[2] = { --[[ bottomleft multibar ]]
-		enabled = false,
-		layout = "map",
-		maptype = "zigzag",
 		savedPosition = {
-			Azerite = {
+			[MFM:GetDefaultLayout()] = ns:Merge({
+				enabled = true,
+				--enableBarFading = true,
+				fadeFrom = 1,
+				layout = "zigzag",
+				startAt = 2, -- at which button the zigzag pattern should begin
+				growth = "horizontal", -- which direction the bar goes in
+				growthHorizontal = "RIGHT", -- the bar's horizontal growth direction
+				growthVertical = "DOWN", -- the bar's vertical growth direction
+				offset = (64 - 44 + 8)/64, -- 28
 				scale = 1,
 				[1] = "BOTTOMLEFT",
-				[2] = 780,
+				[2] = 780 - 28,
 				[3] = 42
-			}
+			}, ns.ActionBar.defaults)
 		}
 	},
 	[3] = { --[[ bottomright multibar ]]
 		enabled = false,
-		grid = {
-			breakpoint = 6,
-			growth = "vertical",
-			growthHorizontal = "RIGHT",
-			growthVertical = "DOWN",
-		},
 		savedPosition = {
-			Azerite = {
+			[MFM:GetDefaultLayout()] = ns:Merge({
+				layout = "grid",
+				breakpoint = 6,
+				growth = "vertical",
+				growthHorizontal = "RIGHT",
+				growthVertical = "DOWN",
 				scale = 1,
 				[1] = "RIGHT",
 				[2] = -40,
 				[3] = 0
-			}
+			}, ns.ActionBar.defaults)
 		}
 	},
 	[4] = { --[[ right multibar 1 ]]
 		enabled = false,
-		grid = {
-			breakpoint = 6,
-			growth = "vertical",
-			growthHorizontal = "RIGHT",
-			growthVertical = "DOWN",
-		},
 		savedPosition = {
-			Azerite = {
+			[MFM:GetDefaultLayout()] = ns:Merge({
+				layout = "grid",
+				breakpoint = 6,
+				growth = "vertical",
+				growthHorizontal = "RIGHT",
+				growthVertical = "DOWN",
 				scale = 1,
 				[1] = "RIGHT",
 				[2] = -(40 + 10 + 72*2),
 				[3] = 0
-			}
+			}, ns.ActionBar.defaults)
 		}
 	},
 	[5] = { --[[ right multibar 2 ]]
 		enabled = false,
-		grid = {
-			breakpoint = 6,
-			growth = "vertical",
-			growthHorizontal = "RIGHT",
-			growthVertical = "DOWN",
-		},
 		savedPosition = {
-			Azerite = {
+			[MFM:GetDefaultLayout()] = ns:Merge({
+				layout = "grid",
+				breakpoint = 6,
+				growth = "vertical",
+				growthHorizontal = "RIGHT",
+				growthVertical = "DOWN",
 				scale = 1,
 				[1] = "RIGHT",
 				[2] = -(40 + 10 + 72*2 + 10 + 72*2),
 				[3] = 0
-			}
+			}, ns.ActionBar.defaults)
 		}
 	}
 }
 if (ns.IsRetail) then
 	barDefaults[6] = { --[[]]
-		enabled = false,
 		savedPosition = {
-			Azerite = {
+			[MFM:GetDefaultLayout()] = ns:Merge({
+				enabled = false,
+				layout = "grid",
+				breakpoint = 12,
+				growth = "horizontal",
+				growthHorizontal = "RIGHT",
+				growthVertical = "DOWN",
 				scale = 1,
 				[1] = "CENTER",
 				[2] = 0,
 				[3] = 72 + 10
-			}
+			}, ns.ActionBar.defaults)
 		}
 	}
 	barDefaults[7] = { --[[]]
-		enabled = false,
 		savedPosition = {
-			Azerite = {
+			[MFM:GetDefaultLayout()] = ns:Merge({
+				enabled = false,
+				layout = "grid",
+				breakpoint = 12,
+				growth = "horizontal",
+				growthHorizontal = "RIGHT",
+				growthVertical = "DOWN",
 				scale = 1,
 				[1] = "CENTER",
 				[2] = 0,
 				[3] = 0
-			}
+			}, ns.ActionBar.defaults)
 		}
 	}
 	barDefaults[8] = { --[[]]
-		enabled = false,
 		savedPosition = {
-			Azerite = {
+			[MFM:GetDefaultLayout()] = ns:Merge({
+				enabled = false,
+				layout = "grid",
+				breakpoint = 12,
+				growth = "horizontal",
+				growthHorizontal = "RIGHT",
+				growthVertical = "DOWN",
 				scale = 1,
 				[1] = "CENTER",
 				[2] = 0,
 				[3] = -(72 + 10)
-			}
+			}, ns.ActionBar.defaults)
 		}
 	}
 end
 
+-- Module defaults.
 local defaults = { profile = ns:Merge({
 	enabled = true,
-	enableBarFading = true,
-	bars = barDefaults
+	bars = ns:Merge({}, barDefaults)
 }, ns.moduleDefaults) }
 
 local config = {
@@ -617,128 +644,8 @@ ActionBarMod.HandleMaxDps = function(self)
 	self.MaxDps = true
 end
 
-ActionBarMod.UpdateBindings = function(self)
-	for i,bar in next,self.bars do
-		if (bar:IsEnabled()) then
-			bar:UpdateBindings()
-		end
-	end
-end
-
-ActionBarMod.UpdatePositionAndScale = function(self, bar)
-	if (InCombatLockdown()) then
-		self.positionNeedsFix = true
-		return
-	end
-
-	local savedPosition = bar.currentLayout and bar.config.savedPosition[bar.currentLayout]
-	if (savedPosition) then
-		local point, x, y = unpack(savedPosition)
-		local scale = savedPosition.scale
-		local anchor = bar.anchor
-
-		-- Set the scale before positioning,
-		-- or everything will be wonky.
-		bar:SetScale(scale * ns.API.GetDefaultElementScale())
-
-		if (anchor and anchor.framePoint) then
-			-- Position the frame at the anchor,
-			-- with the given point and offsets.
-			bar:ClearAllPoints()
-			bar:SetPoint(anchor.framePoint, anchor, anchor.framePoint, (anchor.frameOffsetX or 0)/scale, (anchor.frameOffsetY or 0)/scale)
-
-			-- Parse where this actually is relative to UIParent
-			local point, x, y = ns.API.GetPosition(bar)
-
-			-- Reposition the frame relative to UIParent,
-			-- to avoid it being hooked to our anchor in combat.
-			bar:ClearAllPoints()
-			bar:SetPoint(point, UIParent, point, x, y)
-		end
-	end
-
-	self.positionNeedsFix = nil
-	self:UpdateSettings()
-end
-
-ActionBarMod.OnAnchorUpdate = function(self, bar, reason, layoutName, ...)
-	local savedPositions = self.db.profile.bars[ID_TO_BAR[bar.id]].savedPosition
-	local defaultPositions = self.db.defaults.profile.bars[ID_TO_BAR[bar.id]].savedPosition
-
-	local anchor = bar.anchor
-
-	if (reason == "LayoutDeleted") then
-		if (savedPositions[layoutName]) then
-			savedPositions[layoutName] = nil
-		end
-
-	elseif (reason == "LayoutsUpdated") then
-
-		if (savedPositions[layoutName]) then
-
-			anchor:SetScale(savedPositions[layoutName].scale or anchor:GetScale())
-			anchor:ClearAllPoints()
-			anchor:SetPoint(unpack(savedPositions[layoutName]))
-
-			local defaultPosition = defaultPositions[layoutName] or defaultPositions.Azerite
-			if (defaultPosition) then
-				anchor:SetDefaultPosition(unpack(defaultPosition))
-			end
-
-			bar.initialPositionSet = true
-				--self.currentLayout = layoutName
-
-		else
-			-- The user is unlikely to have a preset with our name
-			-- on the first time logging in.
-			if (not bar.initialPositionSet) then
-
-				local defaultPosition = defaultPositions.Azerite
-
-				anchor:SetScale(defaultPosition.scale)
-				anchor:ClearAllPoints()
-				anchor:SetPoint(unpack(defaultPosition))
-				anchor:SetDefaultPosition(unpack(defaultPosition))
-
-				bar.initialPositionSet = true
-				--self.currentLayout = layoutName
-			end
-
-			savedPositions[layoutName] = { anchor:GetPosition() }
-			savedPositions[layoutName].scale = anchor:GetScale()
-		end
-
-		bar.currentLayout = layoutName
-
-		self:UpdatePositionAndScale(bar)
-
-	elseif (reason == "PositionUpdated") then
-		-- Fires when position has been changed.
-		local point, x, y = ...
-
-		savedPositions[layoutName] = { point, x, y }
-		savedPositions[layoutName].scale = anchor:GetScale()
-
-		self:UpdatePositionAndScale(bar)
-
-	elseif (reason == "ScaleUpdated") then
-		-- Fires when scale has been mousewheel updated.
-		local scale = ...
-
-		savedPositions[layoutName].scale = scale
-
-		self:UpdatePositionAndScale(bar)
-
-	elseif (reason == "Dragging") then
-		-- Fires on every drag update. Spammy.
-		if (not self.incombat) then
-			self:OnAnchorUpdate(bar, "PositionUpdated", layoutName, ...)
-		end
-	end
-end
-
 -- Returns a localized named usable for our movable frame anchor.
-ActionBarMod.GetBarDisplayName = function(self, id)
+ActionBarMod.GenerateBarDisplayName = function(self, id)
 	local barID = tonumber(id)
 	if (barID == RIGHT_ACTIONBAR_PAGE) then
 		return SHOW_MULTIBAR3_TEXT -- "Right Action Bar 1"
@@ -748,6 +655,11 @@ ActionBarMod.GetBarDisplayName = function(self, id)
 		return ITEM_SUFFIX_TEMPLATE:format(BINDING_HEADER_ACTIONBAR, barID)
 		--return HUD_EDIT_MODE_ACTION_BAR_LABEL:format(barID) -- "Action Bar %d"
 	end
+end
+
+-- Returns a table with default bar settings
+ActionBarMod.GenerateBarSettings = function(self, settings)
+	return ns:Merge(settings or {}, ns.ActionBar.defaults)
 end
 
 -- fucking charge cooldown styling
@@ -801,224 +713,200 @@ ActionBarMod.UpdateChargeCooldowns = function(self)
 
 end
 
+ActionBarMod.UpdateBindings = function(self)
+	for i,bar in next,self.bars do
+		if (bar:IsEnabled()) then
+			bar:UpdateBindings()
+		end
+	end
+end
+
 ActionBarMod.UpdateSettings = function(self)
 	if (InCombatLockdown()) then
-		self.settingsNeedFix = true
+		self.needupdate = true
 		return
 	end
-
-	local db = self.db.profile
-
-	for i,bar in next,self.bars do
-		local bardb = db.bars[i]
-		local enabled = bardb.enabled
-
-		-- Force disable bars if ConsolePort is loaded.
-		if (IsAddOnEnabled("ConsolePort_Bar")--[[ and (i == 1 or i == 2)]]) then
-			enabled = false
+	for id,bar in next,self.bars do
+		if (not CPB) then
+			bar:Update()
+			bar:UpdateAnchor()
 		end
-
-		-- Update enabled bars.
-		if (enabled) then
-			bar:Enable()
-		else
-			bar:Disable()
-		end
-
-		-- Update bar fading for enabled bars.
-		if (enabled and db.enableBarFading) then
-			if (i == 1 and bardb.layout == "map" and bardb.maptype == "azerite") then
-				for id = 8, #bar.buttons do
-					self:RegisterFrameForFading(bar.buttons[id], "actionbuttons", unpack(config.ButtonHitRects))
-				end
-			else
-				for id, button in next,bar.buttons do
-					self:RegisterFrameForFading(bar.buttons[id], "actionbuttons", unpack(config.ButtonHitRects))
-				end
-			end
-		else
-			for id, button in next,bar.buttons do
-				self:UnregisterFrameForFading(bar.buttons[id])
-			end
-		end
-
 	end
-
-	self.settingsNeedFix = nil
 end
 
 -- Chat Commands
 -----------------------------------------------
-ActionBarMod.EnableBar = function(self, input)
-	if (InCombatLockdown()) then return end
-	if (not input) then return end
+--ActionBarMod.EnableBar = function(self, input)
+--	if (InCombatLockdown()) then return end
+--	if (not input) then return end
+--
+--	local db = self.db.profile.bars
+--	local id = tonumber((self:GetArgs(string_lower(input))))
+--
+--	if (not id or not db[id]) then return end
+--
+--	db[id].enabled = true
+--
+--	self:UpdateSettings()
+--end
 
-	local db = self.db.profile.bars
-	local id = tonumber((self:GetArgs(string_lower(input))))
+--ActionBarMod.DisableBar = function(self, input)
+--	if (InCombatLockdown()) then return end
+--	if (not input) then return end
+--
+--	local db = self.db.profile.bars
+--	local id = tonumber((self:GetArgs(string_lower(input))))
+--
+--	if (not id or not db[id]) then return end
+--
+--	db[id].enabled = false
+--
+--	self:UpdateSettings()
+--end
 
-	if (not id or not db[id]) then return end
+--ActionBarMod.SetButtons = function(self, input)
+--	if (InCombatLockdown()) then return end
+--	if (not input) then return end
+--
+--	-- Strip superflous spaces from the input
+--	input = string_gsub(input, "%s+", " ")
+--
+--	-- Parse arguments
+--	local args = { string_split(" ", string_lower(input)) }
+--
+--	-- Retrieve the settings
+--	local db = self.db.profile.bars -- get the saved bar settings
+--	local id = tonumber(args[1]) -- get the barID
+--
+--	-- Retrieve the saved settings for the specified bar
+--	local config = id and db[id]
+--	if (not config) then return end
+--
+--	-- Set the number of buttons
+--	local arg = tonumber(args[2]) or defaults.profile.bars[id].numbuttons or 12
+--	config.numbuttons = (arg < 0) and 0 or (arg > 12) and 12 or arg
+--
+--	-- Update the bar!
+--	self:UpdateSettings()
+--end
 
-	db[id].enabled = true
+--ActionBarMod.SetLayout = function(self, input)
+--	if (InCombatLockdown()) then return end
+--	if (not input) then return end
+--
+--	-- Strip superflous spaces from the input
+--	input = string_gsub(input, "%s+", " ")
+--
+--	-- Parse arguments
+--	local args = { string_split(" ", string_lower(input)) }
+--
+--	-- Retrieve the settings
+--	local db = self.db.profile.bars -- get the saved bar settings
+--	local id = tonumber(args[1]) -- get the barID
+--
+--	-- Retrieve the saved settings for the specified bar
+--	local config = id and db[id]
+--	if (not config) then return end
+--
+--	-- Migrate the layout data into the profiled saved positions.
+--	local LAYOUT = MFM:GetLayout()
+--	local profiles = config.savedPosition
+--	local profile = LAYOUT and profile[LAYOUT]
+--	local config = profile -- lame
+--
+--	local layout = args[2]
+--	if (layout == "map" or layout == "azerite" or layout == "zigzag") then
+--
+--		local maptype = args[3]
+--		if (maptype == "azerite" or layout == "azerite") then
+--			if (id == 1) then
+--				config.layout = "map"
+--				config.maptype = "azerite"
+--				config.grid.growth = ns.ButtonBar.defaults.grid.growth
+--				config.grid.growthHorizontal = ns.ButtonBar.defaults.grid.growthHorizontal
+--				config.grid.growthVertical = ns.ButtonBar.defaults.grid.growthVertical
+--				config.grid.breakpoint = ns.ButtonBar.defaults.grid.breakpoint
+--				config.grid.breakpadding = ns.ButtonBar.defaults.grid.breakpadding
+--				config.grid.padding = ns.ButtonBar.defaults.grid.padding
+--			else
+--				-- only supported for primary bar
+--			end
+--
+--		elseif (maptype == "zigzag" or layout == "zigzag") then
+--			config.layout = "map"
+--			config.maptype = "zigzag"
+--			config.grid.growth = ns.ButtonBar.defaults.grid.growth
+--			config.grid.growthHorizontal = ns.ButtonBar.defaults.grid.growthHorizontal
+--			config.grid.growthVertical = ns.ButtonBar.defaults.grid.growthVertical
+--			config.grid.breakpoint = ns.ButtonBar.defaults.grid.breakpoint
+--			config.grid.breakpadding = ns.ButtonBar.defaults.grid.breakpadding
+--			config.grid.padding = ns.ButtonBar.defaults.grid.padding
+--
+--		else
+--			-- unknown maptype
+--		end
+--
+--	elseif (layout == "grid" or layout == "right" or layout == "left" or layout == "up" or layout == "down") then
+--
+--		local growth, breakpoint, altgrowth
+--
+--		if (layout == "grid") then
+--			growth, breakpoint, altgrowth, buttonpadding, breakpadding = args[3], args[4], args[5], args[6], args[7]
+--		else
+--			growth, breakpoint, altgrowth, buttonpadding, breakpadding = args[2], args[3], args[4], args[5], args[6]
+--		end
+--
+--		if (growth ~= "left" and growth ~= "right" and growth ~= "up" and growth ~= "down") then
+--			return -- invalid growth
+--		end
+--
+--		buttonpadding = tonumber(buttonpadding)
+--		breakpadding = tonumber(breakpadding) or buttonpadding
+--
+--		if (breakpoint) then
+--			breakpoint = tonumber(breakpoint)
+--			if (breakpoint > 12) then breakpoint = 12 end
+--			if (breakpoint < 1) then breakpoint = 1 end
+--			if (altgrowth ~= "left" and altgrowth ~= "right" and altgrowth ~= "up" and altgrowth ~= "down") then
+--				return -- invalid altgrowth
+--			end
+--		else
+--			breakpoint = ns.ButtonBar.defaults.grid.breakpoint
+--			altgrowth = (growth == "left" or growth == "right") and "up" or "left"
+--		end
+--
+--		local growthKey = (growth == "left" or growth == "right") and "growthHorizontal" or "growthVertical"
+--
+--		local altgrowthKey = (altgrowth == "left" or altgrowth == "right") and "growthHorizontal" or "growthVertical"
+--		if (growthKey == altgrowthKey) then
+--			return -- invalid altgrowth, same direction as primary
+--		end
+--
+--		-- Got so far, should be able to trust the input now.
+--		config.layout = "grid"
+--		config.maptype = nil
+--		config.grid.growth = (growth == "left" or growth == "right") and "horizontal" or "vertical"
+--		config.grid[growthKey] = string_upper(growth)
+--		config.grid[altgrowthKey] = string_upper(altgrowth)
+--		config.grid.breakpoint = breakpoint
+--		config.grid.breakpadding = breakpadding or ns.ButtonBar.defaults.grid.breakpadding
+--		config.grid.padding = buttonpadding or ns.ButtonBar.defaults.grid.padding
+--
+--	end
+--
+--	-- Update the bar!
+--	self:UpdateSettings()
+--end
 
-	self:UpdateSettings()
-end
+--ActionBarMod.EnableBarFading = function(self)
+--	self.db.profile.enableBarFading = true
+--	self:UpdateSettings()
+--end
 
-ActionBarMod.DisableBar = function(self, input)
-	if (InCombatLockdown()) then return end
-	if (not input) then return end
-
-	local db = self.db.profile.bars
-	local id = tonumber((self:GetArgs(string_lower(input))))
-
-	if (not id or not db[id]) then return end
-
-	db[id].enabled = false
-
-	self:UpdateSettings()
-end
-
-ActionBarMod.SetButtons = function(self, input)
-	if (InCombatLockdown()) then return end
-	if (not input) then return end
-
-	-- Strip superflous spaces from the input
-	input = string_gsub(input, "%s+", " ")
-
-	-- Parse arguments
-	local args = { string_split(" ", string_lower(input)) }
-
-	-- Retrieve the settings
-	local db = self.db.profile.bars -- get the saved bar settings
-	local id = tonumber(args[1]) -- get the barID
-
-	-- Retrieve the saved settings for the specified bar
-	local config = id and db[id]
-	if (not config) then return end
-
-	-- Set the number of buttons
-	local arg = tonumber(args[2]) or defaults.profile.bars[id].numbuttons or 12
-	config.numbuttons = (arg < 0) and 0 or (arg > 12) and 12 or arg
-
-	-- Update the bar!
-	self:UpdateSettings()
-end
-
-ActionBarMod.SetLayout = function(self, input)
-	if (InCombatLockdown()) then return end
-	if (not input) then return end
-
-	-- Strip superflous spaces from the input
-	input = string_gsub(input, "%s+", " ")
-
-	-- Parse arguments
-	local args = { string_split(" ", string_lower(input)) }
-
-	-- Retrieve the settings
-	local db = self.db.profile.bars -- get the saved bar settings
-	local id = tonumber(args[1]) -- get the barID
-
-	-- Retrieve the saved settings for the specified bar
-	local config = id and db[id]
-	if (not config) then return end
-
-	-- Migrate the layout data into the profiled saved positions.
-	local LAYOUT = MFM.db.char.layout
-	local profiles = config.savedPosition
-	local profile = LAYOUT and profile[LAYOUT]
-
-	local layout = args[2]
-	if (layout == "map" or layout == "azerite" or layout == "zigzag") then
-
-		local maptype = args[3]
-		if (maptype == "azerite" or layout == "azerite") then
-			if (id == 1) then
-				config.layout = "map"
-				config.maptype = "azerite"
-				config.grid.growth = ns.ButtonBar.defaults.grid.growth
-				config.grid.growthHorizontal = ns.ButtonBar.defaults.grid.growthHorizontal
-				config.grid.growthVertical = ns.ButtonBar.defaults.grid.growthVertical
-				config.grid.breakpoint = ns.ButtonBar.defaults.grid.breakpoint
-				config.grid.breakpadding = ns.ButtonBar.defaults.grid.breakpadding
-				config.grid.padding = ns.ButtonBar.defaults.grid.padding
-			else
-				-- only supported for primary bar
-			end
-
-		elseif (maptype == "zigzag" or layout == "zigzag") then
-			config.layout = "map"
-			config.maptype = "zigzag"
-			config.grid.growth = ns.ButtonBar.defaults.grid.growth
-			config.grid.growthHorizontal = ns.ButtonBar.defaults.grid.growthHorizontal
-			config.grid.growthVertical = ns.ButtonBar.defaults.grid.growthVertical
-			config.grid.breakpoint = ns.ButtonBar.defaults.grid.breakpoint
-			config.grid.breakpadding = ns.ButtonBar.defaults.grid.breakpadding
-			config.grid.padding = ns.ButtonBar.defaults.grid.padding
-
-		else
-			-- unknown maptype
-		end
-
-	elseif (layout == "grid" or layout == "right" or layout == "left" or layout == "up" or layout == "down") then
-
-		local growth, breakpoint, altgrowth
-
-		if (layout == "grid") then
-			growth, breakpoint, altgrowth, buttonpadding, breakpadding = args[3], args[4], args[5], args[6], args[7]
-		else
-			growth, breakpoint, altgrowth, buttonpadding, breakpadding = args[2], args[3], args[4], args[5], args[6]
-		end
-
-		if (growth ~= "left" and growth ~= "right" and growth ~= "up" and growth ~= "down") then
-			return -- invalid growth
-		end
-
-		buttonpadding = tonumber(buttonpadding)
-		breakpadding = tonumber(breakpadding) or buttonpadding
-
-		if (breakpoint) then
-			breakpoint = tonumber(breakpoint)
-			if (breakpoint > 12) then breakpoint = 12 end
-			if (breakpoint < 1) then breakpoint = 1 end
-			if (altgrowth ~= "left" and altgrowth ~= "right" and altgrowth ~= "up" and altgrowth ~= "down") then
-				return -- invalid altgrowth
-			end
-		else
-			breakpoint = ns.ButtonBar.defaults.grid.breakpoint
-			altgrowth = (growth == "left" or growth == "right") and "up" or "left"
-		end
-
-		local growthKey = (growth == "left" or growth == "right") and "growthHorizontal" or "growthVertical"
-
-		local altgrowthKey = (altgrowth == "left" or altgrowth == "right") and "growthHorizontal" or "growthVertical"
-		if (growthKey == altgrowthKey) then
-			return -- invalid altgrowth, same direction as primary
-		end
-
-		-- Got so far, should be able to trust the input now.
-		config.layout = "grid"
-		config.maptype = nil
-		config.grid.growth = (growth == "left" or growth == "right") and "horizontal" or "vertical"
-		config.grid[growthKey] = string_upper(growth)
-		config.grid[altgrowthKey] = string_upper(altgrowth)
-		config.grid.breakpoint = breakpoint
-		config.grid.breakpadding = breakpadding or ns.ButtonBar.defaults.grid.breakpadding
-		config.grid.padding = buttonpadding or ns.ButtonBar.defaults.grid.padding
-
-	end
-
-	-- Update the bar!
-	self:UpdateSettings()
-end
-
-ActionBarMod.EnableBarFading = function(self)
-	self.db.profile.enableBarFading = true
-	self:UpdateSettings()
-end
-
-ActionBarMod.DisableBarFading = function(self)
-	self.db.profile.enableBarFading = false
-	self:UpdateSettings()
-end
+--ActionBarMod.DisableBarFading = function(self)
+--	self.db.profile.enableBarFading = false
+--	self:UpdateSettings()
+--end
 
 ActionBarMod.OnEvent = function(self, event, ...)
 	if (event == "ADDON_LOADED") then
@@ -1028,6 +916,11 @@ ActionBarMod.OnEvent = function(self, event, ...)
 			self:HandleMaxDps()
 		end
 	elseif (event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UPDATE_SHAPESHIFT_FORM") then
+
+		if (event == "PLAYER_ENTERING_WORLD") then
+			self:UpdateSettings()
+			self.incombat = nil
+		end
 
 		if (self.MaxDps) then
 			for button in next, LAB.activeButtons do
@@ -1040,21 +933,69 @@ ActionBarMod.OnEvent = function(self, event, ...)
 				end
 			end
 		end
+
 	elseif (event == "PLAYER_REGEN_ENABLED") then
 		if (InCombatLockdown()) then return end
 		self.incombat = nil
-		if (self.positionNeedsFix) then
-			self:UpdatePositionAndScale()
-		end
-		if (self.settingsNeedFix) then
+		if (self.needupdate) then
 			self:UpdateSettings()
 		end
+
 	elseif (event == "PLAYER_REGEN_DISABLED") then
 		self.incombat = true
+
 	elseif (event == "UPDATE_BINDINGS") then
-		for id,bar in next(self.bars) do
+		for id,bar in next,self.bars do
 			bar:UpdateBindings()
 		end
+
+	elseif (event == "MFM_LayoutsUpdated") then
+		local LAYOUT = ...
+		for id,bar in next,self.bars do
+			local layouts = self.db.profile.bars[id].savedPosition
+			if (not layouts[LAYOUT]) then
+				layouts[LAYOUT] = ns:Merge({}, defaults.profile.bars[id].savedPosition[MFM:GetDefaultLayout()])
+			end
+			bar.config = layouts[LAYOUT]
+			bar:Update()
+			bar:UpdateAnchor()
+			GUI:Refresh(L["Action Bars"])
+		end
+
+	elseif (event == "MFM_LayoutDeleted") then
+		local LAYOUT = ...
+		for id,bar in next,self.bars do
+			self.db.profile.bars[id].savedPosition[LAYOUT] = nil
+		end
+
+	elseif (event == "MFM_PositionUpdated") then
+		local LAYOUT, anchor, point, x, y = ...
+		local bar = self.anchorLookup[anchor]
+		if (not bar) then return end
+		bar.config[1], bar.config[2], bar.config[3] = point, x, y
+		bar:UpdatePosition()
+		GUI:Refresh(L["Action Bars"])
+
+	elseif (event == "MFM_AnchorShown") then
+		local LAYOUT, anchor, point, x, y = ...
+		local bar = self.anchorLookup[anchor]
+		if (not bar) then return end
+
+	elseif (event == "MFM_ScaleUpdated") then
+		local LAYOUT, bar, scale = ...
+		local bar = self.anchorLookup[anchor]
+		if (not bar) then return end
+		bar.config.scale = scale
+		bar:UpdatePosition()
+		GUI:Refresh(L["Action Bars"])
+
+	elseif (event == "MFM_Dragging") then
+		if (not self.incombat) then
+			local bar = self.anchorLookup[(select(2, ...))]
+			if (not bar) then return end
+			self:OnEvent("MFM_PositionUpdated", ...)
+		end
+
 	elseif (event == "OnButtonUpdate") then
 		local button = ...
 		if (self.buttons[button]) then
@@ -1123,34 +1064,27 @@ ActionBarMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ActionBars", defaults)
 
 	self.bars = {}
+	self.anchorLookup = {}
 	self.buttons = {}
 
+	self:RegisterChatCommand("update", function() GUI:Refresh(L["Action Bars"]) end)
+
 	self:SetEnabledState(self.db.profile.enabled)
+
+	-- Register the available layout names
+	-- with the movable frames manager.
+	for i = 1,#BAR_TO_ID do
+		MFM:RegisterPresets(self.db.profile.bars[i].savedPosition)
+	end
+
+	-- Retrieve name of the current layout.
+	local LAYOUT = MFM:GetLayout()
 
 	-- Spawn all bars
 	for i = 1,#BAR_TO_ID do
 
-		local config = self.db.profile.bars[i]
+		local config = self.db.profile.bars[i].savedPosition[LAYOUT]
 		local bar = ns.ActionBar:Create(BAR_TO_ID[i], config, ns.Prefix.."ActionBar"..i)
-
-		-- Register the available layout names
-		-- with the movable frames manager.
-		MFM:RegisterPresets(self.db.profile.bars[i].savedPosition)
-
-		-- Set an initial size and point before button updates,
-		-- since mapped buttons (like the primary and secondary bars have)
-		-- rely on the bar having these to correctly size both the bar and the anchor.
-		bar:SetPoint(unpack(defaults.profile.bars[i].savedPosition.Azerite))
-		bar:SetSize(2,2)
-
-		-- This will spawn the buttons.
-		bar:UpdateButtons()
-
-		-- This will fix the layout and size of the bar.
-		bar:UpdateButtonLayout()
-
-		-- This is pretty damn pointless at this point.
-		bar:UpdateBindings()
 
 		for id,button in next,bar.buttons do
 			style(button)
@@ -1158,22 +1092,6 @@ ActionBarMod.OnInitialize = function(self)
 		end
 
 		if (i == 1) then
-
-			local exitButton = {
-				func = function(button)
-					if (UnitExists("vehicle")) then
-						VehicleExit()
-					else
-						PetDismiss()
-					end
-				end,
-				tooltip = _G.LEAVE_VEHICLE,
-				texture = [[Interface\Icons\achievement_bg_kill_carrier_opposing_flagroom]]
-			}
-
-			bar.buttons[7]:SetState(16, "custom", exitButton)
-			bar.buttons[7]:SetState(17, "custom", exitButton)
-			bar.buttons[7]:SetState(18, "custom", exitButton)
 
 			-- Pet Battle Keybind Fixer
 			-------------------------------------------------------
@@ -1205,16 +1123,19 @@ ActionBarMod.OnInitialize = function(self)
 		end
 
 		local anchor = MFM:RequestAnchor()
-		anchor:SetTitle(self:GetBarDisplayName(i))
+		anchor:SetTitle(self:GenerateBarDisplayName(i))
 		anchor:SetScalable(true)
 		anchor:SetMinMaxScale(.75, 1.25, .05)
 		anchor:SetSize(bar:GetSize()) -- will be updated later
-		anchor:SetPoint(unpack(defaults.profile.bars[i].savedPosition.Azerite))
-		anchor:SetScale(defaults.profile.bars[i].savedPosition.Azerite.scale)
+		anchor:SetPoint(unpack(defaults.profile.bars[i].savedPosition[MFM:GetDefaultLayout()])) -- store defaults
+		anchor:SetScale(defaults.profile.bars[i].savedPosition[MFM:GetDefaultLayout()].scale)
 		anchor.frameOffsetX = 0
 		anchor.frameOffsetY = 0
 		anchor.framePoint = "BOTTOMLEFT"
-		anchor.Callback = function(_,...) self:OnAnchorUpdate(bar, ...) end
+
+		anchor.PreUpdate = function(self)
+			bar:UpdateAnchor()
+		end
 
 		-- do this on layout updates too
 		if (ns.IsWrath or ns.IsRetail) then
@@ -1226,17 +1147,18 @@ ActionBarMod.OnInitialize = function(self)
 
 		bar.anchor = anchor
 
+		bar:Update()
+
 		self.bars[i] = bar
+		self.anchorLookup[anchor] = bar
 	end
 
-	self:RegisterChatCommand("enablebar", "EnableBar")
-	self:RegisterChatCommand("disablebar", "DisableBar")
-	self:RegisterChatCommand("enablebarfade", "EnableBarFading")
-	self:RegisterChatCommand("disablebarfade", "DisableBarFading")
-
-	-- Experimental for the time being!
-	self:RegisterChatCommand("setbuttons", "SetButtons")
-	self:RegisterChatCommand("setlayout", "SetLayout")
+	--self:RegisterChatCommand("enablebar", "EnableBar")
+	--self:RegisterChatCommand("disablebar", "DisableBar")
+	--self:RegisterChatCommand("enablebarfade", "EnableBarFading")
+	--self:RegisterChatCommand("disablebarfade", "DisableBarFading")
+	--self:RegisterChatCommand("setbuttons", "SetButtons")
+	--self:RegisterChatCommand("setlayout", "SetLayout")
 
 	if (ns.IsRetail) then
 		if (MaxDps) then
@@ -1261,6 +1183,13 @@ ActionBarMod.OnEnable = function(self)
 		self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE", "OnEvent")
 	end
 
+	ns.RegisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
+	ns.RegisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
+	ns.RegisterCallback(self, "MFM_PositionUpdated", "OnEvent")
+	ns.RegisterCallback(self, "MFM_AnchorShown", "OnEvent")
+	ns.RegisterCallback(self, "MFM_ScaleUpdated", "OnEvent")
+	ns.RegisterCallback(self, "MFM_Dragging", "OnEvent")
+
 	LAB.RegisterCallback(self, "OnButtonUpdate", "OnEvent")
 	LAB.RegisterCallback(self, "OnButtonUsable", "OnEvent")
 
@@ -1274,6 +1203,18 @@ ActionBarMod.OnDisable = function(self)
 	self:UnregisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:UnregisterEvent("UPDATE_BINDINGS", "UpdateBindings")
+
+	if (not IsAddOnEnabled("MaxDps")) then
+		self:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW", "OnEvent")
+		self:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE", "OnEvent")
+	end
+
+	ns.UnregisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
+	ns.UnregisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
+	ns.UnregisterCallback(self, "MFM_PositionUpdated", "OnEvent")
+	ns.UnregisterCallback(self, "MFM_AnchorShown", "OnEvent")
+	ns.UnregisterCallback(self, "MFM_ScaleUpdated", "OnEvent")
+	ns.UnregisterCallback(self, "MFM_Dragging", "OnEvent")
 
 	LAB.UnregisterCallback(self, "OnButtonUpdate")
 	LAB.UnregisterCallback(self, "OnButtonUsable")

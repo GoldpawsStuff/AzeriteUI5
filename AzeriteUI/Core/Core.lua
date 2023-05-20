@@ -30,7 +30,7 @@ ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false)
 ns.Hider = CreateFrame("Frame"); ns.Hider:Hide()
 ns.Noop = function() end
 
-ns.SETTINGS_VERSION = 13
+ns.SETTINGS_VERSION = 15
 
 _G[Addon] = ns
 
@@ -126,7 +126,6 @@ ns.OnEvent = function(self, event, ...)
 end
 
 ns.OnInitialize = function(self)
-
 	self.db = LibStub("AceDB-3.0"):New("AzeriteUI5_DB", defaults, true)
 
 	-- Force a settings reset on backwards incompatible changes.
@@ -138,9 +137,6 @@ ns.OnInitialize = function(self)
 	end
 
 	self.db:SetProfile("Azerite")
-	self.db.profile.layoutversion = nil
-
-
 	self.db.RegisterCallback(self, "OnProfileChanged", "UpdateSettings")
 	self.db.RegisterCallback(self, "OnProfileCopied", "UpdateSettings")
 	self.db.RegisterCallback(self, "OnProfileReset", "UpdateSettings")
@@ -148,5 +144,4 @@ ns.OnInitialize = function(self)
 	self:RegisterChatCommand("goto", "SwitchUI")
 	self:RegisterChatCommand("resetscale", "ResetBlizzardScale")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-
 end

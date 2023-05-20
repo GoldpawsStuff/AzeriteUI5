@@ -30,6 +30,19 @@ LoadAddOn("Blizzard_CUFProfiles")
 LoadAddOn("Blizzard_CompactRaidFrames")
 
 local RaidFrameMod = ns:Merge(ns:NewModule("RaidFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
+local MFM = ns:GetModule("MovableFramesManager")
+
+local defaults = { profile = ns:Merge({
+	enabled = true,
+	savedPosition = {
+		[MFM:GetDefaultLayout()] = {
+			scale = 1,
+			[1] = "TOPLEFT",
+			[2] = 50,
+			[3] = -42
+		}
+	}
+}, ns.UnitFrame.defaults) }
 
 -- PARTYRAID_LABEL
 RaidFrameMod.DisableBlizzard = function(self)
@@ -43,6 +56,14 @@ RaidFrameMod.DisableBlizzard = function(self)
 end
 
 RaidFrameMod.OnInitialize = function(self)
+	self.db = ns.db:RegisterNamespace("RaidFrames", defaults)
+
+	self:SetEnabledState(self.db.profile.enabled)
+
+	-- Register the available layout names
+	-- with the movable frames manager.
+	MFM:RegisterPresets(self.db.profile.savedPosition)
+
 	-- Leave these enabled for now.
 	--self:DisableBlizzard()
 end

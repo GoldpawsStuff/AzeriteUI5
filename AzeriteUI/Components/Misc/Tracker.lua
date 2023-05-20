@@ -52,7 +52,7 @@ local Custom = {}
 -- currently just the keys need to exist though.
 local Skins = {
 	Blizzard = {},
-	Azerite = {}
+	[MFM:GetDefaultLayout()] = {}
 }
 
 local defaults = { profile = ns:Merge({

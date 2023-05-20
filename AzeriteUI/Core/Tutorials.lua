@@ -52,19 +52,20 @@ local defaults = {
 
 local tutorials = {}
 
-if (ns.IsRetail) then
+if (ns.WoW10) then
 	table_insert(tutorials, {
 		name = "editmode",
 		version = 1
 	})
 end
 
-if (not ns.IsRetail) then
-	table_insert(tutorials, {
-		name = "scale",
-		version = 1
-	})
-end
+-- Temporarily disable this.
+--if (not ns.WoW10) then
+--	table_insert(tutorials, {
+--		name = "scale",
+--		version = 1
+--	})
+--end
 
 -- Create frame backdrop
 local createBackdropFrame = function(frame)

@@ -24,12 +24,14 @@
 
 --]]
 local Addon, ns = ...
+local AddonName = GetAddOnMetadata(Addon, "Title")
 
 local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
 
 local MovableFramesManager = ns:NewModule("MovableFramesManager", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
 local EMP = ns:GetModule("EditMode", true)
 local AceGUI = LibStub("AceGUI-3.0")
+local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 
 -- Lua API
 local error = error
@@ -283,9 +285,7 @@ Anchor.ResetLastChange = function(self)
 	self:UpdatePosition(LAYOUT, point, x, y)
 	self:UpdateText()
 
-	if (self.Callback) then
-		self:Callback("PositionUpdated", LAYOUT, point, x, y)
-	end
+	ns:Fire("MFM_PositionUpdated", LAYOUT, self, point, x, y)
 end
 
 -- Reset to default position.
@@ -302,9 +302,7 @@ Anchor.ResetToDefault = function(self)
 	self:UpdatePosition(LAYOUT, point, x, y)
 	self:UpdateText()
 
-	if (self.Callback) then
-		self:Callback("PositionUpdated", LAYOUT, point, x, y)
-	end
+	ns:Fire("MFM_PositionUpdated", LAYOUT, self, point, x, y)
 end
 
 Anchor.UpdateText = function(self)
@@ -353,9 +351,7 @@ Anchor.UpdatePosition = function(self, layoutName, point, x, y)
 	self:SetPointBase(point, UIParent, point, x, y)
 	self:UpdateText()
 
-	if (self.Callback) then
-		self:Callback("PositionUpdated", layoutName, point, x, y)
-	end
+	ns:Fire("MFM_PositionUpdated", layoutName, self, point, x, y)
 end
 
 Anchor.UpdateScale = function(self, layoutName, scale)
@@ -369,9 +365,7 @@ Anchor.UpdateScale = function(self, layoutName, scale)
 		self:UpdateText()
 	end
 
-	if (self.Callback) then
-		self:Callback("ScaleUpdated", LAYOUT, scale)
-	end
+	ns:Fire("MFM_ScaleUpdated", LAYOUT, self, scale)
 end
 
 -- Anchor Getters
@@ -529,6 +523,14 @@ Anchor.OnMouseWheel = function(self, delta)
 end
 
 Anchor.OnDragStart = function(self, button)
+
+	-- Treat the dragged frame as clicked.
+	CURRENT = self
+	self.isSelected = true
+	self:OnEnter()
+	self:SetFrameLevel(60)
+
+	-- Start the drag handler.
 	self:StartMoving()
 	self:SetUserPlaced(false)
 	self.elapsed = 0
@@ -543,7 +545,7 @@ Anchor.OnDragStop = function(self)
 
 	local point, x, y = getPosition(self)
 
-	anchorData.currentPosition = { getPosition(self) }
+	anchorData.currentPosition = { point, x, y }
 
 	self:UpdatePosition(LAYOUT, point, x, y)
 end
@@ -559,6 +561,11 @@ Anchor.OnLeave = function(self)
 end
 
 Anchor.OnShow = function(self)
+	-- Allow modules to position anchor correctly.
+	if (self.PreUpdate) then
+		self:PreUpdate()
+	end
+
 	local anchorData = AnchorData[self]
 	local point, x, y = getPosition(self)
 
@@ -572,9 +579,7 @@ Anchor.OnShow = function(self)
 	self:SetPointBase(point, UIParent, point, x, y)
 	self:UpdateText()
 
-	if (self.Callback) then
-		self:Callback("AnchorShown", LAYOUT, point, x, y)
-	end
+	ns:Fire("MFM_AnchorShown", LAYOUT, self, point, x, y)
 end
 
 Anchor.OnHide = function(self)
@@ -600,9 +605,7 @@ Anchor.OnUpdate = function(self, elapsed)
 
 	self:UpdateText()
 
-	if (self.Callback) then
-		self:Callback("Dragging", LAYOUT, point, x, y)
-	end
+	ns:Fire("MFM_Dragging", LAYOUT, self, point, x, y)
 end
 
 local RequestMovableFrameAnchor = function(...)
@@ -682,7 +685,7 @@ MovableFramesManager.ApplyPreset = function(self, layoutName)
 	self.db.char.layout = LAYOUT
 
 	-- Send message to modules to switch to the selected preset.
-	self:ForAllAnchors("LayoutsUpdated", LAYOUT)
+	ns:Fire("MFM_LayoutsUpdated", LAYOUT)
 
 	-- Update the manager frame.
 	self:UpdateMFMFrame()
@@ -705,14 +708,14 @@ MovableFramesManager.DeletePreset = function(self, layoutName)
 		self.db.char.layout = LAYOUT
 
 		-- Send message to modules to switch to the selected preset.
-		self:ForAllAnchors("LayoutsUpdated", LAYOUT)
+		ns:Fire("MFM_LayoutsUpdated", LAYOUT)
 	end
 
 	-- Remove from our preset list.
 	self.layouts[layoutName] = nil
 
 	-- Send message to all moduels to remove the selected preset.
-	self:ForAllAnchors("LayoutDeleted", layoutName)
+	ns:Fire("MFM_LayoutDeleted", LAYOUT)
 
 	-- Update the manager frame.
 	self:UpdateMFMFrame()
@@ -1024,6 +1027,14 @@ MovableFramesManager.GetMFMFrame = function(self)
 	return self.frame
 end
 
+MovableFramesManager.GetLayout = function(self)
+	return LAYOUT
+end
+
+MovableFramesManager.GetDefaultLayout = function(self)
+	return DEFAULTLAYOUT
+end
+
 MovableFramesManager.UpdateMovableFrameAnchors = function(self, ...)
 	UpdateMovableFrameAnchors()
 end
@@ -1041,25 +1052,6 @@ MovableFramesManager.ToggleAnchors = function(self)
 	end
 end
 
-MovableFramesManager.ForAllAnchors = function(self, callback, layoutName)
-	for anchor in next,AnchorData do
-		if (anchor.Callback) then
-			anchor:Callback(callback, layoutName)
-			anchor:OnShow()
-		end
-	end
-end
-
-MovableFramesManager.ForAllVisibleAnchors = function(self, callback, layoutName)
-	for anchor in next,AnchorData do
-		if (anchor.Callback) then
-			if (anchor:IsShown()) then
-				anchor:Callback(callback, layoutName)
-			end
-		end
-	end
-end
-
 MovableFramesManager.OnEnterEditMode = function(self)
 	self:UpdateMFMFrame()
 	self:GetMFMFrame():Show()
@@ -1071,16 +1063,11 @@ end
 
 MovableFramesManager.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_REGEN_DISABLED") then
-
 		self.incombat = true
-		self:ForAllVisibleAnchors("CombatStart", LAYOUT)
-
 
 	elseif (event == "PLAYER_REGEN_ENABLED") then
-
 		if (not InCombatLockdown()) then
 			self.incombat = nil
-			self:ForAllVisibleAnchors("CombatEnd", LAYOUT)
 		end
 
 	else
@@ -1098,6 +1085,8 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 				end
 			end
 			self.incombat = InCombatLockdown()
+
+			ns:Fire("MFM_LayoutsUpdated", LAYOUT)
 		end
 
 		if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
@@ -1109,7 +1098,6 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 			end
 		end
 
-		self:ForAllAnchors("LayoutsUpdated", LAYOUT)
 	end
 
 	self:UpdateMFMFrame()

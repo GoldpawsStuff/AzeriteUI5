@@ -50,7 +50,7 @@ local playerIsRetribution = playerClass == "PALADIN" and (ns.IsRetail and GetSpe
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
-		Azerite = {
+		[MFM:GetDefaultLayout()] = {
 			scale = 1,
 			[1] = "BOTTOMLEFT",
 			[2] = 46,
@@ -91,9 +91,9 @@ local config = {
 
 	-- General Settings
 	-----------------------------------------
-	Size = { 439, 93 },
+	Size = { 560, 180 },
 	--Position = { "BOTTOMLEFT", 167, 100 },
-	HitRectInsets = { -110, 0, -60, 6 },
+	HitRectInsets = { 0, 0, -60, 6 },
 
 	-- Health Value Text
 	HealthValuePosition = { "LEFT", 27, 4 },
@@ -142,20 +142,20 @@ local config = {
 	CombatFeedbackFontSmall = GetFont(18, true), -- glancing blow font
 
 	-- Combat Indicator
-	CombatIndicatorPosition = { "BOTTOMLEFT", -81, -18 },
+	CombatIndicatorPosition = { "BOTTOMLEFT", -81 + 121, -18 },
 	CombatIndicatorSize = { 80,80 },
 	CombatIndicatorTexture = GetMedia("icon-combat"),
 	CombatIndicatorColor = { Colors.ui[1] *.75, Colors.ui[2] *.75, Colors.ui[3] *.75 },
 
 	-- PvP Indicator
-	PvPIndicatorPosition = { "BOTTOMLEFT", -81, -18 },
+	PvPIndicatorPosition = { "BOTTOMLEFT", -81 + 121, -18 },
 	PvPIndicatorSize = { 84, 84 },
 	PvPIndicatorAllianceTexture = GetMedia("icon_badges_alliance"),
 	PvPIndicatorHordeTexture = GetMedia("icon_badges_horde"),
 
 	-- Auras
 	-----------------------------------------
-	AurasPosition = { "BOTTOMLEFT", 37, 91 },
+	AurasPosition = { "BOTTOMLEFT", 37 + 121, 91 },
 	AurasSize = { 40*8 - 4, 40*2 - 4 },
 	AuraSize = 36,
 	AuraSpacing = 4,
@@ -177,7 +177,7 @@ local config = {
 	-----------------------------------------
 	Seasonal = {
 		-- Love Festival Combat Indicator
-		LoveFestivalCombatIndicatorPosition = { "BOTTOMLEFT", -61, 2 },
+		LoveFestivalCombatIndicatorPosition = { "BOTTOMLEFT", -61 + 121, 2 },
 		LoveFestivalCombatIndicatorSize = { 48, 48 },
 		LoveFestivalCombatIndicatorTexture = GetMedia("icon-heart-red"),
 		LoveFestivalCombatIndicatorColor = { Colors.ui[1] *.75, Colors.ui[2] *.75, Colors.ui[3] *.75 },
@@ -215,13 +215,13 @@ local config = {
 
 		-- Health Bar
 		HealthBarSize = { 385, 37 },
-		HealthBarPosition = { "BOTTOMLEFT", 27, 27 },
+		HealthBarPosition = { "BOTTOMLEFT", 27 + 121, 27 },
 		HealthBarTexture = GetMedia("hp_lowmid_bar"),
 		HealthBarColor = { Colors.health[1], Colors.health[2], Colors.health[3] },
 		HealthBarOrientation = "RIGHT",
 		HealthBarSparkMap = barSparkMap,
 		HealthBackdropSize = { 716, 188 },
-		HealthBackdropPosition = { "CENTER", 1, -.5 },
+		HealthBackdropPosition = { "BOTTOMLEFT", -17, -48 },
 		HealthBackdropTexture = GetMedia("hp_low_case"),
 		HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 		HealthAbsorbColor = { 1, 1, 1, .35 },
@@ -230,7 +230,7 @@ local config = {
 
 		-- Power Crystal
 		PowerBarSize = { 120, 140 },
-		PowerBarPosition = { "BOTTOMLEFT", -101, 38 },
+		PowerBarPosition = { "BOTTOMLEFT", -101 + 121, 38 },
 		PowerBarTexture = ns.IsWrath and GetMedia("power-crystal-ice-front") or GetMedia("power_crystal_front"),
 		PowerBarTexCoord = { 50/255, 206/255, 37/255, 219/255 },
 		PowerBarOrientation = "UP",
@@ -247,7 +247,7 @@ local config = {
 
 		-- Mana Orb
 		ManaOrbSize = { 103, 103 },
-		ManaOrbPosition = { "BOTTOMLEFT", -92, 27 },
+		ManaOrbPosition = { "BOTTOMLEFT", -92 + 121, 27 },
 		ManaOrbTexture = { GetMedia("orb2"), GetMedia("orb2") },
 
 		ManaOrbBackdropSize = { 180, 180 },
@@ -271,13 +271,13 @@ local config = {
 
 		-- Health Bar
 		HealthBarSize = { 385, 37 },
-		HealthBarPosition = { "BOTTOMLEFT", 27, 27 },
+		HealthBarPosition = { "BOTTOMLEFT", 27 + 121, 27 },
 		HealthBarTexture = GetMedia("hp_lowmid_bar"),
 		HealthBarColor = { Colors.health[1], Colors.health[2], Colors.health[3] },
 		HealthBarOrientation = "RIGHT",
 		HealthBarSparkMap = barSparkMap,
 		HealthBackdropSize = { 716, 188 },
-		HealthBackdropPosition = { "CENTER", 1, -.5 },
+		HealthBackdropPosition = { "BOTTOMLEFT", -17, -48 },
 		HealthBackdropTexture = GetMedia("hp_mid_case"),
 		HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 		HealthAbsorbColor = { 1, 1, 1, .35 },
@@ -286,7 +286,7 @@ local config = {
 
 		-- Power Crystal
 		PowerBarSize = { 120, 140 },
-		PowerBarPosition = { "BOTTOMLEFT", -101, 38 },
+		PowerBarPosition = { "BOTTOMLEFT", -101 + 121, 38 },
 		PowerBarTexture = ns.IsWrath and GetMedia("power-crystal-ice-front") or GetMedia("power_crystal_front"),
 		PowerBarTexCoord = { 50/255, 206/255, 37/255, 219/255 },
 		PowerBarOrientation = "UP",
@@ -303,7 +303,7 @@ local config = {
 
 		-- Mana Orb
 		ManaOrbSize = { 103, 103 },
-		ManaOrbPosition = { "BOTTOMLEFT", -92, 27 },
+		ManaOrbPosition = { "BOTTOMLEFT", -92 + 121, 27 },
 		ManaOrbTexture = { GetMedia("orb2"), GetMedia("orb2") },
 
 		ManaOrbBackdropSize = { 180, 180 },
@@ -326,13 +326,13 @@ local config = {
 
 		-- Health Bar
 		HealthBarSize = { 385, 40 },
-		HealthBarPosition = { "BOTTOMLEFT", 27, 27 },
+		HealthBarPosition = { "BOTTOMLEFT", 27 + 121, 27 },
 		HealthBarTexture = GetMedia("hp_cap_bar"),
 		HealthBarColor = { Colors.health[1], Colors.health[2], Colors.health[3] },
 		HealthBarOrientation = "RIGHT",
 		HealthBarSparkMap = barSparkMap,
 		HealthBackdropSize = { 716, 188 },
-		HealthBackdropPosition = { "CENTER", 1, -.5 },
+		HealthBackdropPosition = { "BOTTOMLEFT", -17, -48 },
 		HealthBackdropTexture = GetMedia("hp_cap_case"),
 		HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 		HealthAbsorbColor = { 1, 1, 1, .35 },
@@ -341,7 +341,7 @@ local config = {
 
 		-- Power Crystal
 		PowerBarSize = { 120, 140 },
-		PowerBarPosition = { "BOTTOMLEFT", -101, 38 },
+		PowerBarPosition = { "BOTTOMLEFT", -101 + 121, 38 },
 		PowerBarTexture = ns.IsWrath and GetMedia("power-crystal-ice-front") or GetMedia("power_crystal_front"),
 		PowerBarTexCoord = { 50/255, 206/255, 37/255, 219/255 },
 		PowerBarOrientation = "UP",
@@ -358,7 +358,7 @@ local config = {
 
 		-- Mana Orb
 		ManaOrbSize = { 103, 103 },
-		ManaOrbPosition = { "BOTTOMLEFT", -92, 27 },
+		ManaOrbPosition = { "BOTTOMLEFT", -92 + 121, 27 },
 		ManaOrbTexture = { GetMedia("orb2"), GetMedia("orb2") },
 
 		ManaOrbBackdropSize = { 180, 180 },
@@ -1169,12 +1169,12 @@ PlayerFrameMod.Spawn = function(self)
 	anchor:SetScalable(true)
 	anchor:SetMinMaxScale(.75, 1.25, .05)
 	anchor:SetSize(560, 180)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition.Azerite))
-	anchor:SetScale(defaults.profile.savedPosition.Azerite.scale)
+	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
+	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
+	anchor.PreUpdate = function() self:UpdateAnchor() end
 	anchor.frameOffsetX = 121
 	anchor.frameOffsetY = 0
 	anchor.framePoint = "BOTTOMLEFT"
-	anchor.Callback = function(anchor, ...) self:OnAnchorUpdate(...) end
 
 	self.anchor = anchor
 end
