@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 5
+local MINOR_VERSION = 7
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -175,8 +175,11 @@ lib.RegisterFrameForFading = function(self, frame, fadeGroup, ...)
 	lib:UpdateFadeFrames()
 end
 
-lib.UnregisterFrameForFading = function(self, frame)
+lib.UnregisterFrameForFading = function(self, frame, noAlphaChange)
 	if (not lib.fadeFrames[frame]) then
+		if (not noAlphaChange) then
+			setAlpha(frame, 1)
+		end
 		return
 	end
 
@@ -185,6 +188,10 @@ lib.UnregisterFrameForFading = function(self, frame)
 	lib.fadeFrames[frame] = nil
 	lib.fadeFrameType[frame] = nil
 	lib.fadeFrameHitRects[frame] = nil
+
+	if (not noAlphaChange) then
+		setAlpha(frame, 1)
+	end
 
 	if (not next(lib.fadeFrames)) then
 		lib:Disable()
