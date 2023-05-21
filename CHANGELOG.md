@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-05-20
+## [Unreleased] 2023-05-21
 - This version is backwards incompatible and requires a full settings reset.
 
 ### Added
@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Started working on proper localization for the addon. A lot of general phrases copied from blizzard are already in place, but some phrases and longer texts remains untranslated for non-English locales. Work in progress.
 
 ### Changed
+- The player auras located in the upper right corner are now movable, and has new settings in the new option menu for visibility.
 - Redid how our movable frame system works in relation to saved settings. Most settings within modules like the actionbars should now be tied to the current movable frame profile. Meaning settings like enabled bars and bar layouts also change alongside the positioning profile.
 
 ### Fixed
