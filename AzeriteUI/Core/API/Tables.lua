@@ -34,7 +34,7 @@ ns.Merge = function(self, target, source)
 	if (type(target) ~= "table") then target = {} end
 	for k,v in pairs(source) do
 		if (type(v) == "table") then
-			target[k] = self:Copy(target[k], v)
+			target[k] = ns:Merge(target[k], v)
 		elseif (target[k] == nil) then
 			target[k] = v
 		end
@@ -44,10 +44,16 @@ end
 
 -- Deep table copy without metatables.
 ns.Copy = function(self, target, source)
-	if (type(target) ~= "table") then target = {} end
+	if (not source) then
+		source = target
+		target = nil
+	end
+	if (type(target) ~= "table") then
+		target = {}
+	end
 	for k,v in pairs(source) do
 		if (type(v) == "table") then
-			target[k] = self:Copy(target[k], v)
+			target[k] = ns:Copy(target[k], v)
 		else
 			target[k] = v
 		end
