@@ -225,31 +225,9 @@ end
 ActionBar.UpdatePosition = function(self)
 	if (InCombatLockdown()) then return end
 
-	local point, x, y = unpack(self.config)
-	--print(self:GetName(), point, x, y)
-	--local scale = self.config.scale
-	--local anchor = self.anchor
-
-	-- Set the scale before positioning,
-	-- or everything will be wonky.
-	--self:SetScale(scale * ns.API.GetDefaultElementScale())
 	self:SetScale(self.config.scale * ns.API.GetDefaultElementScale())
-
-	--if (anchor and anchor.framePoint) then
-		-- Position the frame at the anchor,
-		-- with the given point and offsets.
-		--self:ClearAllPoints()
-		--self:SetPoint(anchor.framePoint, anchor, anchor.framePoint, (anchor.frameOffsetX or 0)/scale, (anchor.frameOffsetY or 0)/scale)
-
-		-- Parse where this actually is relative to UIParent
-		--local point, x, y = ns.API.GetPosition(self)
-		--local point, x, y = ns.API.GetPosition(anchor)
-
-		-- Reposition the frame relative to UIParent,
-		-- to avoid it being hooked to our anchor in combat.
-		self:ClearAllPoints()
-		self:SetPoint(point, UIParent, point, x, y)
-	--end
+	self:ClearAllPoints()
+	self:SetPoint(self.config[1], UIParent, self.config[1], self.config[2], self.config[3])
 end
 
 ActionBar.UpdateAnchor = function(self)
@@ -257,18 +235,16 @@ ActionBar.UpdateAnchor = function(self)
 		self.anchor:SetSize(self:GetSize())
 		self.anchor:SetScale(self.config.scale)
 		self.anchor:ClearAllPoints()
-		self.anchor:SetPoint(unpack(self.config))
+		self.anchor:SetPoint(self.config[1], UIParent, self.config[1], self.config[2], self.config[3])
 	end
 end
 
 ActionBar.UpdateButtons = function(self)
 	ButtonBar.UpdateButtons(self)
-	--self:UpdateAnchor()
 end
 
 ActionBar.UpdateButtonLayout = function(self)
 	ButtonBar.UpdateButtonLayout(self)
-	--self:UpdateAnchor()
 end
 
 ActionBar.UpdateBindings = function(self)
