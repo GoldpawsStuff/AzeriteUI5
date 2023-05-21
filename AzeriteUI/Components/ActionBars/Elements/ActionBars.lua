@@ -81,7 +81,7 @@ local barDefaults = {
 		savedPosition = {
 			[MFM:GetDefaultLayout()] = ns:Merge({
 				enabled = true,
-				--enableBarFading = true,
+				enableBarFading = true,
 				fadeFrom = 8,
 				layout = "zigzag",
 				startAt = 9, -- at which button the zigzag pattern should begin
@@ -104,8 +104,8 @@ local barDefaults = {
 	[2] = { --[[ bottomleft multibar ]]
 		savedPosition = {
 			[MFM:GetDefaultLayout()] = ns:Merge({
-				enabled = true,
-				--enableBarFading = true,
+				enabled = false,
+				enableBarFading = true,
 				fadeFrom = 1,
 				layout = "zigzag",
 				startAt = 2, -- at which button the zigzag pattern should begin
@@ -1066,8 +1066,6 @@ ActionBarMod.OnInitialize = function(self)
 	self.bars = {}
 	self.anchorLookup = {}
 	self.buttons = {}
-
-	self:RegisterChatCommand("update", function() GUI:Refresh(L["Action Bars"]) end)
 
 	self:SetEnabledState(self.db.profile.enabled)
 
