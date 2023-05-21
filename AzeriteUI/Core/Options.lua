@@ -93,27 +93,25 @@ local generateActionBarOptions = function()
 	if (barModEnabled) then
 
 		local setter = function(info,val)
-			local LAYOUT = MFM:GetLayout()
 			local option, parent = info[#info], info[#info - 1]
 			local id = tonumber((string_match(parent,"(%d+)"))) -- extract barID
-			local db = barMod.db.profile.bars[id].savedPosition[LAYOUT] -- retrieve the bar's db
+			local db = barMod.db.profile.bars[id].savedPosition[MFM:GetLayout()] -- retrieve the bar's db
 			db[option] = val -- save the setting
 			barMod:UpdateSettings() -- apply bar settings
-			if (option == "enabled") then
-				local parent = info[#info-1]
-				for i,v in pairs(info.options.args[parent].args) do
-					if (i ~= "enabled") then
-						v.disabled = not val -- disable bar options when bar is disabled
-					end
-				end
-			end
+			--if (option == "enabled") then
+			--	local parent = info[#info-1]
+			--	for i,v in pairs(info.options.args[parent].args) do
+			--		if (i ~= "enabled") then
+			--			v.disabled = not val -- disable bar options when bar is disabled
+			--		end
+			--	end
+			--end
 		end
 
 		local getter = function(info)
-			local LAYOUT = MFM:GetLayout()
 			local option, parent = info[#info], info[#info - 1]
 			local id = tonumber((string_match(parent,"(%d+)")))
-			local db = barMod.db.profile.bars[id].savedPosition[LAYOUT]
+			local db = barMod.db.profile.bars[id].savedPosition[MFM:GetLayout()]
 			return db[option]
 		end
 
@@ -425,10 +423,87 @@ local generateAuraOptions = function()
 	local auraMod = ns:GetModule("Auras")
 	local auraModEnabled = auraMod.db.profile.enabled
 	if (auraModEnabled) then
+
+		local setter = function(info,val)
+			local option, parent = info[#info], info[#info - 1]
+			local db = auraMod.db.profile.savedPosition[MFM:GetLayout()]
+			db[option] = val -- save the setting
+			auraMod:UpdateSettings() -- apply bar settings
+			--if (option == "enabled") then
+			--	local parent = info[#info-1]
+			--	for i,v in pairs(info.options.args[parent].args) do
+			--		if (i ~= "enabled") then
+			--			v.disabled = not val -- disable bar options when bar is disabled
+			--		end
+			--	end
+			--end
+		end
+
+		local getter = function(info)
+			local option, parent = info[#info], info[#info - 1]
+			local db = auraMod.db.profile.savedPosition[MFM:GetLayout()]
+			return db[option]
+		end
+
+		local isdisabled = function(info)
+			local option, parent = info[#info], info[#info - 1]
+			local db = auraMod.db.profile.savedPosition[MFM:GetLayout()]
+			return option ~= "enabled" and not db.enabled
+		end
+
+		local getoption = function(info,option)
+			local db = auraMod.db.profile.savedPosition[MFM:GetLayout()]
+			return db[option]
+		end
+
 		registerOptionsPanel(L["Player Auras"], {
 			name = string_format(subModName, L["Aura Settings"]),
 			type = "group",
-			args = {}
+			args = {
+				enabled = {
+					name = L["Enable"],
+					desc = L["Toggle whether to show the player aura buttons or not."],
+					order = 1,
+					type = "toggle", width = "full",
+					set = setter,
+					get = getter
+				},
+				enableModifier = {
+					name = L["Enable Modifier Key"],
+					desc = L["Require a modifier key to show the auras."],
+					order = 10,
+					type = "toggle", width = "full",
+					hidden = isdisabled,
+					set = setter,
+					get = getter
+				},
+				modifier = {
+					name = L["Modifier Key"],
+					desc = L["Choose which modifier key to hold  down to show the aura buttons."],
+					order = 11,
+					hidden = function(info) return isdisabled(info) or not getoption(info, "enableModifier") end,
+					type = "select", style = "dropdown",
+					values = {
+						["ALT"] = ALT_KEY_TEXT,
+						["SHIFT"] = SHIFT_KEY_TEXT,
+						["CTRL"] = CTRL_KEY_TEXT
+					},
+					set = setter,
+					get = getter
+				},
+				modifierSpace = {
+					name = "", order = 12, type = "description", hidden = isdisabled
+				},
+				enableAuraFading = {
+					name = L["Enable Aura Fading"],
+					desc = L["Toggle whether to enable the player aura buttons to fade out when not moused over."],
+					order = 20,
+					type = "toggle", width = "full",
+					hidden = isdisabled,
+					set = setter,
+					get = getter
+				}
+			}
 		}, Addon)
 	end
 end
@@ -444,9 +519,9 @@ end
 
 local generateOptionsPages = function()
 	generateActionBarOptions()
-	--generateUnitFrameOptions()
+	generateUnitFrameOptions()
 	generateTooltipOptions()
-	--generateAuraOptions()
+	generateAuraOptions()
 	--generateFadeOptions()
 end
 
