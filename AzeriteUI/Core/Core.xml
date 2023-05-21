@@ -19,6 +19,7 @@
 	<Script file="API\Colors.lua"/>
 	<Script file="API\Positions.lua"/>
 	<Script file="API\Scale.lua"/>
+	<Script file="API\Tables.lua"/>
 	<Script file="API\Time.lua"/>
 
 	<!--

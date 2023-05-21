@@ -47,12 +47,8 @@ local moduleDefaults = {
 ns.moduleDefaults = moduleDefaults
 
 -- Lua API
-local ipairs = ipairs
-local math_max = math.max
-local math_min = math.min
 local next = next
 local string_lower = string.lower
-local tonumber = tonumber
 
 -- Addon API
 local IsAddOnAvailable = ns.API.IsAddOnAvailable
@@ -62,19 +58,6 @@ local UpdateObjectScales = ns.API.UpdateObjectScales
 -- Proxy method to avoid modules using the callback object directly
 ns.Fire = function(self, name, ...)
 	self.callbacks:Fire(name, ...)
-end
-
--- Hard table merging without metatables.
-ns.Merge = function(self, target, source)
-	if (type(target) ~= "table") then target = {} end
-	for k,v in pairs(source) do
-		if (type(v) == "table") then
-			target[k] = self:Merge(target[k], v)
-		elseif (target[k] == nil) then
-			target[k] = v
-		end
-	end
-	return target
 end
 
 ns.ResetBlizzardScale = function(self)
