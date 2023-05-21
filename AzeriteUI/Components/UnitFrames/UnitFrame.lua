@@ -236,7 +236,7 @@ ns.UnitFrame.modulePrototype = {
 		self.anchor:SetSize(self.frame:GetSize())
 		self.anchor:SetScale(config.scale)
 		self.anchor:ClearAllPoints()
-		self.anchor:SetPoint(unpack(config))
+		self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
 	end
 
 }

@@ -220,7 +220,7 @@ Durability.UpdateAnchor = function(self)
 	local config = self.db.profile.savedPosition[MFM:GetLayout()]
 	self.anchor:SetScale(config.scale)
 	self.anchor:ClearAllPoints()
-	self.anchor:SetPoint(unpack(config))
+	self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
 end
 
 Durability.UpdateWidget = function(self, forced)
