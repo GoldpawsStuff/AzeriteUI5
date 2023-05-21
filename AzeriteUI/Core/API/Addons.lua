@@ -29,6 +29,7 @@ ns.API = API
 
 local PLAYER_NAME = UnitName("player")
 
+-- Proxy for the Blizzard method, which also includes the 'enabled' flag.
 local GetAddOnInfo = function(index)
 	local name, title, notes, loadable, reason, security, newVersion = _G.GetAddOnInfo(index)
 	local enabled = not(_G.GetAddOnEnableState(PLAYER_NAME, index) == 0)

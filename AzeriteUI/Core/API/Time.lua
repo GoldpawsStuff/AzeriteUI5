@@ -41,13 +41,6 @@ local string_match = string.match
 local tonumber = tonumber
 local type = type
 
--- WoW API
-local GetGameTime = GetGameTime
-
--- WoW Strings
-local S_AM = TIMEMANAGER_AM
-local S_PM = TIMEMANAGER_PM
-
 -- Converts dates to time since epoch and compares.
 local dateInRange = function(day1, month1, year1, day2, month2, year2)
 	local now = time()
@@ -59,10 +52,10 @@ end
 -- Calculates standard hours from a give 24-hour time
 -- Keep this systematic to the point of moronic, or I'll mess it up again.
 local ComputeStandardHours = function(hour)
-	if 		(hour == 0) then 					return 12, S_AM 		-- 0 is 12 AM
-	elseif 	(hour > 0) and (hour < 12) then 	return hour, S_AM 		-- 01-11 is 01-11 AM
-	elseif 	(hour == 12) then 					return 12, S_PM 		-- 12 is 12 PM
-	elseif 	(hour > 12) then 					return hour - 12, S_PM 	-- 13-24 is 01-12 PM
+	if (hour == 0) then return 12, TIMEMANAGER_AM -- 0 is 12 AM
+	elseif (hour > 0) and (hour < 12) then return hour, TIMEMANAGER_AM -- 01-11 is 01-11 AM
+	elseif (hour == 12) then return 12, TIMEMANAGER_PM -- 12 is 12 PM
+	elseif (hour > 12) then return hour - 12, TIMEMANAGER_PM -- 13-24 is 01-12 PM
 	end
 end
 

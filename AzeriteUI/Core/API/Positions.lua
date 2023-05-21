@@ -28,7 +28,7 @@ local API = ns.API or {}
 ns.API = API
 
 -- Convert a coordinate within a frame to a usable position
-API.GetParsedPosition = function(parentWidth, parentHeight, x, y, bottomOffset, leftOffset, topOffset, rightOffset)
+local GetParsedPosition = function(parentWidth, parentHeight, x, y, bottomOffset, leftOffset, topOffset, rightOffset)
 	if (y < parentHeight * 1/3) then
 		if (x < parentWidth * 1/3) then
 			return "BOTTOMLEFT", leftOffset, bottomOffset
@@ -57,7 +57,7 @@ API.GetParsedPosition = function(parentWidth, parentHeight, x, y, bottomOffset, 
 end
 
 -- Retrieve a properly scaled position of a frame.
-API.GetPosition = function(frame)
+local GetPosition = function(frame)
 
 	-- Retrieve UI coordinates, convert to unscaled screen coordinates
 	local worldHeight = 768 -- WorldFrame:GetHeight()
@@ -85,8 +85,13 @@ API.GetPosition = function(frame)
 	top = top - uiTop
 
 	-- Figure out the point within the given coordinate space
-	local point, offsetX, offsetY = API.GetParsedPosition(uiWidth, uiHeight, x, y, bottom, left, top, right)
+	local point, offsetX, offsetY = GetParsedPosition(uiWidth, uiHeight, x, y, bottom, left, top, right)
 
 	-- Convert coordinates to the frame's scale.
 	return point, offsetX / frameScale, offsetY / frameScale
 end
+
+-- Global API
+---------------------------------------------------------
+API.GetParsedPosition = GetParsedPosition
+API.GetPosition = GetPosition

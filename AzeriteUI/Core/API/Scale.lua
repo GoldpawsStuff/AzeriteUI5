@@ -38,7 +38,7 @@ local UIParent = UIParent
 local Scaled = {}
 local ScaledToUIParent = {}
 
--- Scaling Functions
+-- Global API
 ---------------------------------------------------------
 -- Get the scale to set when ignoring parent scale
 API.GetScale = function()

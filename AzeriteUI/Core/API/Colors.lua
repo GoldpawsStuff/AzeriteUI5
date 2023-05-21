@@ -29,22 +29,6 @@ ns.API = API
 
 local Colors = ns.Colors
 
--- WoW API
-local GetQuestGreenRange = GetQuestGreenRange
-local GetScalingQuestGreenRange = GetScalingQuestGreenRange
-local UnitCanAttack = UnitCanAttack
-local UnitClass = UnitClass
-local UnitEffectiveLevel = UnitEffectiveLevel or UnitLevel
-local UnitIsConnected = UnitIsConnected
-local UnitIsDeadOrGhost = UnitIsDeadOrGhost
-local UnitIsPlayer = UnitIsPlayer
-local UnitIsTapDenied = UnitIsTapDenied
-local UnitLevel = UnitLevel
-local UnitPlayerControlled = UnitPlayerControlled
-local UnitQuestTrivialLevelRange = UnitQuestTrivialLevelRange
-local UnitQuestTrivialLevelRangeScaling = UnitQuestTrivialLevelRangeScaling
-local UnitReaction = UnitReaction
-
 -- Retrieve a unit's color
 local GetUnitColor = function(unit)
 	if (unit) then
@@ -104,6 +88,7 @@ local GetDifficultyColor = function(level, isScaling)
 		end
 	end
 end
+
 if (ns.IsClassic or ns.IsTBC or ns.IsWrath) then
 	GetDifficultyColor = function(level, isScaling)
 		local colors = Colors.quest
