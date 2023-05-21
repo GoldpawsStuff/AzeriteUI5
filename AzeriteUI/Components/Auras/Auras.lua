@@ -31,6 +31,7 @@ local MFM = ns:GetModule("MovableFramesManager")
 
 -- Lua API
 local math_ceil = math.ceil
+local math_max = math.max
 local pairs = pairs
 local select = select
 local string_lower = string.lower
