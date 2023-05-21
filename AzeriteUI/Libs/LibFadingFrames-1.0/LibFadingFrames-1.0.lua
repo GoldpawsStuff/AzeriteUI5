@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 7
+local MINOR_VERSION = 8
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -166,6 +166,8 @@ lib.RegisterFrameForFading = function(self, frame, fadeGroup, ...)
 	if (...) then
 		local left, right, top, bottom = ...
 		lib.fadeFrameHitRects[frame] = { -top, bottom, left, -right }
+	else
+		lib.fadeFrameHitRects[frame] = { 0, 0, 0, 0 }
 	end
 
 	if (shouldInit) then
