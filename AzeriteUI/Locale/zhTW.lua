@@ -108,6 +108,13 @@ L["Toggle whether to add spellIDs and auraIDs in tooltips containing actions, sp
 -- Player Aura Settings
 L["Player Auras"] = true
 L["Aura Settings"] = true
+L["Toggle whether to show the player aura buttons or not."] = true
+L["Enable Modifier Key"] = true
+L["Require a modifier key to show the auras."] = true
+L["Modifier Key"] = true
+L["Choose which modifier key to hold  down to show the aura buttons."] = true
+L["Enable Aura Fading"] = true
+L["Toggle whether to enable the player aura buttons to fade out when not moused over."] = true
 
 -- Fading & Explorer Mode Settings
 L["Frame Fading"] = true
