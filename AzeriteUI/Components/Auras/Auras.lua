@@ -411,17 +411,24 @@ Auras.UpdateSettings = function(self)
 	if (config.enabled and config.enableAuraFading) then
 		LFF:RegisterFrameForFading(self.frame, "playerauras")
 		LFF:RegisterFrameForFading(self.buffs.proxy, "playerauras")
+		LFF:RegisterFrameForFading(self.buffs.consolidation, "playerauras")
 	else
 		LFF:UnregisterFrameForFading(self.frame, "playerauras")
 		LFF:UnregisterFrameForFading(self.buffs.proxy, "playerauras")
+		LFF:UnregisterFrameForFading(self.buffs.consolidation, "playerauras")
 	end
 
 	self.frame:SetSize(config.wrapAfter * 36 + (config.wrapAfter - 1) * config.paddingX, (36 + config.paddingY) * math_ceil(BUFF_MAX_DISPLAY / config.wrapAfter))
 
-	self.buffs:SetAttribute("xOffset", (36 + config.paddingX) * (config.growthX == "LEFT" and -1 or 1))
-	self.buffs:SetAttribute("wrapYOffset", (36 + config.paddingY) * (config.growthY == "DOWN" and -1 or 1))
-	self.buffs:SetAttribute("wrapAfter", config.wrapAfter)
 	self.buffs:SetAttribute("point", config.anchorPoint)
+	self.buffs:SetAttribute("xOffset", (36 + config.paddingX) * (config.growthX == "LEFT" and -1 or 1))
+	self.buffs:SetAttribute("wrapAfter", config.wrapAfter)
+	self.buffs:SetAttribute("wrapYOffset", (36 + config.paddingY) * (config.growthY == "DOWN" and -1 or 1))
+
+	self.buffs.consolidation:SetAttribute("point", self.buffs:GetAttribute("point"))
+	self.buffs.consolidation:SetAttribute("xOffset", self.buffs:GetAttribute("xOffset"))
+	self.buffs.consolidation:SetAttribute("wrapAfter", self.buffs:GetAttribute("wrapAfter"))
+	self.buffs.consolidation:SetAttribute("wrapYOffset", self.buffs:GetAttribute("wrapYOffset"))
 
 	self.visibility:SetAttribute("auramode", not config.enabled and "hide" or config.enableModifier and "modifier" or "show")
 	self.visibility:SetAttribute("modifierkey", string_lower(config.modifier))
@@ -563,7 +570,7 @@ Auras.InitializeAuras = function(self)
 		consolidation:SetPoint("TOPRIGHT", proxy, "TOPLEFT", -6, 0)
 		consolidation:SetAttribute("minHeight", nil)
 		consolidation:SetAttribute("minWidth", nil)
-		consolidation:SetAttribute("point", "TOPRIGHT")
+		consolidation:SetAttribute("point", buffs:GetAttribute("point"))
 		consolidation:SetAttribute("template", buffs:GetAttribute("template"))
 		consolidation:SetAttribute("weaponTemplate", buffs:GetAttribute("weaponTemplate"))
 		consolidation:SetAttribute("xOffset", buffs:GetAttribute("xOffset"))
