@@ -409,13 +409,11 @@ Auras.UpdateSettings = function(self)
 	local config = self.db.profile.savedPosition[MFM:GetLayout()]
 
 	if (config.enabled and config.enableAuraFading) then
-		print("adding frame to fading")
 		LFF:RegisterFrameForFading(self.frame, "playerauras")
-		LFF:RegisterFrameForFading(self.frame.buffs.proxy, "playerauras")
+		LFF:RegisterFrameForFading(self.buffs.proxy, "playerauras")
 	else
-		print("removing frame from fading")
 		LFF:UnregisterFrameForFading(self.frame, "playerauras")
-		LFF:UnregisterFrameForFading(self.frame.buffs.proxy, "playerauras")
+		LFF:UnregisterFrameForFading(self.buffs.proxy, "playerauras")
 	end
 
 	self.frame:SetSize(config.wrapAfter * 36 + (config.wrapAfter - 1) * config.paddingX, (36 + config.paddingY) * math_ceil(BUFF_MAX_DISPLAY / config.wrapAfter))
@@ -475,10 +473,6 @@ Auras.InitializeAuras = function(self)
 		frame:SetScale(config.scale)
 
 		self.frame = frame
-
-		local test = frame:CreateTexture()
-		test:SetAllPoints()
-		test:SetColorTexture(.5, 0, 0)
 
 		-----------------------------------------
 		-- Header

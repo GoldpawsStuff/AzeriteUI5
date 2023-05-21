@@ -428,15 +428,7 @@ local generateAuraOptions = function()
 			local option, parent = info[#info], info[#info - 1]
 			local db = auraMod.db.profile.savedPosition[MFM:GetLayout()]
 			db[option] = val -- save the setting
-			auraMod:UpdateSettings() -- apply bar settings
-			--if (option == "enabled") then
-			--	local parent = info[#info-1]
-			--	for i,v in pairs(info.options.args[parent].args) do
-			--		if (i ~= "enabled") then
-			--			v.disabled = not val -- disable bar options when bar is disabled
-			--		end
-			--	end
-			--end
+			auraMod:UpdateSettings() -- apply settings
 		end
 
 		local getter = function(info)
@@ -468,10 +460,19 @@ local generateAuraOptions = function()
 					set = setter,
 					get = getter
 				},
+				enableAuraFading = {
+					name = L["Enable Aura Fading"],
+					desc = L["Toggle whether to enable the player aura buttons to fade out when not moused over."],
+					order = 10,
+					type = "toggle", width = "full",
+					hidden = isdisabled,
+					set = setter,
+					get = getter
+				},
 				enableModifier = {
 					name = L["Enable Modifier Key"],
 					desc = L["Require a modifier key to show the auras."],
-					order = 10,
+					order = 20,
 					type = "toggle", width = "full",
 					hidden = isdisabled,
 					set = setter,
@@ -480,7 +481,7 @@ local generateAuraOptions = function()
 				modifier = {
 					name = L["Modifier Key"],
 					desc = L["Choose which modifier key to hold  down to show the aura buttons."],
-					order = 11,
+					order = 21,
 					hidden = function(info) return isdisabled(info) or not getoption(info, "enableModifier") end,
 					type = "select", style = "dropdown",
 					values = {
@@ -493,15 +494,6 @@ local generateAuraOptions = function()
 				},
 				modifierSpace = {
 					name = "", order = 12, type = "description", hidden = isdisabled
-				},
-				enableAuraFading = {
-					name = L["Enable Aura Fading"],
-					desc = L["Toggle whether to enable the player aura buttons to fade out when not moused over."],
-					order = 20,
-					type = "toggle", width = "full",
-					hidden = isdisabled,
-					set = setter,
-					get = getter
 				}
 			}
 		}, Addon)
