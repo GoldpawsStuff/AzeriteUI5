@@ -47,12 +47,10 @@ local playerClass = ns.PlayerClass
 ns.ActiveNamePlates = {}
 ns.NamePlates = {}
 
-local defaults = {
-	profile = {
-		enabled = true,
-		scale = 1
-	}
-}
+local defaults = { profile = ns:Merge({
+	enabled = true,
+	scale = 1
+}, ns.moduleDefaults) }
 
 local barSparkMap = {
 	top = {
@@ -993,7 +991,7 @@ local style = function(self, unit, id)
 	auras.CreateButton = ns.AuraStyles.CreateSmallButton
 	auras.PostUpdateButton = ns.AuraStyles.NameplatePostUpdateButton
 
-	if (ns:GetModule("Unitframes").db.global.disableAuraSorting) then
+	if (ns:GetModule("UnitFrames").db.global.disableAuraSorting) then
 		auras.PreSetPosition = ns.AuraSorts.Alternate -- only in classic
 		auras.SortAuras = ns.AuraSorts.AlternateFuncton -- only in retail
 	else
@@ -1171,6 +1169,8 @@ NamePlatesMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("NamePlates", defaults)
 
 	self:SetEnabledState(self.db.profile.enabled)
+
+	if (not self.db.profile.enabled) then return end
 
 	oUF:RegisterStyle(ns.Prefix.."NamePlates", style)
 
