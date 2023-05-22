@@ -31,6 +31,21 @@ L["<Left-Click and drag to move>"] = true
 L["<MouseWheel to change scale>"] = true
 L["<Ctrl and Right-Click to undo last change>"] = true
 L["<Shift-Click to reset to default>"] = true
+L["Position"] = true
+L["Anchor Point"] = true
+L["Top-Left Corner"] = true
+L["Top Center"] = true
+L["Top-Right Corner"] = true
+L["Middle Right Side"] = true
+L["Bottom-Right Corner"] = true
+L["Bottom Center"] = true
+L["Bottom-Left Corner"] = true
+L["Middle Left Side"] = true
+L["Center"] = true
+L["Offset X"] = true
+L["Sets the horizontal offset from your chosen point. Positive values means right, negative values means left."] = true
+L["Offset Y"] = true
+L["Sets the vertical offset from your chosen point. Positive values means up, negative values means down."] = true
 
 -- Intro Tutorials
 --------------------------------------------------
@@ -76,21 +91,7 @@ L["Horizontal Growth"] = true
 L["Choose which horizontal direction the bar should expand in."] = true
 L["Vertical Growth"] = true
 L["Choose which vertical direction the bar should expand in."] = true
-L["Anchor Point"] = true
 L["Sets the anchor point of your actionbar."] = true
-L["Top-Left Corner"] = true
-L["Top Center"] = true
-L["Top-Right Corner"] = true
-L["Middle Right Side"] = true
-L["Bottom-Right Corner"] = true
-L["Bottom Center"] = true
-L["Bottom-Left Corner"] = true
-L["Middle Left Side"] = true
-L["Center"] = true
-L["Offset X"] = true
-L["Sets the horizontal offset from your chosen point. Positive values means right, negative values means left."] = true
-L["Offset Y"] = true
-L["Sets the vertical offset from your chosen point. Positive values means up, negative values means down."] = true
 
 -- Unit Frame Settings
 L["Unit Frames"] = true
@@ -108,12 +109,27 @@ L["Toggle whether to add spellIDs and auraIDs in tooltips containing actions, sp
 L["Player Auras"] = true
 L["Aura Settings"] = true
 L["Toggle whether to show the player aura buttons or not."] = true
+L["Visibility"] = true
+L["Choose when your auras will be visible."] = true
+L["Enable Aura Fading"] = true
+L["Toggle whether to enable the player aura buttons to fade out when not moused over."] = true
 L["Enable Modifier Key"] = true
 L["Require a modifier key to show the auras."] = true
 L["Modifier Key"] = true
 L["Choose which modifier key to hold  down to show the aura buttons."] = true
-L["Enable Aura Fading"] = true
-L["Toggle whether to enable the player aura buttons to fade out when not moused over."] = true
+L["Anchor Point"] = true
+L["Sets the anchor point of your auras."] = true
+L["Horizontal Growth"] = true
+L["Choose which horizontal direction the aura buttons should expand in."] = true
+L["Vertical Growth"] = true
+L["Choose which vertical direction the aura buttons should expand in."] = true
+L["Horizontal Padding"] = true
+L["Sets the horizontal padding between your aura buttons."] = true
+L["Vertical Padding"] = true
+L["Sets the horizontal padding between your aura buttons."] = true
+L["Buttons Per Row"] = true
+L["Sets the maximum number of aura buttons per row."] = true
+L["Sets the anchor point of your auras."] = true
 
 -- Fading & Explorer Mode Settings
 L["Frame Fading"] = true
