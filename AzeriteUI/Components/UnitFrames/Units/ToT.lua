@@ -45,6 +45,7 @@ local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
 		[MFM:GetDefaultLayout()] = {
+			enabled = true,
 			scale = 1,
 			[1] = "TOPRIGHT",
 			[2] = -492,
