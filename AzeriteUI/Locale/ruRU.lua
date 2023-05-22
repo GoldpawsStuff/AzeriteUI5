@@ -92,6 +92,7 @@ L["Choose which horizontal direction the bar should expand in."] = true
 L["Vertical Growth"] = true
 L["Choose which vertical direction the bar should expand in."] = true
 L["Sets the anchor point of your actionbar."] = true
+L["Toggle whether to enable this unit frame or not."] = true
 
 -- Unit Frame Settings
 L["Unit Frames"] = true

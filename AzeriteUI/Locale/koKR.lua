@@ -107,6 +107,7 @@ L["Show itemID"] = true
 L["Toggle whether to add itemID to item tooltips or not."] = true
 L["Show spellID"] = true
 L["Toggle whether to add spellIDs and auraIDs in tooltips containing actions, spells or auras."] = true
+L["Toggle whether to enable this unit frame or not."] = true
 
 -- Player Aura Settings
 L["Player Auras"] = true

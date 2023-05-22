@@ -99,6 +99,7 @@ L["UnitFrame Settings"] = true
 L["Enable Aura Sorting"] = true
 L["Here you can change settings related to the aura buttons appearing at each unitframe."] = true
 L["When enabled, unitframe auras will be sorted depending on time left and who cast the aura. When disabled, unitframe auras will appear in the order they were applied, like in the default user interface."] = true
+L["Toggle whether to enable this unit frame or not."] = true
 
 -- Tooltip Settings
 L["Tooltips"] = true
