@@ -96,6 +96,7 @@ L["Sets the anchor point of your actionbar."] = true
 L["Unit Frames"] = true
 L["UnitFrame Settings"] = true
 L["Enable Aura Sorting"] = true
+L["Here you can change settings related to the aura buttons appearing at each unitframe."] = true
 L["When enabled, unitframe auras will be sorted depending on time left and who cast the aura. When disabled, unitframe auras will appear in the order they were applied, like in the default user interface."] = true
 
 -- Tooltip Settings
@@ -109,6 +110,7 @@ L["Toggle whether to add spellIDs and auraIDs in tooltips containing actions, sp
 -- Player Aura Settings
 L["Player Auras"] = true
 L["Aura Settings"] = true
+L["Here you can change settings related to the aura buttons appearing by default in the top right corner of the screen. None of these settings apply to the aura buttons found at the unitframes."] = true
 L["Toggle whether to show the player aura buttons or not."] = true
 L["Visibility"] = true
 L["Choose when your auras will be visible."] = true
