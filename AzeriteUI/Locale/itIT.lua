@@ -96,6 +96,8 @@ L["Sets the anchor point of your actionbar."] = true
 -- Unit Frame Settings
 L["Unit Frames"] = true
 L["UnitFrame Settings"] = true
+L["Enable Aura Sorting"] = true
+L["When enabled, unitframe auras will be sorted depending on time left and who cast the aura. When disabled, unitframe auras will appear in the order they were applied, like in the default user interface."] = true
 
 -- Tooltip Settings
 L["Tooltips"] = true
@@ -130,6 +132,16 @@ L["Sets the horizontal padding between your aura buttons."] = true
 L["Buttons Per Row"] = true
 L["Sets the maximum number of aura buttons per row."] = true
 L["Sets the anchor point of your auras."] = true
+
+-- Bag/Container Settings
+L["Bag Settings"] = true
+L["Bags"] = true
+L["Sort Direction"] = true
+L["Choose in which direction items in your bags are sorted."] = true
+L["Left to Right"] = true
+L["Right to Left"] = true
+L["Insert Point"] = true
+L["Choose from which side new items are inserted into your bags."] = true
 
 -- Fading & Explorer Mode Settings
 L["Frame Fading"] = true

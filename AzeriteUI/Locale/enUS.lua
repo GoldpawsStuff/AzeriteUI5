@@ -95,6 +95,8 @@ L["Sets the anchor point of your actionbar."] = true
 -- Unit Frame Settings
 L["Unit Frames"] = true
 L["UnitFrame Settings"] = true
+L["Enable Aura Sorting"] = true
+L["When enabled, unitframe auras will be sorted depending on time left and who cast the aura. When disabled, unitframe auras will appear in the order they were applied, like in the default user interface."] = true
 
 -- Tooltip Settings
 L["Tooltips"] = true
