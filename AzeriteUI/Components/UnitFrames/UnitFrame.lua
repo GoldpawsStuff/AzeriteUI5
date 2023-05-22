@@ -38,7 +38,7 @@ local next = next
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	disableAuraSorting = false
-}, ns.UnitFrame.defaults) }
+}, ns.moduleDefaults) }
 
 -- UnitFrame Callbacks
 ---------------------------------------------------
@@ -78,7 +78,7 @@ local UnitFrame_OnHide = function(self, ...)
 end
 
 -- UnitFrame Module Defauts
-local defaults = {
+local unitFrameDefaults = {
 	enabled = true,
 	scale = 1
 }
@@ -91,7 +91,7 @@ oUF:RegisterMetaFunction("CreateOrb", UnitFrame_CreateOrb)
 
 ns.UnitFrames = {}
 ns.UnitFrame = {}
-ns.UnitFrame.defaults = defaults
+ns.UnitFrame.defaults = unitFrameDefaults
 
 ns.UnitFrame.InitializeUnitFrame = function(self)
 
@@ -177,7 +177,7 @@ ns.UnitFrame.modulePrototype = {
 			local LAYOUT = ...
 
 			if (not self.db.profile.savedPosition[LAYOUT]) then
-				self.db.profile.savedPosition[LAYOUT] = ns:Merge({}, defaults.profile.savedPosition[MFM:GetDefaultLayout()])
+				self.db.profile.savedPosition[LAYOUT] = ns:Merge({}, unitFrameDefaults.profile.savedPosition[MFM:GetDefaultLayout()])
 			end
 
 			self:UpdatePositionAndScale()
