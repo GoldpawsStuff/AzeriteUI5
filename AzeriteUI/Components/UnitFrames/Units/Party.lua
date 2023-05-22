@@ -775,7 +775,7 @@ local style = function(self, unit)
 	auras.CustomFilter = ns.AuraFilters.PartyAuraFilter -- classic
 	auras.FilterAura = ns.AuraFilters.PartyAuraFilter -- retail
 
-	if (ns.db.global.disableAuraSorting) then
+	if (ns:GetModule("Unitframes").db.global.disableAuraSorting) then
 		auras.PreSetPosition = ns.AuraSorts.Alternate -- only in classic
 		auras.SortAuras = ns.AuraSorts.AlternateFuncton -- only in retail
 	else

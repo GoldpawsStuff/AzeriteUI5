@@ -26,13 +26,19 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
+local UnitFrameMod = ns:NewModule("UnitFrames", "LibMoreEvents-1.0")
+local MFM = ns:GetModule("MovableFramesManager")
+
 local LibSmoothBar = LibStub("LibSmoothBar-1.0")
 local LibSpinBar = LibStub("LibSpinBar-1.0")
 local LibOrb = LibStub("LibOrb-1.0")
 
-local MFM = ns:GetModule("MovableFramesManager")
-
 local next = next
+
+local defaults = { profile = ns:Merge({
+	enabled = true,
+	disableAuraSorting = false
+}, ns.UnitFrame.defaults) }
 
 -- UnitFrame Callbacks
 ---------------------------------------------------
@@ -240,3 +246,62 @@ ns.UnitFrame.modulePrototype = {
 	end
 
 }
+
+UnitFrameMod.UpdateSettings = function(self)
+
+	if (self.db.profile.disableAuraSorting) then
+
+		-- Iterate through unitframes.
+		for frame in next,ns.UnitFrames do
+			local auras = frame.Auras
+			if (auras) then
+				auras.PreSetPosition = ns.AuraSorts.Alternate -- only in classic
+				auras.SortAuras = ns.AuraSorts.AlternateFuncton -- only in retail
+				auras:ForceUpdate()
+			end
+		end
+
+		-- Iterate through nameplates.
+		for frame in next,ns.NamePlates do
+			local auras = frame.Auras
+			if (auras) then
+				auras.PreSetPosition = ns.AuraSorts.Alternate -- only in classic
+				auras.SortAuras = ns.AuraSorts.AlternateFuncton -- only in retail
+				auras:ForceUpdate()
+			end
+		end
+	else
+
+		-- Iterate through unitframes.
+		for frame in next,ns.UnitFrames do
+			local auras = frame.Auras
+			if (auras) then
+				auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
+				auras.SortAuras = ns.AuraSorts.DefaultFunction -- only in retail
+				auras:ForceUpdate()
+			end
+		end
+
+		-- Iterate through nameplates.
+		for frame in next,ns.NamePlates do
+			local auras = frame.Auras
+			if (auras) then
+				auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
+				auras.SortAuras = ns.AuraSorts.DefaultFunction -- only in retail
+				auras:ForceUpdate()
+			end
+		end
+
+	end
+
+end
+
+UnitFrameMod.OnInitialize = function(self)
+	self.db = ns.db:RegisterNamespace("UnitFrames", defaults)
+
+	self:SetEnabledState(self.db.profile.enabled)
+end
+
+UnitFrameMod.OnEnable = function(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateSettings")
+end

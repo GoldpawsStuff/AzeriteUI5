@@ -29,104 +29,10 @@ local Experimental = ns:NewModule("Experimental", "LibMoreEvents-1.0", "AceConso
 -- Addon API
 local GetScale = ns.API.GetScale
 
-Experimental.SetEnableAuraSorting = function(self)
-
-	-- Store the setting.
-	ns.db.global.disableAuraSorting = nil
-
-	self:EnableAuraSorting()
-end
-
-Experimental.SetDisableAuraSorting = function(self)
-
-	-- Store the setting.
-	ns.db.global.disableAuraSorting = true
-
-	self:DisableAuraSorting()
-end
-
-Experimental.DisableAuraSorting = function(self)
-
-	-- Iterate through unitframes.
-	for frame in next,ns.UnitFrames do
-		local auras = frame.Auras
-		if (auras) then
-			auras.PreSetPosition = ns.AuraSorts.Alternate -- only in classic
-			auras.SortAuras = ns.AuraSorts.AlternateFuncton -- only in retail
-			auras:ForceUpdate()
-		end
-	end
-
-	-- Iterate through nameplates.
-	for frame in next,ns.NamePlates do
-		local auras = frame.Auras
-		if (auras) then
-			auras.PreSetPosition = ns.AuraSorts.Alternate -- only in classic
-			auras.SortAuras = ns.AuraSorts.AlternateFuncton -- only in retail
-			auras:ForceUpdate()
-		end
-	end
-
-	-- Don't need this even anymore.
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DisableAuraSorting")
-end
-
-Experimental.EnableAuraSorting = function(self)
-
-	-- Iterate through unitframes.
-	for frame in next,ns.UnitFrames do
-		local auras = frame.Auras
-		if (auras) then
-			auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
-			auras.SortAuras = ns.AuraSorts.DefaultFunction -- only in retail
-			auras:ForceUpdate()
-		end
-	end
-
-	-- Iterate through nameplates.
-	for frame in next,ns.NamePlates do
-		local auras = frame.Auras
-		if (auras) then
-			auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
-			auras.SortAuras = ns.AuraSorts.DefaultFunction -- only in retail
-			auras:ForceUpdate()
-		end
-	end
-
-	-- Now we might need this event.
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "DisableAuraSorting")
-end
-
 Experimental.ToggleBlips = function(self)
 	local show = not self.Blips:IsShown()
 	self.Blips:SetShown(show)
 	self.BlibsBackdrop:SetShown(show)
-end
-
-Experimental.CreateBagCommands = function(self)
-	if (not C_Container) then return end
-
-	if (C_Container.SetSortBagsRightToLeft) then
-		self:RegisterChatCommand("sortbagsrtl", function() C_Container.SetSortBagsRightToLeft(true) end)
-		self:RegisterChatCommand("sortbagsltr", function() C_Container.SetSortBagsRightToLeft(false) end)
-	end
-
-	if (C_Container.SetInsertItemsLeftToRight) then
-		self:RegisterChatCommand("insertitemsltr", function() C_Container.SetInsertItemsLeftToRight(true) end)
-		self:RegisterChatCommand("insertitemsrtl", function() C_Container.SetInsertItemsLeftToRight(false) end)
-	end
-end
-
-Experimental.SpawnAuraSorting = function(self)
-
-	self:RegisterChatCommand("disableaurasorting", "SetDisableAuraSorting")
-	self:RegisterChatCommand("enableaurasorting", "SetEnableAuraSorting")
-
-	-- Make sure this happens when the setting is saved
-	local db = ns.db.global
-	if (db.disableAuraSorting) then
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", "DisableAuraSorting")
-	end
 end
 
 Experimental.SpawnBlips = function(self)
@@ -160,6 +66,4 @@ end
 
 Experimental.OnInitialize = function(self)
 	self:SpawnBlips()
-	self:SpawnAuraSorting()
-	self:CreateBagCommands()
 end

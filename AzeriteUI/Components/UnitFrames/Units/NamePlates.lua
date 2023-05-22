@@ -993,7 +993,7 @@ local style = function(self, unit, id)
 	auras.CreateButton = ns.AuraStyles.CreateSmallButton
 	auras.PostUpdateButton = ns.AuraStyles.NameplatePostUpdateButton
 
-	if (ns.db.global.disableAuraSorting) then
+	if (ns:GetModule("Unitframes").db.global.disableAuraSorting) then
 		auras.PreSetPosition = ns.AuraSorts.Alternate -- only in classic
 		auras.SortAuras = ns.AuraSorts.AlternateFuncton -- only in retail
 	else
