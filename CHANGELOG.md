@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-05-21
+## [Unreleased] 2023-05-22
 - This version is backwards incompatible and requires a full settings reset.
 
 ### Added
