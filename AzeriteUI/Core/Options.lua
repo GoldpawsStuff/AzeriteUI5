@@ -45,11 +45,10 @@ local string_split = string.split
 local table_insert = table.insert
 
 local panels = {}
-local namePattern = AddonName.." - %s"
 
 local registerOptionsPanel = function(name, options, parent)
 	AceConfigRegistry:RegisterOptionsTable(name, options)
-	local categoryID = AceConfigDialog:AddToBlizOptions(name, name, parent)
+	local categoryID = AceConfigDialog:AddToBlizOptions(name, name, parent or Addon)
 	if (not Options.categoryIDs) then
 		Options.categoryIDs = {}
 	end
@@ -58,8 +57,13 @@ local registerOptionsPanel = function(name, options, parent)
 	panels[name] = true
 end
 
+local generateName = function(name)
+	return string_format("%s - %s", AddonName, name)
+end
+
 local generateOptions = function()
-	AceConfigRegistry:RegisterOptionsTable(AddonName, {
+
+	local optionsTable = {
 		type = "group",
 		args = {
 			profiles = {
@@ -82,378 +86,73 @@ local generateOptions = function()
 				end
 			}
 		}
-	})
+	}
+	AceConfigRegistry:RegisterOptionsTable(AddonName, optionsTable)
 	Options.categoryID = AceConfigDialog:AddToBlizOptions(AddonName, Addon)
+
 	panels[AddonName] = true
 end
 
 local generateActionBarOptions = function()
 
-	local module = ns:GetModule("ActionBars")
-	if (module.db.profile.enabled) then
-
-		local setter = function(info,val)
-			local id = tonumber((string_match(info[#info - 1],"(%d+)")))
-			local db = module.db.profile.bars[id].savedPosition[MFM:GetLayout()]
-			db[info[#info]] = val
-			module:UpdateSettings()
-		end
-
-		local getter = function(info)
-			local id = tonumber((string_match(info[#info - 1],"(%d+)")))
-			local db = module.db.profile.bars[id].savedPosition[MFM:GetLayout()]
-			return db[info[#info]]
-		end
-
-		local isdisabled = function(info)
-			local id = tonumber((string_match(info[#info - 1],"(%d+)")))
-			local db = module.db.profile.bars[id].savedPosition[MFM:GetLayout()]
-			return info[#info] ~= "enabled" and not db.enabled
-		end
-
-		local getsetting = function(info, setting)
-			local id = tonumber((string_match(info[#info - 1],"(%d+)")))
-			local db = module.db.profile.bars[id].savedPosition[MFM:GetLayout()]
-			return db[setting]
-		end
-
-		local setoption = function(info,option,val)
-			local id = tonumber((string_match(info[#info - 1],"(%d+)")))
-			local db = module.db.profile.bars[id].savedPosition[MFM:GetLayout()]
-			db[option] = val
-			module:UpdateSettings()
-		end
-
-		local getoption = function(info,option)
-			local id = tonumber((string_match(info[#info - 1],"(%d+)")))
-			local db = module.db.profile.bars[id].savedPosition[MFM:GetLayout()]
-			return db[option]
-		end
-
-		local barOptions = {
-			name = string_format(namePattern, L["Action Bar Settings"]),
-			type = "group",
-			args = {}
-		}
-
-		for id = 1,ns.IsRetail and 8 or 5 do
-			barOptions.args["bar"..id] = {
-				name = string_format(L["Action Bar %d"], id),
-				order = 1,
-				type = "group",
-				args = {
-					enabled = {
-						name = L["Enable"],
-						desc = L["Toggle whether to enable this action bar or not."],
-						order = 1,
-						type = "toggle", width = "full",
-						set = setter,
-						get = getter
-					},
-					visibilityHeader = {
-						name = L["Visibility"],
-						order = 2,
-						type = "header"
-					},
-					visibilityDesc = {
-						name = L["Choose when your auras will be visible."],
-						order = 3,
-						type = "description",
-						fontSize = "medium"
-					},
-					enableBarFading = {
-						name = L["Enable Bar Fading"],
-						desc = L["Toggle whether to enable the buttons of this action bar to fade out."],
-						order = 10,
-						type = "toggle", width = "full",
-						hidden = isdisabled,
-						set = setter,
-						get = getter
-					},
-					fadeFrom = {
-						name = L["Start Fading from"],
-						desc = L["Choose which button to start the fading from."],
-						order = 11,
-						type = "range", width = "full", min = 1, max = 12, step = 1,
-						hidden = function(info) return isdisabled(info) or not getsetting(info, "enableBarFading") end,
-						set = setter,
-						get = getter
-					},
-					layoutHeader = {
-						name = L["Layout"],
-						order = 18,
-						type = "header"
-					},
-					layoutDesc = {
-						name = L["Choose how your auras are displayed."],
-						order = 19,
-						type = "description",
-						fontSize = "medium"
-					},
-					layout = {
-						name = L["Bar Layout"],
-						desc = L["Choose the action bar layout type."],
-						order = 20,
-						type = "select", style = "dropdown",
-						hidden = isdisabled,
-						values = {
-							["grid"] = L["Grid Layout"],
-							["zigzag"] = L["ZigZag Layout"],
-						},
-						set = setter,
-						get = getter
-					},
-					startAt = {
-						name = L["First ZigZag Button"],
-						desc = L["Sets which button the zigzag pattern should begin at."],
-						order = 21,
-						type = "range", width = "full", min = 1, max = 12, step = 1,
-						hidden = function(info) return isdisabled(info) or getsetting(info, "layout") ~= "zigzag" end,
-						set = setter,
-						get = getter
-					},
-					numbuttons = {
-						name = L["Number of buttons"],
-						desc = L["Sets the number of action buttons on the action bar."],
-						order = 30,
-						type = "range", width = "full", min = 0, max = 12, step = 1,
-						hidden = isdisabled,
-						set = setter,
-						get = getter
-					},
-					padding = {
-						name = L["Button Padding"],
-						desc = L["Sets the padding between buttons on the same line."],
-						order = 31,
-						type = "range", width = "full", min = 0, max = 16, step = 1,
-						hidden = isdisabled,
-						set = setter,
-						get = getter
-					},
-					breakpadding = {
-						name = L["Line Padding"],
-						desc = L["Sets the padding between multiple lines of buttons."],
-						order = 32,
-						type = "range", width = "full", min = 0, max = 16, step = 1,
-						hidden = isdisabled,
-						set = setter,
-						get = getter
-					},
-					breakpoint = {
-						name = L["Line Break"],
-						desc = L["Sets when a new line of buttons should begin."],
-						order = 40,
-						type = "range", width = "full", min = 1, max = 12, step = 1,
-						hidden = function(info) return isdisabled(info) or getsetting(info, "layout") ~= "grid" end,
-						set = setter,
-						get = getter
-					},
-					growth = {
-						name = L["Initial Growth"],
-						desc = L["Choose whether the bar initially should expand horizontally or vertically."],
-						order = 50,
-						type = "select", style = "dropdown",
-						hidden = isdisabled,
-						values = {
-							["horizontal"] = L["Horizontal Layout"],
-							["vertical"] = L["Vertical Layout"],
-						},
-						set = setter,
-						get = getter
-					},
-					growthSpace = {
-						name = "", order = 51, type = "description",
-						hidden = isdisabled
-					},
-					growthHorizontal = {
-						name = L["Horizontal Growth"],
-						desc = L["Choose which horizontal direction the bar should expand in."],
-						order = 52,
-						type = "select", style = "dropdown",
-						hidden = isdisabled,
-						values = {
-							["RIGHT"] = L["Right"],
-							["LEFT"] = L["Left"],
-						},
-						set = setter,
-						get = getter
-					},
-					growthVertical = {
-						name = L["Vertical Growth"],
-						desc = L["Choose which vertical direction the bar should expand in."],
-						order = 53,
-						type = "select", style = "dropdown",
-						hidden = isdisabled,
-						values = {
-							["DOWN"] = L["Down"],
-							["UP"] = L["Up"],
-						},
-						set = setter,
-						get = getter
-					},
-					pointPreSpace = {
-						name = "", order = 60, type = "description", hidden = isdisabled
-					},
-					point = {
-						name = L["Anchor Point"],
-						desc = L["Sets the anchor point of your actionbar."],
-						order = 61,
-						hidden = isdisabled,
-						type = "select", style = "dropdown",
-						values = {
-							["TOPLEFT"] = L["Top-Left Corner"],
-							["TOP"] = L["Top Center"],
-							["TOPRIGHT"] = L["Top-Right Corner"],
-							["RIGHT"] = L["Middle Right Side"],
-							["BOTTOMRIGHT"] = L["Bottom-Right Corner"],
-							["BOTTOM"] = L["Bottom Center"],
-							["BOTTOMLEFT"] = L["Bottom-Left Corner"],
-							["LEFT"] = L["Middle Left Side"],
-							["CENTER"] = L["Center"]
-						},
-						set = function(info,val) setoption(info,1,val) end,
-						get = function(info) return getoption(info,1) end
-					},
-					pointPostSpace = {
-						name = "", order = 62, type = "description", hidden = isdisabled
-					},
-					offsetX = {
-						name = L["Offset X"],
-						desc = L["Sets the horizontal offset from your chosen point. Positive values means right, negative values means left."],
-						order = 63,
-						type = "input",
-						hidden = isdisabled,
-						validate = function(info,val)
-							local val = tonumber((string_match(val,"(%d+%.?%d*)")))
-							if (val) then return true end
-							return L["Only numbers are allowed."]
-						end,
-						set = function(info,val)
-							local val = tonumber((string_match(val,"(%d+%.?%d*)")))
-							if (not val) then return end
-							setoption(info,2,val)
-						end,
-						get = function(info)
-							local val = getoption(info,2)
-							val = math_floor(val * 1000 + .5)/1000
-							return tostring(val)
-						end
-					},
-					offsetY = {
-						name = L["Offset Y"],
-						desc = L["Sets the vertical offset from your chosen point. Positive values means up, negative values means down."],
-						order = 64,
-						type = "input",
-						hidden = isdisabled,
-						validate = function(info,val)
-							local val = tonumber((string_match(val,"(%d+%.?%d*)")))
-							if (val) then return true end
-							return L["Only numbers are allowed."]
-						end,
-						set = function(info,val)
-							local val = tonumber((string_match(val,"(%d+%.?%d*)")))
-							if (not val) then return end
-							setoption(info,3,val)
-						end,
-						get = function(info)
-							local val = getoption(info,3)
-							val = math_floor(val * 1000 + .5)/1000
-							return tostring(val)
-						end
-					}
-				}
-			}
-		end
-		registerOptionsPanel(L["Action Bars"], barOptions, Addon)
+	local module = ns:GetModule("ActionBars", true)
+	if (not module or not module.db.profile.enabled) then
+		return
 	end
 
-end
+	local setter = function(info,val)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = module.db.profile.bars[id].savedPosition[MFM:GetLayout()]
+		db[info[#info]] = val
+		module:UpdateSettings()
+	end
 
-local generateUnitFrameOptions = function()
+	local getter = function(info)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = module.db.profile.bars[id].savedPosition[MFM:GetLayout()]
+		return db[info[#info]]
+	end
 
-	local unitFrameOptions = {
-		name = string_format(namePattern, L["UnitFrame Settings"]),
+	local isdisabled = function(info)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = module.db.profile.bars[id].savedPosition[MFM:GetLayout()]
+		return info[#info] ~= "enabled" and not db.enabled
+	end
+
+	local getsetting = function(info, setting)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = module.db.profile.bars[id].savedPosition[MFM:GetLayout()]
+		return db[setting]
+	end
+
+	local setoption = function(info,option,val)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = module.db.profile.bars[id].savedPosition[MFM:GetLayout()]
+		db[option] = val
+		module:UpdateSettings()
+	end
+
+	local getoption = function(info,option)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = module.db.profile.bars[id].savedPosition[MFM:GetLayout()]
+		return db[option]
+	end
+
+	local optionsTable = {
+		name = generateName(L["Action Bar Settings"]),
 		type = "group",
 		args = {}
 	}
-	if (ns.IsRetail or ns.IsWrath) then
-	end
-	registerOptionsPanel(L["Unit Frames"], unitFrameOptions, Addon)
-end
 
-local generateTooltipOptions = function()
-
-	local module = ns:GetModule("Tooltips")
-	if (module.db.profile.enabled) then
-
-		local setter = function(info,val)
-			module.db.profile[info[#info]] = val
-		end
-
-		local getter = function(info)
-			return module.db.profile[info[#info]]
-		end
-
-		local tooltipOptions = {
-			name = string_format(namePattern, L["Tooltip Settings"]),
-			type = "group",
-			args = {
-				showItemID = {
-					name = L["Show itemID"],
-					desc = L["Toggle whether to add itemID to item tooltips or not."],
-					order = 1,
-					type = "toggle", width = "full",
-					set = setter,
-					get = getter
-				},
-				showSpellID = {
-					name = L["Show spellID"],
-					desc = L["Toggle whether to add spellIDs and auraIDs in tooltips containing actions, spells or auras."],
-					order = 2,
-					type = "toggle", width = "full",
-					set = setter,
-					get = getter
-				}
-			}
-		}
-		registerOptionsPanel(L["Tooltips"], tooltipOptions, Addon)
-	end
-end
-
-local generateAuraOptions = function()
-
-	local module = ns:GetModule("Auras")
-	if (module.db.profile.enabled) then
-
-		local setter = function(info,val)
-			module.db.profile.savedPosition[MFM:GetLayout()][info[#info]] = val
-			module:UpdateSettings()
-		end
-
-		local getter = function(info)
-			return module.db.profile.savedPosition[MFM:GetLayout()][info[#info]]
-		end
-
-		local isdisabled = function(info)
-			return info[#info] ~= "enabled" and not module.db.profile.savedPosition[MFM:GetLayout()].enabled
-		end
-
-		local setoption = function(info,option,val)
-			module.db.profile.savedPosition[MFM:GetLayout()][option] = val
-			module:UpdateSettings()
-		end
-
-		local getoption = function(info,option)
-			return module.db.profile.savedPosition[MFM:GetLayout()][option]
-		end
-
-		registerOptionsPanel(L["Player Auras"], {
-			name = string_format(namePattern, L["Aura Settings"]),
+	for id = 1,ns.IsRetail and 8 or 5 do
+		optionsTable.args["bar"..id] = {
+			name = string_format(L["Action Bar %d"], id),
+			order = 1,
 			type = "group",
 			args = {
 				enabled = {
 					name = L["Enable"],
-					desc = L["Toggle whether to show the player aura buttons or not."],
+					desc = L["Toggle whether to enable this action bar or not."],
 					order = 1,
 					type = "toggle", width = "full",
 					set = setter,
@@ -470,81 +169,114 @@ local generateAuraOptions = function()
 					type = "description",
 					fontSize = "medium"
 				},
-				enableAuraFading = {
-					name = L["Enable Aura Fading"],
-					desc = L["Toggle whether to enable the player aura buttons to fade out when not moused over."],
+				enableBarFading = {
+					name = L["Enable Bar Fading"],
+					desc = L["Toggle whether to enable the buttons of this action bar to fade out."],
 					order = 10,
 					type = "toggle", width = "full",
 					hidden = isdisabled,
 					set = setter,
 					get = getter
 				},
-				enableModifier = {
-					name = L["Enable Modifier Key"],
-					desc = L["Require a modifier key to show the auras."],
-					order = 20,
-					type = "toggle", width = "full",
-					hidden = isdisabled,
+				fadeFrom = {
+					name = L["Start Fading from"],
+					desc = L["Choose which button to start the fading from."],
+					order = 11,
+					type = "range", width = "full", min = 1, max = 12, step = 1,
+					hidden = function(info) return isdisabled(info) or not getsetting(info, "enableBarFading") end,
 					set = setter,
 					get = getter
 				},
-				modifier = {
-					name = L["Modifier Key"],
-					desc = L["Choose which modifier key to hold  down to show the aura buttons."],
-					order = 21,
-					hidden = isdisabled,
-					disabled = function(info) return isdisabled(info) or not getoption(info, "enableModifier") end,
-					type = "select", style = "dropdown",
-					values = {
-						["ALT"] = ALT_KEY_TEXT,
-						["SHIFT"] = SHIFT_KEY_TEXT,
-						["CTRL"] = CTRL_KEY_TEXT
-					},
-					set = setter,
-					get = getter
-				},
-				--modifierSpace = {
-				--	name = "", order = 22, type = "description", hidden = isdisabled
-				--},
 				layoutHeader = {
 					name = L["Layout"],
-					order = 30,
+					order = 18,
 					type = "header"
 				},
 				layoutDesc = {
 					name = L["Choose how your auras are displayed."],
-					order = 31,
+					order = 19,
 					type = "description",
 					fontSize = "medium"
 				},
-				anchorPoint = {
-					name = L["Anchor Point"],
-					desc = L["Sets the anchor point of your auras."],
-					order = 32,
-					hidden = isdisabled,
+				layout = {
+					name = L["Bar Layout"],
+					desc = L["Choose the action bar layout type."],
+					order = 20,
 					type = "select", style = "dropdown",
+					hidden = isdisabled,
 					values = {
-						["TOPLEFT"] = L["Top-Left Corner"],
-						["TOP"] = L["Top Center"],
-						["TOPRIGHT"] = L["Top-Right Corner"],
-						["RIGHT"] = L["Middle Right Side"],
-						["BOTTOMRIGHT"] = L["Bottom-Right Corner"],
-						["BOTTOM"] = L["Bottom Center"],
-						["BOTTOMLEFT"] = L["Bottom-Left Corner"],
-						["LEFT"] = L["Middle Left Side"],
-						["CENTER"] = L["Center"]
+						["grid"] = L["Grid Layout"],
+						["zigzag"] = L["ZigZag Layout"],
 					},
 					set = setter,
 					get = getter
 				},
-				anchorPointSpace = {
-					name = "", order = 33, type = "description",
+				startAt = {
+					name = L["First ZigZag Button"],
+					desc = L["Sets which button the zigzag pattern should begin at."],
+					order = 21,
+					type = "range", width = "full", min = 1, max = 12, step = 1,
+					hidden = function(info) return isdisabled(info) or getsetting(info, "layout") ~= "zigzag" end,
+					set = setter,
+					get = getter
+				},
+				numbuttons = {
+					name = L["Number of buttons"],
+					desc = L["Sets the number of action buttons on the action bar."],
+					order = 30,
+					type = "range", width = "full", min = 0, max = 12, step = 1,
+					hidden = isdisabled,
+					set = setter,
+					get = getter
+				},
+				padding = {
+					name = L["Button Padding"],
+					desc = L["Sets the padding between buttons on the same line."],
+					order = 31,
+					type = "range", width = "full", min = 0, max = 16, step = 1,
+					hidden = isdisabled,
+					set = setter,
+					get = getter
+				},
+				breakpadding = {
+					name = L["Line Padding"],
+					desc = L["Sets the padding between multiple lines of buttons."],
+					order = 32,
+					type = "range", width = "full", min = 0, max = 16, step = 1,
+					hidden = isdisabled,
+					set = setter,
+					get = getter
+				},
+				breakpoint = {
+					name = L["Line Break"],
+					desc = L["Sets when a new line of buttons should begin."],
+					order = 40,
+					type = "range", width = "full", min = 1, max = 12, step = 1,
+					hidden = function(info) return isdisabled(info) or getsetting(info, "layout") ~= "grid" end,
+					set = setter,
+					get = getter
+				},
+				growth = {
+					name = L["Initial Growth"],
+					desc = L["Choose whether the bar initially should expand horizontally or vertically."],
+					order = 50,
+					type = "select", style = "dropdown",
+					hidden = isdisabled,
+					values = {
+						["horizontal"] = L["Horizontal Layout"],
+						["vertical"] = L["Vertical Layout"],
+					},
+					set = setter,
+					get = getter
+				},
+				growthSpace = {
+					name = "", order = 51, type = "description",
 					hidden = isdisabled
 				},
-				growthX = {
+				growthHorizontal = {
 					name = L["Horizontal Growth"],
-					desc = L["Choose which horizontal direction the aura buttons should expand in."],
-					order = 41,
+					desc = L["Choose which horizontal direction the bar should expand in."],
+					order = 52,
 					type = "select", style = "dropdown",
 					hidden = isdisabled,
 					values = {
@@ -554,10 +286,10 @@ local generateAuraOptions = function()
 					set = setter,
 					get = getter
 				},
-				growthY = {
+				growthVertical = {
 					name = L["Vertical Growth"],
-					desc = L["Choose which vertical direction the aura buttons should expand in."],
-					order = 42,
+					desc = L["Choose which vertical direction the bar should expand in."],
+					order = 53,
 					type = "select", style = "dropdown",
 					hidden = isdisabled,
 					values = {
@@ -567,51 +299,21 @@ local generateAuraOptions = function()
 					set = setter,
 					get = getter
 				},
-				pointPostSpace = {
-					name = "", order = 50, type = "description", hidden = isdisabled
-				},
-				paddingX = {
-					name = L["Horizontal Padding"],
-					desc = L["Sets the horizontal padding between your aura buttons."],
-					order = 51,
-					type = "range", width = "full", min = 0, max = 12, step = 1,
-					hidden = isdisabled,
-					set = setter,
-					get = getter
-				},
-				paddingY = {
-					name = L["Vertical Padding"],
-					desc = L["Sets the horizontal padding between your aura buttons."],
-					order = 52,
-					type = "range", width = "full", min = 6, max = 18, step = 1,
-					hidden = isdisabled,
-					set = setter,
-					get = getter
-				},
-				wrapAfter = {
-					name = L["Buttons Per Row"],
-					desc = L["Sets the maximum number of aura buttons per row."],
-					order = 53,
-					type = "range", width = "full", min = 1, max = 16, step = 1,
-					hidden = isdisabled,
-					set = setter,
-					get = getter
-				},
 				positionHeader = {
 					name = L["Position"],
-					order = 60,
+					order = 58,
 					type = "header"
 				},
 				positionDesc = {
 					name = L["Fine-tune the position."],
-					order = 61,
+					order = 59,
 					type = "description",
 					fontSize = "medium"
 				},
 				point = {
 					name = L["Anchor Point"],
-					desc = L["Sets the anchor point of your auras."],
-					order = 62,
+					desc = L["Sets the anchor point of your actionbar."],
+					order = 61,
 					hidden = isdisabled,
 					type = "select", style = "dropdown",
 					values = {
@@ -629,12 +331,12 @@ local generateAuraOptions = function()
 					get = function(info) return getoption(info,1) end
 				},
 				pointPostSpace = {
-					name = "", order = 63, type = "description", hidden = isdisabled
+					name = "", order = 62, type = "description", hidden = isdisabled
 				},
 				offsetX = {
 					name = L["Offset X"],
 					desc = L["Sets the horizontal offset from your chosen point. Positive values means right, negative values means left."],
-					order = 64,
+					order = 63,
 					type = "input",
 					hidden = isdisabled,
 					validate = function(info,val)
@@ -656,7 +358,7 @@ local generateAuraOptions = function()
 				offsetY = {
 					name = L["Offset Y"],
 					desc = L["Sets the vertical offset from your chosen point. Positive values means up, negative values means down."],
-					order = 65,
+					order = 64,
 					type = "input",
 					hidden = isdisabled,
 					validate = function(info,val)
@@ -676,56 +378,618 @@ local generateAuraOptions = function()
 					end
 				}
 			}
-		}, Addon)
+		}
 	end
+
+	registerOptionsPanel(L["Action Bars"], optionsTable)
+end
+
+local generateUnitFrameOptions = function()
+
+	local module = ns:GetModule("UnitFrames", true)
+	if (not module or not module.db.profile.enabled) then
+		return
+	end
+
+	local setter = function(info,val)
+		module.db.profile[info[#info]] = val
+		module:UpdateSettings()
+	end
+
+	local getter = function(info)
+		return module.db.profile[info[#info]]
+	end
+
+	local isdisabled = function(info)
+		return info[#info] ~= "enabled" and not module.db.profile.enabled
+	end
+
+	local setoption = function(info,option,val)
+		module.db.profile[option] = val
+		module:UpdateSettings()
+	end
+
+	local getoption = function(info,option)
+		return module.db.profile[option]
+	end
+
+	local optionsTable = {
+		name = generateName(L["UnitFrame Settings"]),
+		type = "group",
+		args = {
+			auraHeader = {
+				name = L["Aura Settings"],
+				order = 2,
+				type = "header"
+			},
+			auraDesc = {
+				name = L["Here you can change settings related to the aura buttons appearing at each unitframe."],
+				order = 3,
+				type = "description",
+				fontSize = "medium"
+			},
+			disableAuraSorting = {
+				name = L["Enable Aura Sorting"],
+				desc = L["When enabled, unitframe auras will be sorted depending on time left and who cast the aura. When disabled, unitframe auras will appear in the order they were applied, like in the default user interface."],
+				order = 10,
+				type = "toggle", width = "full",
+				hidden = isdisabled,
+				set = setter,
+				get = getter
+			}
+		}
+	}
+
+	local categoryCount = 0
+
+	-- Player
+	do
+		local module = ns:GetModule("PlayerFrame", true)
+		if (module and module.db.profile.enabled) then
+
+			categoryCount = categoryCount + 1
+
+			local setter = function(info,val)
+				module.db.profile.savedPosition[MFM:GetLayout()][info[#info]] = val
+				module:UpdateSettings()
+			end
+
+			local getter = function(info)
+				return module.db.profile.savedPosition[MFM:GetLayout()][info[#info]]
+			end
+
+			local isdisabled = function(info)
+				return info[#info] ~= "enabled" and not module.db.profile.savedPosition[MFM:GetLayout()].enabled
+			end
+
+			local setoption = function(info,option,val)
+				module.db.profile.savedPosition[MFM:GetLayout()][option] = val
+				module:UpdateSettings()
+			end
+
+			local getoption = function(info,option)
+				return module.db.profile.savedPosition[MFM:GetLayout()][option]
+			end
+
+			optionsTable.args.player = {
+				name = PLAYER,
+				type = "group",
+				order = 100 + (categoryCount - 1) * 10,
+				args = {
+					enabled = {
+						name = L["Enable"],
+						desc = L["Toggle whether to enable this unit frame or not."],
+						order = 1,
+						type = "toggle", width = "full",
+						set = setter,
+						get = getter
+					},
+					positionHeader = {
+						name = L["Position"],
+						order = 60,
+						type = "header"
+					},
+					positionDesc = {
+						name = L["Fine-tune the position."],
+						order = 61,
+						type = "description",
+						fontSize = "medium"
+					},
+					point = {
+						name = L["Anchor Point"],
+						desc = L["Sets the anchor point of the unit frame."],
+						order = 62,
+						hidden = isdisabled,
+						type = "select", style = "dropdown",
+						values = {
+							["TOPLEFT"] = L["Top-Left Corner"],
+							["TOP"] = L["Top Center"],
+							["TOPRIGHT"] = L["Top-Right Corner"],
+							["RIGHT"] = L["Middle Right Side"],
+							["BOTTOMRIGHT"] = L["Bottom-Right Corner"],
+							["BOTTOM"] = L["Bottom Center"],
+							["BOTTOMLEFT"] = L["Bottom-Left Corner"],
+							["LEFT"] = L["Middle Left Side"],
+							["CENTER"] = L["Center"]
+						},
+						set = function(info,val) setoption(info,1,val) end,
+						get = function(info) return getoption(info,1) end
+					},
+					pointPostSpace = {
+						name = "", order = 63, type = "description", hidden = isdisabled
+					},
+					offsetX = {
+						name = L["Offset X"],
+						desc = L["Sets the horizontal offset from your chosen point. Positive values means right, negative values means left."],
+						order = 64,
+						type = "input",
+						hidden = isdisabled,
+						validate = function(info,val)
+							local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+							if (val) then return true end
+							return L["Only numbers are allowed."]
+						end,
+						set = function(info,val)
+							local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+							if (not val) then return end
+							setoption(info,2,val)
+						end,
+						get = function(info)
+							local val = getoption(info,2)
+							val = math_floor(val * 1000 + .5)/1000
+							return tostring(val)
+						end
+					},
+					offsetY = {
+						name = L["Offset Y"],
+						desc = L["Sets the vertical offset from your chosen point. Positive values means up, negative values means down."],
+						order = 65,
+						type = "input",
+						hidden = isdisabled,
+						validate = function(info,val)
+							local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+							if (val) then return true end
+							return L["Only numbers are allowed."]
+						end,
+						set = function(info,val)
+							local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+							if (not val) then return end
+							setoption(info,3,val)
+						end,
+						get = function(info)
+							local val = getoption(info,3)
+							val = math_floor(val * 1000 + .5)/1000
+							return tostring(val)
+						end
+					}
+				}
+			}
+
+		end
+	end
+
+	-- Player Cast Bar
+	-- Player Class Power
+	-- Pet
+	-- Target
+	-- ToT
+	-- Focus
+
+
+	-- NamePlates
+
+	-- Party
+	-- Raid
+	-- Boss
+	-- Arena
+
+	if (ns.IsRetail or ns.IsWrath) then
+
+	end
+
+	registerOptionsPanel(L["Unit Frames"], optionsTable)
+end
+
+local generateTooltipOptions = function()
+
+	local module = ns:GetModule("Tooltips", true)
+	if (not module or not module.db.profile.enabled) then
+		return
+	end
+
+	local setter = function(info,val)
+		module.db.profile[info[#info]] = val
+	end
+
+	local getter = function(info)
+		return module.db.profile[info[#info]]
+	end
+
+	local optionsTable = {
+		name = generateName(L["Tooltip Settings"]),
+		type = "group",
+		args = {
+			showItemID = {
+				name = L["Show itemID"],
+				desc = L["Toggle whether to add itemID to item tooltips or not."],
+				order = 1,
+				type = "toggle", width = "full",
+				set = setter,
+				get = getter
+			},
+			showSpellID = {
+				name = L["Show spellID"],
+				desc = L["Toggle whether to add spellIDs and auraIDs in tooltips containing actions, spells or auras."],
+				order = 2,
+				type = "toggle", width = "full",
+				set = setter,
+				get = getter
+			}
+		}
+	}
+
+	registerOptionsPanel(L["Tooltips"], optionsTable)
+end
+
+local generateAuraOptions = function()
+
+	local module = ns:GetModule("Auras", true)
+	if (not module or not module.db.profile.enabled) then
+		return
+	end
+
+	local setter = function(info,val)
+		module.db.profile.savedPosition[MFM:GetLayout()][info[#info]] = val
+		module:UpdateSettings()
+	end
+
+	local getter = function(info)
+		return module.db.profile.savedPosition[MFM:GetLayout()][info[#info]]
+	end
+
+	local isdisabled = function(info)
+		return info[#info] ~= "enabled" and not module.db.profile.savedPosition[MFM:GetLayout()].enabled
+	end
+
+	local setoption = function(info,option,val)
+		module.db.profile.savedPosition[MFM:GetLayout()][option] = val
+		module:UpdateSettings()
+	end
+
+	local getoption = function(info,option)
+		return module.db.profile.savedPosition[MFM:GetLayout()][option]
+	end
+
+	local optionsTable = {
+		name = generateName(L["Aura Settings"]),
+		type = "group",
+		args = {
+			description = {
+				name = L["Here you can change settings related to the aura buttons appearing by default in the top right corner of the screen. None of these settings apply to the aura buttons found at the unitframes."],
+				order = 1,
+				type = "description",
+				fontSize = "medium"
+			},
+			enabled = {
+				name = L["Enable"],
+				desc = L["Toggle whether to show the player aura buttons or not."],
+				order = 2,
+				type = "toggle", width = "full",
+				set = setter,
+				get = getter
+			},
+			visibilityHeader = {
+				name = L["Visibility"],
+				order = 3,
+				type = "header"
+			},
+			visibilityDesc = {
+				name = L["Choose when your auras will be visible."],
+				order = 4,
+				type = "description",
+				fontSize = "medium"
+			},
+			enableAuraFading = {
+				name = L["Enable Aura Fading"],
+				desc = L["Toggle whether to enable the player aura buttons to fade out when not moused over."],
+				order = 10,
+				type = "toggle", width = "full",
+				hidden = isdisabled,
+				set = setter,
+				get = getter
+			},
+			enableModifier = {
+				name = L["Enable Modifier Key"],
+				desc = L["Require a modifier key to show the auras."],
+				order = 20,
+				type = "toggle", width = "full",
+				hidden = isdisabled,
+				set = setter,
+				get = getter
+			},
+			modifier = {
+				name = L["Modifier Key"],
+				desc = L["Choose which modifier key to hold  down to show the aura buttons."],
+				order = 21,
+				hidden = isdisabled,
+				disabled = function(info) return isdisabled(info) or not getoption(info, "enableModifier") end,
+				type = "select", style = "dropdown",
+				values = {
+					["ALT"] = ALT_KEY_TEXT,
+					["SHIFT"] = SHIFT_KEY_TEXT,
+					["CTRL"] = CTRL_KEY_TEXT
+				},
+				set = setter,
+				get = getter
+			},
+			layoutHeader = {
+				name = L["Layout"],
+				order = 30,
+				type = "header"
+			},
+			layoutDesc = {
+				name = L["Choose how your auras are displayed."],
+				order = 31,
+				type = "description",
+				fontSize = "medium"
+			},
+			anchorPoint = {
+				name = L["Anchor Point"],
+				desc = L["Sets the anchor point of your auras."],
+				order = 32,
+				hidden = isdisabled,
+				type = "select", style = "dropdown",
+				values = {
+					["TOPLEFT"] = L["Top-Left Corner"],
+					["TOP"] = L["Top Center"],
+					["TOPRIGHT"] = L["Top-Right Corner"],
+					["RIGHT"] = L["Middle Right Side"],
+					["BOTTOMRIGHT"] = L["Bottom-Right Corner"],
+					["BOTTOM"] = L["Bottom Center"],
+					["BOTTOMLEFT"] = L["Bottom-Left Corner"],
+					["LEFT"] = L["Middle Left Side"],
+					["CENTER"] = L["Center"]
+				},
+				set = setter,
+				get = getter
+			},
+			anchorPointSpace = {
+				name = "", order = 33, type = "description",
+				hidden = isdisabled
+			},
+			growthX = {
+				name = L["Horizontal Growth"],
+				desc = L["Choose which horizontal direction the aura buttons should expand in."],
+				order = 41,
+				type = "select", style = "dropdown",
+				hidden = isdisabled,
+				values = {
+					["RIGHT"] = L["Right"],
+					["LEFT"] = L["Left"],
+				},
+				set = setter,
+				get = getter
+			},
+			growthY = {
+				name = L["Vertical Growth"],
+				desc = L["Choose which vertical direction the aura buttons should expand in."],
+				order = 42,
+				type = "select", style = "dropdown",
+				hidden = isdisabled,
+				values = {
+					["DOWN"] = L["Down"],
+					["UP"] = L["Up"],
+				},
+				set = setter,
+				get = getter
+			},
+			pointPostSpace = {
+				name = "", order = 50, type = "description", hidden = isdisabled
+			},
+			paddingX = {
+				name = L["Horizontal Padding"],
+				desc = L["Sets the horizontal padding between your aura buttons."],
+				order = 51,
+				type = "range", width = "full", min = 0, max = 12, step = 1,
+				hidden = isdisabled,
+				set = setter,
+				get = getter
+			},
+			paddingY = {
+				name = L["Vertical Padding"],
+				desc = L["Sets the horizontal padding between your aura buttons."],
+				order = 52,
+				type = "range", width = "full", min = 6, max = 18, step = 1,
+				hidden = isdisabled,
+				set = setter,
+				get = getter
+			},
+			wrapAfter = {
+				name = L["Buttons Per Row"],
+				desc = L["Sets the maximum number of aura buttons per row."],
+				order = 53,
+				type = "range", width = "full", min = 1, max = 16, step = 1,
+				hidden = isdisabled,
+				set = setter,
+				get = getter
+			},
+			positionHeader = {
+				name = L["Position"],
+				order = 60,
+				type = "header"
+			},
+			positionDesc = {
+				name = L["Fine-tune the position."],
+				order = 61,
+				type = "description",
+				fontSize = "medium"
+			},
+			point = {
+				name = L["Anchor Point"],
+				desc = L["Sets the anchor point of your auras."],
+				order = 62,
+				hidden = isdisabled,
+				type = "select", style = "dropdown",
+				values = {
+					["TOPLEFT"] = L["Top-Left Corner"],
+					["TOP"] = L["Top Center"],
+					["TOPRIGHT"] = L["Top-Right Corner"],
+					["RIGHT"] = L["Middle Right Side"],
+					["BOTTOMRIGHT"] = L["Bottom-Right Corner"],
+					["BOTTOM"] = L["Bottom Center"],
+					["BOTTOMLEFT"] = L["Bottom-Left Corner"],
+					["LEFT"] = L["Middle Left Side"],
+					["CENTER"] = L["Center"]
+				},
+				set = function(info,val) setoption(info,1,val) end,
+				get = function(info) return getoption(info,1) end
+			},
+			pointPostSpace = {
+				name = "", order = 63, type = "description", hidden = isdisabled
+			},
+			offsetX = {
+				name = L["Offset X"],
+				desc = L["Sets the horizontal offset from your chosen point. Positive values means right, negative values means left."],
+				order = 64,
+				type = "input",
+				hidden = isdisabled,
+				validate = function(info,val)
+					local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+					if (val) then return true end
+					return L["Only numbers are allowed."]
+				end,
+				set = function(info,val)
+					local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+					if (not val) then return end
+					setoption(info,2,val)
+				end,
+				get = function(info)
+					local val = getoption(info,2)
+					val = math_floor(val * 1000 + .5)/1000
+					return tostring(val)
+				end
+			},
+			offsetY = {
+				name = L["Offset Y"],
+				desc = L["Sets the vertical offset from your chosen point. Positive values means up, negative values means down."],
+				order = 65,
+				type = "input",
+				hidden = isdisabled,
+				validate = function(info,val)
+					local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+					if (val) then return true end
+					return L["Only numbers are allowed."]
+				end,
+				set = function(info,val)
+					local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+					if (not val) then return end
+					setoption(info,3,val)
+				end,
+				get = function(info)
+					local val = getoption(info,3)
+					val = math_floor(val * 1000 + .5)/1000
+					return tostring(val)
+				end
+			}
+		}
+	}
+
+	registerOptionsPanel(L["Player Auras"], optionsTable)
+end
+
+local generateBagOptions = function()
+
+	local module = ns:GetModule("Containers", true)
+	if (not module or not module.db.profile.enabled) then
+		return
+	end
+
+	local setter = function(info,val)
+		module.db.profile[info[#info]] = val
+		module:UpdateSettings()
+	end
+
+	local getter = function(info)
+		return module.db.profile[info[#info]]
+	end
+
+	local isdisabled = function(info)
+		return info[#info] ~= "enabled" and not module.db.profile.enabled
+	end
+
+	local setoption = function(info,option,val)
+		module.db.profile[option] = val
+		module:UpdateSettings()
+	end
+
+	local getoption = function(info,option)
+		return module.db.profile[option]
+	end
+
+	local optionsTable = {
+		name = generateName(L["Bag Settings"]),
+		type = "group",
+		args = {}
+	}
+
+	if (C_Container.SetSortBagsRightToLeft) then
+		optionsTable.args["sort"] = {
+			name = L["Sort Direction"],
+			desc = L["Choose in which direction items in your bags are sorted."],
+			type = "select", style = "dropdown",
+			order = 1,
+			values = {
+				["ltr"] = L["Left to Right"],
+				["rtl"] = L["Right to Left"]
+			},
+			set = setter,
+			get = getter
+		}
+		optionsTable.args.space1 = {
+			name = "", order = 2, type = "description", hidden = isdisabled
+		}
+
+	end
+
+	if (C_Container.SetInsertItemsLeftToRight) then
+		optionsTable.args["insert"] = {
+			name = L["Insert Point"],
+			desc = L["Choose from which side new items are inserted into your bags."],
+			type = "select", style = "dropdown",
+			order = 3,
+			values = {
+				["rtl"] = L["Right to Left"],
+				["ltr"] = L["Left to Right"]
+			},
+			set = setter,
+			get = getter
+		}
+		optionsTable.args.space2 = {
+			name = "", order = 4, type = "description", hidden = isdisabled
+		}
+	end
+
+	registerOptionsPanel(L["Bags"], optionsTable)
 end
 
 local generateFadeOptions = function()
 
-	registerOptionsPanel(L["Frame Fading"], {
-		name = string_format(namePattern, L["Frame Fade Settings"]),
+	local optionsTable = {
+		name = generateName(L["Frame Fade Settings"]),
 		type = "group",
 		args = {}
-	}, Addon)
+	}
+
+	registerOptionsPanel(L["Frame Fading"], optionsTable)
 end
 
 local generateOptionsPages = function()
 	generateActionBarOptions()
 	generateUnitFrameOptions()
-	generateTooltipOptions()
 	generateAuraOptions()
+	generateTooltipOptions()
+	generateBagOptions()
 	--generateFadeOptions()
-end
-
-local shorthand = {
-	aura = "playerauras",
-	auras = "playerauras",
-	bar = "actionbars",
-	bars = "actionbars",
-	fade = "framefading",
-	fades = "framefading",
-	fading = "framefading",
-	unit = "unitframes",
-	units = "unitframes"
-}
-
-Options.OpenMenu = function(self, input)
-	local categoryID = self.categoryID
-	if (input) then
-		input = string_gsub(input, "%s+", " ")
-		local subMenuName = string_split(" ", string_lower(input))
-		local subMenuCategory = (subMenuName and self.categoryIDs[subMenuName]) or (shorthand[subMenuName] and self.categoryIDs[shorthand[subMenuName]])
-		if (subMenuCategory) then
-			self.categoryID = subMenuCategory
-		end
-	end
-	(Settings and Settings.OpenToCategory or InterfaceOptionsFrame_OpenToCategory) (self.categoryID)
-end
-
-Options.OnInitialize = function(self)
-	-- Main options page.
-	-- Register this early to get the order right.
-	generateOptions()
 end
 
 -- Refresh requested panels, or all if none is passed.
@@ -746,24 +1010,57 @@ Options.Refresh = function(self, ...)
 	end
 end
 
+Options.OnInitialize = function(self)
+
+	-- Main options page.
+	-- Register this early to get the order right.
+	generateOptions()
+end
+
 Options.OnEnable = function(self)
+
 	-- The rest of the options pages.
 	-- These require the various addon modules to be loaded.
 	generateOptionsPages()
 
-	-- Hack to force menu creation early.
-	-- If we don't do this the chat command will fail the first time.
-	if (InterfaceOptionsFrame) then
+	if (not ns.WoW10) then
+
+		-- Hack to force menu creation early.
+		-- If we don't do this the chat command will fail the first time.
 		InterfaceOptionsFrame:Show()
 		InterfaceOptionsFrame:Hide()
+
+		local shorthand = {
+			aura = "playerauras",
+			auras = "playerauras",
+			bar = "actionbars",
+			bars = "actionbars",
+			fade = "framefading",
+			fades = "framefading",
+			fading = "framefading",
+			unit = "unitframes",
+			units = "unitframes"
+		}
+
+		-- Open directly to a specific menu page.
+		-- For reasons unknown this is currently only working in the classics.
+		self.OpenMenu = function(self, input)
+			local categoryID = self.categoryID
+			if (input) then
+				input = string_gsub(input, "%s+", " ")
+				local subMenuName = string_split(" ", string_lower(input))
+				local subMenuCategory = (subMenuName and self.categoryIDs[subMenuName]) or (shorthand[subMenuName] and self.categoryIDs[shorthand[subMenuName]])
+				if (subMenuCategory) then
+					self.categoryID = subMenuCategory
+				end
+			end
+			(Settings and Settings.OpenToCategory or InterfaceOptionsFrame_OpenToCategory) (self.categoryID)
+		end
+
+		-- Add a few commands for faster access.
+		self:RegisterChatCommand("azeriteui", "OpenMenu")
+		self:RegisterChatCommand("azerite", "OpenMenu")
+		self:RegisterChatCommand("azui", "OpenMenu")
+		self:RegisterChatCommand("az", "OpenMenu")
 	end
-
-	--ns.RegisterCallback(self, "MFM_LayoutDeleted", "Refresh")
-	--ns.RegisterCallback(self, "MFM_LayoutsUpdated", "Refresh")
-
-	-- Add a few commands for faster access.
-	self:RegisterChatCommand("azeriteui", "OpenMenu")
-	self:RegisterChatCommand("azerite", "OpenMenu")
-	self:RegisterChatCommand("azui", "OpenMenu")
-	self:RegisterChatCommand("az", "OpenMenu")
 end
