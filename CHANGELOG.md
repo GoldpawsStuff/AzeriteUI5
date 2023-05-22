@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-05-22
-- This version is backwards incompatible and requires a full settings reset.
+- This version is backwards incompatible and requires a full reset of its settings.
 
 ### Added
 - Added an options menu. The menu is accessible from the addon section of the interface options panels.
