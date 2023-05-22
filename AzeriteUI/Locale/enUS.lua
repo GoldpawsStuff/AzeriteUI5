@@ -130,6 +130,16 @@ L["Buttons Per Row"] = true
 L["Sets the maximum number of aura buttons per row."] = true
 L["Sets the anchor point of your auras."] = true
 
+-- Bag/Container Settings
+L["Bag Settings"] = true
+L["Bags"] = true
+L["Sort Direction"] = true
+L["Choose in which direction items in your bags are sorted."] = true
+L["Left to Right"] = true
+L["Right to Left"] = true
+L["Insert Point"] = true
+L["Choose from which side new items are inserted into your bags."] = true
+
 -- Fading & Explorer Mode Settings
 L["Frame Fading"] = true
 L["Frame Fade Settings"] = true
