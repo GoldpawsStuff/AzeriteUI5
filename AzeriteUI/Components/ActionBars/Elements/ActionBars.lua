@@ -94,7 +94,7 @@ local barDefaults = {
 					overridebar = true,
 					vehicleui = true
 				},
-				scale = 1,
+				--scale = 1,
 				[1] = "BOTTOMLEFT",
 				[2] = 60,
 				[3] = 42
@@ -113,7 +113,7 @@ local barDefaults = {
 				growthHorizontal = "RIGHT", -- the bar's horizontal growth direction
 				growthVertical = "DOWN", -- the bar's vertical growth direction
 				offset = (64 - 44 + 8)/64, -- 28
-				scale = 1,
+				--scale = 1,
 				[1] = "BOTTOMLEFT",
 				[2] = 780 - 28,
 				[3] = 42
@@ -129,7 +129,7 @@ local barDefaults = {
 				growth = "vertical",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
-				scale = 1,
+				--scale = 1,
 				[1] = "RIGHT",
 				[2] = -40,
 				[3] = 0
@@ -145,7 +145,7 @@ local barDefaults = {
 				growth = "vertical",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
-				scale = 1,
+				--scale = 1,
 				[1] = "RIGHT",
 				[2] = -(40 + 10 + 72*2),
 				[3] = 0
@@ -161,7 +161,7 @@ local barDefaults = {
 				growth = "vertical",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
-				scale = 1,
+				--scale = 1,
 				[1] = "RIGHT",
 				[2] = -(40 + 10 + 72*2 + 10 + 72*2),
 				[3] = 0
@@ -179,7 +179,7 @@ if (ns.IsRetail) then
 				growth = "horizontal",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
-				scale = 1,
+				--scale = 1,
 				[1] = "CENTER",
 				[2] = 0,
 				[3] = 72 + 10
@@ -195,7 +195,7 @@ if (ns.IsRetail) then
 				growth = "horizontal",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
-				scale = 1,
+				--scale = 1,
 				[1] = "CENTER",
 				[2] = 0,
 				[3] = 0
@@ -211,7 +211,7 @@ if (ns.IsRetail) then
 				growth = "horizontal",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
-				scale = 1,
+				--scale = 1,
 				[1] = "CENTER",
 				[2] = 0,
 				[3] = -(72 + 10)
@@ -734,180 +734,6 @@ ActionBarMod.UpdateSettings = function(self)
 	end
 end
 
--- Chat Commands
------------------------------------------------
---ActionBarMod.EnableBar = function(self, input)
---	if (InCombatLockdown()) then return end
---	if (not input) then return end
---
---	local db = self.db.profile.bars
---	local id = tonumber((self:GetArgs(string_lower(input))))
---
---	if (not id or not db[id]) then return end
---
---	db[id].enabled = true
---
---	self:UpdateSettings()
---end
-
---ActionBarMod.DisableBar = function(self, input)
---	if (InCombatLockdown()) then return end
---	if (not input) then return end
---
---	local db = self.db.profile.bars
---	local id = tonumber((self:GetArgs(string_lower(input))))
---
---	if (not id or not db[id]) then return end
---
---	db[id].enabled = false
---
---	self:UpdateSettings()
---end
-
---ActionBarMod.SetButtons = function(self, input)
---	if (InCombatLockdown()) then return end
---	if (not input) then return end
---
---	-- Strip superflous spaces from the input
---	input = string_gsub(input, "%s+", " ")
---
---	-- Parse arguments
---	local args = { string_split(" ", string_lower(input)) }
---
---	-- Retrieve the settings
---	local db = self.db.profile.bars -- get the saved bar settings
---	local id = tonumber(args[1]) -- get the barID
---
---	-- Retrieve the saved settings for the specified bar
---	local config = id and db[id]
---	if (not config) then return end
---
---	-- Set the number of buttons
---	local arg = tonumber(args[2]) or defaults.profile.bars[id].numbuttons or 12
---	config.numbuttons = (arg < 0) and 0 or (arg > 12) and 12 or arg
---
---	-- Update the bar!
---	self:UpdateSettings()
---end
-
---ActionBarMod.SetLayout = function(self, input)
---	if (InCombatLockdown()) then return end
---	if (not input) then return end
---
---	-- Strip superflous spaces from the input
---	input = string_gsub(input, "%s+", " ")
---
---	-- Parse arguments
---	local args = { string_split(" ", string_lower(input)) }
---
---	-- Retrieve the settings
---	local db = self.db.profile.bars -- get the saved bar settings
---	local id = tonumber(args[1]) -- get the barID
---
---	-- Retrieve the saved settings for the specified bar
---	local config = id and db[id]
---	if (not config) then return end
---
---	-- Migrate the layout data into the profiled saved positions.
---	local LAYOUT = MFM:GetLayout()
---	local profiles = config.savedPosition
---	local profile = LAYOUT and profile[LAYOUT]
---	local config = profile -- lame
---
---	local layout = args[2]
---	if (layout == "map" or layout == "azerite" or layout == "zigzag") then
---
---		local maptype = args[3]
---		if (maptype == "azerite" or layout == "azerite") then
---			if (id == 1) then
---				config.layout = "map"
---				config.maptype = "azerite"
---				config.grid.growth = ns.ButtonBar.defaults.grid.growth
---				config.grid.growthHorizontal = ns.ButtonBar.defaults.grid.growthHorizontal
---				config.grid.growthVertical = ns.ButtonBar.defaults.grid.growthVertical
---				config.grid.breakpoint = ns.ButtonBar.defaults.grid.breakpoint
---				config.grid.breakpadding = ns.ButtonBar.defaults.grid.breakpadding
---				config.grid.padding = ns.ButtonBar.defaults.grid.padding
---			else
---				-- only supported for primary bar
---			end
---
---		elseif (maptype == "zigzag" or layout == "zigzag") then
---			config.layout = "map"
---			config.maptype = "zigzag"
---			config.grid.growth = ns.ButtonBar.defaults.grid.growth
---			config.grid.growthHorizontal = ns.ButtonBar.defaults.grid.growthHorizontal
---			config.grid.growthVertical = ns.ButtonBar.defaults.grid.growthVertical
---			config.grid.breakpoint = ns.ButtonBar.defaults.grid.breakpoint
---			config.grid.breakpadding = ns.ButtonBar.defaults.grid.breakpadding
---			config.grid.padding = ns.ButtonBar.defaults.grid.padding
---
---		else
---			-- unknown maptype
---		end
---
---	elseif (layout == "grid" or layout == "right" or layout == "left" or layout == "up" or layout == "down") then
---
---		local growth, breakpoint, altgrowth
---
---		if (layout == "grid") then
---			growth, breakpoint, altgrowth, buttonpadding, breakpadding = args[3], args[4], args[5], args[6], args[7]
---		else
---			growth, breakpoint, altgrowth, buttonpadding, breakpadding = args[2], args[3], args[4], args[5], args[6]
---		end
---
---		if (growth ~= "left" and growth ~= "right" and growth ~= "up" and growth ~= "down") then
---			return -- invalid growth
---		end
---
---		buttonpadding = tonumber(buttonpadding)
---		breakpadding = tonumber(breakpadding) or buttonpadding
---
---		if (breakpoint) then
---			breakpoint = tonumber(breakpoint)
---			if (breakpoint > 12) then breakpoint = 12 end
---			if (breakpoint < 1) then breakpoint = 1 end
---			if (altgrowth ~= "left" and altgrowth ~= "right" and altgrowth ~= "up" and altgrowth ~= "down") then
---				return -- invalid altgrowth
---			end
---		else
---			breakpoint = ns.ButtonBar.defaults.grid.breakpoint
---			altgrowth = (growth == "left" or growth == "right") and "up" or "left"
---		end
---
---		local growthKey = (growth == "left" or growth == "right") and "growthHorizontal" or "growthVertical"
---
---		local altgrowthKey = (altgrowth == "left" or altgrowth == "right") and "growthHorizontal" or "growthVertical"
---		if (growthKey == altgrowthKey) then
---			return -- invalid altgrowth, same direction as primary
---		end
---
---		-- Got so far, should be able to trust the input now.
---		config.layout = "grid"
---		config.maptype = nil
---		config.grid.growth = (growth == "left" or growth == "right") and "horizontal" or "vertical"
---		config.grid[growthKey] = string_upper(growth)
---		config.grid[altgrowthKey] = string_upper(altgrowth)
---		config.grid.breakpoint = breakpoint
---		config.grid.breakpadding = breakpadding or ns.ButtonBar.defaults.grid.breakpadding
---		config.grid.padding = buttonpadding or ns.ButtonBar.defaults.grid.padding
---
---	end
---
---	-- Update the bar!
---	self:UpdateSettings()
---end
-
---ActionBarMod.EnableBarFading = function(self)
---	self.db.profile.enableBarFading = true
---	self:UpdateSettings()
---end
-
---ActionBarMod.DisableBarFading = function(self)
---	self.db.profile.enableBarFading = false
---	self:UpdateSettings()
---end
-
 ActionBarMod.OnEvent = function(self, event, ...)
 	if (event == "ADDON_LOADED") then
 		local addon = ...
@@ -918,6 +744,10 @@ ActionBarMod.OnEvent = function(self, event, ...)
 	elseif (event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UPDATE_SHAPESHIFT_FORM") then
 
 		if (event == "PLAYER_ENTERING_WORLD") then
+			local isInitialLogin, isReloadingUi = ...
+			if (isInitialLogin or isReloadingUi) then
+				self:CreateBars()
+			end
 			self:UpdateSettings()
 			self.incombat = nil
 		end
@@ -982,7 +812,7 @@ ActionBarMod.OnEvent = function(self, event, ...)
 		if (not bar) then return end
 
 	elseif (event == "MFM_ScaleUpdated") then
-		local LAYOUT, bar, scale = ...
+		local LAYOUT, anchor, scale = ...
 		local bar = self.anchorLookup[anchor]
 		if (not bar) then return end
 		bar.config.scale = scale
@@ -1060,20 +890,7 @@ ActionBarMod.OnEvent = function(self, event, ...)
 	end
 end
 
-ActionBarMod.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("ActionBars", defaults)
-
-	self.bars = {}
-	self.anchorLookup = {}
-	self.buttons = {}
-
-	self:SetEnabledState(self.db.profile.enabled)
-
-	-- Register the available layout names
-	-- with the movable frames manager.
-	for i = 1,#BAR_TO_ID do
-		MFM:RegisterPresets(self.db.profile.bars[i].savedPosition)
-	end
+ActionBarMod.CreateBars = function(self)
 
 	-- Retrieve name of the current layout.
 	local LAYOUT = MFM:GetLayout()
@@ -1123,10 +940,11 @@ ActionBarMod.OnInitialize = function(self)
 		local anchor = MFM:RequestAnchor()
 		anchor:SetTitle(self:GenerateBarDisplayName(i))
 		anchor:SetScalable(true)
-		anchor:SetMinMaxScale(.75, 1.25, .05)
+		anchor:SetMinMaxScale(.25, 2.5, .05)
 		anchor:SetSize(bar:GetSize()) -- will be updated later
-		anchor:SetPoint(unpack(defaults.profile.bars[i].savedPosition[MFM:GetDefaultLayout()])) -- store defaults
+		anchor:SetPoint(unpack(defaults.profile.bars[i].savedPosition[MFM:GetDefaultLayout()]))
 		anchor:SetScale(defaults.profile.bars[i].savedPosition[MFM:GetDefaultLayout()].scale)
+		anchor:SetDefaultScale(ns.API.GetEffectiveScale)
 		anchor.frameOffsetX = 0
 		anchor.frameOffsetY = 0
 		anchor.framePoint = "BOTTOMLEFT"
@@ -1151,13 +969,6 @@ ActionBarMod.OnInitialize = function(self)
 		self.anchorLookup[anchor] = bar
 	end
 
-	--self:RegisterChatCommand("enablebar", "EnableBar")
-	--self:RegisterChatCommand("disablebar", "DisableBar")
-	--self:RegisterChatCommand("enablebarfade", "EnableBarFading")
-	--self:RegisterChatCommand("disablebarfade", "DisableBarFading")
-	--self:RegisterChatCommand("setbuttons", "SetButtons")
-	--self:RegisterChatCommand("setlayout", "SetLayout")
-
 	if (ns.IsRetail) then
 		if (MaxDps) then
 			self:HandleMaxDps()
@@ -1168,10 +979,30 @@ ActionBarMod.OnInitialize = function(self)
 
 end
 
+ActionBarMod.OnInitialize = function(self)
+	self.db = ns.db:RegisterNamespace("ActionBars", defaults)
+
+	self.bars = {}
+	self.anchorLookup = {}
+	self.buttons = {}
+
+	self:SetEnabledState(self.db.profile.enabled)
+	if (not self.db.profile.enabled) then return end
+
+	-- Register the available layout names
+	-- with the movable frames manager.
+	for i = 1,#BAR_TO_ID do
+		MFM:RegisterPresets(self.db.profile.bars[i].savedPosition)
+	end
+
+end
+
 ActionBarMod.OnEnable = function(self)
+	--self:CreateBars()
 	self:UpdateSettings()
 	self:UpdateBindings()
 
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterEvent("UPDATE_BINDINGS", "UpdateBindings")

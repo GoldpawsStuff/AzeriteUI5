@@ -85,7 +85,7 @@ local defaults = ns:Merge({
 		overridebar = false,
 		vehicleui = false
 	},
-	scale = 1,
+	scale = ns.API.GetEffectiveScale(),
 	[1] = "CENTER",
 	[2] = 0,
 	[3] = 0
@@ -189,14 +189,10 @@ end
 ActionBar.Disable = function(self)
 	ButtonBar.Disable(self)
 	self:Update()
-	--self:UpdateVisibilityDriver()
 end
 
 ActionBar.Update = function(self)
 	if (InCombatLockdown()) then return end
-	--if (not self.config.enabled) then
-	--	return self:UpdateVisibilityDriver()
-	--end
 
 	self:UpdatePosition()
 	self:UpdateButtons()
@@ -225,9 +221,9 @@ end
 ActionBar.UpdatePosition = function(self)
 	if (InCombatLockdown()) then return end
 
-	self:SetScale(self.config.scale * ns.API.GetDefaultElementScale())
+	self:SetScale(self.config.scale)
 	self:ClearAllPoints()
-	self:SetPoint(self.config[1], UIParent, self.config[1], self.config[2], self.config[3])
+	self:SetPoint(self.config[1], UIParent, self.config[1], self.config[2]/self.config.scale, self.config[3]/self.config.scale)
 end
 
 ActionBar.UpdateAnchor = function(self)
