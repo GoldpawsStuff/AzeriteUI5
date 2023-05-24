@@ -24,7 +24,7 @@
 
 --]]
 local Addon, ns = ...
-if (not EditModeManagerFrame) then return end
+if (not ns.WoW10) then return end
 
 local EditMode = ns:NewModule("EditMode", "LibMoreEvents-1.0", "AceConsole-3.0", "AceTimer-3.0", "AceHook-3.0")
 local LEMO = LibStub("LibEditModeOverride-1.0")

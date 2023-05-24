@@ -39,10 +39,12 @@ local getmetatable = getmetatable
 local math_abs = math.abs
 local next = next
 local rawget = rawget
+local select = select
 local setmetatable = setmetatable
 local string_format = string.format
 local table_insert = table.insert
 local table_sort = table.sort
+local type = type
 local unpack = unpack
 
 -- Addon API
@@ -68,14 +70,32 @@ local AnchorData = {}
 
 -- Utility
 --------------------------------------
--- Compare two anchor points or two scales.
+-- Parse any number of arguments for functions,
+-- return the function result as the value,
+-- or just the pass the value otherwise.
+local get = function(...)
+	local numArgs = select("#", ...)
+	if (numArgs == "1") then
+		return type(...) == "function" and (...)() or ...
+	end
+	local args = { ... }
+	for i,val in ipairs(args) do
+		local arg = select(i, ...)
+		if (type(arg) == "function") then
+			args[i] = arg()
+		end
+	end
+	return unpack(args)
+end
+
+-- Compare two scales or two positions.
 local compare = function(...)
 	local numArgs = select("#", ...)
 	if (numArgs == 2) then
-		local s, s2 = ...
+		local s, s2 = get(...)
 		return (math_abs(s - s2) < (diff or 0.01))
 	else
-		local point, x, y, point2, x2, y2, diff = ...
+		local point, x, y, point2, x2, y2, diff = get(...)
 		return (point == point2) and (math_abs(x - x2) < (diff or 0.01)) and (math_abs(y - y2) < (diff or 0.01))
 	end
 end
@@ -173,7 +193,7 @@ Anchor.Create = function(self)
 	anchor:SetFrameStrata("HIGH")
 	anchor:SetFrameLevel(1000)
 	anchor:SetMovable(true)
-	anchor:SetHitRectInsets(-20,-20,-20,-20)
+	--anchor:SetHitRectInsets(-20,-20,-20,-20)
 	anchor:RegisterForDrag("LeftButton")
 	anchor:RegisterForClicks("AnyUp")
 	anchor:SetScript("OnDragStart", Anchor.OnDragStart)
@@ -298,7 +318,7 @@ Anchor.ResetToDefault = function(self)
 	anchorData.currentPosition = { point, x, y }
 	anchorData.lastPosition = { point, x, y }
 
-	self:UpdateScale(LAYOUT, anchorData.defaultScale)
+	self:UpdateScale(LAYOUT, get(anchorData.defaultScale))
 	self:UpdatePosition(LAYOUT, point, x, y)
 	self:UpdateText()
 
@@ -378,6 +398,14 @@ Anchor.GetScale = function(self)
 	return AnchorData[self].scale
 end
 
+Anchor.GetDefaultScale = function(self, scale)
+	return get(AnchorData[self].defaultScale)
+end
+
+Anchor.GetDefaultPosition = function(self, point, x, y)
+	return AnchorData[self].defaultPosition
+end
+
 -- Anchor Setters
 --------------------------------------
 -- Link the visibility of the anchor to an editmode account setting.
@@ -435,6 +463,7 @@ Anchor.SetWidth = function(self, width)
 	local anchorData = AnchorData[self]
 	anchorData.width = width
 	self:SetWidthBase(width * anchorData.scale)
+	self:SetHitRectInsets(width < 20 and -10 or 0, width < 20 and -10 or 0, height < 20 and -10 or 0, height < 20 and -10 or 0)
 end
 
 Anchor.SetHeightBase = mt.SetHeight
@@ -442,6 +471,7 @@ Anchor.SetHeight = function(self, height)
 	local anchorData = AnchorData[self]
 	anchorData.height = height
 	self:SetHeightBase(height * anchorData.scale)
+	self:SetHitRectInsets(width < 20 and -10 or 0, width < 20 and -10 or 0, height < 20 and -10 or 0, height < 20 and -10 or 0)
 end
 
 Anchor.SetPointBase = mt.SetPoint
@@ -491,6 +521,11 @@ Anchor.OnClick = function(self, button)
 		end
 
 	elseif (button == "RightButton") then
+		if (CURRENT and CURRENT == self) then
+			CURRENT = nil
+			self.isSelected = nil
+			self:OnLeave()
+		end
 		self:SetFrameLevel(40)
 		if (IsControlKeyDown() and self:HasMovedSinceLastUpdate()) then
 			self:ResetLastChange()
@@ -503,6 +538,7 @@ Anchor.OnClick = function(self, button)
 end
 
 Anchor.OnMouseWheel = function(self, delta)
+	if (not self.isSelected) then return end
 	local anchorData = AnchorData[self]
 	local scale = anchorData.scale
 	local step = anchorData.scaleStep or .1
@@ -557,7 +593,7 @@ end
 
 Anchor.OnLeave = function(self)
 	self:UpdateText()
-	self:SetAlpha(.75)
+	self:SetAlpha(.5)
 end
 
 Anchor.OnShow = function(self)
@@ -574,7 +610,7 @@ Anchor.OnShow = function(self)
 	anchorData.currentPosition = { point, x, y }
 
 	self:SetFrameLevel(50)
-	self:SetAlpha(.75)
+	self:SetAlpha(.5)
 	self:ClearAllPoints()
 	self:SetPointBase(point, UIParent, point, x, y)
 	self:UpdateText()
@@ -615,7 +651,7 @@ end
 -- This needs to be updated on layout changes.
 local UpdateMovableFrameAnchors = function()
 	for anchor in next,AnchorData do
-		if (anchor.editModeAccountSetting) then
+		if (ns.WoW10 and anchor.editModeAccountSetting) then
 			if (EditModeManagerFrame:GetAccountSettingValueBool(anchor.editModeAccountSetting)) then
 				if (anchor:IsEnabled()) then
 					anchor:Show()
@@ -639,12 +675,6 @@ end
 
 -- Module API
 --------------------------------------
-MovableFramesManager.SetRelativeScale = function(self, scale)
-end
-
-MovableFramesManager.GetRelativeScale = function(self)
-end
-
 MovableFramesManager.RequestAnchor = function(self, ...)
 	return RequestMovableFrameAnchor(...)
 end
@@ -1111,7 +1141,7 @@ MovableFramesManager.OnInitialize = function(self)
 
 	LAYOUT = self.db.char.layout
 
-	if (EMP) then
+	if (ns.WoW10) then
 		-- Hook our anchor frame's visibility to the editmode.
 		-- Note that we cannot simply parent it to the editmode manager,
 		-- as that will break the resizing and functionality of the editmode manager.
