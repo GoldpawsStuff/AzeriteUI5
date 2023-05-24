@@ -43,13 +43,14 @@ ns.Private.IsRelease = string.find(version, "%-Release$")
 -- WoW client version
 ------------------------------------------------------
 local patch, build, date, version = GetBuildInfo()
-local major, minor = string.split(".", patch)
+local major, minor, micro = string.split(".", patch)
 
 ns.Private.ClientVersion = version
 ns.Private.ClientDate = date
 ns.Private.ClientPatch = patch
 ns.Private.ClientMajor = tonumber(major)
 ns.Private.ClientMinor = tonumber(minor)
+ns.Private.ClientMicro = tonumber(micro)
 ns.Private.ClientBuild = tonumber(build)
 
 -- Simple flags for client version checks
@@ -58,6 +59,9 @@ ns.Private.IsClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
 ns.Private.IsTBC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 ns.Private.IsWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
 ns.Private.WoW10 = version >= 100000
+
+-- They're adding stuff from the 10.x client into Wrath 3.4.2
+ns.Private.IsWrathModern = (ns.IsWrath and ((ns.ClientMinor > 4) or (ns.ClientMinor == 4 and ns.ClientMicro >= 2)))
 
 -- Prefix for frame names
 ------------------------------------------------------
