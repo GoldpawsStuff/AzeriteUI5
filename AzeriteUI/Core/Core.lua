@@ -52,22 +52,14 @@ local string_lower = string.lower
 
 -- Addon API
 local IsAddOnAvailable = ns.API.IsAddOnAvailable
-local SetRelativeScale = ns.API.SetRelativeScale
-local UpdateObjectScales = ns.API.UpdateObjectScales
 
 -- Proxy method to avoid modules using the callback object directly
 ns.Fire = function(self, name, ...)
 	self.callbacks:Fire(name, ...)
 end
 
-ns.ResetBlizzardScale = function(self)
-	if (InCombatLockdown()) then return end
-	SetCVar("useUIScale", 1)
-	SetCVar("uiScale", ns.API.GetDefaultBlizzardScale())
-	ReloadUI() -- need a reset as the above can taint
-end
-
 ns.SwitchUI = function(self, input)
+	if (not self.IsDevelopment) then return end
 	if (not self._ui_list) then
 		-- Create a list of currently installed UIs.
 		self._ui_list = {}
@@ -102,17 +94,11 @@ ns.UpdateSettings = function(self, event, ...)
 	self.callbacks:Fire("Saved_Settings_Updated")
 end
 
-ns.OnEvent = function(self, event, ...)
-	if (event == "PLAYER_ENTERING_WORLD") then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent") -- once is enough.
-	end
-end
-
 ns.OnInitialize = function(self)
 	self.db = LibStub("AceDB-3.0"):New("AzeriteUI5_DB", defaults, true)
 
 	-- Force a settings reset on backwards incompatible changes.
-	if (self.db.global.version ~= ns.SETTINGS_VERSION) then
+	if (self.db.global.version ~= ns.SETTINGS_VERSION or true) then
 		--local profiles, count = self.db:GetProfiles()
 		--local current = self.db:GetCurrentProfile()
 		self.db:ResetDB() -- Full db reset of all profiles. Destructive operation.
@@ -124,7 +110,7 @@ ns.OnInitialize = function(self)
 	self.db.RegisterCallback(self, "OnProfileCopied", "UpdateSettings")
 	self.db.RegisterCallback(self, "OnProfileReset", "UpdateSettings")
 
-	self:RegisterChatCommand("goto", "SwitchUI")
-	self:RegisterChatCommand("resetscale", "ResetBlizzardScale")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
+	if (ns.IsDevelopment) then
+		self:RegisterChatCommand("goto", "SwitchUI")
+	end
 end
