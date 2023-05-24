@@ -244,6 +244,10 @@ ns.UnitFrame.modulePrototype = {
 		self.anchor:SetScale(config.scale)
 		self.anchor:ClearAllPoints()
 		self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
+	end,
+
+	UpdateSettings = function(self)
+		self:UpdatePositionAndScale()
 	end
 
 }
