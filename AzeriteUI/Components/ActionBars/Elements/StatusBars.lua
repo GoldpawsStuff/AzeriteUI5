@@ -24,6 +24,7 @@
 
 --]]
 local Addon, ns = ...
+
 local StatusBars = ns:NewModule("PlayerStatusBars", "LibMoreEvents-1.0")
 local LibSpinBar = LibStub("LibSpinBar-1.0")
 
@@ -84,6 +85,7 @@ end)({
 local math_floor = math.floor
 local math_min = math.min
 local string_format = string.format
+local type = type
 local unpack = unpack
 
 -- Addon API
@@ -143,6 +145,27 @@ local config = {
 	RingPercentJustifyV = "MIDDLE",
 	RingPercentFont = GetFont(15, true),
 }
+
+local getScale = function()
+	local mod = ns:GetModule("Minimap", true)
+	return mod and mod:GetScale() or 1
+end
+
+local get = function(...)
+	local args
+	if (type((...)) == "table") then
+		args = { unpack((...)) }
+	else
+		args = { ... }
+	end
+	local scale = getScale()
+	for i,val in ipairs(args) do
+		if (type(val) == "number") then
+			args[i] = val / scale
+		end
+	end
+	return unpack(args)
+end
 
 -- Full clear of any cancelled fade-ins
 local Button_Clear = function(button)
@@ -388,10 +411,33 @@ local RingFrame_OnLeave = function(frame)
 	end
 end
 
-StatusBars.UpdateBars = function(self, event, ...)
-	if (not self.Bar) then
-		return
+StatusBars.UpdateBarScales = function(self, event, ...)
+	if (not self.Bar) then return end
+
+	if (event == "MFM_ScaleUpdated") then
+		local MinimapMod = ns:GetModule("Minimap", true)
+		if (not MinimapMod or not MinimapMod:IsEnabled() or select(2,...) ~= MinimapMod.anchor) then return end
 	end
+
+	self.Button:SetPoint(get(config.ButtonPosition))
+	self.Button:SetSize(get(config.ButtonSize))
+	self.Button.Texture:SetSize(get(config.ButtonTextureSize))
+	self.Button.Texture:SetPoint(get(config.ButtonTexturePosition))
+	self.Frame:SetPoint(get(config.RingFramePosition))
+	self.Frame:SetSize(get(config.RingFrameSize))
+	self.Frame.Bg:SetPoint(get(config.RingFrameBackdropPosition))
+	self.Frame.Bg:SetSize(get(config.RingFrameBackdropSize))
+	self.Bar:SetPoint(get(config.RingPosition))
+	self.Bar:SetSize(get(config.RingSize))
+	self.Bonus:SetPoint(get(config.RingPosition))
+	self.Bonus:SetSize(get(config.RingSize))
+	self.Bar.Value:SetScale(get(1))
+	self.Bar.Description:SetScale(get(1))
+	self.Bar.Percent:SetScale(get(1))
+end
+
+StatusBars.UpdateBars = function(self, event, ...)
+	if (not self.Bar) then return end
 
 	local bar, bonus = self.Bar, self.Bonus
 	local bonusShown = bonus:IsShown()
@@ -532,33 +578,35 @@ StatusBars.UpdateBars = function(self, event, ...)
 end
 
 StatusBars.CreateBars = function(self)
+	if (self.Bar) then return end
 
+	local scale = getScale()
 	local db = config
 
 	local button = CreateFrame("Frame", nil, Minimap)
 	button:Hide()
 	button:SetFrameStrata("MEDIUM")
 	button:SetFrameLevel(60)
-	button:SetPoint(unpack(db.ButtonPosition))
-	button:SetSize(unpack(db.ButtonSize))
+	button:SetPoint(get(config.ButtonPosition))
+	button:SetSize(get(config.ButtonSize))
 	button:EnableMouse(true)
 	button:SetScript("OnEnter", Button_OnEnter)
 	button:SetScript("OnLeave", Button_OnLeave)
 	button:SetScript("OnMouseUp", Button_OnMouseUp)
 
 	local texture = button:CreateTexture(nil, "BACKGROUND", nil, 1)
-	texture:SetSize(unpack(db.ButtonTextureSize))
-	texture:SetPoint(unpack(db.ButtonTexturePosition))
-	texture:SetTexture(db.ButtonTexturePath)
-	texture:SetVertexColor(unpack(db.ButtonTextureColor))
+	texture:SetSize(get(config.ButtonTextureSize))
+	texture:SetPoint(get(config.ButtonTexturePosition))
+	texture:SetTexture(config.ButtonTexturePath)
+	texture:SetVertexColor(unpack(config.ButtonTextureColor))
 
 	button.Texture = texture
 
 	local frame = CreateFrame("Frame", nil, button)
 	frame:Hide()
 	frame:SetFrameLevel(button:GetFrameLevel() - 10)
-	frame:SetPoint(unpack(db.RingFramePosition))
-	frame:SetSize(unpack(db.RingFrameSize))
+	frame:SetPoint(get(config.RingFramePosition))
+	frame:SetSize(get(config.RingFrameSize))
 	frame:EnableMouse(true)
 	frame:SetScript("OnEnter", RingFrame_OnEnter)
 	frame:SetScript("OnLeave", RingFrame_OnLeave)
@@ -567,63 +615,65 @@ StatusBars.CreateBars = function(self)
 	button.Frame = frame
 
 	local backdrop = frame:CreateTexture(nil, "BACKGROUND", nil, 1)
-	backdrop:SetPoint(unpack(db.RingFrameBackdropPosition))
-	backdrop:SetSize(unpack(db.RingFrameBackdropSize))
-	backdrop:SetTexture(db.RingFrameBackdropTexture)
-	backdrop:SetVertexColor(unpack(db.RingFrameBackdropColor))
+	backdrop:SetPoint(get(config.RingFrameBackdropPosition))
+	backdrop:SetSize(get(config.RingFrameBackdropSize))
+	backdrop:SetTexture(config.RingFrameBackdropTexture)
+	backdrop:SetVertexColor(unpack(config.RingFrameBackdropColor))
 
 	frame.Bg = backdrop
 
 	local ring = LibSpinBar:CreateSpinBar(ns.Prefix.."StatusTrackingBar", frame)
 	ring:SetFrameLevel(frame:GetFrameLevel() + 5)
-	ring:SetPoint(unpack(db.RingPosition))
-	ring:SetSize(unpack(db.RingSize))
-	ring:SetSparkOffset(db.RingSparkOffset)
-	ring:SetSparkInset(db.RingSparkInset)
-	ring:SetSparkFlash(unpack(db.RingSparkFlash))
+	ring:SetPoint(get(config.RingPosition))
+	ring:SetSize(get(config.RingSize))
+	ring:SetSparkOffset(config.RingSparkOffset)
+	ring:SetSparkInset(config.RingSparkInset)
+	ring:SetSparkFlash(unpack(config.RingSparkFlash))
 	ring:SetSparkBlendMode("ADD")
 	ring:SetClockwise(true)
-	ring:SetDegreeOffset(db.RingDegreeOffset)
-	ring:SetDegreeSpan(db.RingDegreeSpan)
-	ring:SetStatusBarTexture(db.RingTexture)
+	ring:SetDegreeOffset(config.RingDegreeOffset)
+	ring:SetDegreeSpan(config.RingDegreeSpan)
+	ring:SetStatusBarTexture(config.RingTexture)
 
 	frame.Bar = ring
 
 	local bonus = LibSpinBar:CreateSpinBar(ns.Prefix.."StatusTrackingBarBonusBar", frame)
 	bonus:Hide() -- for some reason this is required. will look into it later.
 	bonus:SetFrameLevel(frame:GetFrameLevel() + 2)
-	bonus:SetPoint(unpack(db.RingPosition))
-	bonus:SetSize(unpack(db.RingSize))
-	bonus:SetSparkOffset(db.RingSparkOffset)
-	bonus:SetSparkInset(db.RingSparkInset)
-	bonus:SetSparkFlash(unpack(db.RingSparkFlash))
+	bonus:SetPoint(get(config.RingPosition))
+	bonus:SetSize(get(config.RingSize))
+	bonus:SetSparkOffset(config.RingSparkOffset)
+	bonus:SetSparkInset(config.RingSparkInset)
+	bonus:SetSparkFlash(unpack(config.RingSparkFlash))
 	bonus:SetSparkBlendMode("ADD")
 	bonus:SetClockwise(true)
-	bonus:SetDegreeOffset(db.RingDegreeOffset)
-	bonus:SetDegreeSpan(db.RingDegreeSpan)
-	bonus:SetStatusBarTexture(db.RingTexture)
+	bonus:SetDegreeOffset(config.RingDegreeOffset)
+	bonus:SetDegreeSpan(config.RingDegreeSpan)
+	bonus:SetStatusBarTexture(config.RingTexture)
 	bonus:SetStatusBarColor(unpack(Colors.restedBonus))
 
 	ring.Bonus = bonus
 
 	-- Ring Value Text
 	local value = ring:CreateFontString(nil, "OVERLAY", nil, 1)
-	value:SetPoint(unpack(db.RingValuePosition))
-	value:SetJustifyH(db.RingValueJustifyH)
-	value:SetJustifyV(db.RingValueJustifyV)
-	value:SetFontObject(db.RingValueFont)
+	value:SetScale(1/scale)
+	value:SetPoint(unpack(config.RingValuePosition))
+	value:SetJustifyH(config.RingValueJustifyH)
+	value:SetJustifyV(config.RingValueJustifyV)
+	value:SetFontObject(config.RingValueFont)
 	value.showDeficit = true
 
 	ring.Value = value
 
 	-- Ring Description Text
 	local description = ring:CreateFontString(nil, "OVERLAY", nil, 1)
-	description:SetPoint(unpack(db.RingValueDescriptionPosition))
-	description:SetWidth(db.RingValueDescriptionWidth)
-	description:SetTextColor(unpack(db.RingValueDescriptionColor))
-	description:SetJustifyH(db.RingValueDescriptionJustifyH)
-	description:SetJustifyV(db.RingValueDescriptionJustifyV)
-	description:SetFontObject(db.RingValueDescriptionFont)
+	description:SetScale(1/scale)
+	description:SetPoint(unpack(config.RingValueDescriptionPosition))
+	description:SetWidth(config.RingValueDescriptionWidth)
+	description:SetTextColor(unpack(config.RingValueDescriptionColor))
+	description:SetJustifyH(config.RingValueDescriptionJustifyH)
+	description:SetJustifyV(config.RingValueDescriptionJustifyV)
+	description:SetFontObject(config.RingValueDescriptionFont)
 	description:SetIndentedWordWrap(false)
 	description:SetWordWrap(true)
 	description:SetNonSpaceWrap(false)
@@ -632,10 +682,11 @@ StatusBars.CreateBars = function(self)
 
 	-- Button Percentage Text
 	local perc = button:CreateFontString(nil, "OVERLAY", nil, 1)
-	perc:SetJustifyH(db.RingPercentJustifyH)
-	perc:SetJustifyV(db.RingPercentJustifyV)
-	perc:SetFontObject(db.RingPercentFont)
-	perc:SetPoint(unpack(db.RingPercentPosition))
+	perc:SetScale(1/scale)
+	perc:SetJustifyH(config.RingPercentJustifyH)
+	perc:SetJustifyV(config.RingPercentJustifyV)
+	perc:SetFontObject(config.RingPercentFont)
+	perc:SetPoint(unpack(config.RingPercentPosition))
 
 	ring.Percent = perc
 
@@ -649,11 +700,15 @@ StatusBars.CreateBars = function(self)
 end
 
 StatusBars.OnInitialize = function(self)
-	self:CreateBars()
 end
 
 StatusBars.OnEnable = function(self)
+	local MinimapMod = ns:GetModule("Minimap", true)
+	if (not MinimapMod or not MinimapMod:IsEnabled()) then return end
+
+	self:CreateBars()
 	self:UpdateBars()
+
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateBars")
 	self:RegisterEvent("PLAYER_LOGIN", "UpdateBars")
 	self:RegisterEvent("PLAYER_ALIVE", "UpdateBars")
@@ -665,4 +720,9 @@ StatusBars.OnEnable = function(self)
 	self:RegisterEvent("PLAYER_UPDATE_RESTING", "UpdateBars")
 	self:RegisterEvent("UPDATE_EXHAUSTION", "UpdateBars")
 	self:RegisterEvent("UPDATE_FACTION", "UpdateBars")
+
+	if (not ns.WoW10) then
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateBarScales")
+		ns.RegisterCallback(self, "MFM_ScaleUpdated", "UpdateBarScales")
+	end
 end
