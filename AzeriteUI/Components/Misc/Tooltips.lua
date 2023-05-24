@@ -34,10 +34,7 @@ local select = select
 local string_find = string.find
 local string_format = string.format
 local string_match = string.match
-
--- WoW API
-local TooltipDataType = Enum.TooltipDataType
-local AddTooltipPostCall = TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall
+local tonumber = tonumber
 
 -- Addon API
 local Colors = ns.Colors
@@ -72,10 +69,10 @@ local defaults = { profile = ns:Merge({
 if (not ns.IsRetail) then
 	defaults.profile.savedPosition = {
 		[MFM:GetDefaultLayout()] = {
-			scale = 1,
+			scale = ns.API.GetEffectiveScale(),
 			[1] = "BOTTOMRIGHT",
-			[2] = -319,
-			[3] = 166
+			[2] = -319 * ns.API.GetEffectiveScale(),
+			[3] = 166 * ns.API.GetEffectiveScale()
 		}
 	}
 end
@@ -464,7 +461,7 @@ end
 Tooltips.SetDefaultAnchor = function(self, tooltip, parent)
 	if (not tooltip) or (tooltip:IsForbidden()) then return end
 
-	local point, x, y = unpack(self.db.profile.savedPosition[MFM:GetDefaultLayout()])
+	local point, x, y = unpack(self.db.profile.savedPosition[MFM:GetLayout()])
 
 	tooltip:SetOwner(parent, "ANCHOR_NONE")
 	tooltip:ClearAllPoints()
@@ -484,14 +481,14 @@ Tooltips.SetHooks = function(self)
 	self:SecureHook("GameTooltip_UnitColor", "SetUnitColor")
 	self:SecureHook("GameTooltip_ShowCompareItem", "OnCompareItemShow")
 
-	if (not ns.IsRetail) then
+	if (not ns.WoW10) then
 		self:SecureHook("GameTooltip_SetDefaultAnchor", "SetDefaultAnchor")
 	end
 
-	if (AddTooltipPostCall) then
-		AddTooltipPostCall(TooltipDataType.Spell, function(tooltip, ...) self:OnTooltipSetSpell(tooltip, ...) end)
-		AddTooltipPostCall(TooltipDataType.Item, function(tooltip, ...) self:OnTooltipSetItem(tooltip, ...) end)
-		AddTooltipPostCall(TooltipDataType.Unit, function(tooltip, ...) self:OnTooltipSetUnit(tooltip, ...) end)
+	if (TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall) then
+		TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Spell, function(tooltip, ...) self:OnTooltipSetSpell(tooltip, ...) end)
+		TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, function(tooltip, ...) self:OnTooltipSetItem(tooltip, ...) end)
+		TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, function(tooltip, ...) self:OnTooltipSetUnit(tooltip, ...) end)
 	else
 		self:SecureHookScript(GameTooltip, "OnTooltipSetSpell", "OnTooltipSetSpell")
 		self:SecureHookScript(GameTooltip, "OnTooltipSetItem", "OnTooltipSetItem")
@@ -508,7 +505,6 @@ Tooltips.SetHooks = function(self)
 	end
 
 	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "OnTooltipCleared")
-
 	self:SecureHookScript(GameTooltip.StatusBar, "OnValueChanged", "OnValueChanged")
 
 end
@@ -557,10 +553,11 @@ Tooltips.OnEvent = function(self, event, ...)
 		if (anchor ~= self.anchor) then return end
 
 	elseif (event == "MFM_ScaleUpdated") then
-		local LAYOUT, bar, scale = ...
+		local LAYOUT, anchor, scale = ...
 
 		if (anchor ~= self.anchor) then return end
 
+		self.db.profile.savedPosition[LAYOUT].scale = scale
 		self:UpdatePositionAndScale()
 
 	elseif (event == "MFM_Dragging") then
@@ -604,10 +601,6 @@ Tooltips.OnEnable = function(self)
 	end
 end
 
--- Movable Frames (Classics)
---------------------------------------------
-if (ns.WoW10) then return end
-
 Tooltips.InitializeMovableFrameAnchor = function(self)
 
 	local frame = CreateFrame("Frame", nil, UIParent)
@@ -633,11 +626,12 @@ Tooltips.InitializeMovableFrameAnchor = function(self)
 
 	local anchor = MFM:RequestAnchor()
 	anchor:SetTitle(label or USE_UBERTOOLTIPS)
-	anchor:SetScalable(false)
-	anchor:SetMinMaxScale(.75, 1.25, .05)
+	anchor:SetScalable(true)
+	anchor:SetMinMaxScale(.25, 2.5, .05)
 	anchor:SetSize(250, 120)
 	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
 	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
+	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
 	anchor.PreUpdate = function() self:UpdateAnchor() end
 	anchor.frameOffsetX = 0
 	anchor.frameOffsetY = 0
@@ -651,13 +645,16 @@ Tooltips.UpdatePositionAndScale = function(self)
 
 	local config = self.db.profile.savedPosition[MFM:GetLayout()]
 
-	self.frame:SetScale(config.scale * ns.API.GetDefaultElementScale())
+	self.frame:SetScale(config.scale)
 	self.frame:ClearAllPoints()
-	self.frame:SetPoint(config[1], UIParent, config[1], config[2], config[3])
+	self.frame:SetPoint(config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
+
+	GameTooltip:SetScale(config.scale)
 end
 
 Tooltips.UpdateAnchor = function(self)
 	local config = self.db.profile.savedPosition[MFM:GetLayout()]
+
 	self.anchor:SetScale(config.scale)
 	self.anchor:ClearAllPoints()
 	self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])

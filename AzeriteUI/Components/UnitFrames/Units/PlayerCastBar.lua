@@ -52,10 +52,10 @@ local defaults = { profile = ns:Merge({
 	savedPosition = {
 		[MFM:GetDefaultLayout()] = {
 			enabled = true,
-			scale = 1,
+			scale = ns.API.GetEffectiveScale(),
 			[1] = "BOTTOM",
-			[2] = 0,
-			[3] = 290 - 16/2
+			[2] = 0 * ns.API.GetEffectiveScale(),
+			[3] = (290 - 16/2) * ns.API.GetEffectiveScale()
 		}
 	}
 }, ns.UnitFrame.defaults) }
@@ -256,7 +256,7 @@ CastBarMod.Spawn = function(self)
 	local anchor = MFM:RequestAnchor()
 	anchor:SetTitle(HUD_EDIT_MODE_CAST_BAR_LABEL or SHOW_ARENA_ENEMY_CASTBAR_TEXT)
 	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.75, 1.25, .05)
+	anchor:SetMinMaxScale(.25, 2.5, .05)
 	anchor:SetSize(112 + 16, 11 + 16)
 	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
 	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)

@@ -40,10 +40,10 @@ local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
 		[MFM:GetDefaultLayout()] = {
-			scale = 1,
+			scale = ns.API.GetEffectiveScale(),
 			[1] = "TOP",
-			[2] = 0,
-			[3] = -340
+			[2] = 0 * ns.API.GetEffectiveScale(),
+			[3] = -340 * ns.API.GetEffectiveScale()
 		}
 	}
 }, ns.moduleDefaults) }
@@ -81,10 +81,11 @@ RaidWarnings.InitializeMovableFrameAnchor = function(self)
 	local anchor = MFM:RequestAnchor()
 	anchor:SetTitle(CHAT_MSG_RAID_WARNING)
 	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.75, 1.25, .05)
+	anchor:SetMinMaxScale(.25, 2.5, .05)
 	anchor:SetSize(760, 80)
 	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
 	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
+	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
 	anchor.PreUpdate = function() self:UpdateAnchor() end
 	anchor.frameOffsetX = 0
 	anchor.frameOffsetY = 0
@@ -98,9 +99,9 @@ RaidWarnings.UpdatePositionAndScale = function(self)
 
 	local config = self.db.profile.savedPosition[MFM:GetLayout()]
 
-	self.frame:SetScale(config.scale * ns.API.GetDefaultElementScale())
+	self.frame:SetScale(config.scale)
 	self.frame:ClearAllPoints()
-	self.frame:SetPoint(config[1], UIParent, config[1], config[2], config[3])
+	self.frame:SetPoint(config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
 end
 
 RaidWarnings.UpdateAnchor = function(self)
@@ -154,10 +155,11 @@ RaidWarnings.OnEvent = function(self, event, ...)
 		if (anchor ~= self.anchor) then return end
 
 	elseif (event == "MFM_ScaleUpdated") then
-		local LAYOUT, bar, scale = ...
+		local LAYOUT, anchor, scale = ...
 
 		if (anchor ~= self.anchor) then return end
 
+		self.db.profile.savedPosition[LAYOUT].scale = scale
 		self:UpdatePositionAndScale()
 
 	elseif (event == "MFM_Dragging") then

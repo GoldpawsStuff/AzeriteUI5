@@ -241,7 +241,7 @@ Anchor.Create = function(self)
 
 	AnchorData[anchor] = {
 		anchor = anchor,
-		scale = 1,
+		scale = ns.API.GetEffectiveScale(), -- we're doing this?
 		minScale = .5,
 		maxScale = 1.5,
 		isScalable = false,
@@ -1100,34 +1100,31 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 			self.incombat = nil
 		end
 
-	else
-		if (event == "PLAYER_LOGIN") then
+	elseif (event == "PLAYER_LOGIN") then
+		if (EMP) then
+			return EMP:LoadLayouts()
+		end
+
+	elseif (event == "PLAYER_ENTERING_WORLD") then
+		local isInitialLogin, isReloadingUi = ...
+		if (isInitialLogin or isReloadingUi) then
 			if (EMP) then
-				return EMP:LoadLayouts()
+				self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
+			end
+		end
+		self.incombat = InCombatLockdown()
+
+		ns:Fire("MFM_LayoutsUpdated", LAYOUT)
+	elseif (event == "EDIT_MODE_LAYOUTS_UPDATED") then
+		local layoutInfo, fromServer = ...
+		if (fromServer) then
+			if (EMP) then
+				EMP:LoadLayouts()
 			end
 		end
 
-		if (event == "PLAYER_ENTERING_WORLD") then
-			local isInitialLogin, isReloadingUi = ...
-			if (isInitialLogin or isReloadingUi) then
-				if (EMP) then
-					self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
-				end
-			end
-			self.incombat = InCombatLockdown()
-
-			ns:Fire("MFM_LayoutsUpdated", LAYOUT)
-		end
-
-		if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
-			local layoutInfo, fromServer = ...
-			if (fromServer) then
-				if (EMP) then
-					EMP:LoadLayouts()
-				end
-			end
-		end
-
+	elseif (event == "UI_SCALE_CHANGED") then
+		ReloadUI()
 	end
 
 	self:UpdateMFMFrame()
@@ -1165,4 +1162,5 @@ MovableFramesManager.OnInitialize = function(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	self:RegisterEvent("UI_SCALE_CHANGED", "OnEvent")
 end

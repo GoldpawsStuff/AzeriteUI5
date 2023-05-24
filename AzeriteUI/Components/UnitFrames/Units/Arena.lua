@@ -36,10 +36,10 @@ local defaults = { profile = ns:Merge({
 	savedPosition = {
 		[MFM:GetDefaultLayout()] = {
 			enabled = true,
-			scale = 1,
+			scale = ns.API.GetEffectiveScale(),
 			[1] = "TOPRIGHT",
-			[2] = -64,
-			[3] = -279
+			[2] = -64 * ns.API.GetEffectiveScale(),
+			[3] = -279 * ns.API.GetEffectiveScale()
 		}
 	}
 }, ns.UnitFrame.defaults) }

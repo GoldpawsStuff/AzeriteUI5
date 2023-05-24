@@ -48,10 +48,10 @@ local defaults = { profile = ns:Merge({
 	savedPosition = {
 		[MFM:GetDefaultLayout()] = {
 			enabled = true,
-			scale = 1,
+			scale = ns.API.GetEffectiveScale(),
 			[1] = "TOPRIGHT",
-			[2] = -40,
-			[3] = -40
+			[2] = -40 * ns.API.GetEffectiveScale(),
+			[3] = -40 * ns.API.GetEffectiveScale()
 		}
 	}
 }, ns.UnitFrame.defaults) }
@@ -1258,7 +1258,7 @@ TargetFrameMod.Spawn = function(self)
 	local anchor = MFM:RequestAnchor()
 	anchor:SetTitle(HUD_EDIT_MODE_TARGET_FRAME_LABEL or TARGET)
 	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.75, 1.25, .05)
+	anchor:SetMinMaxScale(.25, 2.5, .05)
 	anchor:SetSize(550, 210)
 	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
 	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)

@@ -205,10 +205,11 @@ ns.UnitFrame.modulePrototype = {
 			if (anchor ~= self.anchor) then return end
 
 		elseif (event == "MFM_ScaleUpdated") then
-			local LAYOUT, bar, scale = ...
+			local LAYOUT, anchor, scale = ...
 
 			if (anchor ~= self.anchor) then return end
 
+			self.db.profile.savedPosition[LAYOUT].scale = scale
 			self:UpdatePositionAndScale()
 
 		elseif (event == "MFM_Dragging") then
@@ -229,9 +230,9 @@ ns.UnitFrame.modulePrototype = {
 
 		local config = self.db.profile.savedPosition[MFM:GetLayout()]
 
-		self.frame:SetScale(config.scale * ns.API.GetDefaultElementScale())
+		self.frame:SetScale(config.scale)
 		self.frame:ClearAllPoints()
-		self.frame:SetPoint(config[1], UIParent, config[1], config[2], config[3])
+		self.frame:SetPoint(config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
 	end,
 
 	UpdateAnchor = function(self)

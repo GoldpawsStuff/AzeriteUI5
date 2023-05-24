@@ -46,10 +46,10 @@ local defaults = { profile = ns:Merge({
 	savedPosition = {
 		[MFM:GetDefaultLayout()] = {
 			enabled = true,
-			scale = 1,
+			scale = ns.API.GetEffectiveScale(),
 			[1] = "BOTTOMLEFT",
-			[2] = 362,
-			[3] = 102
+			[2] = 362 * ns.API.GetEffectiveScale(),
+			[3] = 102 * ns.API.GetEffectiveScale()
 		}
 	}
 }, ns.UnitFrame.defaults) }
@@ -457,7 +457,7 @@ PetFrameMod.Spawn = function(self)
 	local anchor = MFM:RequestAnchor()
 	anchor:SetTitle(PET)
 	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.75, 1.25, .05)
+	anchor:SetMinMaxScale(.25, 2.5, .05)
 	anchor:SetSize(136, 47)
 	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
 	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)

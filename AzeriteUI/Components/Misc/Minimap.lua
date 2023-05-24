@@ -73,6 +73,31 @@ local L_WORLD = string_upper(string_match(WORLD, "^.")) -- "World"
 local TORGHAST_ZONE_ID = 2162
 local IN_TORGHAST = (not IsResting()) and (GetRealZoneText() == GetRealZoneText(TORGHAST_ZONE_ID))
 
+local getSize = function()
+	if (ns.WoW10) then
+		return 198,198
+	else
+		return 140,140
+	end
+end
+
+local getScale = function()
+	if (ns.WoW10) then return 1 end
+	return (198 / getSize())
+end
+
+local getDefaultScale = function()
+	return getScale() * ns.API.GetEffectiveScale()
+end
+
+MinimapMod.GetScale = function(self)
+	return getScale()
+end
+
+MinimapMod.GetDefaultScale = function(self)
+	return getDefaultScale()
+end
+
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	theme = "Azerite",
@@ -83,10 +108,10 @@ local defaults = { profile = ns:Merge({
 if (not ns.WoW10) then
 	defaults.profile.savedPosition = {
 		[MFM:GetDefaultLayout()] = {
-			scale = 1,
+			scale = getDefaultScale(),
 			[1] = "BOTTOMRIGHT",
-			[2] = -20,
-			[3] = 20
+			[2] = -20 / getDefaultScale(),
+			[3] = 20 / getDefaultScale()
 		}
 	}
 end
@@ -390,7 +415,7 @@ local Skins = {
 				DrawLayer = "BACKGROUND",
 				DrawLevel = -7,
 				Path = GetMedia("minimap-mask-opaque"),
-				Size = { 198, 198 },
+				Size = function() return (198 / getScale()), (198 / getScale()) end,
 				Point = { "CENTER" },
 				Color = { 0, 0, 0, .75 },
 			},
@@ -399,7 +424,7 @@ local Skins = {
 				DrawLayer = "BORDER",
 				DrawLevel = 1,
 				Path = GetMedia("minimap-border"),
-				Size = { 404, 404 },
+				Size = function() return (404 / getScale()), (404 / getScale()) end,
 				Point = { "CENTER", -1, 0 },
 				Color = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 			},
@@ -466,7 +491,7 @@ local Unskinned = {
 	MailColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .85 },
 
 	-- Dungeon Eye
-	EyePosition = { "CENTER", math.cos(225*(math.pi/180)) * (280/2 + 10), math.sin(225*(math.pi/180)) * (280/2 + 10) },
+	EyePosition = { "CENTER", math.cos((225 / getScale())*(math.pi/180)) * ((280 / getScale())/2 + 10), math.sin((225 / getScale())*(math.pi/180)) * ((280 / getScale())/2 + 10) },
 	EyeSize = { 64, 64 },
 	EyeTexture = GetMedia("group-finder-eye-green"),
 	EyeTextureColor = { .90, .95, 1 },
@@ -564,14 +589,22 @@ Prototype.SetTheme = function(self, requestedTheme)
 					object:SetParent(objectParent or owner)
 
 					if (data.Size) then
-						object:SetSize(unpack(data.Size))
+						if (type(data.Size) == "function") then
+							object:SetSize(data.Size())
+						else
+							object:SetSize(unpack(data.Size))
+						end
 					else
 						object:SetSize(Minimap:GetSize())
 					end
 
 					if (data.Point) then
 						object:ClearAllPoints()
-						object:SetPoint(unpack(data.Point))
+						if (type(data.Point) == "function") then
+							object:SetPoint(data.Point())
+						else
+							object:SetPoint(unpack(data.Point))
+						end
 					end
 
 					if (ElementTypes[element] == "Texture") then
@@ -916,7 +949,7 @@ MinimapMod.UpdateZone = function(self)
 	zoneName:SetText(minimapZoneName)
 end
 
--- Addon Styling
+-- Addon Styling & Initialization
 --------------------------------------------
 MinimapMod.InitializeMBB = function(self)
 
@@ -1034,6 +1067,25 @@ MinimapMod.InitializeAddon = function(self, addon, ...)
 		method(self)
 	end
 	self.Addons[addon] = nil
+end
+
+MinimapMod.InitializeMovableFrameAnchor = function(self)
+	self.frame = Minimap
+
+	local anchor = MFM:RequestAnchor()
+	anchor:SetTitle(MINIMAP_LABEL)
+	anchor:SetScalable(true)
+	anchor:SetMinMaxScale(.25, 2.5, .05)
+	anchor:SetSize(240, 240)
+	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
+	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
+	anchor:SetDefaultScale(getDefaultScale)
+	anchor.PreUpdate = function() self:UpdateAnchor() end
+	anchor.frameOffsetX = 0
+	anchor.frameOffsetY = 0
+	anchor.framePoint = "CENTER"
+
+	self.anchor = anchor
 end
 
 -- Module Theme API (really...?)
@@ -1218,7 +1270,7 @@ MinimapMod.CreateCustomElements = function(self)
 
 	self.dropdown = dropdown
 
-	if (EditModeManagerFrame) then
+	if (ns.WoW10) then
 		self:SecureHook(EditModeManagerFrame, "EnterEditMode", "UpdateCustomElements")
 		self:SecureHook(EditModeManagerFrame, "ExitEditMode", "UpdateCustomElements")
 		self:SecureHook(EditModeManagerFrame, "OnAccountSettingChanged", "UpdateCustomElements")
@@ -1266,8 +1318,36 @@ MinimapMod.UpdatePosition = function(self)
 end
 
 MinimapMod.UpdateSize = function(self)
+	--do return end
 	if (ns.WoW10) then return end
-	Minimap:SetSize(213,213)
+
+	local classicW,classicH = 140,140
+	local retailW,retailH = 198,198
+	local azeriteW, azeriteH = 213,213
+
+	Minimap:SetScale(self.db.profile.savedPosition[MFM:GetLayout()].scale)
+	--Minimap:SetSize(classicW,classicH)
+end
+
+MinimapMod.UpdatePositionAndScale = function(self)
+	if (not self.frame) then return end
+
+	local config = self.db.profile.savedPosition[MFM:GetLayout()]
+
+	self.frame:SetScale(config.scale)
+	self.frame:ClearAllPoints()
+	self.frame:SetPoint(config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
+	self.widgetFrame:SetScale(ns.API.GetEffectiveScale() / config.scale)
+
+	self:UpdateCustomElements()
+end
+
+MinimapMod.UpdateAnchor = function(self)
+	local config = self.db.profile.savedPosition[MFM:GetLayout()]
+	self.anchor:SetSize(self.frame:GetSize())
+	self.anchor:SetScale(config.scale)
+	self.anchor:ClearAllPoints()
+	self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
 end
 
 -- Module Initialization & Events
@@ -1334,10 +1414,11 @@ MinimapMod.OnEvent = function(self, event, ...)
 		if (anchor ~= self.anchor) then return end
 
 	elseif (event == "MFM_ScaleUpdated") then
-		local LAYOUT, bar, scale = ...
+		local LAYOUT, anchor, scale = ...
 
 		if (anchor ~= self.anchor) then return end
 
+		self.db.profile.savedPosition[LAYOUT].scale = scale
 		self:UpdatePositionAndScale()
 
 	elseif (event == "MFM_Dragging") then
@@ -1417,45 +1498,4 @@ MinimapMod.OnEnable = function(self)
 		self:UpdatePosition()
 	end
 	self:SetMinimapTheme(self.db.profile.theme)
-end
-
--- Movable Frames (Classics)
---------------------------------------------
-if (ns.WoW10) then return end
-
-MinimapMod.InitializeMovableFrameAnchor = function(self)
-	self.frame = Minimap
-
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(MINIMAP_LABEL)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.75, 1.25, .05)
-	anchor:SetSize(240, 240)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.frameOffsetX = 0
-	anchor.frameOffsetY = 0
-	anchor.framePoint = "CENTER"
-
-	self.anchor = anchor
-end
-
-MinimapMod.UpdatePositionAndScale = function(self)
-	if (not self.frame) then return end
-
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
-
-	self.frame:SetScale(config.scale * ns.API.GetDefaultElementScale())
-	self.frame:ClearAllPoints()
-	self.frame:SetPoint(config[1], UIParent, config[1], config[2], config[3])
-
-	self:UpdateCustomElements()
-end
-
-MinimapMod.UpdateAnchor = function(self)
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
-	self.anchor:SetScale(config.scale)
-	self.anchor:ClearAllPoints()
-	self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
 end

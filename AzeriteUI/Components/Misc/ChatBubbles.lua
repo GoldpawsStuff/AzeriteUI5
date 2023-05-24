@@ -24,7 +24,7 @@
 
 --]]
 local Addon, ns = ...
-if (ns.IsRetail) then return end
+if (ns.IsClassic or ns.IsTBC or ns.IsWrath or ns.IsRetail) then return end
 
 local ChatBubbles = ns:NewModule("ChatBubbles", "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
 

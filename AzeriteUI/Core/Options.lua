@@ -161,13 +161,15 @@ local generateActionBarOptions = function()
 				visibilityHeader = {
 					name = L["Visibility"],
 					order = 2,
-					type = "header"
+					type = "header",
+					hidden = isdisabled
 				},
 				visibilityDesc = {
 					name = L["Choose when your auras will be visible."],
 					order = 3,
 					type = "description",
-					fontSize = "medium"
+					fontSize = "medium",
+					hidden = isdisabled
 				},
 				enableBarFading = {
 					name = L["Enable Bar Fading"],
@@ -190,13 +192,15 @@ local generateActionBarOptions = function()
 				layoutHeader = {
 					name = L["Layout"],
 					order = 18,
-					type = "header"
+					type = "header",
+					hidden = isdisabled
 				},
 				layoutDesc = {
 					name = L["Choose how your auras are displayed."],
 					order = 19,
 					type = "description",
-					fontSize = "medium"
+					fontSize = "medium",
+					hidden = isdisabled
 				},
 				layout = {
 					name = L["Bar Layout"],
@@ -302,13 +306,15 @@ local generateActionBarOptions = function()
 				positionHeader = {
 					name = L["Position"],
 					order = 58,
-					type = "header"
+					type = "header",
+					hidden = isdisabled
 				},
 				positionDesc = {
 					name = L["Fine-tune the position."],
 					order = 59,
 					type = "description",
-					fontSize = "medium"
+					fontSize = "medium",
+					hidden = isdisabled
 				},
 				point = {
 					name = L["Anchor Point"],
@@ -340,12 +346,12 @@ local generateActionBarOptions = function()
 					type = "input",
 					hidden = isdisabled,
 					validate = function(info,val)
-						local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+						local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
 						if (val) then return true end
 						return L["Only numbers are allowed."]
 					end,
 					set = function(info,val)
-						local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+						local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
 						if (not val) then return end
 						setoption(info,2,val)
 					end,
@@ -362,12 +368,12 @@ local generateActionBarOptions = function()
 					type = "input",
 					hidden = isdisabled,
 					validate = function(info,val)
-						local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+						local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
 						if (val) then return true end
 						return L["Only numbers are allowed."]
 					end,
 					set = function(info,val)
-						local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+						local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
 						if (not val) then return end
 						setoption(info,3,val)
 					end,
@@ -420,13 +426,15 @@ local generateUnitFrameOptions = function()
 			auraHeader = {
 				name = L["Aura Settings"],
 				order = 2,
-				type = "header"
+				type = "header",
+				hidden = isdisabled
 			},
 			auraDesc = {
 				name = L["Here you can change settings related to the aura buttons appearing at each unitframe."],
 				order = 3,
 				type = "description",
-				fontSize = "medium"
+				fontSize = "medium",
+				hidden = isdisabled
 			},
 			disableAuraSorting = {
 				name = L["Enable Aura Sorting"],
@@ -434,8 +442,8 @@ local generateUnitFrameOptions = function()
 				order = 10,
 				type = "toggle", width = "full",
 				hidden = isdisabled,
-				set = setter,
-				get = getter
+				set = function(info,val) setter(info, not val) end,
+				get = function(info) return not getter(info) end
 			}
 		}
 	}
@@ -487,13 +495,15 @@ local generateUnitFrameOptions = function()
 					positionHeader = {
 						name = L["Position"],
 						order = 60,
-						type = "header"
+						type = "header",
+						hidden = isdisabled
 					},
 					positionDesc = {
 						name = L["Fine-tune the position."],
 						order = 61,
 						type = "description",
-						fontSize = "medium"
+						fontSize = "medium",
+						hidden = isdisabled
 					},
 					point = {
 						name = L["Anchor Point"],
@@ -525,12 +535,12 @@ local generateUnitFrameOptions = function()
 						type = "input",
 						hidden = isdisabled,
 						validate = function(info,val)
-							local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+							local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
 							if (val) then return true end
 							return L["Only numbers are allowed."]
 						end,
 						set = function(info,val)
-							local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+							local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
 							if (not val) then return end
 							setoption(info,2,val)
 						end,
@@ -547,12 +557,12 @@ local generateUnitFrameOptions = function()
 						type = "input",
 						hidden = isdisabled,
 						validate = function(info,val)
-							local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+							local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
 							if (val) then return true end
 							return L["Only numbers are allowed."]
 						end,
 						set = function(info,val)
-							local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+							local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
 							if (not val) then return end
 							setoption(info,3,val)
 						end,
@@ -681,13 +691,15 @@ local generateAuraOptions = function()
 			visibilityHeader = {
 				name = L["Visibility"],
 				order = 3,
-				type = "header"
+				type = "header",
+				hidden = isdisabled
 			},
 			visibilityDesc = {
 				name = L["Choose when your auras will be visible."],
 				order = 4,
 				type = "description",
-				fontSize = "medium"
+				fontSize = "medium",
+				hidden = isdisabled
 			},
 			enableAuraFading = {
 				name = L["Enable Aura Fading"],
@@ -725,13 +737,15 @@ local generateAuraOptions = function()
 			layoutHeader = {
 				name = L["Layout"],
 				order = 30,
-				type = "header"
+				type = "header",
+				hidden = isdisabled
 			},
 			layoutDesc = {
 				name = L["Choose how your auras are displayed."],
 				order = 31,
 				type = "description",
-				fontSize = "medium"
+				fontSize = "medium",
+				hidden = isdisabled
 			},
 			anchorPoint = {
 				name = L["Anchor Point"],
@@ -816,13 +830,15 @@ local generateAuraOptions = function()
 			positionHeader = {
 				name = L["Position"],
 				order = 60,
-				type = "header"
+				type = "header",
+				hidden = isdisabled
 			},
 			positionDesc = {
 				name = L["Fine-tune the position."],
 				order = 61,
 				type = "description",
-				fontSize = "medium"
+				fontSize = "medium",
+				hidden = isdisabled
 			},
 			point = {
 				name = L["Anchor Point"],
@@ -854,12 +870,12 @@ local generateAuraOptions = function()
 				type = "input",
 				hidden = isdisabled,
 				validate = function(info,val)
-					local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+					local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
 					if (val) then return true end
 					return L["Only numbers are allowed."]
 				end,
 				set = function(info,val)
-					local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+					local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
 					if (not val) then return end
 					setoption(info,2,val)
 				end,
@@ -876,12 +892,12 @@ local generateAuraOptions = function()
 				type = "input",
 				hidden = isdisabled,
 				validate = function(info,val)
-					local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+					local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
 					if (val) then return true end
 					return L["Only numbers are allowed."]
 				end,
 				set = function(info,val)
-					local val = tonumber((string_match(val,"(%d+%.?%d*)")))
+					local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
 					if (not val) then return end
 					setoption(info,3,val)
 				end,
@@ -1023,7 +1039,7 @@ Options.OnEnable = function(self)
 	-- These require the various addon modules to be loaded.
 	generateOptionsPages()
 
-	if (not ns.WoW10) then
+	if (ns.IsClassic or ns.IsTBC or ns.IsWrath and ((ns.ClientMinor < 4) or (ns.ClientMinor == 4 and ns.ClientMicro < 2))) then
 
 		-- Hack to force menu creation early.
 		-- If we don't do this the chat command will fail the first time.

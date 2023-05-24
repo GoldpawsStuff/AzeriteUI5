@@ -94,10 +94,10 @@ local barDefaults = {
 					overridebar = true,
 					vehicleui = true
 				},
-				--scale = 1,
+				scale = ns.API.GetEffectiveScale(),
 				[1] = "BOTTOMLEFT",
-				[2] = 60,
-				[3] = 42
+				[2] = 60 * ns.API.GetEffectiveScale(),
+				[3] = 42 * ns.API.GetEffectiveScale()
 			}, ns.ActionBar.defaults)
 		}
 	},
@@ -113,10 +113,10 @@ local barDefaults = {
 				growthHorizontal = "RIGHT", -- the bar's horizontal growth direction
 				growthVertical = "DOWN", -- the bar's vertical growth direction
 				offset = (64 - 44 + 8)/64, -- 28
-				--scale = 1,
+				scale = ns.API.GetEffectiveScale(),
 				[1] = "BOTTOMLEFT",
-				[2] = 780 - 28,
-				[3] = 42
+				[2] = 752 * ns.API.GetEffectiveScale(),
+				[3] = 42 * ns.API.GetEffectiveScale()
 			}, ns.ActionBar.defaults)
 		}
 	},
@@ -129,10 +129,10 @@ local barDefaults = {
 				growth = "vertical",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
-				--scale = 1,
+				scale = ns.API.GetEffectiveScale(),
 				[1] = "RIGHT",
-				[2] = -40,
-				[3] = 0
+				[2] = -40 * ns.API.GetEffectiveScale(),
+				[3] = 0 * ns.API.GetEffectiveScale()
 			}, ns.ActionBar.defaults)
 		}
 	},
@@ -145,10 +145,10 @@ local barDefaults = {
 				growth = "vertical",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
-				--scale = 1,
+				scale = ns.API.GetEffectiveScale(),
 				[1] = "RIGHT",
-				[2] = -(40 + 10 + 72*2),
-				[3] = 0
+				[2] = -(40 + 10 + 72*2) * ns.API.GetEffectiveScale(),
+				[3] = 0 * ns.API.GetEffectiveScale()
 			}, ns.ActionBar.defaults)
 		}
 	},
@@ -161,10 +161,10 @@ local barDefaults = {
 				growth = "vertical",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
-				--scale = 1,
+				scale = ns.API.GetEffectiveScale(),
 				[1] = "RIGHT",
-				[2] = -(40 + 10 + 72*2 + 10 + 72*2),
-				[3] = 0
+				[2] = -(40 + 10 + 72*2 + 10 + 72*2) * ns.API.GetEffectiveScale(),
+				[3] = 0 * ns.API.GetEffectiveScale()
 			}, ns.ActionBar.defaults)
 		}
 	}
@@ -179,10 +179,10 @@ if (ns.IsRetail) then
 				growth = "horizontal",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
-				--scale = 1,
+				scale = ns.API.GetEffectiveScale(),
 				[1] = "CENTER",
-				[2] = 0,
-				[3] = 72 + 10
+				[2] = 0 * ns.API.GetEffectiveScale(),
+				[3] = 82 * ns.API.GetEffectiveScale()
 			}, ns.ActionBar.defaults)
 		}
 	}
@@ -195,10 +195,10 @@ if (ns.IsRetail) then
 				growth = "horizontal",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
-				--scale = 1,
+				scale = ns.API.GetEffectiveScale(),
 				[1] = "CENTER",
-				[2] = 0,
-				[3] = 0
+				[2] = 0 * ns.API.GetEffectiveScale(),
+				[3] = 0 * ns.API.GetEffectiveScale()
 			}, ns.ActionBar.defaults)
 		}
 	}
@@ -211,10 +211,10 @@ if (ns.IsRetail) then
 				growth = "horizontal",
 				growthHorizontal = "RIGHT",
 				growthVertical = "DOWN",
-				--scale = 1,
+				scale = ns.API.GetEffectiveScale(),
 				[1] = "CENTER",
-				[2] = 0,
-				[3] = -(72 + 10)
+				[2] = 0 * ns.API.GetEffectiveScale(),
+				[3] = -82 * ns.API.GetEffectiveScale()
 			}, ns.ActionBar.defaults)
 		}
 	}

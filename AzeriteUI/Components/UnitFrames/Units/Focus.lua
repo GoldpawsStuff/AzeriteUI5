@@ -48,10 +48,10 @@ local defaults = { profile = ns:Merge({
 	savedPosition = {
 		[MFM:GetDefaultLayout()] = {
 			enabled = true,
-			scale = 1,
+			scale = ns.API.GetEffectiveScale(),
 			[1] = "BOTTOMLEFT",
-			[2] = 332-136,
-			[3] = 270-23
+			[2] = (332-136) * ns.API.GetEffectiveScale(),
+			[3] = (270-23) * ns.API.GetEffectiveScale()
 		}
 	}
 }, ns.UnitFrame.defaults) }
@@ -472,7 +472,7 @@ FocusFrameMod.Spawn = function(self)
 	local anchor = MFM:RequestAnchor()
 	anchor:SetTitle(FOCUS) -- crazy long
 	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.75, 1.25, .05)
+	anchor:SetMinMaxScale(.25, 2.5, .05)
 	anchor:SetSize(136, 47)
 	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
 	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
