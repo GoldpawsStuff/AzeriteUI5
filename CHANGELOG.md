@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - This version is compatible with Wrath 3.4.2 PTR.
 
 ### Added
+- Added the command `/resetsettings` to fully reset the AzeriteUI stored settings to their defaults.
 - Added an options menu. The menu is accessible from the addon section of the interface options panels.
 - Added threat glow to the player unit frame.
 - Started working on proper localization for the addon. A lot of general phrases copied from blizzard are already in place, but some phrases and longer texts remains untranslated for non-English locales. Work in progress.
