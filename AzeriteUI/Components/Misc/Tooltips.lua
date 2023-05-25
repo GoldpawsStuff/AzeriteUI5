@@ -633,9 +633,6 @@ Tooltips.InitializeMovableFrameAnchor = function(self)
 	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
 	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
 	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.frameOffsetX = 0
-	anchor.frameOffsetY = 0
-	anchor.framePoint = "BOTTOMRIGHT"
 
 	self.anchor = anchor
 end

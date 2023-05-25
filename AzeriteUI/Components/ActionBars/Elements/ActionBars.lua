@@ -942,28 +942,17 @@ ActionBarMod.CreateBars = function(self)
 		anchor:SetTitle(self:GenerateBarDisplayName(i))
 		anchor:SetScalable(true)
 		anchor:SetMinMaxScale(.25, 2.5, .05)
-		anchor:SetSize(bar:GetSize()) -- will be updated later
+		anchor:SetSize(bar:GetSize())
 		anchor:SetPoint(unpack(defaults.profile.bars[i].savedPosition[MFM:GetDefaultLayout()]))
 		anchor:SetScale(defaults.profile.bars[i].savedPosition[MFM:GetDefaultLayout()].scale)
 		anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-		anchor.frameOffsetX = 0
-		anchor.frameOffsetY = 0
-		anchor.framePoint = "BOTTOMLEFT"
+		anchor.PreUpdate = function(self) bar:UpdateAnchor() end
 
-		anchor.PreUpdate = function(self)
-			bar:UpdateAnchor()
-		end
-
-		-- do this on layout updates too
-		if (ns.IsWrath or ns.IsRetail) then
-			if (config.grid and config.grid.growth == "vertical") then
-				anchor.Text:SetRotation((-90 / 180) * math.pi)
-				anchor.Title:SetRotation((-90 / 180) * math.pi)
-			end
-		end
+		local r, g, b = unpack(Colors.anchor.actionbars)
+		anchor.Overlay:SetBackdropColor(r, g, b, .75)
+		anchor.Overlay:SetBackdropBorderColor(r, g, b, 1)
 
 		bar.anchor = anchor
-
 		bar:Update()
 
 		self.bars[i] = bar

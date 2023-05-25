@@ -98,7 +98,7 @@ ns.OnInitialize = function(self)
 	self.db = LibStub("AceDB-3.0"):New("AzeriteUI5_DB", defaults, true)
 
 	-- Force a settings reset on backwards incompatible changes.
-	if (self.db.global.version ~= ns.SETTINGS_VERSION) then
+	if (self.db.global.version ~= ns.SETTINGS_VERSION or true) then
 		--local profiles, count = self.db:GetProfiles()
 		--local current = self.db:GetCurrentProfile()
 		self.db:ResetDB() -- Full db reset of all profiles. Destructive operation.

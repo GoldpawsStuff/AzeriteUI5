@@ -1264,9 +1264,9 @@ TargetFrameMod.Spawn = function(self)
 	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
 	anchor:SetEditModeAccountSetting(ns.IsRetail and Enum.EditModeAccountSetting.ShowTargetAndFocus)
 	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.frameOffsetX = -113
-	anchor.frameOffsetY = -39
-	anchor.framePoint = "TOPRIGHT"
+	--anchor.frameOffsetX = -113
+	--anchor.frameOffsetY = -39
+	--anchor.framePoint = "TOPRIGHT"
 
 	self.anchor = anchor
 

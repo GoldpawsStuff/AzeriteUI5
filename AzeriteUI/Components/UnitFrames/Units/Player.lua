@@ -1226,8 +1226,6 @@ end
 
 PlayerFrameMod.Spawn = function(self)
 
-	-- UnitFrame
-	---------------------------------------------------
 	local unit, name = "player", "Player"
 
 	oUF:RegisterStyle(ns.Prefix..name, style)
@@ -1246,9 +1244,7 @@ PlayerFrameMod.Spawn = function(self)
 	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
 	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
 	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.frameOffsetX = 121
-	anchor.frameOffsetY = 0
-	anchor.framePoint = "BOTTOMLEFT"
+	anchor.UpdateDefaults = function() self:UpdateDefaults() end
 
 	self.anchor = anchor
 end

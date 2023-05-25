@@ -35,7 +35,11 @@ local LibSmoothBar = LibStub("LibSmoothBar-1.0")
 local LibSpinBar = LibStub("LibSpinBar-1.0")
 local LibOrb = LibStub("LibOrb-1.0")
 
+-- Lua API
 local next = next
+
+-- Private API
+local Colors = ns.Colors
 
 local defaults = { profile = ns:Merge({
 	enabled = true,
@@ -121,12 +125,22 @@ end
 ---------------------------------------------------
 ns.UnitFrame.modulePrototype = {
 	OnEnable = function(self)
+		if (self.UpdateDefaults) then
+			self:UpdateDefaults()
+		end
+
 		local frame = self.frame
 		if (frame and frame.Enable) then
 			frame:Enable()
 		else
 			if (self.Spawn) then
 				self:Spawn()
+
+				if (self.anchor) then
+					local r, g, b = unpack(Colors.anchor.unitframes)
+					self.anchor.Overlay:SetBackdropColor(r, g, b, .75)
+					self.anchor.Overlay:SetBackdropBorderColor(r, g, b, 1)
+				end
 			end
 		end
 
@@ -184,6 +198,7 @@ ns.UnitFrame.modulePrototype = {
 
 			self:UpdatePositionAndScale()
 			self:UpdateAnchor()
+
 			GUI:Refresh("unitframes")
 
 		elseif (event == "MFM_LayoutDeleted") then
@@ -201,6 +216,7 @@ ns.UnitFrame.modulePrototype = {
 			self.db.profile.savedPosition[LAYOUT][3] = y
 
 			self:UpdatePositionAndScale()
+
 			GUI:Refresh("unitframes")
 
 		elseif (event == "MFM_AnchorShown") then
@@ -215,6 +231,7 @@ ns.UnitFrame.modulePrototype = {
 
 			self.db.profile.savedPosition[LAYOUT].scale = scale
 			self:UpdatePositionAndScale()
+
 			GUI:Refresh("unitframes")
 
 		elseif (event == "MFM_Dragging") then
@@ -249,6 +266,17 @@ ns.UnitFrame.modulePrototype = {
 		self.anchor:SetScale(config.scale)
 		self.anchor:ClearAllPoints()
 		self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
+	end,
+
+	UpdateDefaults = function(self)
+		if (not self.anchor) then return end
+		if (not self.db) then return end
+
+		local defaults = self.db.defaults.profile.savedPosition[MFM:GetDefaultLayout()]
+		if (not defaults) then return end
+
+		defaults.scale = self.anchor:GetDefaultScale()
+		defaults[1], defaults[2], defaults[3] = self.anchor:GetDefaultPosition()
 	end,
 
 	UpdateSettings = function(self)

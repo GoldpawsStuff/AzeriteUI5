@@ -53,7 +53,7 @@ local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 local UIHider = ns.Hider
 
-local SCALE = 1 -- current relative scale
+local SCALE = UIParent:GetScale() -- current blizzard scale
 local DEFAULTLAYOUT = "Azerite" -- default layout name
 local LAYOUT = DEFAULTLAYOUT -- currently selected layout preset
 local CURRENT -- currently selected anchor frame
@@ -193,7 +193,6 @@ Anchor.Create = function(self)
 	anchor:SetFrameStrata("HIGH")
 	anchor:SetFrameLevel(1000)
 	anchor:SetMovable(true)
-	--anchor:SetHitRectInsets(-20,-20,-20,-20)
 	anchor:RegisterForDrag("LeftButton")
 	anchor:RegisterForClicks("AnyUp")
 	anchor:SetScript("OnDragStart", Anchor.OnDragStart)
@@ -215,8 +214,11 @@ Anchor.Create = function(self)
 		edgeSize = 16,
 		insets = { left = 5, right = 3, top = 3, bottom = 5 }
 	})
-	overlay:SetBackdropColor(.5, 1, .5, .75)
-	overlay:SetBackdropBorderColor(.5, 1, .5, 1)
+
+	local r, g, b = unpack(Colors.anchor.general)
+	overlay:SetBackdropColor(r, g, b, .75)
+	overlay:SetBackdropBorderColor(r, g, b, 1)
+
 	anchor.Overlay = overlay
 
 	local text = overlay:CreateFontString(nil, "OVERLAY", nil, 1)
@@ -240,7 +242,8 @@ Anchor.Create = function(self)
 	anchor.Title = title
 
 	AnchorData[anchor] = {
-		anchor = anchor,
+		hasMoved = false,
+		--anchor = anchor,
 		scale = ns.API.GetEffectiveScale(), -- we're doing this?
 		minScale = .5,
 		maxScale = 1.5,
@@ -335,6 +338,18 @@ Anchor.UpdateText = function(self)
 		msg = string_format(Colors.highlight.colorCode.."%s, %.0f, %.0f|r", unpack(anchorData.currentPosition))
 	end
 
+	-- No texture rotation in Classic or TBC
+	if (ns.IsWrath or ns.IsRetail) then
+		local width,height = anchor:GetSize()
+		if (width/height > 5/4) then
+			self.Text:SetRotation(0)
+			self.Title:SetRotation(0)
+		else
+			self.Text:SetRotation(-math.pi/2)
+			self.Title:SetRotation(-math.pi/2)
+		end
+	end
+
 	if (self.isSelected) then -- self:IsMouseOver(20,-20,-20,20)
 		if (self:IsInDefaultPosition()) then
 			msg = msg .. Colors.green.colorCode.."\n"..L["<Left-Click and drag to move>"].."|r"
@@ -391,7 +406,7 @@ end
 -- Anchor Getters
 --------------------------------------
 Anchor.GetPosition = function(self)
-	return unpack(AnchorData[self].currentPosition)
+	return AnchorData[self].currentPosition[1], AnchorData[self].currentPosition[2], AnchorData[self].currentPosition[3]
 end
 
 Anchor.GetScale = function(self)
@@ -571,6 +586,8 @@ Anchor.OnDragStart = function(self, button)
 	self:SetUserPlaced(false)
 	self.elapsed = 0
 	self:SetScript("OnUpdate", self.OnUpdate)
+
+	AnchorData[self].hasMoved = true
 end
 
 Anchor.OnDragStop = function(self)
@@ -1124,7 +1141,38 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 		end
 
 	elseif (event == "UI_SCALE_CHANGED") then
-		ReloadUI()
+		local scale = UIParent:GetScale()
+
+		for anchor,anchorData in next,AnchorData do
+
+			local isDefault = anchor:IsInDefaultPosition()
+			local anchorscale = anchor:GetScale()
+			local point, x, y = anchor:GetPosition()
+
+			local nscale = (anchorscale * SCALE) / scale
+			local npoint, nx, ny = point, (x * SCALE) / scale, (y * SCALE) / scale
+
+			anchor:SetScale(nscale)
+			anchor:ClearAllPoints()
+			anchor:SetPoint(npoint, nx, ny)
+
+			anchorData.lastScale = nscale
+			anchorData.lastPosition = { npoint, nx, ny }
+			anchorData.currentPosition = { npoint, nx, ny }
+
+			if (isDefault) then
+				anchorData.defaultPosition[1] = npoint
+				anchorData.defaultPosition[2] = nx
+				anchorData.defaultPosition[3] = ny
+				anchorData.defaultScale = nscale
+			end
+
+			if (anchor.UpdateDefaults) then
+				anchor:UpdateDefaults()
+			end
+		end
+
+		SCALE = scale
 	end
 
 	self:UpdateMFMFrame()
@@ -1137,6 +1185,7 @@ MovableFramesManager.OnInitialize = function(self)
 	self.layouts = {}
 
 	LAYOUT = self.db.char.layout
+	SCALE = UIParent:GetScale()
 
 	if (ns.WoW10) then
 		-- Hook our anchor frame's visibility to the editmode.

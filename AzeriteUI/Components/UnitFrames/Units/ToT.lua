@@ -500,9 +500,6 @@ ToTFrameMod.Spawn = function(self)
 	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
 	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
 	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.frameOffsetX = 0
-	anchor.frameOffsetY = 0
-	anchor.framePoint = "BOTTOMLEFT"
 
 	self.anchor = anchor
 end

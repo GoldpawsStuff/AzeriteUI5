@@ -118,6 +118,13 @@ Colors.verydarkgray = createColor(69/255, 59/255, 49/255)
 Colors.ui = createColor(192/255, 192/255, 192/255)
 Colors.aura = createColor(251/255, 120/255, 29/255)
 
+-- MFM anchor coloring
+Colors.anchor = {}
+Colors.anchor.general = createColor(128/255, 255/255, 128/255)
+Colors.anchor.actionbars = createColor(64/255, 192/255, 255/255)
+Colors.anchor.unitframes = createColor(255/255, 160/255, 64/255)
+Colors.anchor.floaters = createColor(255/255, 192/255, 128/255)
+
 -- Item Rarity
 Colors.blizzquality = createColorGroup(ITEM_QUALITY_COLORS)
 Colors.quality = {}
