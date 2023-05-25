@@ -229,7 +229,7 @@ local config = {
 
 		-- Health Bar Threat
 		HealthThreatSize = { 716, 188 },
-		HealthThreatPosition = { "CENTER", 1, 0 },
+		HealthThreatPosition = { "BOTTOMLEFT", -15, -47 },
 		HealthThreatTexture = GetMedia("hp_low_case_glow"),
 
 		-- Power Crystal
@@ -303,7 +303,7 @@ local config = {
 
 		-- Health Bar Threat
 		HealthThreatSize = { 716, 188 },
-		HealthThreatPosition = { "CENTER", 1, 0 },
+		HealthThreatPosition = { "BOTTOMLEFT", -15, -47 },
 		HealthThreatTexture = GetMedia("hp_low_case_glow"),
 
 		-- Power Crystal
@@ -377,7 +377,7 @@ local config = {
 
 		-- Health Bar Threat
 		HealthThreatSize = { 716, 188 },
-		HealthThreatPosition = { "CENTER", 1, 0 },
+		HealthThreatPosition = { "BOTTOMLEFT", -15, -47 },
 		HealthThreatTexture = GetMedia("hp_low_case_glow"),
 
 		-- Power Crystal
@@ -1138,34 +1138,35 @@ local style = function(self, unit)
 
 	-- Threat Indicator
 	--------------------------------------------
-	local threatIndicator = {
-		textures = {
-			Health = self:CreateTexture(nil, "BACKGROUND", nil, -2),
-			PowerBar = power:CreateTexture(nil, "BACKGROUND", nil, -3),
-			PowerBackdrop = power:CreateTexture(nil, "ARTWORK", nil, 1),
-			ManaOrb = mana:CreateTexture(nil, "BACKGROUND", nil, -3),
-		},
-		IsObjectType = ns.Noop,
-		Show = function(self)
-			self.isShown = true
+	local threatIndicator = CreateFrame("Frame", nil, self)
+	threatIndicator:SetFrameLevel(self:GetFrameLevel() - 2)
+	threatIndicator:SetAllPoints()
+
+	threatIndicator.textures = {
+		Health = threatIndicator:CreateTexture(nil, "BACKGROUND", nil, -3),
+		PowerBar = power:CreateTexture(nil, "BACKGROUND", nil, -3),
+		PowerBackdrop = power:CreateTexture(nil, "ARTWORK", nil, 1),
+		ManaOrb = mana:CreateTexture(nil, "BACKGROUND", nil, -3),
+	}
+	threatIndicator.Show = function(self)
+		self.isShown = true
+		for key,texture in next,self.textures do
+			texture:Show()
+		end
+	end
+	threatIndicator.Hide = function(self)
+		self.isShown = nil
+		for key,texture in next,self.textures do
+			texture:Hide()
+		end
+	end
+	threatIndicator.PostUpdate = function(self, unit, status, r, g, b)
+		if (self.isShown) then
 			for key,texture in next,self.textures do
-				texture:Show()
-			end
-		end,
-		Hide = function(self)
-			self.isShown = nil
-			for key,texture in next,self.textures do
-				texture:Hide()
-			end
-		end,
-		PostUpdate = function(self, unit, status, r, g, b)
-			if (self.isShown) then
-				for key,texture in next,self.textures do
-					texture:SetVertexColor(r, g, b)
-				end
+				texture:SetVertexColor(r, g, b)
 			end
 		end
-	}
+	end
 
 	self.ThreatIndicator = threatIndicator
 
