@@ -226,6 +226,10 @@ local config = {
 		HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 		HealthAbsorbColor = { 1, 1, 1, .35 },
 		HealthCastOverlayColor = { 1, 1, 1, .35 },
+
+		-- Health Bar Threat
+		HealthThreatSize = { 716, 188 },
+		HealthThreatPosition = { "CENTER", 1, 0 },
 		HealthThreatTexture = GetMedia("hp_low_case_glow"),
 
 		-- Power Crystal
@@ -297,6 +301,11 @@ local config = {
 		HealthCastOverlayColor = { 1, 1, 1, .35 },
 		HealthThreatTexture = GetMedia("hp_mid_case_glow"),
 
+		-- Health Bar Threat
+		HealthThreatSize = { 716, 188 },
+		HealthThreatPosition = { "CENTER", 1, 0 },
+		HealthThreatTexture = GetMedia("hp_low_case_glow"),
+
 		-- Power Crystal
 		PowerBarSize = { 120, 140 },
 		PowerBarPosition = { "BOTTOMLEFT", 20, 38 },
@@ -365,6 +374,11 @@ local config = {
 		HealthAbsorbColor = { 1, 1, 1, .35 },
 		HealthCastOverlayColor = { 1, 1, 1, .35 },
 		HealthThreatTexture = GetMedia("hp_cap_case_glow"),
+
+		-- Health Bar Threat
+		HealthThreatSize = { 716, 188 },
+		HealthThreatPosition = { "CENTER", 1, 0 },
+		HealthThreatTexture = GetMedia("hp_low_case_glow"),
 
 		-- Power Crystal
 		PowerBarSize = { 120, 140 },
@@ -833,6 +847,16 @@ local UnitFrame_UpdateTextures = function(self)
 	cast:SetOrientation(db.HealthBarOrientation)
 	cast:SetSparkMap(db.HealthBarSparkMap)
 
+	local threat = self.ThreatIndicator
+	if (threat) then
+		for key,texture in next,threat.textures do
+			texture:ClearAllPoints()
+			texture:SetPoint(unpack(db[key.."ThreatPosition"]))
+			texture:SetSize(unpack(db[key.."ThreatSize"]))
+			texture:SetTexture(db[key.."ThreatTexture"])
+		end
+	end
+
 end
 
 local UnitFrame_PostUpdate = function(self)
@@ -1114,33 +1138,32 @@ local style = function(self, unit)
 
 	-- Threat Indicator
 	--------------------------------------------
-	local healthThreat = self:CreateTexture(nil, "BACKGROUND", nil, -2)
-
-	local manaThreat = mana:CreateTexture(nil, "BACKGROUND", nil, -3)
-
-	local powerThreat = power:CreateTexture(nil, "BACKGROUND", nil, -3)
-
-	local powerCaseThreat = power:CreateTexture(nil, "ARTWORK", nil, 1)
-
 	local threatIndicator = {
+		textures = {
+			Health = self:CreateTexture(nil, "BACKGROUND", nil, -2),
+			PowerBar = power:CreateTexture(nil, "BACKGROUND", nil, -3),
+			PowerBackdrop = power:CreateTexture(nil, "ARTWORK", nil, 1),
+			ManaOrb = mana:CreateTexture(nil, "BACKGROUND", nil, -3),
+		},
 		IsObjectType = ns.Noop,
 		Show = function(self)
-			healthThreat:Show()
-			manaThreat:Show()
-			powerThreat:Show()
-			powerCaseThreat:Show()
+			self.isShown = true
+			for key,texture in next,self.textures do
+				texture:Show()
+			end
 		end,
 		Hide = function(self)
-			healthThreat:Hide()
-			manaThreat:Hide()
-			powerThreat:Hide()
-			powerCaseThreat:Hide()
+			self.isShown = nil
+			for key,texture in next,self.textures do
+				texture:Hide()
+			end
 		end,
 		PostUpdate = function(self, unit, status, r, g, b)
-			healthThreat:SetVertexColor(r, g, b)
-			manaThreat:SetVertexColor(r, g, b)
-			powerThreat:SetVertexColor(r, g, b)
-			powerCaseThreat:SetVertexColor(r, g, b)
+			if (self.isShown) then
+				for key,texture in next,self.textures do
+					texture:SetVertexColor(r, g, b)
+				end
+			end
 		end
 	}
 

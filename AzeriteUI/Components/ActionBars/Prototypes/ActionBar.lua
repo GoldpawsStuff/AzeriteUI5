@@ -226,6 +226,13 @@ ActionBar.UpdatePosition = function(self)
 	self:SetPoint(self.config[1], UIParent, self.config[1], self.config[2]/self.config.scale, self.config[3]/self.config.scale)
 end
 
+ActionBar.UpdateDefaults = function(self)
+	if (not self.anchor or not self.defaults) then return end
+
+	self.defaults.scale = self.anchor:GetDefaultScale()
+	self.defaults[1], self.defaults[2], self.defaults[3] = self.anchor:GetDefaultPosition()
+end
+
 ActionBar.UpdateAnchor = function(self)
 	if (self.anchor) then
 		self.anchor:SetSize(self:GetSize())

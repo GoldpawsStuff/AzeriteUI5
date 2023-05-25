@@ -902,6 +902,8 @@ ActionBarMod.CreateBars = function(self)
 		local config = self.db.profile.bars[i].savedPosition[LAYOUT]
 		local bar = ns.ActionBar:Create(BAR_TO_ID[i], config, ns.Prefix.."ActionBar"..i)
 
+		bar.defaults = self.db.defaults.profile.bars[i].savedPosition[MFM:GetDefaultLayout()]
+
 		for id,button in next,bar.buttons do
 			style(button)
 			self.buttons[button] = true
@@ -947,6 +949,7 @@ ActionBarMod.CreateBars = function(self)
 		anchor:SetScale(defaults.profile.bars[i].savedPosition[MFM:GetDefaultLayout()].scale)
 		anchor:SetDefaultScale(ns.API.GetEffectiveScale)
 		anchor.PreUpdate = function(self) bar:UpdateAnchor() end
+		anchor.UpdateDefaults = function() bar:UpdateDefaults() end
 
 		local r, g, b = unpack(Colors.anchor.actionbars)
 		anchor.Overlay:SetBackdropColor(r, g, b, .75)

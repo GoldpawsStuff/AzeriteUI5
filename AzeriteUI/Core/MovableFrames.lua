@@ -340,7 +340,7 @@ Anchor.UpdateText = function(self)
 
 	-- No texture rotation in Classic or TBC
 	if (ns.IsWrath or ns.IsRetail) then
-		local width,height = anchor:GetSize()
+		local width,height = self:GetSize()
 		if (width/height > 5/4) then
 			self.Text:SetRotation(0)
 			self.Title:SetRotation(0)

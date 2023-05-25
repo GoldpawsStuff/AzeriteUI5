@@ -131,7 +131,10 @@ MicroMenu.SpawnButtons = function(self)
 
 	local bar = CreateFrame("Frame", ns.Prefix.."MicroMenu", UIParent, "SecureHandlerStateTemplate")
 	bar:SetFrameStrata("HIGH")
+	bar:SetScale(ns.API.GetEffectiveScale())
 	bar:Hide()
+
+	self.bar = bar
 
 	local backdrop = CreateFrame("Frame", nil, bar, ns.BackdropTemplate)
 	backdrop:SetFrameLevel(bar:GetFrameLevel())
@@ -243,11 +246,13 @@ MicroMenu.SpawnButtons = function(self)
 	backdrop:SetPoint("TOP", self.buttons[#self.buttons], "TOP", 0, 18)
 
 	local toggle = CreateFrame("CheckButton", ns.Prefix.."MicroMenuToggleButton", UIParent, "SecureHandlerClickTemplate")
-	toggle:SetScale(ns.API.GetDefaultElementScale())
+	toggle:SetScale(ns.API.GetEffectiveScale())
 	toggle:SetSize(48, 48)
-	toggle:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4)
+	toggle:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4 / ns.API.GetEffectiveScale(), 4 / ns.API.GetEffectiveScale())
 	toggle:RegisterForClicks("AnyUp")
 	toggle:SetFrameRef("Bar", bar)
+
+	self.toggle = toggle
 
 	bar:SetPoint("BOTTOMRIGHT", toggle, "TOPLEFT", 0, 0)
 	bar:SetSize(200, 4 + 32*#self.buttons)
@@ -294,6 +299,21 @@ MicroMenu.UpdateButtons = function(self)
 	end
 end
 
+MicroMenu.UpdateScale = function(self)
+	if (InCombatLockdown()) then
+		self.updateneeded = true
+		return
+	end
+	if (self.toggle) then
+		self.toggle:SetScale(ns.API.GetEffectiveScale())
+		self.toggle:ClearAllPoints()
+		self.toggle:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4 / ns.API.GetEffectiveScale(), 4 / ns.API.GetEffectiveScale())
+	end
+	if (self.bar) then
+		self.bar:SetScale(ns.API.GetEffectiveScale())
+	end
+end
+
 MicroMenu.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		self.incombat = nil
@@ -301,7 +321,13 @@ MicroMenu.OnEvent = function(self, event, ...)
 		self.incombat = true
 	elseif (event == "PLAYER_REGEN_ENABLED") then
 		if (InCombatLockdown()) then return end
+		if (self.updateneeded) then
+			self.updateneeded = nil
+			self:UpdateScale()
+		end
 		self.incombat = nil
+	elseif (event == "UI_SCALE_CHANGED") then
+		self:UpdateScale()
 	end
 	self:UpdateButtons()
 end
@@ -314,4 +340,5 @@ MicroMenu.OnEnable = function(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	self:RegisterEvent("UI_SCALE_CHANGED", "OnEvent")
 end

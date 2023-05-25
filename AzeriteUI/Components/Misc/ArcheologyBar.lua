@@ -59,8 +59,19 @@ ArcheologyBar.InitializeMovableFrameAnchor = function(self)
 	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
 	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
 	anchor.PreUpdate = function() self:UpdateAnchor() end
+	anchor.UpdateDefaults = function() self:UpdateDefaults() end
 
 	self.anchor = anchor
+end
+
+ArcheologyBar.UpdateDefaults = function(self)
+	if (not self.anchor or not self.db) then return end
+
+	local defaults = self.db.defaults.profile.savedPosition[MFM:GetDefaultLayout()]
+	if (not defaults) then return end
+
+	defaults.scale = self.anchor:GetDefaultScale()
+	defaults[1], defaults[2], defaults[3] = self.anchor:GetDefaultPosition()
 end
 
 ArcheologyBar.UpdatePositionAndScale = function(self)

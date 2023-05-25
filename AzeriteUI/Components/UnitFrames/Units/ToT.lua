@@ -500,6 +500,7 @@ ToTFrameMod.Spawn = function(self)
 	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
 	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
 	anchor.PreUpdate = function() self:UpdateAnchor() end
+	anchor.UpdateDefaults = function() self:UpdateDefaults() end
 
 	self.anchor = anchor
 end

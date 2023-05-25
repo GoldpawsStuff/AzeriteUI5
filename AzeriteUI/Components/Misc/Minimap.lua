@@ -102,16 +102,15 @@ local defaults = { profile = ns:Merge({
 	enabled = true,
 	theme = "Azerite",
 	useHalfClock = true,
-	useServerTime = false,
-
+	useServerTime = false
 }, ns.moduleDefaults) }
 if (not ns.WoW10) then
 	defaults.profile.savedPosition = {
 		[MFM:GetDefaultLayout()] = {
 			scale = getDefaultScale(),
 			[1] = "BOTTOMRIGHT",
-			[2] = -20 / getDefaultScale(),
-			[3] = 20 / getDefaultScale()
+			[2] = -40 / getDefaultScale(),
+			[3] = 40 / getDefaultScale()
 		}
 	}
 end

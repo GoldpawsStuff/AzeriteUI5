@@ -262,6 +262,7 @@ CastBarMod.Spawn = function(self)
 	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
 	anchor:SetEditModeAccountSetting(ns.IsRetail and Enum.EditModeAccountSetting.ShowCastBar)
 	anchor.PreUpdate = function() self:UpdateAnchor() end
+	anchor.UpdateDefaults = function() self:UpdateDefaults() end
 
 	self.anchor = anchor
 end
