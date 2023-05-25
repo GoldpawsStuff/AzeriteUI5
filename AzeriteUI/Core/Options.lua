@@ -1008,6 +1008,12 @@ local generateOptionsPages = function()
 	--generateFadeOptions()
 end
 
+-- Make updates a little easier.
+local shorthand = {
+	actionbars = L["Action Bars"],
+	unitframes = L["Unit Frames"]
+}
+
 -- Refresh requested panels, or all if none is passed.
 -- *Note that panel names are localized.
 Options.Refresh = function(self, ...)
@@ -1015,8 +1021,9 @@ Options.Refresh = function(self, ...)
 		local panelName
 		for i = 1,select("#", ...) do
 			panelName = select(i, ...)
-			if (panels[panelName]) then
-				AceConfigRegistry:NotifyChange(panelName)
+			local name = shorthand[panelName] or panelName
+			if (panels[name]) then
+				AceConfigRegistry:NotifyChange(name)
 			end
 		end
 	else

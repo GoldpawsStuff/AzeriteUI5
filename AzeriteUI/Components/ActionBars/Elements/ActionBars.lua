@@ -33,6 +33,7 @@ local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "LibFadingF
 
 local GUI = ns:GetModule("Options")
 local MFM = ns:GetModule("MovableFramesManager")
+
 local CPB = ns.API.IsAddOnEnabled("ConsolePort_Bar")
 
 -- Lua API
@@ -789,7 +790,7 @@ ActionBarMod.OnEvent = function(self, event, ...)
 			bar.config = layouts[LAYOUT]
 			bar:Update()
 			bar:UpdateAnchor()
-			GUI:Refresh(L["Action Bars"])
+			GUI:Refresh("actionbars")
 		end
 
 	elseif (event == "MFM_LayoutDeleted") then
@@ -804,7 +805,7 @@ ActionBarMod.OnEvent = function(self, event, ...)
 		if (not bar) then return end
 		bar.config[1], bar.config[2], bar.config[3] = point, x, y
 		bar:UpdatePosition()
-		GUI:Refresh(L["Action Bars"])
+		GUI:Refresh("actionbars")
 
 	elseif (event == "MFM_AnchorShown") then
 		local LAYOUT, anchor, point, x, y = ...
@@ -817,7 +818,7 @@ ActionBarMod.OnEvent = function(self, event, ...)
 		if (not bar) then return end
 		bar.config.scale = scale
 		bar:UpdatePosition()
-		GUI:Refresh(L["Action Bars"])
+		GUI:Refresh("actionbars")
 
 	elseif (event == "MFM_Dragging") then
 		if (not self.incombat) then

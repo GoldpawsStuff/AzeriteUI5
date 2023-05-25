@@ -27,7 +27,9 @@ local Addon, ns = ...
 local oUF = ns.oUF
 
 local UnitFrameMod = ns:NewModule("UnitFrames", "LibMoreEvents-1.0")
+
 local MFM = ns:GetModule("MovableFramesManager")
+local GUI = ns:GetModule("Options")
 
 local LibSmoothBar = LibStub("LibSmoothBar-1.0")
 local LibSpinBar = LibStub("LibSpinBar-1.0")
@@ -182,6 +184,7 @@ ns.UnitFrame.modulePrototype = {
 
 			self:UpdatePositionAndScale()
 			self:UpdateAnchor()
+			GUI:Refresh("unitframes")
 
 		elseif (event == "MFM_LayoutDeleted") then
 			local LAYOUT = ...
@@ -198,6 +201,7 @@ ns.UnitFrame.modulePrototype = {
 			self.db.profile.savedPosition[LAYOUT][3] = y
 
 			self:UpdatePositionAndScale()
+			GUI:Refresh("unitframes")
 
 		elseif (event == "MFM_AnchorShown") then
 			local LAYOUT, anchor, point, x, y = ...
@@ -211,6 +215,7 @@ ns.UnitFrame.modulePrototype = {
 
 			self.db.profile.savedPosition[LAYOUT].scale = scale
 			self:UpdatePositionAndScale()
+			GUI:Refresh("unitframes")
 
 		elseif (event == "MFM_Dragging") then
 			if (not self.incombat) then
