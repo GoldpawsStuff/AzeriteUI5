@@ -269,8 +269,7 @@ ns.UnitFrame.modulePrototype = {
 	end,
 
 	UpdateDefaults = function(self)
-		if (not self.anchor) then return end
-		if (not self.db) then return end
+		if (not self.anchor or not self.db) then return end
 
 		local defaults = self.db.defaults.profile.savedPosition[MFM:GetDefaultLayout()]
 		if (not defaults) then return end
