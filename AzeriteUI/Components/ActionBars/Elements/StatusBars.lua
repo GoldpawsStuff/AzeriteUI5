@@ -99,7 +99,7 @@ local playerLevel = UnitLevel("player")
 local config = {
 
 	-- Toggle Button
-	ButtonPosition = (not ns.IsRetail) and { "CENTER", Minimap, "BOTTOM", 2, 1 } or { "CENTER", Minimap, "BOTTOM", 2, -6 },
+	ButtonPosition = (not ns.IsRetail) and { "CENTER", Minimap, "BOTTOM", 0, -6 } or { "CENTER", Minimap, "BOTTOM", 2, -6 },
 	ButtonSize = { 56, 56 },
 	ButtonTexturePosition = { "CENTER", 0, 0 },
 	ButtonTextureSize = { 100, 100 },
@@ -419,6 +419,7 @@ StatusBars.UpdateBarScales = function(self, event, ...)
 		if (not MinimapMod or not MinimapMod:IsEnabled() or select(2,...) ~= MinimapMod.anchor) then return end
 	end
 
+	self.Button:ClearAllPoints()
 	self.Button:SetPoint(get(config.ButtonPosition))
 	self.Button:SetSize(get(config.ButtonSize))
 	self.Button.Texture:SetSize(get(config.ButtonTextureSize))
