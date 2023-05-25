@@ -94,22 +94,37 @@ ns.UpdateSettings = function(self, event, ...)
 	self.callbacks:Fire("Saved_Settings_Updated")
 end
 
+ns.ResetSettings = function(self, noreload)
+	--local profiles, count = self.db:GetProfiles()
+	--local current = self.db:GetCurrentProfile()
+	self.db:ResetDB() -- Full db reset of all profiles. Destructive operation.
+	self.db.global.version = ns.SETTINGS_VERSION -- Store version in default profile.
+
+	-- We haven't connected the wires to all the modules yet,
+	-- so at this point a forced reload is the only way.
+	if (not noreload) then
+		ReloadUI()
+	end
+end
+
 ns.OnInitialize = function(self)
 	self.db = LibStub("AceDB-3.0"):New("AzeriteUI5_DB", defaults, true)
 
 	-- Force a settings reset on backwards incompatible changes.
 	if (self.db.global.version ~= ns.SETTINGS_VERSION) then
-		--local profiles, count = self.db:GetProfiles()
-		--local current = self.db:GetCurrentProfile()
-		self.db:ResetDB() -- Full db reset of all profiles. Destructive operation.
-		self.db.global.version = ns.SETTINGS_VERSION -- Store version in default profile.
+		self:ResetSettings(true) -- no reload needed yet
 	end
 
+	-- Setup the profile and register the callbacks.
 	self.db:SetProfile("Azerite")
 	self.db.RegisterCallback(self, "OnProfileChanged", "UpdateSettings")
 	self.db.RegisterCallback(self, "OnProfileCopied", "UpdateSettings")
 	self.db.RegisterCallback(self, "OnProfileReset", "UpdateSettings")
 
+	-- Create a command to force a full settings reset manually.
+	self:RegisterChatCommand("resetsettings", function() self:ResetSettings() end)
+
+	-- At this point only I need this one.
 	if (ns.IsDevelopment) then
 		self:RegisterChatCommand("goto", "SwitchUI")
 	end
