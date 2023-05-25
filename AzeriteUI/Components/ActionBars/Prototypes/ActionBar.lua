@@ -216,6 +216,12 @@ ActionBar.UpdateFading = function(self)
 			LFF:UnregisterFrameForFading(self.buttons[id])
 		end
 	end
+	local LAB = LibStub("LibActionButton-1.0-GE")
+	local OnEvent = LAB.eventFrame:GetScript("OnEvent")
+	if (OnEvent) then
+		OnEvent(LAB, "ACTIONBAR_SHOWGRID")
+		OnEvent(LAB, "ACTIONBAR_HIDEGRID")
+	end
 end
 
 ActionBar.UpdatePosition = function(self)
