@@ -396,7 +396,7 @@ Anchor.UpdateScale = function(self, layoutName, scale)
 	anchorData.scale = scale
 
 	if (anchorData.width and anchorData.height) then
-		self:SetSizeBase(anchorData.width * anchorData.scale, anchorData.height * anchorData.scale)
+		self:SetSizeBase(anchorData.width * get(anchorData.scale), anchorData.height * get(anchorData.scale))
 		self:UpdateText()
 	end
 
@@ -1145,7 +1145,7 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 
 		for anchor,anchorData in next,AnchorData do
 
-			local isDefault = anchor:IsInDefaultPosition()
+			--local isDefault = anchor:IsInDefaultPosition()
 			local anchorscale = anchor:GetScale()
 			local point, x, y = anchor:GetPosition()
 
@@ -1160,15 +1160,29 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 			anchorData.lastPosition = { npoint, nx, ny }
 			anchorData.currentPosition = { npoint, nx, ny }
 
-			if (isDefault) then
+			-- If the default position has been set, adjust it.
+			if (anchorData.defaultPosition) then
+				local anchorscale = anchorData.defaultScale
+				local calculatedscale = type(anchorscale) == "function" and anchorscale()
+				local point, x, y = anchorData.defaultPosition[1], anchorData.defaultPosition[2], anchorData.defaultPosition[3]
+
+				local nscale = ((calculatedscale or anchorscale) * SCALE) / scale
+				local npoint, nx, ny = point, (x * SCALE) / scale, (y * SCALE) / scale
+
 				anchorData.defaultPosition[1] = npoint
 				anchorData.defaultPosition[2] = nx
 				anchorData.defaultPosition[3] = ny
-				anchorData.defaultScale = nscale
-			end
 
-			if (anchor.UpdateDefaults) then
-				anchor:UpdateDefaults()
+				-- Only update this is the scale is a number,
+				-- assume functions are meant as overrides.
+				if (type(anchorscale) == "number") then
+					anchorData.defaultScale = nscale
+				end
+
+				-- Callback to modules so they can update their default tables.
+				if (anchor.UpdateDefaults) then
+					anchor:UpdateDefaults()
+				end
 			end
 		end
 
