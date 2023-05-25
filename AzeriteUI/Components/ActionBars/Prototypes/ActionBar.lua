@@ -216,6 +216,8 @@ ActionBar.UpdateFading = function(self)
 			LFF:UnregisterFrameForFading(self.buttons[id])
 		end
 	end
+	-- Our fade frame unregistration sets alpha back to full opacity,
+	-- this conflicts with how actionbuttons work so we're faking events to fix it.
 	local LAB = LibStub("LibActionButton-1.0-GE")
 	local OnEvent = LAB.eventFrame:GetScript("OnEvent")
 	if (OnEvent) then
