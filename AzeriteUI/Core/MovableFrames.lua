@@ -304,7 +304,7 @@ Anchor.ResetLastChange = function(self)
 
 	self:SetScale(anchorData.scale)
 
-	self:UpdateScale(LAYOUT, anchorData.lastScale or anchorData.scale or anchorData.defaultScale)
+	self:UpdateScale(LAYOUT, get(anchorData.lastScale or anchorData.scale or anchorData.defaultScale))
 	self:UpdatePosition(LAYOUT, point, x, y)
 	self:UpdateText()
 
