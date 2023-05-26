@@ -63,8 +63,8 @@ end })
 
 local defaults = { profile = ns:Merge({
 	enabled = true,
-	showItemID = true,
-	showSpellID = true
+	showItemID = false, -- off by default to reduce clutter
+	showSpellID = false -- off by default to reduce clutter
 }, ns.moduleDefaults) }
 if (not ns.IsRetail) then
 	defaults.profile.savedPosition = {
