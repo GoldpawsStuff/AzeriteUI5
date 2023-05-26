@@ -15,7 +15,7 @@
 ## SavedVariables: AzeriteUI5_DB, AzeriteUI4_DB
 ## OptionalDeps: Ace3, Clique, LibKeyBound-1.0
 
-# TaintLess [22-11-27]
+# TaintLess [23-05-18]
 # https://www.townlong-yak.com/addons/taintless
 TaintLess.xml
 
