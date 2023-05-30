@@ -1,0 +1,11 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+	<Script file="Options.lua"/>
+	<Script file="OptionsPages\ActionBars.lua"/>
+	<Script file="OptionsPages\Auras.lua"/>
+	<Script file="OptionsPages\Bags.lua"/>
+	<Script file="OptionsPages\Minimap.lua"/>
+	<Script file="OptionsPages\Tooltips.lua"/>
+	<Script file="OptionsPages\UnitFrames.lua"/>
+
+</Ui>

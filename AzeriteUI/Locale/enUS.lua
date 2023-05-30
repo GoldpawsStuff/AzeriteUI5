@@ -6,6 +6,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale(Addon, "enUS", true, true)
 --------------------------------------------------
 L["Create"] = true
 L["Copy"] = true
+L["Reset"] = true
 L["Delete"] = true
 L["Save"] = true
 L["Apply"] = true
@@ -32,6 +33,7 @@ L["<Ctrl and Right-Click to undo last change>"] = true
 L["<Shift-Click to reset to default>"] = true
 L["Position"] = true
 L["Anchor Point"] = true
+L["Sets the anchor point."] = true
 L["Top-Left Corner"] = true
 L["Top Center"] = true
 L["Top-Right Corner"] = true
@@ -42,9 +44,9 @@ L["Bottom-Left Corner"] = true
 L["Middle Left Side"] = true
 L["Center"] = true
 L["Offset X"] = true
-L["Sets the horizontal offset from your chosen point. Positive values means right, negative values means left."] = true
+L["Sets the horizontal offset from your chosen anchor point. Positive values means right, negative values means left."] = true
 L["Offset Y"] = true
-L["Sets the vertical offset from your chosen point. Positive values means up, negative values means down."] = true
+L["Sets the vertical offset from your chosen anchor point. Positive values means up, negative values means down."] = true
 
 -- Intro Tutorials
 --------------------------------------------------
@@ -90,7 +92,6 @@ L["Horizontal Growth"] = true
 L["Choose which horizontal direction the bar should expand in."] = true
 L["Vertical Growth"] = true
 L["Choose which vertical direction the bar should expand in."] = true
-L["Sets the anchor point of your actionbar."] = true
 
 -- Unit Frame Settings
 L["Unit Frames"] = true
@@ -99,6 +100,20 @@ L["Enable Aura Sorting"] = true
 L["Here you can change settings related to the aura buttons appearing at each unitframe."] = true
 L["When enabled, unitframe auras will be sorted depending on time left and who cast the aura. When disabled, unitframe auras will appear in the order they were applied, like in the default user interface."] = true
 L["Toggle whether to enable this unit frame or not."] = true
+L["Cast Bar"] = true -- HUD_EDIT_MODE_CAST_BAR_LABEL
+L["Boss Frames"] = true -- HUD_EDIT_MODE_BOSS_FRAMES_LABEL
+L["Party Frames"] = true -- HUD_EDIT_MODE_PARTY_FRAMES_LABEL
+L["Raid Frames"] = true -- HUD_EDIT_MODE_RAID_FRAMES_LABEL
+L["Arena Frames"] = true -- HUD_EDIT_MODE_ARENA_FRAMES_LABEL
+L["Combo Points"] = true -- COMBO_POINTS_POWER
+L["Arcane Charges"] = true -- POWER_TYPE_ARCANE_CHARGES
+L["Chi"] = true -- CHI_POWER
+L["Stagger"] = true -- STAGGER
+L["Holy Power"] = true -- HOLY_POWER
+L["Soul Shards"] = true -- SOUL_SHARDS_POWER
+L["Essence"] = true -- POWER_TYPE_ESSENCE
+L["Runes"] = true -- RUNES
+
 
 -- Tooltip Settings
 L["Tooltips"] = true
@@ -121,8 +136,6 @@ L["Enable Modifier Key"] = true
 L["Require a modifier key to show the auras."] = true
 L["Modifier Key"] = true
 L["Choose which modifier key to hold  down to show the aura buttons."] = true
-L["Anchor Point"] = true
-L["Sets the anchor point of your auras."] = true
 L["Horizontal Growth"] = true
 L["Choose which horizontal direction the aura buttons should expand in."] = true
 L["Vertical Growth"] = true
@@ -133,17 +146,19 @@ L["Vertical Padding"] = true
 L["Sets the horizontal padding between your aura buttons."] = true
 L["Buttons Per Row"] = true
 L["Sets the maximum number of aura buttons per row."] = true
-L["Sets the anchor point of your auras."] = true
 
 -- Bag/Container Settings
 L["Bag Settings"] = true
-L["Bags"] = true
+L["Bags"] = true -- HUD_EDIT_MODE_BAGS_LABEL
 L["Sort Direction"] = true
 L["Choose in which direction items in your bags are sorted."] = true
 L["Left to Right"] = true
 L["Right to Left"] = true
 L["Insert Point"] = true
 L["Choose from which side new items are inserted into your bags."] = true
+
+-- Minimap Settings
+L["Minimap"] = true
 
 -- Fading & Explorer Mode Settings
 L["Frame Fading"] = true

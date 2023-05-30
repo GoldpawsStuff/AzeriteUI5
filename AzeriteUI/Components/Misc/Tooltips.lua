@@ -24,6 +24,7 @@
 
 --]]
 local Addon, ns = ...
+
 local Tooltips = ns:NewModule("Tooltips", "LibMoreEvents-1.0", "AceHook-3.0")
 local MFM = ns:GetModule("MovableFramesManager")
 
@@ -63,13 +64,19 @@ end })
 
 local defaults = { profile = ns:Merge({
 	enabled = true,
-	showItemID = false, -- off by default to reduce clutter
-	showSpellID = false -- off by default to reduce clutter
+	savedPosition = {
+		[MFM:GetDefaultLayout()] = {
+			showItemID = false, -- off by default to reduce clutter
+			showSpellID = false, -- off by default to reduce clutter
+		}
+	}
 }, ns.moduleDefaults) }
 if (not ns.IsRetail) then
 	defaults.profile.savedPosition = {
 		[MFM:GetDefaultLayout()] = {
 			scale = ns.API.GetEffectiveScale(),
+			showItemID = false, -- off by default to reduce clutter
+			showSpellID = false, -- off by default to reduce clutter
 			[1] = "BOTTOMRIGHT",
 			[2] = -319 * ns.API.GetEffectiveScale(),
 			[3] = 166 * ns.API.GetEffectiveScale()
@@ -324,7 +331,7 @@ Tooltips.OnTooltipSetSpell = function(self, tooltip, data)
 end
 
 Tooltips.OnTooltipSetItem = function(self, tooltip, data)
-	if (not self.db.profile.showItemID) then return end
+	if (not self.db.profile.savedPosition[MFM:GetLayout()].showItemID) then return end
 
 	if (not tooltip) or (tooltip:IsForbidden()) then return end
 
@@ -406,7 +413,7 @@ Tooltips.OnTooltipSetUnit = function(self, tooltip, data)
 end
 
 Tooltips.SetUnitAura = function(self, tooltip, unit, index, filter)
-	if (not self.db.profile.showSpellID) then return end
+	if (not self.db.profile.savedPosition[MFM:GetLayout()].showSpellID) then return end
 
 	if (not tooltip) or (tooltip:IsForbidden()) then return end
 
@@ -536,6 +543,9 @@ Tooltips.OnEvent = function(self, event, ...)
 
 		self.db.profile.savedPosition[LAYOUT] = nil
 
+	elseif (event == "MFM_LayoutReset") then
+		local LAYOUT = ...
+
 	elseif (event == "MFM_PositionUpdated") then
 		local LAYOUT, anchor, point, x, y = ...
 
@@ -593,6 +603,7 @@ Tooltips.OnEnable = function(self)
 		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 
 		ns.RegisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
+		ns.RegisterCallback(self, "MFM_LayoutReset", "OnEvent")
 		ns.RegisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
 		ns.RegisterCallback(self, "MFM_PositionUpdated", "OnEvent")
 		ns.RegisterCallback(self, "MFM_AnchorShown", "OnEvent")

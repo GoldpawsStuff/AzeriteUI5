@@ -198,8 +198,8 @@ Tutorials.ShowEditModeTutorial = function(self)
 			end
 
 			-- Update MFM module buttons.
-			MFM:GetMFMFrame().ResetEditModeLayoutButton:SetDisabled(self.incombat or not EMP:CanEditActiveLayout())
-			MFM:GetMFMFrame().CreateEditModeLayoutButton:SetDisabled(self.incombat or EMP:DoesDefaultLayoutExist())
+			--MFM:GetMFMFrame().ResetEditModeLayoutButton:SetDisabled(self.incombat or not EMP:CanEditActiveLayout())
+			--MFM:GetMFMFrame().CreateEditModeLayoutButton:SetDisabled(self.incombat or EMP:DoesDefaultLayoutExist())
 
 			-- close tutorial
 			widget:GetParent():Hide()
@@ -253,8 +253,8 @@ Tutorials.ShowEditModeTutorial = function(self)
 			frame:SetSize(width, height)
 
 			-- Update MFM module buttons.
-			MFM:GetMFMFrame().ResetEditModeLayoutButton:SetDisabled(self.incombat or not EMP:CanEditActiveLayout())
-			MFM:GetMFMFrame().CreateEditModeLayoutButton:SetDisabled(self.incombat or EMP:DoesDefaultLayoutExist())
+			--MFM:GetMFMFrame().ResetEditModeLayoutButton:SetDisabled(self.incombat or not EMP:CanEditActiveLayout())
+			--MFM:GetMFMFrame().CreateEditModeLayoutButton:SetDisabled(self.incombat or EMP:DoesDefaultLayoutExist())
 
 		end)
 

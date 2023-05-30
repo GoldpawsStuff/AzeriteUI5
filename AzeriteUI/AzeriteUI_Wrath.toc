@@ -29,5 +29,8 @@ Locale\Locale.xml
 # Addon core
 Core\Core.xml
 
+# Options Menu
+Options\Options.xml
+
 # Addon components
 Components\Components.xml

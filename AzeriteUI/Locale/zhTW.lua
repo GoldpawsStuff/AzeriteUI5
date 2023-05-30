@@ -7,6 +7,7 @@ if (not L) then return end
 --------------------------------------------------
 L["Create"] = "建立"
 L["Copy"] = "複製"
+L["Reset"] = "重置"
 L["Delete"] = "刪除"
 L["Save"] = "儲存"
 L["Apply"] = "套用"
@@ -43,9 +44,9 @@ L["Bottom-Left Corner"] = true
 L["Middle Left Side"] = true
 L["Center"] = true
 L["Offset X"] = true
-L["Sets the horizontal offset from your chosen point. Positive values means right, negative values means left."] = true
+L["Sets the horizontal offset from your chosen anchor point. Positive values means right, negative values means left."] = true
 L["Offset Y"] = true
-L["Sets the vertical offset from your chosen point. Positive values means up, negative values means down."] = true
+L["Sets the vertical offset from your chosen anchor point. Positive values means up, negative values means down."] = true
 
 -- Intro Tutorials
 --------------------------------------------------
@@ -91,7 +92,7 @@ L["Horizontal Growth"] = true
 L["Choose which horizontal direction the bar should expand in."] = true
 L["Vertical Growth"] = true
 L["Choose which vertical direction the bar should expand in."] = true
-L["Sets the anchor point of your actionbar."] = true
+L["Sets the anchor point."] = true
 
 -- Unit Frame Settings
 L["Unit Frames"] = true
@@ -123,7 +124,7 @@ L["Require a modifier key to show the auras."] = true
 L["Modifier Key"] = true
 L["Choose which modifier key to hold  down to show the aura buttons."] = true
 L["Anchor Point"] = true
-L["Sets the anchor point of your auras."] = true
+L["Sets the anchor point."] = true
 L["Horizontal Growth"] = true
 L["Choose which horizontal direction the aura buttons should expand in."] = true
 L["Vertical Growth"] = true
@@ -134,7 +135,7 @@ L["Vertical Padding"] = true
 L["Sets the horizontal padding between your aura buttons."] = true
 L["Buttons Per Row"] = true
 L["Sets the maximum number of aura buttons per row."] = true
-L["Sets the anchor point of your auras."] = true
+L["Sets the anchor point."] = true
 
 -- Bag/Container Settings
 L["Bag Settings"] = true

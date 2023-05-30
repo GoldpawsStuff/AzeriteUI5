@@ -149,6 +149,7 @@ ns.UnitFrame.modulePrototype = {
 		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 
 		ns.RegisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
+		ns.RegisterCallback(self, "MFM_LayoutReset", "OnEvent")
 		ns.RegisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
 		ns.RegisterCallback(self, "MFM_PositionUpdated", "OnEvent")
 		ns.RegisterCallback(self, "MFM_AnchorShown", "OnEvent")
@@ -167,6 +168,7 @@ ns.UnitFrame.modulePrototype = {
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 
 		ns.UnregisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
+		ns.UnregisterCallback(self, "MFM_LayoutReset", "OnEvent")
 		ns.UnregisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
 		ns.UnregisterCallback(self, "MFM_PositionUpdated", "OnEvent")
 		ns.UnregisterCallback(self, "MFM_AnchorShown", "OnEvent")
@@ -199,12 +201,18 @@ ns.UnitFrame.modulePrototype = {
 			self:UpdatePositionAndScale()
 			self:UpdateAnchor()
 
-			GUI:Refresh("unitframes")
+			GUI:Refresh()
 
 		elseif (event == "MFM_LayoutDeleted") then
 			local LAYOUT = ...
 
 			self.db.profile.savedPosition[LAYOUT] = nil
+
+		elseif (event == "MFM_LayoutReset") then
+			local LAYOUT = ...
+
+			--self.db.profile.savedPosition[LAYOUT]
+			--self.db.defaults.profile.savedPosition[LAYOUT]
 
 		elseif (event == "MFM_PositionUpdated") then
 			local LAYOUT, anchor, point, x, y = ...
@@ -217,7 +225,7 @@ ns.UnitFrame.modulePrototype = {
 
 			self:UpdatePositionAndScale()
 
-			GUI:Refresh("unitframes")
+			GUI:Refresh()
 
 		elseif (event == "MFM_AnchorShown") then
 			local LAYOUT, anchor, point, x, y = ...
@@ -232,14 +240,18 @@ ns.UnitFrame.modulePrototype = {
 			self.db.profile.savedPosition[LAYOUT].scale = scale
 			self:UpdatePositionAndScale()
 
-			GUI:Refresh("unitframes")
+			GUI:Refresh()
 
 		elseif (event == "MFM_Dragging") then
-			if (not self.incombat) then
-				if (select(2, ...) ~= self.anchor) then return end
+			local LAYOUT, anchor, point, x, y = ...
 
-				self:OnEvent("MFM_PositionUpdated", ...)
-			end
+			if (anchor ~= self.anchor) then return end
+
+			self.db.profile.savedPosition[LAYOUT][1] = point
+			self.db.profile.savedPosition[LAYOUT][2] = x
+			self.db.profile.savedPosition[LAYOUT][3] = y
+
+			self:UpdatePositionAndScale()
 		end
 	end,
 

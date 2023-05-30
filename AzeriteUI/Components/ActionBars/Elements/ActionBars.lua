@@ -782,6 +782,11 @@ ActionBarMod.OnEvent = function(self, event, ...)
 
 	elseif (event == "MFM_LayoutsUpdated") then
 		local LAYOUT = ...
+
+		if (InCombatLockdown()) then
+			self.needupdate = true
+		end
+
 		for id,bar in next,self.bars do
 			local layouts = self.db.profile.bars[id].savedPosition
 			if (not layouts[LAYOUT]) then
@@ -790,7 +795,7 @@ ActionBarMod.OnEvent = function(self, event, ...)
 			bar.config = layouts[LAYOUT]
 			bar:Update()
 			bar:UpdateAnchor()
-			GUI:Refresh("actionbars")
+			GUI:Refresh()
 		end
 
 	elseif (event == "MFM_LayoutDeleted") then
@@ -799,33 +804,63 @@ ActionBarMod.OnEvent = function(self, event, ...)
 			self.db.profile.bars[id].savedPosition[LAYOUT] = nil
 		end
 
+	elseif (event == "MFM_LayoutReset") then
+		local LAYOUT = ...
+
 	elseif (event == "MFM_PositionUpdated") then
 		local LAYOUT, anchor, point, x, y = ...
 		local bar = self.anchorLookup[anchor]
+
 		if (not bar) then return end
+
 		bar.config[1], bar.config[2], bar.config[3] = point, x, y
+
+		if (InCombatLockdown()) then
+			self.needupdate = true
+			return
+		end
+
 		bar:UpdatePosition()
-		GUI:Refresh("actionbars")
+
+		GUI:Refresh()
 
 	elseif (event == "MFM_AnchorShown") then
 		local LAYOUT, anchor, point, x, y = ...
 		local bar = self.anchorLookup[anchor]
+
 		if (not bar) then return end
 
 	elseif (event == "MFM_ScaleUpdated") then
 		local LAYOUT, anchor, scale = ...
 		local bar = self.anchorLookup[anchor]
+
 		if (not bar) then return end
+
 		bar.config.scale = scale
+
+		if (InCombatLockdown()) then
+			self.needupdate = true
+			return
+		end
+
 		bar:UpdatePosition()
-		GUI:Refresh("actionbars")
+
+		GUI:Refresh()
 
 	elseif (event == "MFM_Dragging") then
-		if (not self.incombat) then
-			local bar = self.anchorLookup[(select(2, ...))]
-			if (not bar) then return end
-			self:OnEvent("MFM_PositionUpdated", ...)
+		local LAYOUT, anchor, point, x, y = ...
+		local bar = self.anchorLookup[anchor]
+
+		if (not bar) then return end
+
+		bar.config[1], bar.config[2], bar.config[3] = point, x, y
+
+		if (InCombatLockdown()) then
+			self.needupdate = true
+			return
 		end
+
+		bar:UpdatePosition()
 
 	elseif (event == "OnButtonUpdate") then
 		local button = ...
@@ -1006,6 +1041,7 @@ ActionBarMod.OnEnable = function(self)
 	end
 
 	ns.RegisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
+	ns.RegisterCallback(self, "MFM_LayoutReset", "OnEvent")
 	ns.RegisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
 	ns.RegisterCallback(self, "MFM_PositionUpdated", "OnEvent")
 	ns.RegisterCallback(self, "MFM_AnchorShown", "OnEvent")
@@ -1032,6 +1068,7 @@ ActionBarMod.OnDisable = function(self)
 	end
 
 	ns.UnregisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
+	ns.UnregisterCallback(self, "MFM_LayoutReset", "OnEvent")
 	ns.UnregisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
 	ns.UnregisterCallback(self, "MFM_PositionUpdated", "OnEvent")
 	ns.UnregisterCallback(self, "MFM_AnchorShown", "OnEvent")

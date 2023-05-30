@@ -25,44 +25,43 @@
 --]]
 local Addon, ns = ...
 
-if (not C_Container) then return end
+local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
 
-local Containers = ns:NewModule("Containers", "LibMoreEvents-1.0")
+local Options = ns:GetModule("Options")
 local MFM = ns:GetModule("MovableFramesManager")
 
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = {
-			enabled = true,
-			sort = "ltr",
-			insert = "rtl"
-		}
-	}
-}, ns.moduleDefaults) }
-
-Containers.UpdateSettings = function(self)
-	if (C_Container.SetSortBagsRightToLeft) then
-		if (self.db.profile.sort == "rtl") then
-			C_Container.SetSortBagsRightToLeft(true)
-		elseif (self.db.profile.sort == "ltr") then
-			C_Container.SetSortBagsRightToLeft(false)
-		end
-	end
-	if (C_Container.SetInsertItemsLeftToRight) then
-		if (self.db.profile.sort == "ltr") then
-			C_Container.SetInsertItemsLeftToRight(true)
-		elseif (self.db.profile.sort == "rtl") then
-			C_Container.SetInsertItemsLeftToRight(false)
-		end
-	end
+local getmodule = function()
+	return ns:GetModule("Minimap", true)
 end
 
-Containers.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("Containers", defaults)
-	self:SetEnabledState(self.db.profile.enabled)
+local setter = function(info,val)
+	getmodule().db.profile.savedPosition[MFM:GetLayout()][info[#info]] = val
+	getmodule():UpdateSettings()
 end
 
-Containers.OnEnable = function(self)
-	self:UpdateSettings()
+local getter = function(info)
+	return getmodule().db.profile.savedPosition[MFM:GetLayout()][info[#info]]
 end
+
+local isdisabled = function(info)
+	return info[#info] ~= "enabled" and not getmodule().db.profile.savedPosition[MFM:GetLayout()].enabled
+end
+
+local setoption = function(info,option,val)
+	getmodule().db.profile.savedPosition[MFM:GetLayout()][option] = val
+	getmodule():UpdateSettings()
+end
+
+local getoption = function(info,option)
+	return getmodule().db.profile.savedPosition[MFM:GetLayout()][option]
+end
+
+local GenerateOptions = function()
+	if (not getmodule()) then return end
+
+	local options
+
+	return options
+end
+
+Options:AddGroup(L["Minimap"], GenerateOptions)

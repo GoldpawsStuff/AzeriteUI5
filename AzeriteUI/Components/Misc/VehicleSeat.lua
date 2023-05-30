@@ -139,6 +139,9 @@ VehicleSeat.OnEvent = function(self, event, ...)
 
 		self.db.profile.savedPosition[LAYOUT] = nil
 
+	elseif (event == "MFM_LayoutReset") then
+		local LAYOUT = ...
+
 	elseif (event == "MFM_PositionUpdated") then
 		local LAYOUT, anchor, point, x, y = ...
 
@@ -191,6 +194,7 @@ VehicleSeat.OnEnable = function(self)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 
 	ns.RegisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
+	ns.RegisterCallback(self, "MFM_LayoutReset", "OnEvent")
 	ns.RegisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
 	ns.RegisterCallback(self, "MFM_PositionUpdated", "OnEvent")
 	ns.RegisterCallback(self, "MFM_AnchorShown", "OnEvent")

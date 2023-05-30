@@ -24,26 +24,31 @@
 
 --]]
 local Addon, ns = ...
-local AddonName = GetAddOnMetadata(Addon, "Title")
 
 local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
 
 local MovableFramesManager = ns:NewModule("MovableFramesManager", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
 local EMP = ns:GetModule("EditMode", true)
+
 local AceGUI = LibStub("AceGUI-3.0")
+local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 
 -- Lua API
 local error = error
 local getmetatable = getmetatable
 local math_abs = math.abs
+local math_floor = math.floor
 local next = next
 local rawget = rawget
 local select = select
 local setmetatable = setmetatable
 local string_format = string.format
+local string_match = string.match
 local table_insert = table.insert
 local table_sort = table.sort
+local tonumber = tonumber
+local tostring = tostring
 local type = type
 local unpack = unpack
 
@@ -129,28 +134,32 @@ local getPosition = function(frame)
 	right = right - uiRight
 	top = top - uiTop
 
+	-- How many sections to divide the screen into.
+	local vertical = 1/3
+	local horizontal = 1/4
+
 	-- Figure out the point within the given coordinate space,
 	-- return values converted to the frame's own scale.
-	if (y < uiHeight * 1/3) then
-		if (x < uiWidth * 1/3) then
+	if (y < uiHeight * vertical) then
+		if (x < uiWidth * horizontal) then
 			return "BOTTOMLEFT", left / frameScale, bottom / frameScale
-		elseif (x > uiWidth * 2/3) then
+		elseif (x > uiWidth * (1 - horizontal)) then
 			return "BOTTOMRIGHT", right / frameScale, bottom / frameScale
 		else
 			return "BOTTOM", (x - uiWidth/2) / frameScale, bottom / frameScale
 		end
-	elseif (y > uiHeight * 2/3) then
-		if (x < uiWidth * 1/3) then
+	elseif (y > uiHeight * (1 - vertical)) then
+		if (x < uiWidth * horizontal) then
 			return "TOPLEFT", left / frameScale, top / frameScale
-		elseif x > uiWidth * 2/3 then
+		elseif x > uiWidth * (1 - horizontal) then
 			return "TOPRIGHT", right / frameScale, top / frameScale
 		else
 			return "TOP", (x - uiWidth/2) / frameScale, top / frameScale
 		end
 	else
-		if (x < uiWidth * 1/3) then
+		if (x < uiWidth * horizontal) then
 			return "LEFT", left / frameScale, (y - uiHeight/2) / frameScale
-		elseif (x > uiWidth * 2/3) then
+		elseif (x > uiWidth * (1 - horizontal)) then
 			return "RIGHT", right / frameScale, (y - uiHeight/2) / frameScale
 		else
 			return "CENTER", (x - uiWidth/2) / frameScale, (y - uiHeight/2) / frameScale
@@ -524,24 +533,28 @@ Anchor.OnClick = function(self, button)
 		if (CURRENT) then
 			CURRENT.isSelected = nil
 			CURRENT:OnLeave()
-			--CURRENT:UpdateText()
 		end
 		CURRENT = self
+
 		self.isSelected = true
 		self:OnEnter()
-		--self:UpdateText()
 		self:SetFrameLevel(60)
+
 		if (IsShiftKeyDown() and not self:IsInDefaultPosition()) then
 			self:ResetToDefault()
 		end
+
+		MovableFramesManager:RefreshMFMFrame()
 
 	elseif (button == "RightButton") then
 		if (CURRENT and CURRENT == self) then
 			CURRENT = nil
 			self.isSelected = nil
 			self:OnLeave()
+			MovableFramesManager:RefreshMFMFrame()
 		end
 		self:SetFrameLevel(40)
+
 		if (IsControlKeyDown() and self:HasMovedSinceLastUpdate()) then
 			self:ResetLastChange()
 		end
@@ -588,6 +601,8 @@ Anchor.OnDragStart = function(self, button)
 	self:SetScript("OnUpdate", self.OnUpdate)
 
 	AnchorData[self].hasMoved = true
+
+	MovableFramesManager:RefreshMFMFrame()
 end
 
 Anchor.OnDragStop = function(self)
@@ -601,6 +616,8 @@ Anchor.OnDragStop = function(self)
 	anchorData.currentPosition = { point, x, y }
 
 	self:UpdatePosition(LAYOUT, point, x, y)
+
+	MovableFramesManager:RefreshMFMFrame()
 end
 
 Anchor.OnEnter = function(self)
@@ -668,7 +685,9 @@ end
 -- This needs to be updated on layout changes.
 local UpdateMovableFrameAnchors = function()
 	for anchor in next,AnchorData do
-		if (ns.WoW10 and anchor.editModeAccountSetting) then
+		-- Only hook anchor visibility to the editmode
+		-- if the editmode manager frame is actually visible.
+		if (ns.WoW10 and anchor.editModeAccountSetting and EditModeManagerFrame:IsShown()) then
 			if (EditModeManagerFrame:GetAccountSettingValueBool(anchor.editModeAccountSetting)) then
 				if (anchor:IsEnabled()) then
 					anchor:Show()
@@ -738,8 +757,15 @@ MovableFramesManager.ApplyPreset = function(self, layoutName)
 	self:UpdateMFMFrame()
 end
 
+-- Send a message to the modules to reset a saved preset.
+MovableFramesManager.ResetPreset = function(self, layoutName)
+	if (not self.layouts[layoutName]) then return end
+
+	-- Send message to modules to reset the selected preset.
+	ns:Fire("MFM_LayoutReset", LAYOUT)
+end
+
 -- Send a message to modules to delete a saved preset.
--- Will switch to the default preset in our dropdown menu.
 MovableFramesManager.DeletePreset = function(self, layoutName)
 	if (layoutName == DEFAULTLAYOUT) then return end
 	if (not self.layouts[layoutName]) then return end
@@ -770,6 +796,8 @@ end
 
 -- Update available preset list in our dropdown.
 MovableFramesManager.UpdateMFMFrame = function(self)
+	do return end
+
 	local MFMFrame = self:GetMFMFrame()
 
 	-- Create a sorted table.
@@ -964,19 +992,31 @@ MovableFramesManager.GetMFMFrame = function(self)
 		group:AddChild(button)
 		window.CreateLayoutButton = button
 
+		--local button = AceGUI:Create("Button")
+		--button:SetText(L["Copy"])
+		--button:SetRelativeWidth(.3)
+		--button:SetDisabled(true)
+		--button:SetCallback("OnClick", function()
+		--	-- Open name dialog
+		--	-- Copy preset
+		--	-- Fire anchor callback to let modules copy and save it
+		--	-- Add preset to list
+		--	-- Update managerframe
+		--end)
+		--group:AddChild(button)
+		--window.CopyLayoutButton = button
+
 		local button = AceGUI:Create("Button")
-		button:SetText(L["Copy"])
+		button:SetText(L["Reset"])
 		button:SetRelativeWidth(.3)
 		button:SetDisabled(true)
 		button:SetCallback("OnClick", function()
-			-- Open name dialog
-			-- Copy preset
-			-- Fire anchor callback to let modules copy and save it
-			-- Add preset to list
-			-- Update managerframe
+			-- Open confirmation dialog
+			-- Fire module callback to let modules clear the saved entry
+			self:ResetPreset(LAYOUT)
 		end)
 		group:AddChild(button)
-		window.CopyLayoutButton = button
+		window.DeleteLayoutButton = button
 
 		local button = AceGUI:Create("Button")
 		button:SetText(L["Delete"])
@@ -992,6 +1032,11 @@ MovableFramesManager.GetMFMFrame = function(self)
 
 		window:AddChild(group)
 
+
+
+
+		-- Edit Mode Integrations
+		--------------------------------------------------
 		if (EMP) then
 
 			-- HUD Edit Mode Title
@@ -1068,10 +1113,187 @@ MovableFramesManager.GetMFMFrame = function(self)
 			group:AddChild(button)
 
 			window:AddChild(group)
+
 		end
 	end
 
 	return self.frame
+end
+
+MovableFramesManager.GenerateMFMFrame = function(self)
+	if (self.appName and AceConfigRegistry:GetOptionsTable(self.appName)) then
+		return
+	end
+
+	local Options = ns:GetModule("Options", true)
+	if (not Options) then return end
+
+	local isdisabled = function(info)
+		return not CURRENT
+	end
+
+	local getter = function(info)
+		if (not CURRENT) then return end
+
+		local point, x, y = CURRENT:GetPosition()
+
+		local arg = info[#info]
+		if (arg == "point") then
+			return point
+
+		elseif (arg == "offsetX") then
+			return tostring(math_floor(x * 1000 + .5)/1000)
+
+		elseif (arg == "offsetY") then
+			return tostring(math_floor(y * 1000 + .5)/1000)
+		end
+	end
+
+	local setter = function(info,val)
+		if (not CURRENT) then return end
+
+		local point, x, y = CURRENT:GetPosition()
+
+		local arg = info[#info]
+		if (arg == "point") then
+			point = val
+
+		elseif (arg == "offsetX") then
+
+			local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
+			if (not val) then return end
+
+			x = val
+
+		elseif (arg == "offsetY") then
+
+			local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
+			if (not val) then return end
+
+			y = val
+		end
+
+		CURRENT:ClearAllPoints()
+		CURRENT:SetPoint(point, x, y)
+	end
+
+	local validate = function(info,val)
+		local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
+		if (val) then return true end
+		return L["Only numbers are allowed."]
+	end
+
+	local options = Options:GenerateProfileMenu()
+
+	-- EditMode integration
+	if (EMP) then
+	end
+
+	-- Frame Positioning
+	options.args.positionHeader = {
+		name = function(info)
+			return CURRENT and CURRENT.Title:GetText() or L["Position"]
+		end,
+		order = 100,
+		type = "header",
+		hidden = isdisabled
+	}
+	options.args.positionDesc = {
+		name = L["Fine-tune the position."],
+		order = 101,
+		type = "description",
+		fontSize = "medium",
+		hidden = isdisabled
+	}
+	options.args.point = {
+		name = L["Anchor Point"],
+		desc = L["Sets the anchor point."],
+		order = 110,
+		hidden = isdisabled,
+		type = "select", style = "dropdown",
+		values = {
+			["TOPLEFT"] = L["Top-Left Corner"],
+			["TOP"] = L["Top Center"],
+			["TOPRIGHT"] = L["Top-Right Corner"],
+			["RIGHT"] = L["Middle Right Side"],
+			["BOTTOMRIGHT"] = L["Bottom-Right Corner"],
+			["BOTTOM"] = L["Bottom Center"],
+			["BOTTOMLEFT"] = L["Bottom-Left Corner"],
+			["LEFT"] = L["Middle Left Side"],
+			["CENTER"] = L["Center"]
+		},
+		set = setter,
+		get = getter
+	}
+	options.args.pointSpace = {
+		name = "", order = 111, type = "description", hidden = isdisabled
+	}
+	options.args.offsetX = {
+		name = L["Offset X"],
+		desc = L["Sets the horizontal offset from your chosen anchor point. Positive values means right, negative values means left."],
+		order = 120,
+		type = "input",
+		hidden = isdisabled,
+		validate = validate,
+		set = setter,
+		get = getter
+	}
+	options.args.offsetY = {
+		name = L["Offset Y"],
+		desc = L["Sets the vertical offset from your chosen anchor point. Positive values means up, negative values means down."],
+		order = 130,
+		type = "input",
+		hidden = isdisabled,
+		validate = validate,
+		set = setter,
+		get = getter
+	}
+
+	self.app = AceGUI:Create("Frame")
+	self:SecureHook(self.app.frame, "Show", "UpdateMovableFrameAnchors")
+	self:SecureHook(self.app.frame, "Hide", "HideMovableFrameAnchors")
+
+	AceConfigRegistry:RegisterOptionsTable(self.appName, options)
+
+	return
+end
+
+MovableFramesManager.RefreshMFMFrame = function(self)
+	if (AceConfigRegistry:GetOptionsTable(self.appName)) then
+		if (self.app) then
+			-- When using a custom window for the dialog,
+			-- the notify callback does not fire for it.
+			-- So we need to fake a refresh by toggling twice.
+			self:ToggleMFMFrame()
+			self:ToggleMFMFrame()
+		else
+			AceConfigRegistry:NotifyChange(self.appName)
+		end
+	end
+end
+
+MovableFramesManager.OpenMFMFrame = function(self)
+	if (not AceConfigRegistry:GetOptionsTable(self.appName)) then
+		self:GenerateMFMFrame()
+	end
+	AceConfigDialog:SetDefaultSize(self.appName, 440, 360)
+	AceConfigDialog:Open(self.appName, self.app)
+	--self:UpdateMovableFrameAnchors()
+end
+
+MovableFramesManager.CloseMFMFrame = function(self)
+	if (AceConfigRegistry:GetOptionsTable(self.appName)) then
+		AceConfigDialog:Close(self.appName)
+	end
+	--self:HideMovableFrameAnchors()
+end
+
+MovableFramesManager.ToggleMFMFrame = function(self)
+	if (AceConfigDialog.OpenFrames[self.appName]) then
+		self:CloseMFMFrame()
+	else
+		self:OpenMFMFrame()
+	end
 end
 
 MovableFramesManager.GetLayout = function(self)
@@ -1090,22 +1312,19 @@ MovableFramesManager.HideMovableFrameAnchors = function(self)
 	HideMovableFrameAnchors()
 end
 
-MovableFramesManager.ToggleAnchors = function(self)
-	local MFMFrame = self:GetMFMFrame()
-	if (MFMFrame:IsShown()) then
-		MFMFrame:Hide()
-	else
-		MFMFrame:Show()
-	end
+MovableFramesManager.IsInEditMode = function(self)
+	return self.inEditMode
 end
 
 MovableFramesManager.OnEnterEditMode = function(self)
-	self:UpdateMFMFrame()
-	self:GetMFMFrame():Show()
+	self.inEditMode = true
+	self:RefreshMFMFrame()
+	self:OpenMFMFrame()
 end
 
 MovableFramesManager.OnExitEditMode = function(self)
-	self:GetMFMFrame():Hide()
+	self.inEditMode = nil
+	self:CloseMFMFrame()
 end
 
 MovableFramesManager.OnEvent = function(self, event, ...)
@@ -1197,6 +1416,7 @@ MovableFramesManager.OnInitialize = function(self)
 	self.db.profile = nil
 
 	self.layouts = {}
+	self.appName = L["Movable Frames Manager"]
 
 	LAYOUT = self.db.char.layout
 	SCALE = UIParent:GetScale()
@@ -1212,14 +1432,10 @@ MovableFramesManager.OnInitialize = function(self)
 		-- since they might be related to anchor visibility.
 		self:SecureHook(EditModeManagerFrame, "OnEvent", "UpdateMovableFrameAnchors")
 		self:SecureHook(EditModeManagerFrame, "OnAccountSettingChanged", "UpdateMovableFrameAnchors")
-
-	else
-		self:RegisterChatCommand("lock", "ToggleAnchors")
 	end
 
-	-- Hook our anchor visibility updates to our managerframe visibility.
-	self:SecureHook(self:GetMFMFrame(), "Show", "UpdateMovableFrameAnchors")
-	self:SecureHook(self:GetMFMFrame(), "Hide", "HideMovableFrameAnchors")
+	-- Use this command for all versions now.
+	self:RegisterChatCommand("lock", "ToggleMFMFrame")
 
 	self:RegisterEvent("PLAYER_LOGIN", "OnEvent")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
