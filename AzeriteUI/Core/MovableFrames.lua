@@ -63,6 +63,11 @@ local DEFAULTLAYOUT = "Azerite" -- default layout name
 local LAYOUT = DEFAULTLAYOUT -- currently selected layout preset
 local CURRENT -- currently selected anchor frame
 local HOVERED -- currently mouseovered anchor frame
+local OUTLINE = CreateFrame("Frame", nil, UIParent, ns.BackdropTemplate) -- mouseover outline
+OUTLINE:SetBackdrop({ edgeFile = [[Interface\Tooltips\UI-Tooltip-Border]], edgeSize = 16, insets = { left = 5, right = 3, top = 3, bottom = 5 } })
+OUTLINE:SetBackdropBorderColor(Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75)
+OUTLINE:SetFrameStrata("HIGH")
+OUTLINE:SetFrameLevel(10000)
 
 -- Addon defaults. Don't change, does not affect what is saved.
 local defaults = {
@@ -189,15 +194,6 @@ end
 --------------------------------------
 local mt = getmetatable(CreateFrame("Button")).__index
 local Anchor = {}
-
-local OUTLINE = CreateFrame("Frame", nil, UIParent, ns.BackdropTemplate)
-OUTLINE:SetBackdrop({
-	edgeFile = [[Interface\Tooltips\UI-Tooltip-Border]], edgeSize = 16,
-	insets = { left = 5, right = 3, top = 3, bottom = 5 }
-})
-OUTLINE:SetBackdropBorderColor(Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75)
-OUTLINE:SetFrameStrata("HIGH")
-OUTLINE:SetFrameLevel(10000)
 
 -- Constructor
 Anchor.Create = function(self)
@@ -637,8 +633,6 @@ Anchor.OnEnter = function(self)
 		OUTLINE:SetAllPoints(self)
 		OUTLINE:Show()
 	end
-	--self:UpdateText()
-	--self:SetAlpha(1)
 end
 
 Anchor.OnLeave = function(self)
@@ -647,8 +641,6 @@ Anchor.OnLeave = function(self)
 		OUTLINE:ClearAllPoints()
 		OUTLINE:Hide()
 	end
-	--self:UpdateText()
-	--self:SetAlpha(.5)
 end
 
 Anchor.OnShow = function(self)
