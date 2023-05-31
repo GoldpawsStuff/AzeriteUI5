@@ -12,6 +12,6 @@ AzeriteUI5.1 is a custom World of Warcraft user interface for Dragonflight, Wrat
 - Yes, I will be making arena frames.
 - To remove abilities from the action bars, hold `Alt`+`Ctrl`+`Shift` and drag.
 
-### Chat Commands
+## Chat Commands
 - **/azerite** - Toggles the options menu.
 - **/lock** - Toggles the movable frame anchors. *(Note that in Retail a lot of the default Blizzard elements are controlled by the EditMode, so you need to enter it to move or scale these.)*
