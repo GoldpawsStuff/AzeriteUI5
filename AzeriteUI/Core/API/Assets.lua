@@ -38,7 +38,7 @@ local string_format = string.format
 local type = type
 
 -- Full cache that spawns new objects on-the-fly.
-local count, font_mt = 0
+local count, font_mt = 0, nil
 font_mt = {
 	__index = function(t,k)
 		-- Create a new category and subtable
