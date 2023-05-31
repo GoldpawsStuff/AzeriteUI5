@@ -192,7 +192,7 @@ local GenerateOptions = function()
 				set = setter,
 				get = getter
 			},
-			pointPostSpace = {
+			growthSpace = {
 				name = "", order = 50, type = "description", hidden = isdisabled
 			},
 			paddingX = {
@@ -255,7 +255,7 @@ local GenerateOptions = function()
 				set = function(info,val) setoption(info,1,val) end,
 				get = function(info) return getoption(info,1) end
 			},
-			pointPostSpace = {
+			pointSpace = {
 				name = "", order = 63, type = "description", hidden = isdisabled
 			},
 			offsetX = {
