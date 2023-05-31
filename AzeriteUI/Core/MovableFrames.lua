@@ -62,6 +62,7 @@ local SCALE = UIParent:GetScale() -- current blizzard scale
 local DEFAULTLAYOUT = "Azerite" -- default layout name
 local LAYOUT = DEFAULTLAYOUT -- currently selected layout preset
 local CURRENT -- currently selected anchor frame
+local HOVERED -- currently mouseovered anchor frame
 
 -- Addon defaults. Don't change, does not affect what is saved.
 local defaults = {
@@ -189,6 +190,15 @@ end
 local mt = getmetatable(CreateFrame("Button")).__index
 local Anchor = {}
 
+local OUTLINE = CreateFrame("Frame", nil, UIParent, ns.BackdropTemplate)
+OUTLINE:SetBackdrop({
+	edgeFile = [[Interface\Tooltips\UI-Tooltip-Border]], edgeSize = 16,
+	insets = { left = 5, right = 3, top = 3, bottom = 5 }
+})
+OUTLINE:SetBackdropBorderColor(Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75)
+OUTLINE:SetFrameStrata("HIGH")
+OUTLINE:SetFrameLevel(10000)
+
 -- Constructor
 Anchor.Create = function(self)
 
@@ -210,8 +220,8 @@ Anchor.Create = function(self)
 	anchor:SetScript("OnClick", Anchor.OnClick)
 	anchor:SetScript("OnShow", Anchor.OnShow)
 	anchor:SetScript("OnHide", Anchor.OnHide)
-	--anchor:SetScript("OnEnter", Anchor.OnEnter)
-	--anchor:SetScript("OnLeave", Anchor.OnLeave)
+	anchor:SetScript("OnEnter", Anchor.OnEnter)
+	anchor:SetScript("OnLeave", Anchor.OnLeave)
 
 	local overlay = CreateFrame("Frame", nil, anchor, ns.BackdropTemplate)
 	overlay:SetAllPoints()
@@ -621,13 +631,24 @@ Anchor.OnDragStop = function(self)
 end
 
 Anchor.OnEnter = function(self)
-	self:UpdateText()
-	self:SetAlpha(1)
+	if (HOVERED ~= self) then
+		HOVERED = self
+		OUTLINE:ClearAllPoints()
+		OUTLINE:SetAllPoints(self)
+		OUTLINE:Show()
+	end
+	--self:UpdateText()
+	--self:SetAlpha(1)
 end
 
 Anchor.OnLeave = function(self)
-	self:UpdateText()
-	self:SetAlpha(.5)
+	if (HOVERED == self) then
+		HOVERED = nil
+		OUTLINE:ClearAllPoints()
+		OUTLINE:Hide()
+	end
+	--self:UpdateText()
+	--self:SetAlpha(.5)
 end
 
 Anchor.OnShow = function(self)
