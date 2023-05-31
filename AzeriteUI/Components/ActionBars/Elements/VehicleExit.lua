@@ -25,7 +25,7 @@
 --]]
 local Addon, ns = ...
 
-local VehicleExit = ns:NewModule("VehicleExit", "LibMoreEvents-1.0")
+local VehicleExit = ns:NewModule("VehicleExit", "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Lua API
 local math_cos = math.cos
@@ -41,7 +41,12 @@ local GetMedia = ns.API.GetMedia
 local deg2rad = math.pi / 180
 
 local config = {
-	VehicleExitButtonPosition = { "CENTER", Minimap, "CENTER", -math_floor(math_cos(45*deg2rad) * 116.5), math_floor(math_sin(45*deg2rad) * 116.5) },
+	VehicleExitButtonPosition = function()
+		-- Trickery to work around the fact this cannot be parented to the Minimap,
+		-- as that would cause the Minimap to be become restricted from its secure children.
+		local m,w,h = .69, Minimap:GetSize()
+		return { "CENTER", Minimap, "CENTER", -math_floor(math_cos(45*deg2rad) * w * m), math_floor(math_sin(45*deg2rad) * h * m) }
+	end,
 	VehicleExitButtonSize = { 32, 32 },
 	VehicleExitButtonTexturePosition = { "CENTER", 0, 0 },
 	VehicleExitButtonTextureSize = { 80, 80 },
@@ -82,17 +87,53 @@ local ExitButton_PostClick = function(self, button)
 	end
 end
 
+VehicleExit.UpdateScale = function(self)
+	if (InCombatLockdown()) then
+		self.updateneeded = true
+		return
+	end
+	if (self.Button) then
+		local point, anchor, rpoint, x, y = unpack(config.VehicleExitButtonPosition())
+		local mscale = Minimap:GetScale()
+		local escale = Minimap:GetScale() / Minimap:GetEffectiveScale()
+
+		self.Button:SetScale(ns.API.GetEffectiveScale() * mscale)
+		self.Button:ClearAllPoints()
+		self.Button:SetPoint(point, anchor, rpoint, x * escale, y * escale)
+	end
+end
+
+VehicleExit.OnEvent = function(self, event, ...)
+	if (event == "PLAYER_ENTERING_WORLD") then
+		self.incombat = nil
+		self:UpdateScale()
+	elseif (event == "PLAYER_REGEN_DISABLED") then
+		self.incombat = true
+	elseif (event == "PLAYER_REGEN_ENABLED") then
+		if (InCombatLockdown()) then return end
+		if (self.updateneeded) then
+			self.updateneeded = nil
+			self:UpdateScale()
+		end
+		self.incombat = nil
+	elseif (event == "UI_SCALE_CHANGED") then
+		self:UpdateScale()
+	end
+end
+
 VehicleExit.OnInitialize = function(self)
 
 	local button = CreateFrame("CheckButton", ns.Prefix.."VehicleExitButton", UIParent, "SecureActionButtonTemplate")
 	button:SetFrameStrata("MEDIUM")
 	button:SetFrameLevel(100)
-	button:SetPoint(unpack(config.VehicleExitButtonPosition))
+	button:SetPoint(unpack(config.VehicleExitButtonPosition()))
 	button:SetSize(unpack(config.VehicleExitButtonSize))
 	button:SetScript("OnEnter", ExitButton_OnEnter)
 	button:SetScript("OnLeave", ExitButton_OnLeave)
 	button:SetScript("PostClick", ExitButton_PostClick)
 	button:SetAttribute("type", "macro")
+
+	self.Button = button
 
 	if (ns.IsClassic) then
 		button:SetAttribute("macrotext", "/dismount [mounted]\n")
@@ -113,4 +154,10 @@ VehicleExit.OnInitialize = function(self)
 
 	button.Texture = texture
 
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	self:RegisterEvent("UI_SCALE_CHANGED", "OnEvent")
+
+	self:SecureHook(Minimap, "SetScale", "UpdateScale")
 end
