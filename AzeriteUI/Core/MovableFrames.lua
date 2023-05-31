@@ -633,6 +633,8 @@ Anchor.OnEnter = function(self)
 		OUTLINE:SetAllPoints(self)
 		OUTLINE:Show()
 	end
+	self:SetAlpha(.75)
+	self:UpdateText()
 end
 
 Anchor.OnLeave = function(self)
@@ -641,6 +643,8 @@ Anchor.OnLeave = function(self)
 		OUTLINE:ClearAllPoints()
 		OUTLINE:Hide()
 	end
+	self:SetAlpha(.25)
+	self:UpdateText()
 end
 
 Anchor.OnShow = function(self)
