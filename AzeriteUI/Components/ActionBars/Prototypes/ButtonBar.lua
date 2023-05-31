@@ -111,7 +111,7 @@ ButtonBar.UpdateButtonLayout = function(self)
 		local buttonHeight = self.buttonHeight
 
 		local fullZag = config.startAt == 1
-		local counter, width, height = 0
+		local counter = 0
 		local left, right, top, bottom = 0, 0, 0, 0
 		local point = (config.growthVertical == "UP" and "BOTTOM" or "TOP")..(config.growthHorizontal == "RIGHT" and "LEFT" or "RIGHT")
 		local offsetX, offsetY
@@ -170,8 +170,6 @@ ButtonBar.UpdateButtonLayout = function(self)
 				end
 
 			end
-
-			--print(button:GetName(), point, offsetX, offsetY)
 
 			if (not isZigZag) then
 				counter = counter + 1
