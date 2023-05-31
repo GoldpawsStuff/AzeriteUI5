@@ -46,9 +46,6 @@ end
 ns.Copy = function(self, target, source)
 	if (not source) then
 		source = target
-		target = nil
-	end
-	if (type(target) ~= "table") then
 		target = {}
 	end
 	for k,v in pairs(source) do

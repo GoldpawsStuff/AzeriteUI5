@@ -67,6 +67,9 @@ local defaults = { profile = ns:Merge({
 	}
 }, ns.moduleDefaults) }
 
+-- Defaults are good here
+--for i,v in pairs(ns:Copy(profileDefaults)) do print(i,v) end
+
 -- Aura Template
 --------------------------------------------
 local Aura = {}
@@ -384,6 +387,8 @@ Auras.UpdatePositionAndScale = function(self)
 	if (not self.frame) then return end
 
 	local config = self.db.profile.savedPosition[MFM:GetLayout()]
+	--print(MFM:GetLayout())
+	--for i,v in pairs(config) do print(i,v) end
 
 	self.frame:SetScale(config.scale)
 	self.frame:ClearAllPoints()
@@ -701,7 +706,7 @@ Auras.OnEvent = function(self, event, ...)
 		local LAYOUT = ...
 
 		if (not self.db.profile.savedPosition[LAYOUT]) then
-			self.db.profile.savedPosition[LAYOUT] = ns:Merge({}, defaults.profile.savedPosition[MFM:GetDefaultLayout()])
+			self.db.profile.savedPosition[LAYOUT] = ns:Copy(profileDefaults)
 		end
 
 		self:UpdatePositionAndScale()
@@ -757,7 +762,6 @@ Auras.OnInitialize = function(self)
 	self:DisableBlizzard()
 	self:InitializeAuras()
 	self:InitializeMovableFrameAnchor()
-	--self:RegisterChatCommand("auras", "OnChatCommand")
 end
 
 Auras.OnEnable = function(self)

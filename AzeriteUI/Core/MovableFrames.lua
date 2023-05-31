@@ -415,7 +415,7 @@ Anchor.UpdateScale = function(self, layoutName, scale)
 		self:UpdateText()
 	end
 
-	ns:Fire("MFM_ScaleUpdated", LAYOUT, self, scale)
+	ns:Fire("MFM_ScaleUpdated", layoutName, self, scale)
 end
 
 -- Anchor Getters
@@ -726,6 +726,10 @@ end
 --------------------------------------
 MovableFramesManager.RequestAnchor = function(self, ...)
 	return RequestMovableFrameAnchor(...)
+end
+
+MovableFramesManager.PresetExists = function(self, layoutName)
+	return layoutName and self.layouts[layoutName] and true or false
 end
 
 -- Register a preset name in our dropdown menu.
@@ -1277,8 +1281,10 @@ MovableFramesManager.RefreshMFMFrame = function(self)
 			-- When using a custom window for the dialog,
 			-- the notify callback does not fire for it.
 			-- So we need to fake a refresh by toggling twice.
-			self:ToggleMFMFrame()
-			self:ToggleMFMFrame()
+			if (AceConfigDialog.OpenFrames[self.appName]) then
+				self:ToggleMFMFrame()
+				self:ToggleMFMFrame()
+			end
 		else
 			AceConfigRegistry:NotifyChange(self.appName)
 		end
@@ -1291,14 +1297,12 @@ MovableFramesManager.OpenMFMFrame = function(self)
 	end
 	AceConfigDialog:SetDefaultSize(self.appName, 440, 360)
 	AceConfigDialog:Open(self.appName, self.app)
-	--self:UpdateMovableFrameAnchors()
 end
 
 MovableFramesManager.CloseMFMFrame = function(self)
 	if (AceConfigRegistry:GetOptionsTable(self.appName)) then
 		AceConfigDialog:Close(self.appName)
 	end
-	--self:HideMovableFrameAnchors()
 end
 
 MovableFramesManager.ToggleMFMFrame = function(self)
@@ -1364,6 +1368,7 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 		self.incombat = InCombatLockdown()
 
 		ns:Fire("MFM_LayoutsUpdated", LAYOUT)
+
 	elseif (event == "EDIT_MODE_LAYOUTS_UPDATED") then
 		local layoutInfo, fromServer = ...
 		if (fromServer) then

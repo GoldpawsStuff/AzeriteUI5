@@ -62,18 +62,14 @@ local Backdrops = setmetatable({}, { __index = function(t,k)
 	return bg
 end })
 
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = {
+local profileDefaults = function()
+	if (ns.IsRetail) then
+		return {
 			showItemID = false, -- off by default to reduce clutter
 			showSpellID = false, -- off by default to reduce clutter
 		}
-	}
-}, ns.moduleDefaults) }
-if (not ns.IsRetail) then
-	defaults.profile.savedPosition = {
-		[MFM:GetDefaultLayout()] = {
+	else
+		return {
 			scale = ns.API.GetEffectiveScale(),
 			showItemID = false, -- off by default to reduce clutter
 			showSpellID = false, -- off by default to reduce clutter
@@ -81,8 +77,15 @@ if (not ns.IsRetail) then
 			[2] = -319 * ns.API.GetEffectiveScale(),
 			[3] = 166 * ns.API.GetEffectiveScale()
 		}
-	}
+	end
 end
+
+local defaults = { profile = ns:Merge({
+	enabled = true,
+	savedPosition = {
+		[MFM:GetDefaultLayout()] = profileDefaults()
+	}
+}, ns.moduleDefaults) }
 
 Tooltips.SetBackdropStyle = function(self, tooltip)
 	if (not tooltip) or (tooltip.IsEmbedded) or (tooltip:IsForbidden()) then return end
@@ -532,7 +535,7 @@ Tooltips.OnEvent = function(self, event, ...)
 		local LAYOUT = ...
 
 		if (not self.db.profile.savedPosition[LAYOUT]) then
-			self.db.profile.savedPosition[LAYOUT] = ns:Merge({}, defaults.profile.savedPosition[MFM:GetDefaultLayout()])
+			self.db.profile.savedPosition[LAYOUT] = profileDefaults()
 		end
 
 		self:UpdatePositionAndScale()

@@ -98,6 +98,15 @@ MinimapMod.GetDefaultScale = function(self)
 	return getDefaultScale()
 end
 
+local profileDefaults = function()
+	return {
+		scale = getDefaultScale(),
+		[1] = "BOTTOMRIGHT",
+		[2] = -40 / getDefaultScale(),
+		[3] = 40 / getDefaultScale()
+	}
+end
+
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	theme = "Azerite",
@@ -106,12 +115,7 @@ local defaults = { profile = ns:Merge({
 }, ns.moduleDefaults) }
 if (not ns.WoW10) then
 	defaults.profile.savedPosition = {
-		[MFM:GetDefaultLayout()] = {
-			scale = getDefaultScale(),
-			[1] = "BOTTOMRIGHT",
-			[2] = -40 / getDefaultScale(),
-			[3] = 40 / getDefaultScale()
-		}
+		[MFM:GetDefaultLayout()] = profileDefaults()
 	}
 end
 
@@ -1382,7 +1386,7 @@ MinimapMod.OnEvent = function(self, event, ...)
 		local LAYOUT = ...
 
 		if (not self.db.profile.savedPosition[LAYOUT]) then
-			self.db.profile.savedPosition[LAYOUT] = ns:Merge({}, defaults.profile.savedPosition[MFM:GetDefaultLayout()])
+			self.db.profile.savedPosition[LAYOUT] = profileDefaults()
 		end
 
 		self:UpdatePositionAndScale()

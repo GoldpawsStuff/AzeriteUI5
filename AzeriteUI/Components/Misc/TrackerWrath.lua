@@ -36,15 +36,19 @@ local GetMedia = ns.API.GetMedia
 local IsAddOnEnabled = ns.API.IsAddOnEnabled
 local UIHider = ns.Hider
 
+local profileDefaults = function()
+	return {
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "TOPRIGHT",
+		[2] = -60 * ns.API.GetEffectiveScale(),
+		[3] = -280 * ns.API.GetEffectiveScale()
+	}
+end
+
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
-		[MFM:GetDefaultLayout()] = {
-			scale = ns.API.GetEffectiveScale(),
-			[1] = "TOPRIGHT",
-			[2] = -60 * ns.API.GetEffectiveScale(),
-			[3] = -280 * ns.API.GetEffectiveScale()
-		}
+		[MFM:GetDefaultLayout()] = profileDefaults()
 	}
 }, ns.moduleDefaults) }
 
@@ -299,7 +303,7 @@ Tracker.OnEvent = function(self, event, ...)
 		local LAYOUT = ...
 
 		if (not self.db.profile.savedPosition[LAYOUT]) then
-			self.db.profile.savedPosition[LAYOUT] = ns:Merge({}, defaults.profile.savedPosition[MFM:GetDefaultLayout()])
+			self.db.profile.savedPosition[LAYOUT] = profileDefaults()
 		end
 
 		self:UpdatePositionAndScale()

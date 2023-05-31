@@ -34,6 +34,13 @@ local EMP = ns:GetModule("EditMode", true)
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 
+-- Lua API
+local ipairs = ipairs
+local pairs = pairs
+local string_format = string.format
+local table_sort = table.sort
+local type = type
+
 Options.GenerateProfileMenu = function(self)
 	local options = {
 		type = "group",
@@ -65,19 +72,22 @@ Options.GenerateProfileMenu = function(self)
 			reset = {
 				name = L["Reset"],
 				type = "execute",
-				--width = .3,
 				order = 11,
 				func = function(info) end
 			},
 			delete = {
 				name = L["Delete"],
 				type = "execute",
-				--width = .3,
 				order = 12,
+				confirm = function(info)
+					return string_format(L["Are you sure you want to delete the preset '%s'? This cannot be undone."], MFM:GetLayout())
+				end,
 				disabled = function(info)
 					return MFM:GetLayout() == MFM:GetDefaultLayout()
 				end,
-				func = function(info) end
+				func = function(info)
+					MFM:DeletePreset(MFM:GetLayout())
+				end
 			},
 			space2 = {
 				name = "", order = 13, type = "description"
@@ -92,13 +102,34 @@ Options.GenerateProfileMenu = function(self)
 				name = L["Name of new profile:"],
 				type = "input",
 				order = 21,
+				arg = "", -- store the name here
+				validate = function(info,val)
+					if (not val or val == "") then
+						return L["The new profile needs a name."]
+					end
+					if (MFM:PresetExists(val)) then
+						return L["Profile already exists."]
+					end
+					return true
+				end,
+				get = function(info)
+					return info.option.arg
+				end,
+				set = function(info,val)
+					info.option.arg = val
+				end
 			},
 			create = {
 				name = L["Create"],
 				type = "execute",
-				--width = .3,
 				order = 22,
-				func = function(info) end
+				func = function(info)
+					local layoutName = info.options.args.newprofileName.arg
+					if (layoutName) then
+						MFM:RegisterPreset(layoutName)
+						MFM:ApplyPreset(layoutName)
+					end
+				end
 			},
 			space3 = {
 				name = "", order = 23, type = "description"
@@ -142,7 +173,7 @@ Options.GenerateOptionsMenu = function(self)
 	if (not self.objects) then return end
 
 	-- Sort groups by localized name.
-	table.sort(self.objects, function(a,b) return a.name < b.name end)
+	table_sort(self.objects, function(a,b) return a.name < b.name end)
 
 	-- Generate the options table.
 	local options = self:GenerateProfileMenu()

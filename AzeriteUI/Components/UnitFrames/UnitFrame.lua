@@ -195,7 +195,7 @@ ns.UnitFrame.modulePrototype = {
 			local LAYOUT = ...
 
 			if (not self.db.profile.savedPosition[LAYOUT]) then
-				self.db.profile.savedPosition[LAYOUT] = ns:Merge({}, unitFrameDefaults.profile.savedPosition[MFM:GetDefaultLayout()])
+				self.db.profile.savedPosition[LAYOUT] = ns:Merge({}, self.db.defaults.profile.savedPosition[MFM:GetDefaultLayout()])
 			end
 
 			self:UpdatePositionAndScale()

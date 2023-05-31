@@ -790,6 +790,7 @@ ActionBarMod.OnEvent = function(self, event, ...)
 		for id,bar in next,self.bars do
 			local layouts = self.db.profile.bars[id].savedPosition
 			if (not layouts[LAYOUT]) then
+				-- Watch if this bugs out or work. The default tables here should be complete. But.
 				layouts[LAYOUT] = ns:Merge({}, defaults.profile.bars[id].savedPosition[MFM:GetDefaultLayout()])
 			end
 			bar.config = layouts[LAYOUT]

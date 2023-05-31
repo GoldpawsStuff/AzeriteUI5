@@ -32,15 +32,19 @@ local MFM = ns:GetModule("MovableFramesManager")
 -- Lua API
 local pairs, unpack = pairs, unpack
 
+local profileDefaults = function()
+	return {
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "BOTTOMRIGHT",
+		[2] = -(480+64) * ns.API.GetEffectiveScale(),
+		[3] = (210-64) * ns.API.GetEffectiveScale()
+	}
+end
+
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
-		[MFM:GetDefaultLayout()] = {
-			scale = ns.API.GetEffectiveScale(),
-			[1] = "BOTTOMRIGHT",
-			[2] = -(480+64) * ns.API.GetEffectiveScale(),
-			[3] = (210-64) * ns.API.GetEffectiveScale()
-		}
+		[MFM:GetDefaultLayout()] = profileDefaults()
 	}
 }, ns.moduleDefaults) }
 
@@ -128,7 +132,7 @@ VehicleSeat.OnEvent = function(self, event, ...)
 		local LAYOUT = ...
 
 		if (not self.db.profile.savedPosition[LAYOUT]) then
-			self.db.profile.savedPosition[LAYOUT] = ns:Merge({}, defaults.profile.savedPosition[MFM:GetDefaultLayout()])
+			self.db.profile.savedPosition[LAYOUT] = profileDefaults()
 		end
 
 		self:UpdatePositionAndScale()
