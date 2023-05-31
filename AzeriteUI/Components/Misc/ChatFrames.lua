@@ -552,7 +552,7 @@ ChatFrames.OnEvent = function(self, event, ...)
 				QuickJoinToastButton:Hide()
 			end
 
-			--ChatFrame1:Clear()
+			ChatFrame1:Clear()
 		end
 	end
 end
