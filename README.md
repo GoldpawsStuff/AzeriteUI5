@@ -1,4 +1,4 @@
-AzeriteUI5.1 is a custom user interface for World of Warcraft Dragonflight, Wrath Classic and Classic Era.
+AzeriteUI5.1 is a custom World of Warcraft user interface for Dragonflight, Wrath Classic and Classic Era.
 
 ## Connect & Support
 - Patreon: [patreon.com/goldpawsstuff](https://www.patreon.com/goldpawsstuff)
