@@ -368,7 +368,7 @@ Anchor.UpdateText = function(self)
 	if (self.isSelected) then -- self:IsMouseOver(20,-20,-20,20)
 		if (self:IsInDefaultPosition()) then
 			msg = msg .. Colors.green.colorCode.."\n"..L["<Left-Click and drag to move>"].."|r"
-			if (self:IsScalable() and compare(anchorData.scale, anchorData.defaultScale)) then
+			if (self:IsScalable()--[[ and compare(anchorData.scale, anchorData.defaultScale)]]) then
 				msg = msg .. Colors.green.colorCode.."\n"..L["<MouseWheel to change scale>"].."|r"
 			end
 		else
@@ -744,7 +744,7 @@ MovableFramesManager.RegisterPreset = function(self, layoutName)
 	self.layouts[layoutName] = true
 
 	-- Update the manager frame.
-	self:UpdateMFMFrame()
+	--self:UpdateMFMFrame()
 end
 
 -- Register a table of layout names at once.
@@ -775,7 +775,7 @@ MovableFramesManager.ApplyPreset = function(self, layoutName)
 	ns:Fire("MFM_LayoutsUpdated", LAYOUT)
 
 	-- Update the manager frame.
-	self:UpdateMFMFrame()
+	--self:UpdateMFMFrame()
 end
 
 -- Send a message to the modules to reset a saved preset.
@@ -812,333 +812,7 @@ MovableFramesManager.DeletePreset = function(self, layoutName)
 	ns:Fire("MFM_LayoutDeleted", LAYOUT)
 
 	-- Update the manager frame.
-	self:UpdateMFMFrame()
-end
-
--- Update available preset list in our dropdown.
-MovableFramesManager.UpdateMFMFrame = function(self)
-	do return end
-
-	local MFMFrame = self:GetMFMFrame()
-
-	-- Create a sorted table.
-	local sorted = {}
-	for layoutName in next,self.layouts do
-		table_insert(sorted, layoutName)
-	end
-	table_sort(sorted)
-
-	-- Apply the sorted table to our dropdown.
-	MFMFrame.SelectLayoutDropdown:SetList(sorted)
-
-	-- Select the currently active layout in the dropdown.
-	for i,layoutName in ipairs(sorted) do
-		if (layoutName == LAYOUT) then
-			MFMFrame.SelectLayoutDropdown:SetValue(i)
-			break
-		end
-	end
-
-	-- Toggle button enabled status.
-	MFMFrame.DeleteLayoutButton:SetDisabled(LAYOUT == DEFAULTLAYOUT)
-	if (EMP) then
-		if (not EMP:AreLayoutsLoaded()) then return end
-		MFMFrame.ResetEditModeLayoutButton:SetDisabled(self.incombat or not EMP:CanEditActiveLayout())
-		MFMFrame.CreateEditModeLayoutButton:SetDisabled(self.incombat or EMP:DoesDefaultLayoutExist())
-	end
-end
-
-MovableFramesManager.GetMFMFrame = function(self)
-	if (not self.frame) then
-
-		-- Create primary window
-		--------------------------------------------------
-		local window = AceGUI:Create("Frame")
-		window:Hide()
-		window:SetWidth(360)
-		window:SetHeight(EMP and 366 or 166)
-		window:SetPoint(EMP and "TOPRIGHT" or "TOP", UIParent, EMP and "TOPRIGHT" or "TOP", EMP and -220 or 0, -260)
-		window:SetTitle(Addon)
-		window:SetStatusText(Addon .." ".. (ns.IsDevelopment and "Git Version" or ns.Version))
-		window:SetLayout("Flow")
-
-		window.frame:SetResizable(false)
-		window.frame:SetBackdrop(nil)
-		window.frame.obj.sizer_se:Hide()
-		window.frame.obj.sizer_s:Hide()
-		window.frame.obj.sizer_e:Hide()
-		window.Backdrop = createBackdropFrame(window.frame)
-
-		self.frame = window
-
-		-- Layout Selection Dropdown Group
-		--------------------------------------------------
-		local group = AceGUI:Create("SimpleGroup")
-		group:SetLayout("Flow")
-		group:SetFullWidth(true)
-		group:SetAutoAdjustHeight(false)
-		group:SetHeight(54)
-
-		-- Dropdown label
-		local label = AceGUI:Create("Label")
-		label:SetText(L["Layout:"])
-		label:SetFontObject(GetFont(13, true))
-		label:SetColor(unpack(Colors.normal))
-		label:SetFullWidth(true)
-		group:AddChild(label)
-
-		-- Preset selection dropdown
-		local dropdown = AceGUI:Create("Dropdown")
-		dropdown:SetWidth(220)
-		dropdown:SetCallback("OnValueChanged", function(widget, script, key)
-			local selected
-			for i,item in widget.pullout:IterateItems() do
-				if (i == key) then
-					selected = item:GetText() or ""
-					break
-				end
-			end
-			if (selected) then
-				self:ApplyPreset(selected)
-			end
-		end)
-		group:AddChild(dropdown)
-		window.SelectLayoutDropdown = dropdown
-
-		window:AddChild(group)
-
-		-- Layout Management Group
-		--------------------------------------------------
-		local group = AceGUI:Create("SimpleGroup")
-		group:SetLayout("Flow")
-		group:SetFullWidth(true)
-		group:SetAutoAdjustHeight(false)
-		group:SetHeight(60)
-
-		local button = AceGUI:Create("Button")
-		button:SetText(L["Create"])
-		button:SetRelativeWidth(.3)
-		button:SetCallback("OnClick", function()
-
-			if (not self.DialogFrame) then
-
-				local popup = CreateFrame("Frame", nil, window.frame)
-				popup:Hide()
-				popup:SetFrameStrata("FULLSCREEN_DIALOG")
-				popup:SetToplevel(true)
-				popup:SetFrameLevel(1000)
-				popup:SetSize(380, 160)
-				popup:SetPoint("CENTER", window.frame)
-				popup:SetScript("OnShow", function()
-					window.frame:SetToplevel(false)
-				end)
-				popup:SetScript("OnHide", function()
-					window.frame:SetToplevel(true)
-				end)
-
-				popup.Backdrop = createBackdropFrame(popup)
-
-				local editbox = CreateFrame("EditBox", nil, popup, "InputBoxTemplate")
-				editbox:SetAutoFocus(true)
-				editbox:SetFontObject(GetFont(15, true))
-				editbox:SetScript("OnEnter", nil)
-				editbox:SetScript("OnLeave", nil)
-				editbox:SetScript("OnEscapePressed", function(widget)
-					widget:ClearFocus()
-				end)
-				editbox:SetScript("OnEnterPressed", function(widget)
-					widget:GetParent().AcceptButton:Click()
-				end)
-				editbox:SetScript("OnTextChanged", nil)
-				editbox:SetScript("OnReceiveDrag", nil)
-				editbox:SetScript("OnMouseDown", nil)
-				editbox:SetScript("OnEditFocusGained", function(widget)
-					widget:SetText("")
-					widget:SetCursorPosition(0)
-				end)
-				editbox:SetScript("OnEditFocusLost", function(widget)
-					widget:GetParent():Hide()
-					widget:SetText("")
-					widget:SetCursorPosition(0)
-				end)
-				editbox:SetTextInsets(3, 3, 6, 6)
-				editbox:SetMaxLetters(32)
-				editbox:SetPoint("BOTTOMLEFT", 28, 70)
-				editbox:SetPoint("BOTTOMRIGHT", -23, 70)
-				editbox:SetHeight(27)
-
-				popup.EditBox = editbox
-
-				local label = popup:CreateFontString(nil, "OVERLAY")
-				label:SetFontObject(GetFont(13, true))
-				label:SetTextColor(unpack(Colors.normal))
-				label:SetText(L["Name the New Layout"])
-				label:SetPoint("BOTTOM", editbox, "TOP", 0, 6)
-				label:SetJustifyH("LEFT")
-				label:SetJustifyV("BOTTOM")
-
-				popup.Label = label
-
-				local accept = CreateFrame("Button", nil, popup, "UIPanelButtonTemplate")
-				accept:SetSize(160, 30)
-				accept:SetText(L["Save"])
-				accept:SetPoint("BOTTOMLEFT", 20, 20)
-				accept:SetScript("OnClick", function(widget)
-					local layoutName = widget:GetParent().EditBox:GetText()
-					widget:GetParent():Hide()
-					if (layoutName and not self.layouts[layoutName]) then
-						self:RegisterPreset(layoutName)
-						self:ApplyPreset(layoutName)
-					end
-				end)
-
-				popup.AcceptButton = accept
-
-				local cancel = CreateFrame("Button", nil, popup, "UIPanelButtonTemplate")
-				cancel:SetSize(160, 30)
-				cancel:SetText(L["Cancel"])
-				cancel:SetPoint("BOTTOMRIGHT", -20, 20)
-				cancel:SetScript("OnClick", function(widget)
-					widget:GetParent():Hide()
-				end)
-
-				popup.CancelButton = cancel
-
-				self.DialogFrame = popup
-			end
-
-			-- Open name dialog
-			self.DialogFrame:Show()
-		end)
-		group:AddChild(button)
-		window.CreateLayoutButton = button
-
-		--local button = AceGUI:Create("Button")
-		--button:SetText(L["Copy"])
-		--button:SetRelativeWidth(.3)
-		--button:SetDisabled(true)
-		--button:SetCallback("OnClick", function()
-		--	-- Open name dialog
-		--	-- Copy preset
-		--	-- Fire anchor callback to let modules copy and save it
-		--	-- Add preset to list
-		--	-- Update managerframe
-		--end)
-		--group:AddChild(button)
-		--window.CopyLayoutButton = button
-
-		local button = AceGUI:Create("Button")
-		button:SetText(L["Reset"])
-		button:SetRelativeWidth(.3)
-		button:SetDisabled(true)
-		button:SetCallback("OnClick", function()
-			-- Open confirmation dialog
-			-- Fire module callback to let modules clear the saved entry
-			self:ResetPreset(LAYOUT)
-		end)
-		group:AddChild(button)
-		window.DeleteLayoutButton = button
-
-		local button = AceGUI:Create("Button")
-		button:SetText(L["Delete"])
-		button:SetRelativeWidth(.3)
-		button:SetDisabled(true)
-		button:SetCallback("OnClick", function()
-			-- Open confirmation dialog
-			-- Fire module callback to let modules clear the saved entry
-			self:DeletePreset(LAYOUT)
-		end)
-		group:AddChild(button)
-		window.DeleteLayoutButton = button
-
-		window:AddChild(group)
-
-
-
-
-		-- Edit Mode Integrations
-		--------------------------------------------------
-		if (EMP) then
-
-			-- HUD Edit Mode Title
-			--------------------------------------------------
-			local group = AceGUI:Create("SimpleGroup")
-			group:SetLayout("Flow")
-			group:SetFullWidth(true)
-			group:SetAutoAdjustHeight(false)
-			group:SetHeight(20)
-
-			-- EditMode section title
-			local label = AceGUI:Create("Label")
-			label:SetText(L["HUD Edit Mode"])
-			label:SetFontObject(GetFont(15, true))
-			label:SetColor(unpack(Colors.normal))
-			label:SetFullWidth(true)
-			group:AddChild(label)
-
-			window:AddChild(group)
-
-			-- HUD Edit Mode Reset
-			--------------------------------------------------
-			local group = AceGUI:Create("SimpleGroup")
-			group:SetLayout("Flow")
-			group:SetFullWidth(true)
-			group:SetAutoAdjustHeight(false)
-			group:SetHeight(80)
-
-			-- EditMode reset button description
-			local label = AceGUI:Create("Label")
-			label:SetText(L["Click the button below to reset the currently selected EditMode preset to positions matching the default AzeriteUI layout."])
-			label:SetFontObject(GetFont(13, true))
-			label:SetColor(unpack(Colors.offwhite))
-			label:SetRelativeWidth(.9)
-			group:AddChild(label)
-
-			local button = AceGUI:Create("Button")
-			button:SetText(L["Reset EditMode Layout"])
-			button:SetFullWidth(true)
-			button:SetCallback("OnClick", function()
-				EMP:ApplySystems()
-			end)
-			window.ResetEditModeLayoutButton = button
-
-			group:AddChild(button)
-
-			window:AddChild(group)
-
-			-- HUD Edit Mode Azerite Preset
-			--------------------------------------------------
-			local group = AceGUI:Create("SimpleGroup")
-			group:SetLayout("Flow")
-			group:SetFullWidth(true)
-			group:SetAutoAdjustHeight(true)
-			--group:SetHeight(60)
-
-			-- EditMode reset button description
-			local label = AceGUI:Create("Label")
-			label:SetText(L["Click the button below to create an EditMode preset named 'Azerite'."])
-			label:SetFontObject(GetFont(13, true))
-			label:SetColor(unpack(Colors.offwhite))
-			label:SetRelativeWidth(.9)
-			group:AddChild(label)
-
-			local button = AceGUI:Create("Button")
-			button:SetText(L["Create EditMode Layout"])
-			button:SetFullWidth(true)
-			button:SetDisabled(true)
-			button:SetCallback("OnClick", function()
-				EMP:ResetLayouts()
-			end)
-			window.CreateEditModeLayoutButton = button
-
-			group:AddChild(button)
-
-			window:AddChild(group)
-
-		end
-	end
-
-	return self.frame
+	--self:UpdateMFMFrame()
 end
 
 MovableFramesManager.GenerateMFMFrame = function(self)
@@ -1209,6 +883,35 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 	-- EditMode integration
 	if (EMP) then
 	end
+
+	local colorize = function(msg)
+		msg = string.gsub(msg, "<", "|cffffd200<")
+		msg = string.gsub(msg, ">", ">|r")
+		return msg
+	end
+
+	-- Guide text when nothing is selected.
+	options.args.guideHeader = {
+		name = L["Help"],
+		order = 89,
+		type = "header",
+		hidden = function(info) return not isdisabled(info) end
+	}
+	options.args.guideText1 = {
+		name = colorize(L["<Left-Click> an anchor to select it and raise it."]),
+		order = 90,
+		type = "description",
+		fontSize = "medium",
+		hidden = function(info) return not isdisabled(info) end
+	}
+	options.args.guideText2 = {
+		name = colorize(L["<Right-Click> an anchor to deselect it and/or lower it."]),
+		order = 91,
+		type = "description",
+		fontSize = "medium",
+		hidden = function(info) return not isdisabled(info) end
+	}
+
 
 	-- Frame Positioning
 	options.args.positionHeader = {
@@ -1285,7 +988,7 @@ MovableFramesManager.RefreshMFMFrame = function(self)
 			-- When using a custom window for the dialog,
 			-- the notify callback does not fire for it.
 			-- So we need to fake a refresh by toggling twice.
-			if (AceConfigDialog.OpenFrames[self.appName]) then
+			if (self.app.frame:IsShown()) then
 				self:ToggleMFMFrame()
 				self:ToggleMFMFrame()
 			end
@@ -1430,7 +1133,7 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 		SCALE = scale
 	end
 
-	self:UpdateMFMFrame()
+	--self:UpdateMFMFrame()
 end
 
 MovableFramesManager.OnInitialize = function(self)
