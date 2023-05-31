@@ -13,6 +13,7 @@ L["Save"] = "Speichern"
 L["Apply"] = "Übernehmen"
 L["Cancel"] = "Abbrechen"
 L["Hide"] = "Ausblenden"
+L["Enable"] = "Aktivieren"
 L["Right"] = "Rechts"
 L["Left"] = "Links"
 L["Down"] = "Unten"
@@ -20,7 +21,12 @@ L["Up"] = "Oben"
 
 -- Movable Frames & EditMode interaction
 --------------------------------------------------
-L["Enable"] = "Aktivieren"
+L["Are you sure you want to delete the preset '%s'? This cannot be undone."] = true
+L["Create New Profile"] = true
+L["Create a new settings profile."] = true
+L["Name of new profile:"] = true
+L["The new profile needs a name."] = true
+L["Profile already exists."] = true
 L["Layout:"] = "Layout:"
 L["Name the New Layout"] = "Neues Layout benennen"
 L["HUD Edit Mode"] = "HUD-Bearbeitungsmodus"

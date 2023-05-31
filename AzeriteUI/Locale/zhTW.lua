@@ -21,6 +21,12 @@ L["Up"] = "上"
 
 -- Movable Frames & EditMode interaction
 --------------------------------------------------
+L["Are you sure you want to delete the preset '%s'? This cannot be undone."] = true
+L["Create New Profile"] = true
+L["Create a new settings profile."] = true
+L["Name of new profile:"] = true
+L["The new profile needs a name."] = true
+L["Profile already exists."] = true
 L["Layout:"] = "版面設定："
 L["Name the New Layout"] = "為新版面設定命名"
 L["HUD Edit Mode"] = "介面配置編輯模式"

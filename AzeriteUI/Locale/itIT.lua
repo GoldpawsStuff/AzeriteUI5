@@ -21,6 +21,12 @@ L["Up"] = "In basso"
 
 -- Movable Frames & EditMode interaction
 --------------------------------------------------
+L["Are you sure you want to delete the preset '%s'? This cannot be undone."] = true
+L["Create New Profile"] = true
+L["Create a new settings profile."] = true
+L["Name of new profile:"] = true
+L["The new profile needs a name."] = true
+L["Profile already exists."] = true
 L["Layout:"] = "Interfaccia:"
 L["Name the New Layout"] = "Nome nuova interfaccia"
 L["HUD Edit Mode"] = "Modalità modifica interfaccia"
