@@ -111,7 +111,7 @@ ns.OnInitialize = function(self)
 	self.db = LibStub("AceDB-3.0"):New("AzeriteUI5_DB", defaults, true)
 
 	-- Force a settings reset on backwards incompatible changes.
-	if (self.db.global.version ~= ns.SETTINGS_VERSION or true) then
+	if (self.db.global.version ~= ns.SETTINGS_VERSION) then
 		self:ResetSettings(true) -- no reload needed yet
 	end
 
