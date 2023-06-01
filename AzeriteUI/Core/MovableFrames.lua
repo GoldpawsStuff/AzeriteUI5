@@ -882,6 +882,9 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 
 	-- EditMode integration
 	if (EMP) then
+		options.args.editmodeHeader = {
+
+		}
 	end
 
 	local colorize = function(msg)
