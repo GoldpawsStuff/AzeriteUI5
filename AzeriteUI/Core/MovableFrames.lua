@@ -783,7 +783,7 @@ MovableFramesManager.ResetPreset = function(self, layoutName)
 	if (not self.layouts[layoutName]) then return end
 
 	-- Send message to modules to reset the selected preset.
-	ns:Fire("MFM_LayoutReset", LAYOUT)
+	ns:Fire("MFM_LayoutReset", layoutName)
 end
 
 -- Send a message to modules to delete a saved preset.
