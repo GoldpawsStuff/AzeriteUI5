@@ -30,6 +30,9 @@ local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
 local Options = ns:GetModule("Options")
 local MFM = ns:GetModule("MovableFramesManager")
 
+-- Lua API
+local string_format = string.format
+
 local getmodule = function()
 	return ns:GetModule("Minimap", true)
 end
@@ -79,7 +82,7 @@ local GenerateOptions = function()
 			},
 			useHalfClock = {
 				name = L["24 Hour Mode"],
-				desc = L[""],
+				desc = string_format(L["Enable to use a 24 hour clock, disable to show a 12 hour clock with %s/%s suffixes."], TIMEMANAGER_AM, TIMEMANAGER_PM),
 				order = 10,
 				type = "toggle", width = "full",
 				hidden = isdisabled,
@@ -88,7 +91,7 @@ local GenerateOptions = function()
 			},
 			useServerTime = {
 				name = L["Use Local Time"],
-				desc = L[""],
+				desc = L["Set the clock to your computer's local time, disable to show the server time instead."],
 				order = 11,
 				type = "toggle", width = "full",
 				hidden = isdisabled,
