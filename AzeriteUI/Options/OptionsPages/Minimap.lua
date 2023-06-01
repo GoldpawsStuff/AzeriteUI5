@@ -56,10 +56,47 @@ local getoption = function(info,option)
 	return getmodule().db.profile.savedPosition[MFM:GetLayout()][option]
 end
 
+local globalsetter = function(info,val)
+	getmodule().db.profile[info[#info]] = val
+	getmodule():UpdateSettings()
+end
+
+local globalgetter = function(info)
+	return getmodule().db.profile[info[#info]]
+end
+
 local GenerateOptions = function()
 	if (not getmodule()) then return end
 
-	local options
+	local options = {
+		name = L["Minimap Settings"],
+		type = "group",
+		args = {
+			header = {
+				order = 1,
+				type = "header",
+				name = L["Clock Settings"]
+			},
+			useHalfClock = {
+				name = L["24 Hour Mode"],
+				desc = L[""],
+				order = 10,
+				type = "toggle", width = "full",
+				hidden = isdisabled,
+				set = function(info,val) globalsetter(info, not val) end,
+				get = function(info) return not globalgetter(info) end
+			},
+			useServerTime = {
+				name = L["Use Local Time"],
+				desc = L[""],
+				order = 11,
+				type = "toggle", width = "full",
+				hidden = isdisabled,
+				set = function(info,val) globalsetter(info, not val) end,
+				get = function(info) return not globalgetter(info) end
+			}
+		}
+	}
 
 	return options
 end

@@ -1350,6 +1350,10 @@ MinimapMod.UpdateAnchor = function(self)
 	self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
 end
 
+MinimapMod.UpdateSettings = function(self)
+	self:UpdateClock()
+end
+
 -- Module Initialization & Events
 --------------------------------------------
 MinimapMod.OnEvent = function(self, event, ...)
