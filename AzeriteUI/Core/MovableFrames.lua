@@ -52,18 +52,23 @@ local tostring = tostring
 local type = type
 local unpack = unpack
 
+-- GLOBALS: CreateFrame, EditModeManagerFrame, UIParent, WorldFrame
+
 -- Addon API
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 local UIHider = ns.Hider
 
+-- Constants & Flags
 local SCALE = UIParent:GetScale() -- current blizzard scale
 local DEFAULTLAYOUT = "Azerite" -- default layout name
 local LAYOUT = DEFAULTLAYOUT -- currently selected layout preset
 local CURRENT -- currently selected anchor frame
 local HOVERED -- currently mouseovered anchor frame
-local OUTLINE = CreateFrame("Frame", nil, UIParent, ns.BackdropTemplate) -- mouseover outline
+
+-- Outline frame for mouseover events.
+local OUTLINE = CreateFrame("Frame", nil, UIParent, ns.BackdropTemplate)
 OUTLINE:SetBackdrop({ edgeFile = [[Interface\Tooltips\UI-Tooltip-Border]], edgeSize = 16, insets = { left = 5, right = 3, top = 3, bottom = 5 } })
 OUTLINE:SetBackdropBorderColor(Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75)
 OUTLINE:SetFrameStrata("HIGH")
@@ -882,9 +887,53 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 
 	-- EditMode integration
 	if (EMP) then
-		--options.args.editmodeHeader = {
-		--
-		--}
+		options.args.editmodeHeader = {
+			type = "header",
+			order = 30,
+			name = L["HUD Edit Mode"]
+		}
+		options.args.editmodeCreateDescription = {
+			type = "description",
+			order = 31,
+			fontSize = "medium",
+			hidden = function(info)
+				return MovableFramesManager.incombat or EMP:DoesDefaultLayoutExist()
+			end,
+			name = L["Click the button below to create an EditMode preset named 'Azerite'."]
+		}
+		options.args.editmodeCreateButton = {
+			type = "execute",
+			order = 32,
+			width = "full",
+			name = L["Create EditMode Layout"],
+			hidden = function(info)
+				return MovableFramesManager.incombat or EMP:DoesDefaultLayoutExist()
+			end,
+			func = function(info)
+				EMP:ResetLayouts()
+			end
+		}
+		options.args.editmodeResetDescription = {
+			type = "description",
+			order = 33,
+			fontSize = "medium",
+			hidden = function(info)
+				return MovableFramesManager.incombat or not EMP:CanEditActiveLayout()
+			end,
+			name = L["Click the button below to reset the currently selected EditMode preset to positions matching the default AzeriteUI layout."]
+		}
+		options.args.editmodeResetPreset = {
+			type = "execute",
+			order = 34,
+			width = "full",
+			name = L["Reset EditMode Layout"],
+			hidden = function(info)
+				return MovableFramesManager.incombat or not EMP:CanEditActiveLayout()
+			end,
+			func = function(info)
+				EMP:ApplySystems()
+			end
+		}
 	end
 
 	local colorize = function(msg)
@@ -977,6 +1026,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 	}
 
 	self.app = AceGUI:Create("Frame")
+
 	self:SecureHook(self.app.frame, "Show", "UpdateMovableFrameAnchors")
 	self:SecureHook(self.app.frame, "Hide", "HideMovableFrameAnchors")
 
@@ -1016,8 +1066,14 @@ MovableFramesManager.OpenMFMFrame = function(self)
 	if (not AceConfigRegistry:GetOptionsTable(self.appName)) then
 		self:GenerateMFMFrame()
 	end
-	AceConfigDialog:SetDefaultSize(self.appName, 440, 360)
+	AceConfigDialog:SetDefaultSize(self.appName, 440, ns.IsRetail and 420 or 360)
 	AceConfigDialog:Open(self.appName, self.app)
+
+	if (not self.positioned) then
+		self.app.frame:ClearAllPoints()
+		self.app.frame:SetPoint("LEFT", UIParent, "LEFT", 160, 100)
+		self.positioned = true
+	end
 end
 
 MovableFramesManager.CloseMFMFrame = function(self)
@@ -1025,6 +1081,10 @@ MovableFramesManager.CloseMFMFrame = function(self)
 	if (self.app and self.app.frame and self.app.frame:IsShown()) then
 		self.app.frame:Hide()
 	end
+end
+
+MovableFramesManager.IsMFMFrameOpen = function(self)
+	return AceConfigRegistry:GetOptionsTable(self.appName) and self.app and self.app.frame and self.app.frame:IsShown()
 end
 
 MovableFramesManager.ToggleMFMFrame = function(self)
@@ -1057,22 +1117,35 @@ end
 
 MovableFramesManager.OnEnterEditMode = function(self)
 	self.inEditMode = true
-	self:RefreshMFMFrame()
-	self:OpenMFMFrame()
+
+	if (not self:IsMFMFrameOpen()) then
+		self:OpenMFMFrame()
+	end
 end
 
 MovableFramesManager.OnExitEditMode = function(self)
 	self.inEditMode = nil
-	self:CloseMFMFrame()
+
+	if (self:IsMFMFrameOpen()) then
+		self:CloseMFMFrame()
+	end
 end
 
 MovableFramesManager.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_REGEN_DISABLED") then
 		self.incombat = true
 
+		if (self:IsMFMFrameOpen()) then
+			self:RefreshMFMFrame()
+		end
+
 	elseif (event == "PLAYER_REGEN_ENABLED") then
 		if (not InCombatLockdown()) then
 			self.incombat = nil
+
+			if (self:IsMFMFrameOpen()) then
+				self:RefreshMFMFrame()
+			end
 		end
 
 	elseif (event == "PLAYER_LOGIN") then
