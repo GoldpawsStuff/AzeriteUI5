@@ -81,7 +81,8 @@ local azeriteSystems = {
 	[Enum.EditModeSystem.Minimap] = {
 		settings = {
 			[Enum.EditModeMinimapSetting.HeaderUnderneath] = 0,
-			[Enum.EditModeMinimapSetting.RotateMinimap] = 1
+			[Enum.EditModeMinimapSetting.RotateMinimap] = 1,
+			[Enum.EditModeMinimapSetting.Size] = 5
 		},
 		anchorInfo = {
 			point = "BOTTOMRIGHT",
