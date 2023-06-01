@@ -118,9 +118,18 @@ local GenerateOptions = function()
 				enableBarFading = {
 					name = L["Enable Bar Fading"],
 					desc = L["Toggle whether to enable the buttons of this action bar to fade out."],
-					order = 10,
+					order = 9,
 					type = "toggle", width = "full",
 					hidden = isdisabled,
+					set = setter,
+					get = getter
+				},
+				fadeInCombat = {
+					name = L["Only show on mouseover"],
+					desc = L["Enable this to only show faded bars on mouseover, and not force them visible in combat."],
+					order = 10,
+					type = "toggle", width = "full",
+					hidden = function(info) return isdisabled(info) or not getsetting(info, "enableBarFading") end,
 					set = setter,
 					get = getter
 				},

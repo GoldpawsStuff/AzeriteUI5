@@ -67,6 +67,7 @@ local exitButton = {
 local defaults = ns:Merge({
 	enabled = false,
 	enableBarFading = false, -- whether to enable non-combat/hover button fading
+	fadeInCombat = false, -- whether to keep fading out even in combat
 	fadeFrom = 1, -- which button to start the button fading from
 	numbuttons = 12, -- total number of buttons on the bar
 	layout = "grid", -- currently applied layout type
