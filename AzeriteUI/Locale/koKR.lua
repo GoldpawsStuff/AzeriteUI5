@@ -74,6 +74,8 @@ L["Action Bar %d"] = "행동 단축바 %d"
 L["Toggle whether to enable this action bar or not."] = true
 L["Enable Bar Fading"] = true
 L["Toggle whether to enable the buttons of this action bar to fade out."] = true
+L["Only show on mouseover"] = true
+L["Enable this to only show faded bars on mouseover, and not force them visible in combat."] = true
 L["Start Fading from"] = true
 L["Choose which button to start the fading from."] = true
 L["Bar Layout"] = true
@@ -101,11 +103,25 @@ L["Choose which vertical direction the bar should expand in."] = true
 L["Sets the anchor point."] = true
 
 -- Unit Frame Settings
-L["Unit Frames"] = true
+L["Unit Frames"] = "개체창"
 L["UnitFrame Settings"] = true
 L["Enable Aura Sorting"] = true
 L["Here you can change settings related to the aura buttons appearing at each unitframe."] = true
 L["When enabled, unitframe auras will be sorted depending on time left and who cast the aura. When disabled, unitframe auras will appear in the order they were applied, like in the default user interface."] = true
+L["Toggle whether to enable this unit frame or not."] = true
+L["Cast Bar"] = "시전바"
+L["Boss Frames"] = "우두머리 개체창"
+L["Party Frames"] = "파티 개체창"
+L["Raid Frames"] = "공격대창"
+L["Arena Frames"] = "투기장 개체창"
+L["Combo Points"] = "연계 점수"
+L["Arcane Charges"] = "비전 충전물"
+L["Chi"] = "기"
+L["Stagger"] = "시간차"
+L["Holy Power"] = "신성한 힘"
+L["Soul Shards"] = "영혼의 조각"
+L["Essence"] = "정수"
+L["Runes"] = "룬"
 
 -- Tooltip Settings
 L["Tooltips"] = true
@@ -114,7 +130,6 @@ L["Show itemID"] = true
 L["Toggle whether to add itemID to item tooltips or not."] = true
 L["Show spellID"] = true
 L["Toggle whether to add spellIDs and auraIDs in tooltips containing actions, spells or auras."] = true
-L["Toggle whether to enable this unit frame or not."] = true
 
 -- Player Aura Settings
 L["Player Auras"] = true
@@ -129,7 +144,6 @@ L["Enable Modifier Key"] = true
 L["Require a modifier key to show the auras."] = true
 L["Modifier Key"] = true
 L["Choose which modifier key to hold  down to show the aura buttons."] = true
-L["Anchor Point"] = true
 L["Sets the anchor point."] = true
 L["Horizontal Growth"] = true
 L["Choose which horizontal direction the aura buttons should expand in."] = true

@@ -74,6 +74,8 @@ L["Action Bar %d"] = "快捷列%d"
 L["Toggle whether to enable this action bar or not."] = true
 L["Enable Bar Fading"] = true
 L["Toggle whether to enable the buttons of this action bar to fade out."] = true
+L["Only show on mouseover"] = true
+L["Enable this to only show faded bars on mouseover, and not force them visible in combat."] = true
 L["Start Fading from"] = true
 L["Choose which button to start the fading from."] = true
 L["Bar Layout"] = true
@@ -101,12 +103,25 @@ L["Choose which vertical direction the bar should expand in."] = true
 L["Sets the anchor point."] = true
 
 -- Unit Frame Settings
-L["Unit Frames"] = true
+L["Unit Frames"] = "單位框架"
 L["UnitFrame Settings"] = true
 L["Enable Aura Sorting"] = true
 L["Here you can change settings related to the aura buttons appearing at each unitframe."] = true
 L["When enabled, unitframe auras will be sorted depending on time left and who cast the aura. When disabled, unitframe auras will appear in the order they were applied, like in the default user interface."] = true
 L["Toggle whether to enable this unit frame or not."] = true
+L["Cast Bar"] = "施法條"
+L["Boss Frames"] = "首領框架"
+L["Party Frames"] = "隊伍框架"
+L["Raid Frames"] = "團隊框架"
+L["Arena Frames"] = "競技場框架"
+L["Combo Points"] = "連擊點數"
+L["Arcane Charges"] = "秘法充能"
+L["Chi"] = "真氣"
+L["Stagger"] = "醉仙緩勁"
+L["Holy Power"] = "聖能"
+L["Soul Shards"] = "靈魂裂片"
+L["Essence"] = "龍能"
+L["Runes"] = "符文"
 
 -- Tooltip Settings
 L["Tooltips"] = true
@@ -129,7 +144,6 @@ L["Enable Modifier Key"] = true
 L["Require a modifier key to show the auras."] = true
 L["Modifier Key"] = true
 L["Choose which modifier key to hold  down to show the aura buttons."] = true
-L["Anchor Point"] = true
 L["Sets the anchor point."] = true
 L["Horizontal Growth"] = true
 L["Choose which horizontal direction the aura buttons should expand in."] = true

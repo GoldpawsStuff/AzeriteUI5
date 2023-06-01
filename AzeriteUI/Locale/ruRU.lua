@@ -74,6 +74,8 @@ L["Action Bar %d"] = "Панель команд %d"
 L["Toggle whether to enable this action bar or not."] = true
 L["Enable Bar Fading"] = true
 L["Toggle whether to enable the buttons of this action bar to fade out."] = true
+L["Only show on mouseover"] = true
+L["Enable this to only show faded bars on mouseover, and not force them visible in combat."] = true
 L["Start Fading from"] = true
 L["Choose which button to start the fading from."] = true
 L["Bar Layout"] = true
@@ -99,14 +101,27 @@ L["Choose which horizontal direction the bar should expand in."] = true
 L["Vertical Growth"] = true
 L["Choose which vertical direction the bar should expand in."] = true
 L["Sets the anchor point."] = true
-L["Toggle whether to enable this unit frame or not."] = true
 
 -- Unit Frame Settings
-L["Unit Frames"] = true
+L["Unit Frames"] = "Рамки портретов"
 L["UnitFrame Settings"] = true
 L["Enable Aura Sorting"] = true
 L["Here you can change settings related to the aura buttons appearing at each unitframe."] = true
 L["When enabled, unitframe auras will be sorted depending on time left and who cast the aura. When disabled, unitframe auras will appear in the order they were applied, like in the default user interface."] = true
+L["Toggle whether to enable this unit frame or not."] = true
+L["Cast Bar"] = "Индикатор заклинаний"
+L["Boss Frames"] = "Рамки боссов"
+L["Party Frames"] = "Интерфейс группы"
+L["Raid Frames"] = "Интерфейс рейда"
+L["Arena Frames"] = "Рамки портретов на арене"
+L["Combo Points"] = "Длина серии приемов"
+L["Arcane Charges"] = "Чародейские заряды"
+L["Chi"] = "Энергия ци"
+L["Stagger"] = "Пошатывание"
+L["Holy Power"] = "Энергия Света"
+L["Soul Shards"] = "Осколки души"
+L["Essence"] = "Сущность"
+L["Runes"] = "Руны"
 
 -- Tooltip Settings
 L["Tooltips"] = true
@@ -129,7 +144,6 @@ L["Enable Modifier Key"] = true
 L["Require a modifier key to show the auras."] = true
 L["Modifier Key"] = true
 L["Choose which modifier key to hold  down to show the aura buttons."] = true
-L["Anchor Point"] = true
 L["Sets the anchor point."] = true
 L["Horizontal Growth"] = true
 L["Choose which horizontal direction the aura buttons should expand in."] = true
