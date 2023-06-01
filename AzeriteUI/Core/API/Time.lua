@@ -38,8 +38,11 @@ local select = select
 local string_format = string.format
 local string_join = string.join
 local string_match = string.match
+local time = time
 local tonumber = tonumber
 local type = type
+
+-- GLOBALS: TIMEMANAGER_AM, TIMEMANAGER_PM
 
 -- Converts dates to time since epoch and compares.
 local dateInRange = function(day1, month1, year1, day2, month2, year2)

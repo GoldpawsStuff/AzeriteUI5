@@ -25,6 +25,15 @@
 --]]
 local Addon, ns = ...
 
+-- Lua API
+local string_find = string.find
+local string_gsub = string.gsub
+local string_split = string.split
+local tonumber = tonumber
+
+-- GLOBALS: GetBuildInfo, GetRealmName, UnitClass, UnitNameUnmodified
+-- GLOBALS: WOW_PROJECT_ID, WOW_PROJECT_MAINLINE, WOW_PROJECT_WRATH_CLASSIC, WOW_PROJECT_CLASSIC, WOW_PROJECT_BURNING_CRUSADE_CLASSIC
+
 -- Addon version
 ------------------------------------------------------
 -- Keyword substitution requires the packager,
@@ -35,15 +44,15 @@ if (version:find("project%-version")) then
 end
 ns.Private.Version = version
 ns.Private.IsDevelopment = version == "Development"
-ns.Private.IsAlpha = string.find(version, "%-Alpha$")
-ns.Private.IsBeta = string.find(version, "%-Beta$")
-ns.Private.IsRC = string.find(version, "%-RC$")
-ns.Private.IsRelease = string.find(version, "%-Release$")
+ns.Private.IsAlpha = string_find(version, "%-Alpha$")
+ns.Private.IsBeta =string_find(version, "%-Beta$")
+ns.Private.IsRC = string_find(version, "%-RC$")
+ns.Private.IsRelease = string_find(version, "%-Release$")
 
 -- WoW client version
 ------------------------------------------------------
 local patch, build, date, version = GetBuildInfo()
-local major, minor, micro = string.split(".", patch)
+local major, minor, micro = string_split(".", patch)
 
 ns.Private.ClientVersion = version
 ns.Private.ClientDate = date
@@ -65,7 +74,7 @@ ns.Private.IsWrathModern = (ns.IsWrath and ((ns.ClientMinor > 4) or (ns.ClientMi
 
 -- Prefix for frame names
 ------------------------------------------------------
-ns.Private.Prefix = string.gsub(Addon, "UI(%d*)", "")
+ns.Private.Prefix = string_gsub(Addon, "UI(%d*)", "")
 
 -- Player constants
 ------------------------------------------------------

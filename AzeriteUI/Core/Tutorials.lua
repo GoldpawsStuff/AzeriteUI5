@@ -38,6 +38,9 @@ local string_format = string.format
 local string_gsub = string.gsub
 local table_insert = table.insert
 
+-- GLOBALS: CreateFrame, GetAddOnMetadata, GetExpansionLevel, InCombatLockdown, UIParent
+-- GLOBALS: BNET_FRIEND_ZONE_WOW_REGULAR
+
 -- Addon API
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont

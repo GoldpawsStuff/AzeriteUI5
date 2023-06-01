@@ -27,6 +27,8 @@ local Addon, ns = ...
 local API = ns.API or {}
 ns.API = API
 
+-- GLOBALS: WorldFrame, UIParent
+
 -- Convert a coordinate within a frame to a usable position
 local GetParsedPosition = function(parentWidth, parentHeight, x, y, bottomOffset, leftOffset, topOffset, rightOffset)
 	if (y < parentHeight * 1/3) then

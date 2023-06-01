@@ -141,17 +141,6 @@ Options.GenerateProfileMenu = function(self)
 	return options
 end
 
---local generateFadeOptions = function()
---
---	local optionsTable = {
---		name = L["Frame Fade Settings"],
---		type = "group",
---		args = {}
---	}
---
---	registerOptionsPanel(L["Frame Fading"], optionsTable)
---end
-
 Options.Refresh = function(self)
 	if (AceConfigRegistry:GetOptionsTable(Addon)) then
 		AceConfigRegistry:NotifyChange(Addon)

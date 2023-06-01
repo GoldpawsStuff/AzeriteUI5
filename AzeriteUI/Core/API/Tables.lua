@@ -27,6 +27,8 @@ local Addon, ns = ...
 local API = ns.API or {}
 ns.API = API
 
+local pairs, type = pairs, type
+
 -- Global API
 ---------------------------------------------------------
 -- Deep table merging without metatables.

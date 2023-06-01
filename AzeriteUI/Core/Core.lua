@@ -23,6 +23,9 @@
 	SOFTWARE.
 
 --]]
+
+-- GLOBALS: CreateFrame, EnableAddOn, DisableAddOn, ReloadUI
+
 local Addon, ns = ...
 ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "LibMoreEvents-1.0", "AceConsole-3.0")
 ns.L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)

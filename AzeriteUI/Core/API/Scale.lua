@@ -31,8 +31,7 @@ ns.API = API
 local next = next
 local tonumber = tonumber
 
--- WoW Objects
-local UIParent = UIParent
+-- GLOBALS: UIParent
 
 -- Cache
 local Scaled = {}

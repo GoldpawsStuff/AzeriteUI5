@@ -27,6 +27,11 @@ local Addon, ns = ...
 local API = ns.API or {}
 ns.API = API
 
+-- GLOBALS: UnitIsConnected, UnitIsDeadOrGhost, UnitIsPlayer, UnitIsTapDenied
+-- GLOBALS: UnitClass, UnitReaction, UnitCanAttack, UnitPlayerControlled
+-- GLOBALS: UnitLevel, UnitEffectiveLevel, UnitQuestTrivialLevelRange, UnitQuestTrivialLevelRangeScaling
+-- GLOBALS: GetScalingQuestGreenRange, GetQuestGreenRange
+
 local Colors = ns.Colors
 
 -- Retrieve a unit's color

@@ -38,6 +38,8 @@ local string_utf8lower = string.utf8lower
 local string_utf8sub = string.utf8sub
 local tonumber = tonumber
 
+-- GLOBALS: GetLocale
+
 -- Constants
 local DAY, HOUR, MINUTE = 86400, 3600, 60
 

@@ -28,11 +28,9 @@ local Widgets = ns.Private.Widgets or {}
 ns.Private.Widgets = Widgets
 
 -- Lua API
-local pairs = pairs
-local select = select
+local next, pairs, select = next, pairs, select
 
--- WoW API
-local GetTime = GetTime
+-- GLOBALS: CreateFrame, GetTime, hooksecurefunc
 
 -- Addon API
 local AbbreviateTime = ns.API.AbbreviateTime

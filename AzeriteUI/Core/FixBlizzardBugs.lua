@@ -25,6 +25,8 @@
 --]]
 local Addon, ns = ...
 
+-- GLOBALS: LoadAddOn, ChannelFrame
+
 LoadAddOn("Blizzard_Channels")
 
 -- Kill off the non-stop voice chat error 17 on retail.

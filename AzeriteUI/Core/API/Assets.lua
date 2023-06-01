@@ -27,15 +27,15 @@ local Addon, ns = ...
 local API = ns.API or {}
 ns.API = API
 
--- WoW API
-local CreateFont = CreateFont
-
 -- Lua API
+local next = next
 local pairs = pairs
 local rawset = rawset
 local setmetatable = setmetatable
 local string_format = string.format
 local type = type
+
+-- GLOBALS: CreateFont
 
 -- Full cache that spawns new objects on-the-fly.
 local count, font_mt = 0, nil

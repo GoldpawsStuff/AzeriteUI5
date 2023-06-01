@@ -25,6 +25,8 @@
 --]]
 local Addon, ns = ...
 
+-- GLOBALS: getmetatable, setmetatable, rawset, error, tostring, type
+
 local mt = getmetatable(ns) or {}
 local private = {}
 

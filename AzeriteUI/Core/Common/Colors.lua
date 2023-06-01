@@ -33,6 +33,8 @@ local select = select
 local string_format = string.format
 local unpack = unpack
 
+-- GLOBALS: ITEM_QUALITY_COLORS, RAID_CLASS_COLORS
+
 -- Define Local Tables
 local ColorTemplate = {}
 

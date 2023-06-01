@@ -34,6 +34,10 @@ local string_match = string_match
 local string_lower = string_lower
 local tonumber = tonumber
 
+-- GLOBALS: UIParent, SlashCmdList, MAX_BATTLEFIELD_QUEUES
+-- GLOBALS: CreateFrame, GetBattlefieldStatus, IsAddOnLoaded, UIParentLoadAddOn, ToggleCalendar, StaticPopup_Hide
+-- GLOBALS: StopwatchFrame, Stopwatch_Play, Stopwatch_Pause, Stopwatch_Clear, Stopwatch_StartCountdown, Stopwatch_Toggle
+
 -- Addon API
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
