@@ -165,6 +165,7 @@ L["Choose in which direction items in your bags are sorted."] = true
 L["Left to Right"] = true
 L["Right to Left"] = true
 L["Insert Point"] = true
+L["Enable to use a 24 hour clock, disable to show a 12 hour clock with %s/%s suffixes."] = true
 L["Choose from which side new items are inserted into your bags."] = true
 
 -- Minimap Settings
@@ -173,6 +174,7 @@ L["Minimap Settings"] = true
 L["Clock Settings"] = true
 L["24 Hour Mode"] = "24 часа"
 L["Use Local Time"] = "Местное время"
+L["Set the clock to your computer's local time, disable to show the server time instead."] = true
 
 -- Fading & Explorer Mode Settings
 L["Frame Fading"] = true

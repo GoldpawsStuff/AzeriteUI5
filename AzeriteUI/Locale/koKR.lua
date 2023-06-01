@@ -172,7 +172,9 @@ L["Minimap"] = "미니맵"
 L["Minimap Settings"] = true
 L["Clock Settings"] = true
 L["24 Hour Mode"] = "24시간으로 표시"
+L["Enable to use a 24 hour clock, disable to show a 12 hour clock with %s/%s suffixes."] = true
 L["Use Local Time"] = "시스템 시간으로 표시"
+L["Set the clock to your computer's local time, disable to show the server time instead."] = true
 
 -- Fading & Explorer Mode Settings
 L["Frame Fading"] = true

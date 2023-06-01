@@ -172,7 +172,9 @@ L["Minimap"] = "Minimappa"
 L["Minimap Settings"] = true
 L["Clock Settings"] = true
 L["24 Hour Mode"] = "Modalità 24 ore"
+L["Enable to use a 24 hour clock, disable to show a 12 hour clock with %s/%s suffixes."] = true
 L["Use Local Time"] = "Usa ora locale"
+L["Set the clock to your computer's local time, disable to show the server time instead."] = true
 
 -- Fading & Explorer Mode Settings
 L["Frame Fading"] = true
