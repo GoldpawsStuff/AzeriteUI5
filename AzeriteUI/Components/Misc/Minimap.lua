@@ -1101,21 +1101,6 @@ end
 
 -- Minimap Widget Settings
 --------------------------------------------
-MinimapMod.SetClock = function(self, input)
-	local args = { self:GetArgs(string_lower(input)) }
-	for _,arg in ipairs(args) do
-		if (arg == "24") then
-			self.db.profile.useHalfClock = false
-		elseif (arg == "12") then
-			self.db.profile.useHalfClock = true
-		elseif (arg == "realm") then
-			self.db.profile.useServerTime = true
-		elseif (arg == "local") then
-			self.db.profile.useServerTime = false
-		end
-	end
-end
-
 -- Create our custom elements
 -- *This is a temporary and clunky measure,
 --  eventually I want this baked into the themes,
@@ -1486,7 +1471,6 @@ MinimapMod.OnInitialize = function(self)
 		ns.RegisterCallback(self, "MFM_Dragging", "OnEvent")
 	end
 
-	self:RegisterChatCommand("setclock", "SetClock")
 	self:RegisterChatCommand("setminimaptheme", "SetMinimapTheme")
 
 	self.Addons = {}
