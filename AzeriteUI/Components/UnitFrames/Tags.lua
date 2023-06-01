@@ -231,7 +231,7 @@ Methods[prefix("*:Name")] = function(unit, realUnit, ...)
 	end
 
 	local maxChars, showLevel, showLevelLast, showFull = getargs(...)
-	local levelTextLength, levelText, shouldShowLevel = 0
+	local levelTextLength, levelText, shouldShowLevel = 0, nil, nil
 
 	if (not showFull and string_find(name, "%s")) then
 		name = AbbreviateName(name)
