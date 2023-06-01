@@ -9,10 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - This version is compatible with Wrath 3.4.2 PTR.
 
 ### Added
-- Added the command `/resetsettings` to fully reset the AzeriteUI stored settings to their defaults.
-- Added an options menu. The menu is accessible from the addon section of the interface options panels.
-- Added the option to also keep actionbars faded in combat and only visible on mouseover.
-- Added threat glow to the player unit frame.
+- Added an options menu accessible through the command `/az` or `/azerite`.
+- Added the command `/resetsettings` to fully reset our user interface to its defaults.
+- Added the option to keep actionbars faded out in combat and only visible on mouseover.
+- Added threat glow to the player unit frame. More are coming.
 - Added nameplate highlight outline for soft targeting in Retail. Thanks Billybishop@GitHub for writing this!
 - Started working on proper localization for the addon. A lot of general phrases copied from blizzard are already in place, but some phrases and longer texts remains untranslated for non-English locales. Work in progress.
 
@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Fixed an issue with the actionbar frame fading that would prevent fading from working correctly after a settings change.
 
 ### Removed
-- Removed most chat commands for actionbar visibility and layout, bag sorting and item insertion and unitframe aura sorting. All these settings have been moved to the new options menu.
+- Removed most chat commands. All these settings have been moved to the new options menu.
 
 ## [5.0.65-RC] 2023-05-06
 ### Fixed
