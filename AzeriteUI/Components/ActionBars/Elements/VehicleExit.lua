@@ -94,7 +94,10 @@ VehicleExit.UpdateScale = function(self)
 	end
 	if (self.Button) then
 		local point, anchor, rpoint, x, y = unpack(config.VehicleExitButtonPosition())
+
 		local scaleObject = ns.IsRetail and MinimapCluster.MinimapContainer or Minimap
+		local mscale = scaleObject:GetScale()
+		local escale = mscale / scaleObject:GetEffectiveScale()
 
 		self.Button:SetScale(ns.API.GetEffectiveScale() * mscale)
 		self.Button:ClearAllPoints()
