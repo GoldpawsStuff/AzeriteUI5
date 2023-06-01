@@ -559,7 +559,7 @@ ChatFrames.OnEvent = function(self, event, ...)
 			kill:SetScript("OnUpdate", function(self)
 				ChatFrame1:Clear()
 				self.count = self.count + 1
-				if (self.counter > 1) then
+				if (self.count > 1) then
 					self:SetScript("OnUpdate", nil)
 					self:Hide()
 				end
