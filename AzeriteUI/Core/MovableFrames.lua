@@ -980,10 +980,10 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 	self:SecureHook(self.app.frame, "Show", "UpdateMovableFrameAnchors")
 	self:SecureHook(self.app.frame, "Hide", "HideMovableFrameAnchors")
 
-	--self:SecureHook("CloseSpecialWindows", "CloseMFMFrame")
-	--self:SecureHook(AceConfigDialog, "CloseAll", "CloseMFMFrame")
-
-	if not self.CloseSpecialWindows then
+	-- Hook into the blizzard function to close windows on Esc
+	-- without tainting their table of special windows to close.
+	-- Kindly borrowed this method from AceConfigDialog which also does it.
+	if (not self.CloseSpecialWindows) then
 		self.CloseSpecialWindows = CloseSpecialWindows
 		CloseSpecialWindows = function()
 			self:CloseMFMFrame()
@@ -1001,7 +1001,7 @@ MovableFramesManager.RefreshMFMFrame = function(self)
 		if (self.app and self.app.frame) then
 			-- When using a custom window for the dialog,
 			-- the notify callback does not fire for it.
-			-- So we need to fake a refresh by toggling twice.
+			-- So we need to fake a refresh by hiding and showing.
 			if (self.app.frame:IsShown()) then
 				self:CloseMFMFrame()
 				self:OpenMFMFrame()
