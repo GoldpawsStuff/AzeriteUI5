@@ -980,6 +980,17 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 	self:SecureHook(self.app.frame, "Show", "UpdateMovableFrameAnchors")
 	self:SecureHook(self.app.frame, "Hide", "HideMovableFrameAnchors")
 
+	--self:SecureHook("CloseSpecialWindows", "CloseMFMFrame")
+	--self:SecureHook(AceConfigDialog, "CloseAll", "CloseMFMFrame")
+
+	if not self.CloseSpecialWindows then
+		self.CloseSpecialWindows = CloseSpecialWindows
+		CloseSpecialWindows = function()
+			self:CloseMFMFrame()
+			return self.CloseSpecialWindows()
+		end
+	end
+
 	AceConfigRegistry:RegisterOptionsTable(self.appName, options)
 
 	return
@@ -987,13 +998,13 @@ end
 
 MovableFramesManager.RefreshMFMFrame = function(self)
 	if (AceConfigRegistry:GetOptionsTable(self.appName)) then
-		if (self.app) then
+		if (self.app and self.app.frame) then
 			-- When using a custom window for the dialog,
 			-- the notify callback does not fire for it.
 			-- So we need to fake a refresh by toggling twice.
 			if (self.app.frame:IsShown()) then
-				self:ToggleMFMFrame()
-				self:ToggleMFMFrame()
+				self:CloseMFMFrame()
+				self:OpenMFMFrame()
 			end
 		else
 			AceConfigRegistry:NotifyChange(self.appName)
@@ -1010,13 +1021,14 @@ MovableFramesManager.OpenMFMFrame = function(self)
 end
 
 MovableFramesManager.CloseMFMFrame = function(self)
-	if (AceConfigRegistry:GetOptionsTable(self.appName)) then
-		AceConfigDialog:Close(self.appName)
+	if (not AceConfigRegistry:GetOptionsTable(self.appName)) then return end
+	if (self.app and self.app.frame and self.app.frame:IsShown()) then
+		self.app.frame:Hide()
 	end
 end
 
 MovableFramesManager.ToggleMFMFrame = function(self)
-	if (AceConfigDialog.OpenFrames[self.appName]) then
+	if (self.app and self.app.frame and self.app.frame:IsShown()) then
 		self:CloseMFMFrame()
 	else
 		self:OpenMFMFrame()
