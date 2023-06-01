@@ -47,16 +47,20 @@ local playerClass = ns.PlayerClass
 local playerLevel = UnitLevel("player")
 local playerXPDisabled = IsXPUserDisabled()
 
+local profileDefaults = function()
+	return {
+		enabled = true,
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "BOTTOM",
+		[2] = 0 * ns.API.GetEffectiveScale(),
+		[3] = (290 - 16/2) * ns.API.GetEffectiveScale()
+	}
+end
+
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
-		[MFM:GetDefaultLayout()] = {
-			enabled = true,
-			scale = ns.API.GetEffectiveScale(),
-			[1] = "BOTTOM",
-			[2] = 0 * ns.API.GetEffectiveScale(),
-			[3] = (290 - 16/2) * ns.API.GetEffectiveScale()
-		}
+		[MFM:GetDefaultLayout()] = profileDefaults()
 	}
 }, ns.UnitFrame.defaults) }
 
@@ -289,6 +293,7 @@ CastBarMod.OnInitialize = function(self)
 	end
 
 	self.db = ns.db:RegisterNamespace("PlayerCastBarFrame", defaults)
+	self.profileDefaults = profileDefaults
 
 	self:SetEnabledState(self.db.profile.enabled)
 

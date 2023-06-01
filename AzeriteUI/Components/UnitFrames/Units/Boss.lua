@@ -41,16 +41,20 @@ local GetMedia = ns.API.GetMedia
 -- Constants
 local playerClass = ns.PlayerClass
 
+local profileDefaults = function()
+	return {
+		enabled = true,
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "TOPRIGHT",
+		[2] = -64 * ns.API.GetEffectiveScale(),
+		[3] = -279 * ns.API.GetEffectiveScale()
+	}
+end
+
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
-		[MFM:GetDefaultLayout()] = {
-			enabled = true,
-			scale = ns.API.GetEffectiveScale(),
-			[1] = "TOPRIGHT",
-			[2] = -64 * ns.API.GetEffectiveScale(),
-			[3] = -279 * ns.API.GetEffectiveScale()
-		}
+		[MFM:GetDefaultLayout()] = profileDefaults()
 	}
 }, ns.UnitFrame.defaults) }
 
@@ -628,6 +632,7 @@ end
 
 BossFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("BossFrames", defaults)
+	self.profileDefaults = profileDefaults
 
 	self:SetEnabledState(self.db.profile.enabled)
 

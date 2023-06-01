@@ -36,7 +36,7 @@ local LibSpinBar = LibStub("LibSpinBar-1.0")
 local LibOrb = LibStub("LibOrb-1.0")
 
 -- Lua API
-local next = next
+local pairs, next = pairs, next
 
 -- Private API
 local Colors = ns.Colors
@@ -195,7 +195,7 @@ ns.UnitFrame.modulePrototype = {
 			local LAYOUT = ...
 
 			if (not self.db.profile.savedPosition[LAYOUT]) then
-				self.db.profile.savedPosition[LAYOUT] = ns:Merge({}, self.db.defaults.profile.savedPosition[MFM:GetDefaultLayout()])
+				self.db.profile.savedPosition[LAYOUT] = self.profileDefaults()
 			end
 
 			self:UpdatePositionAndScale()
@@ -211,8 +211,15 @@ ns.UnitFrame.modulePrototype = {
 		elseif (event == "MFM_LayoutReset") then
 			local LAYOUT = ...
 
-			--self.db.profile.savedPosition[LAYOUT]
-			--self.db.defaults.profile.savedPosition[LAYOUT]
+			local db = self.db.profile.savedPosition[LAYOUT]
+			for i,v in pairs(self.profileDefaults()) do
+				db[i] = v
+			end
+
+			self:UpdatePositionAndScale()
+			self:UpdateAnchor()
+
+			GUI:Refresh()
 
 		elseif (event == "MFM_PositionUpdated") then
 			local LAYOUT, anchor, point, x, y = ...

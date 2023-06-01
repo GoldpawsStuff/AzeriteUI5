@@ -37,6 +37,7 @@ local MFM = ns:GetModule("MovableFramesManager")
 local CPB = ns.API.IsAddOnEnabled("ConsolePort_Bar")
 
 -- Lua API
+local pairs = pairs
 local next = next
 local string_format = string.format
 local string_gsub = string.gsub
@@ -770,6 +771,7 @@ ActionBarMod.OnEvent = function(self, event, ...)
 		self.incombat = nil
 		if (self.needupdate) then
 			self:UpdateSettings()
+			GUI:Refresh()
 		end
 
 	elseif (event == "PLAYER_REGEN_DISABLED") then
@@ -791,7 +793,7 @@ ActionBarMod.OnEvent = function(self, event, ...)
 			local layouts = self.db.profile.bars[id].savedPosition
 			if (not layouts[LAYOUT]) then
 				-- Watch if this bugs out or work. The default tables here should be complete. But.
-				layouts[LAYOUT] = ns:Merge({}, defaults.profile.bars[id].savedPosition[MFM:GetDefaultLayout()])
+				layouts[LAYOUT] = ns:Merge({}, barDefaults[id].savedPosition[MFM:GetDefaultLayout()])
 			end
 			bar.config = layouts[LAYOUT]
 			bar:Update()
@@ -807,6 +809,27 @@ ActionBarMod.OnEvent = function(self, event, ...)
 
 	elseif (event == "MFM_LayoutReset") then
 		local LAYOUT = ...
+
+		for id,bar in next,self.bars do
+			local db = self.db.profile.bars[id].savedPosition[LAYOUT]
+			for i,v in pairs(barDefaults[id].savedPosition[MFM:GetDefaultLayout()]) do
+				db[i] = v
+			end
+			if (MFM:GetLayout() == LAYOUT) then
+				if (not InCombatLockdown()) then
+					bar:UpdatePosition()
+				end
+			end
+		end
+
+		if (MFM:GetLayout() == LAYOUT) then
+			if (InCombatLockdown()) then
+				self.needupdate = true
+				return
+			end
+		end
+
+		GUI:Refresh()
 
 	elseif (event == "MFM_PositionUpdated") then
 		local LAYOUT, anchor, point, x, y = ...

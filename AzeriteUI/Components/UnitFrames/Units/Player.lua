@@ -47,16 +47,20 @@ local playerXPDisabled = IsXPUserDisabled()
 local SPEC_PALADIN_RETRIBUTION = SPEC_PALADIN_RETRIBUTION or 3
 local playerIsRetribution = playerClass == "PALADIN" and (ns.IsRetail and GetSpecialization() == SPEC_PALADIN_RETRIBUTION)
 
+local profileDefaults = function()
+	return {
+		enabled = true,
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "BOTTOMLEFT",
+		[2] = 46 * ns.API.GetEffectiveScale(),
+		[3] = 100 * ns.API.GetEffectiveScale()
+	}
+end
+
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
-		[MFM:GetDefaultLayout()] = {
-			enabled = true,
-			scale = ns.API.GetEffectiveScale(),
-			[1] = "BOTTOMLEFT",
-			[2] = 46 * ns.API.GetEffectiveScale(),
-			[3] = 100 * ns.API.GetEffectiveScale()
-		}
+		[MFM:GetDefaultLayout()] = profileDefaults()
 	}
 }, ns.UnitFrame.defaults) }
 
@@ -299,7 +303,6 @@ local config = {
 		HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 		HealthAbsorbColor = { 1, 1, 1, .35 },
 		HealthCastOverlayColor = { 1, 1, 1, .35 },
-		HealthThreatTexture = GetMedia("hp_mid_case_glow"),
 
 		-- Health Bar Threat
 		HealthThreatSize = { 716, 188 },
@@ -373,7 +376,6 @@ local config = {
 		HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 		HealthAbsorbColor = { 1, 1, 1, .35 },
 		HealthCastOverlayColor = { 1, 1, 1, .35 },
-		HealthThreatTexture = GetMedia("hp_cap_case_glow"),
 
 		-- Health Bar Threat
 		HealthThreatSize = { 716, 188 },
@@ -1275,6 +1277,7 @@ end
 
 PlayerFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PlayerFrame", defaults)
+	self.profileDefaults = profileDefaults
 
 	self:SetEnabledState(self.db.profile.enabled)
 

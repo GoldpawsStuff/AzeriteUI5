@@ -31,21 +31,26 @@ local oUF = ns.oUF
 local ArenaFrameMod = ns:Merge(ns:NewModule("ArenaFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
 local MFM = ns:GetModule("MovableFramesManager")
 
+local profileDefaults = function()
+	return {
+		enabled = true,
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "TOPRIGHT",
+		[2] = -64 * ns.API.GetEffectiveScale(),
+		[3] = -279 * ns.API.GetEffectiveScale()
+	}
+end
+
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
-		[MFM:GetDefaultLayout()] = {
-			enabled = true,
-			scale = ns.API.GetEffectiveScale(),
-			[1] = "TOPRIGHT",
-			[2] = -64 * ns.API.GetEffectiveScale(),
-			[3] = -279 * ns.API.GetEffectiveScale()
-		}
+		[MFM:GetDefaultLayout()] = profileDefaults()
 	}
 }, ns.UnitFrame.defaults) }
 
 ArenaFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ArenaFrames", defaults)
+	self.profileDefaults = profileDefaults
 
 	self:SetEnabledState(self.db.profile.enabled)
 

@@ -47,16 +47,20 @@ local playerClass = ns.PlayerClass
 local playerLevel = UnitLevel("player")
 local playerXPDisabled = IsXPUserDisabled()
 
+local profileDefaults = function()
+	return {
+		enabled = true,
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "CENTER",
+		[2] = -(285 - 124/2) * ns.API.GetEffectiveScale(),
+		[3] = -(168 - 168/2) * ns.API.GetEffectiveScale()
+	}
+end
+
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
-		[MFM:GetDefaultLayout()] = {
-			enabled = true,
-			scale = ns.API.GetEffectiveScale(),
-			[1] = "CENTER",
-			[2] = -(285 - 124/2) * ns.API.GetEffectiveScale(),
-			[3] = -(168 - 168/2) * ns.API.GetEffectiveScale()
-		}
+		[MFM:GetDefaultLayout()] = profileDefaults()
 	}
 }, ns.UnitFrame.defaults) }
 
@@ -603,6 +607,7 @@ end
 
 ClassPowerMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PlayerClassPowerFrame", defaults)
+	self.profileDefaults = profileDefaults
 
 	self:SetEnabledState(self.db.profile.enabled)
 

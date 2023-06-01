@@ -43,16 +43,20 @@ local GetMedia = ns.API.GetMedia
 -- Constants
 local playerLevel = UnitLevel("player")
 
+local profileDefaults = function()
+	return {
+		enabled = true,
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "TOPRIGHT",
+		[2] = -40 * ns.API.GetEffectiveScale(),
+		[3] = -40 * ns.API.GetEffectiveScale()
+	}
+end
+
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
-		[MFM:GetDefaultLayout()] = {
-			enabled = true,
-			scale = ns.API.GetEffectiveScale(),
-			[1] = "TOPRIGHT",
-			[2] = -40 * ns.API.GetEffectiveScale(),
-			[3] = -40 * ns.API.GetEffectiveScale()
-		}
+		[MFM:GetDefaultLayout()] = profileDefaults()
 	}
 }, ns.UnitFrame.defaults) }
 
@@ -1265,9 +1269,6 @@ TargetFrameMod.Spawn = function(self)
 	anchor:SetEditModeAccountSetting(ns.IsRetail and Enum.EditModeAccountSetting.ShowTargetAndFocus)
 	anchor.PreUpdate = function() self:UpdateAnchor() end
 	anchor.UpdateDefaults = function() self:UpdateDefaults() end
-	--anchor.frameOffsetX = -113
-	--anchor.frameOffsetY = -39
-	--anchor.framePoint = "TOPRIGHT"
 
 	self.anchor = anchor
 
@@ -1275,6 +1276,7 @@ end
 
 TargetFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("TargetFrame", defaults)
+	self.profileDefaults = profileDefaults
 
 	self:SetEnabledState(self.db.profile.enabled)
 

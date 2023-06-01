@@ -1400,6 +1400,14 @@ MinimapMod.OnEvent = function(self, event, ...)
 	elseif (event == "MFM_LayoutReset") then
 		local LAYOUT = ...
 
+		local db = self.db.profile.savedPosition[LAYOUT]
+		for i,v in pairs(profileDefaults()) do
+			db[i] = v
+		end
+
+		self:UpdatePositionAndScale()
+		self:UpdateAnchor()
+
 	elseif (event == "MFM_PositionUpdated") then
 		local LAYOUT, anchor, point, x, y = ...
 

@@ -43,32 +43,31 @@ local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 local RegisterCooldown = ns.Widgets.RegisterCooldown
 
-local profileDefaults = {
-	enabled = true,
-	enableAuraFading = true,
-	enableModifier = false,
-	modifier = "SHIFT",
-	anchorPoint = "TOPRIGHT",
-	growthX = "LEFT",
-	growthY = "DOWN",
-	paddingX = 6,
-	paddingY = 12,
-	wrapAfter = 6,
-	scale = ns.API.GetEffectiveScale(),
-	[1] = "TOPRIGHT",
-	[2] = -40 * ns.API.GetEffectiveScale(),
-	[3] = -40 * ns.API.GetEffectiveScale()
-}
+local profileDefaults = function()
+	return {
+		enabled = true,
+		enableAuraFading = true,
+		enableModifier = false,
+		modifier = "SHIFT",
+		anchorPoint = "TOPRIGHT",
+		growthX = "LEFT",
+		growthY = "DOWN",
+		paddingX = 6,
+		paddingY = 12,
+		wrapAfter = 6,
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "TOPRIGHT",
+		[2] = -40 * ns.API.GetEffectiveScale(),
+		[3] = -40 * ns.API.GetEffectiveScale()
+	}
+end
 
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
-		[MFM:GetDefaultLayout()] = ns:Copy(profileDefaults)
+		[MFM:GetDefaultLayout()] = profileDefaults()
 	}
 }, ns.moduleDefaults) }
-
--- Defaults are good here
---for i,v in pairs(ns:Copy(profileDefaults)) do print(i,v) end
 
 -- Aura Template
 --------------------------------------------
@@ -706,7 +705,7 @@ Auras.OnEvent = function(self, event, ...)
 		local LAYOUT = ...
 
 		if (not self.db.profile.savedPosition[LAYOUT]) then
-			self.db.profile.savedPosition[LAYOUT] = ns:Copy(profileDefaults)
+			self.db.profile.savedPosition[LAYOUT] = profileDefaults()
 		end
 
 		self:UpdatePositionAndScale()
@@ -719,6 +718,14 @@ Auras.OnEvent = function(self, event, ...)
 
 	elseif (event == "MFM_LayoutReset") then
 		local LAYOUT = ...
+
+		local db = self.db.profile.savedPosition[LAYOUT]
+		for i,v in pairs(profileDefaults()) do
+			db[i] = v
+		end
+
+		self:UpdatePositionAndScale()
+		self:UpdateAnchor()
 
 	elseif (event == "MFM_PositionUpdated") then
 		local LAYOUT, anchor, point, x, y = ...

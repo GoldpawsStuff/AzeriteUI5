@@ -41,16 +41,20 @@ local GetMedia = ns.API.GetMedia
 -- Constants
 local playerClass = ns.PlayerClass
 
+local profileDefaults = function()
+	return {
+		enabled = true,
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "BOTTOMLEFT",
+		[2] = 362 * ns.API.GetEffectiveScale(),
+		[3] = 102 * ns.API.GetEffectiveScale()
+	}
+end
+
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
-		[MFM:GetDefaultLayout()] = {
-			enabled = true,
-			scale = ns.API.GetEffectiveScale(),
-			[1] = "BOTTOMLEFT",
-			[2] = 362 * ns.API.GetEffectiveScale(),
-			[3] = 102 * ns.API.GetEffectiveScale()
-		}
+		[MFM:GetDefaultLayout()] = profileDefaults()
 	}
 }, ns.UnitFrame.defaults) }
 
@@ -469,6 +473,7 @@ end
 
 PetFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("PetFrame", defaults)
+	self.profileDefaults = profileDefaults
 
 	self:SetEnabledState(self.db.profile.enabled)
 

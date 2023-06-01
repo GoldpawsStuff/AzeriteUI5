@@ -42,16 +42,20 @@ local GetMedia = ns.API.GetMedia
 -- Constants
 local playerClass = ns.PlayerClass
 
+local profileDefaults = function()
+	return {
+		enabled = true,
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "TOPLEFT",
+		[2] = 50 * ns.API.GetEffectiveScale(),
+		[3] = -42 * ns.API.GetEffectiveScale()
+	}
+end
+
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
-		[MFM:GetDefaultLayout()] = {
-			enabled = true,
-			scale = ns.API.GetEffectiveScale(),
-			[1] = "TOPLEFT",
-			[2] = 50 * ns.API.GetEffectiveScale(),
-			[3] = -42 * ns.API.GetEffectiveScale()
-		}
+		[MFM:GetDefaultLayout()] = profileDefaults()
 	}
 }, ns.UnitFrame.defaults) }
 

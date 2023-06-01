@@ -41,16 +41,20 @@ local GetMedia = ns.API.GetMedia
 -- Constants
 local playerClass = ns.PlayerClass
 
+local profileDefaults = function()
+	return {
+		enabled = true,
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "TOPRIGHT",
+		[2] = -492 * ns.API.GetEffectiveScale(),
+		[3] = -(90+23) * ns.API.GetEffectiveScale()
+	}
+end
+
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	savedPosition = {
-		[MFM:GetDefaultLayout()] = {
-			enabled = true,
-			scale = ns.API.GetEffectiveScale(),
-			[1] = "TOPRIGHT",
-			[2] = -492 * ns.API.GetEffectiveScale(),
-			[3] = -(90+23) * ns.API.GetEffectiveScale()
-		}
+		[MFM:GetDefaultLayout()] = profileDefaults()
 	}
 }, ns.UnitFrame.defaults) }
 
@@ -507,6 +511,7 @@ end
 
 ToTFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ToTFrame", defaults)
+	self.defaults = profileDefaults
 
 	self:SetEnabledState(self.db.profile.enabled)
 
