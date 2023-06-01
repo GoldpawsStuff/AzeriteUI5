@@ -73,7 +73,9 @@ Options.GenerateProfileMenu = function(self)
 				name = L["Reset"],
 				type = "execute",
 				order = 11,
-				func = function(info) end
+				func = function(info)
+					MFM:ResetPreset(MFM:GetLayout())
+				end
 			},
 			delete = {
 				name = L["Delete"],
