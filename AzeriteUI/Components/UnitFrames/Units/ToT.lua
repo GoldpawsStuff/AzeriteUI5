@@ -511,7 +511,7 @@ end
 
 ToTFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("ToTFrame", defaults)
-	self.defaults = profileDefaults
+	self.profileDefaults = profileDefaults
 
 	self:SetEnabledState(self.db.profile.enabled)
 

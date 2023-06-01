@@ -189,6 +189,7 @@ end
 
 VehicleSeat.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("VehicleSeat", defaults)
+	self.profileDefaults = profileDefaults
 
 	self:SetEnabledState(self.db.profile.enabled)
 
