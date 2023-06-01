@@ -386,8 +386,6 @@ Auras.UpdatePositionAndScale = function(self)
 	if (not self.frame) then return end
 
 	local config = self.db.profile.savedPosition[MFM:GetLayout()]
-	--print(MFM:GetLayout())
-	--for i,v in pairs(config) do print(i,v) end
 
 	self.frame:SetScale(config.scale)
 	self.frame:ClearAllPoints()
@@ -418,9 +416,9 @@ Auras.UpdateSettings = function(self)
 		LFF:RegisterFrameForFading(self.buffs.proxy, "playerauras")
 		LFF:RegisterFrameForFading(self.buffs.consolidation, "playerauras")
 	else
-		LFF:UnregisterFrameForFading(self.frame, "playerauras")
-		LFF:UnregisterFrameForFading(self.buffs.proxy, "playerauras")
-		LFF:UnregisterFrameForFading(self.buffs.consolidation, "playerauras")
+		LFF:UnregisterFrameForFading(self.frame)
+		LFF:UnregisterFrameForFading(self.buffs.proxy)
+		LFF:UnregisterFrameForFading(self.buffs.consolidation)
 	end
 
 	self.frame:SetSize(config.wrapAfter * 36 + (config.wrapAfter - 1) * config.paddingX, (36 + config.paddingY) * math_ceil(BUFF_MAX_DISPLAY / config.wrapAfter))
