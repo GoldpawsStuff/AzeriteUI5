@@ -167,6 +167,13 @@ L["Right to Left"] = true
 L["Insert Point"] = true
 L["Choose from which side new items are inserted into your bags."] = true
 
+-- Minimap Settings
+L["Minimap"] = "Мини-карта"
+L["Minimap Settings"] = true
+L["Clock Settings"] = true
+L["24 Hour Mode"] = "24 часа"
+L["Use Local Time"] = "Местное время"
+
 -- Fading & Explorer Mode Settings
 L["Frame Fading"] = true
 L["Frame Fade Settings"] = true

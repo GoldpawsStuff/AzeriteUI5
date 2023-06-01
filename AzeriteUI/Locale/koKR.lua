@@ -167,6 +167,13 @@ L["Right to Left"] = true
 L["Insert Point"] = true
 L["Choose from which side new items are inserted into your bags."] = true
 
+-- Minimap Settings
+L["Minimap"] = "미니맵"
+L["Minimap Settings"] = true
+L["Clock Settings"] = true
+L["24 Hour Mode"] = "24시간으로 표시"
+L["Use Local Time"] = "시스템 시간으로 표시"
+
 -- Fading & Explorer Mode Settings
 L["Frame Fading"] = true
 L["Frame Fade Settings"] = true

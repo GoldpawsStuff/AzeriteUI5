@@ -122,7 +122,6 @@ L["Soul Shards"] = true
 L["Essence"] = true
 L["Runes"] = true
 
-
 -- Tooltip Settings
 L["Tooltips"] = true
 L["Tooltip Settings"] = true
@@ -157,7 +156,7 @@ L["Sets the maximum number of aura buttons per row."] = true
 
 -- Bag/Container Settings
 L["Bag Settings"] = true
-L["Bags"] = true -- HUD_EDIT_MODE_BAGS_LABEL
+L["Bags"] = true -- HUD_EDIT_MODE_BAGS_LABEL (only exists for enUS..?)
 L["Sort Direction"] = true
 L["Choose in which direction items in your bags are sorted."] = true
 L["Left to Right"] = true
@@ -167,6 +166,10 @@ L["Choose from which side new items are inserted into your bags."] = true
 
 -- Minimap Settings
 L["Minimap"] = true
+L["Minimap Settings"] = true
+L["Clock Settings"] = true
+L["24 Hour Mode"] = true
+L["Use Local Time"] = true
 
 -- Fading & Explorer Mode Settings
 L["Frame Fading"] = true
