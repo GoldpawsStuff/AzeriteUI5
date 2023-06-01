@@ -183,8 +183,8 @@ local config = {
 	TargetHighlightTexture = GetMedia("nameplate_outline"),
 	TargetHighlightFocusColor = { 144/255, 195/255, 255/255, 1 },
 	TargetHighlightTargetColor = { 255/255, 239/255, 169/255, 1 },
-	TargetHighlightSoftEnemyColor = { 255/255, 250/255, 236/255, 1 },
-	TargetHighlightSoftInteractColor = { 185/255, 255/255, 182/255, 1 },
+	TargetHighlightSoftEnemyColor = { 255/255, 250/255, 236/255, 1 }, -- TODO: Check how this color looks.
+	TargetHighlightSoftInteractColor = { 185/255, 255/255, 182/255, 1 }, -- TODO: Check how this color looks.
 
 	-- Threat Glow
 	-----------------------------------------
@@ -468,8 +468,11 @@ local TargetHighlight_Update = function(self, event, unit, ...)
 
 	local element = self.TargetHighlight
 
-	if (self.isFocus or self.isTarget or self.isSoftEnemy or self.isSoftInteract) then
+	if (self.isFocus or self.isTarget) then
 		element:SetVertexColor(unpack(self.isFocus and element.colorFocus or element.colorTarget))
+		element:Show()
+	elseif (ns.IsRetail and (self.isSoftEnemy or self.isSoftInteract)) then
+		element:SetVertexColor(unpack(self.isSoftEnemy and element.colorSoftEnemy or element.colorSoftInteract))
 		element:Show()
 	else
 		element:Hide()
@@ -659,8 +662,8 @@ local NamePlate_PostUpdate = function(self, event, unit, ...)
 	self.inCombat = InCombatLockdown()
 	self.isFocus = UnitIsUnit(unit, "focus")
 	self.isTarget = UnitIsUnit(unit, "target")
-	self.isSoftEnemy = UnitIsUnit(unit, "softenemy")
-	self.isSoftInteract = UnitIsUnit(unit, "softinteract")
+	self.isSoftEnemy = ns.IsRetail and UnitIsUnit(unit, "softenemy")
+	self.isSoftInteract = ns.IsRetail and UnitIsUnit(unit, "softinteract")
 
 	local db = config
 	local main, reverse = db.Orientation, db.OrientationReversed
@@ -749,7 +752,7 @@ local NamePlate_OnEvent = function(self, event, unit, ...)
 		return
 	elseif (event == "PLAYER_SOFT_ENEMY_CHANGED") then
 		self.isSoftEnemy = UnitIsUnit(unit, "softenemy")
-	
+
 		Classification_Update(self, event, unit, ...)
 		TargetHighlight_Update(self, event, unit, ...)
 		NamePlate_PostUpdateElements(self, event, unit, ...)
@@ -757,7 +760,7 @@ local NamePlate_OnEvent = function(self, event, unit, ...)
 		return
 	elseif (event == "PLAYER_SOFT_INTERACT_CHANGED") then
 		self.isSoftInteract = UnitIsUnit(unit, "softinteract")
-		
+
 		Classification_Update(self, event, unit, ...)
 		TargetHighlight_Update(self, event, unit, ...)
 		NamePlate_PostUpdateElements(self, event, unit, ...)
@@ -1047,13 +1050,15 @@ local style = function(self, unit, id)
 	-- Register events to handle additional texture updates.
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", NamePlate_OnEvent, true)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", NamePlate_OnEvent, true)
-	self:RegisterEvent("PLAYER_SOFT_ENEMY_CHANGED", NamePlate_OnEvent, true)
-	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED", NamePlate_OnEvent, true)
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED", NamePlate_OnEvent, true)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", NamePlate_OnEvent, true)
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", NamePlate_OnEvent, true)
 	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", NamePlate_OnEvent)
 
+	if (ns.IsRetail) then
+		self:RegisterEvent("PLAYER_SOFT_ENEMY_CHANGED", NamePlate_OnEvent, true)
+		self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED", NamePlate_OnEvent, true)
+	end
 end
 
 local cvars = {
@@ -1160,7 +1165,7 @@ local checkSoftTarget = function()
 	if (UnitExists("softenemy") or UnitExists("softinteract")) then
 		if (SOFTTARGET) then
 			local EnemyDead = true
-			if (UnitIsDead("softenemy")) then 
+			if (UnitIsDead("softenemy")) then
 				EnemyDead = true
 			end
 			if ((UnitIsUnit(SOFTTARGET.unit, "softenemy") and not EnemyDead) or UnitIsUnit(SOFTTARGET.unit, "softinteract")) then
@@ -1253,5 +1258,5 @@ NamePlatesMod.OnEnable = function(self)
 	oUF:SpawnNamePlates(ns.Prefix, callback, cvars)
 
 	self.mouseTimer = self:ScheduleRepeatingTimer(checkMouseOver, 1/20)
-	self.softTimer = self:ScheduleRepeatingTimer(checkSoftTarget, 1/20)
+	self.softTimer = ns.IsRetail and self:ScheduleRepeatingTimer(checkSoftTarget, 1/20)
 end
