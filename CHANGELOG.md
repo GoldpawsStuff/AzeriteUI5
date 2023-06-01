@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-05-28
+## [Unreleased] 2023-06-01
 - This version is backwards incompatible and requires a full reset of its settings.
 - This version is compatible with Wrath 3.4.2 PTR.
 
@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added the command `/resetsettings` to fully reset the AzeriteUI stored settings to their defaults.
 - Added an options menu. The menu is accessible from the addon section of the interface options panels.
 - Added threat glow to the player unit frame.
+- Added nameplate highlight outline for soft targeting in Retail. Thanks Billybishop@GitHub for writing this!
 - Started working on proper localization for the addon. A lot of general phrases copied from blizzard are already in place, but some phrases and longer texts remains untranslated for non-English locales. Work in progress.
 
 ### Changed
