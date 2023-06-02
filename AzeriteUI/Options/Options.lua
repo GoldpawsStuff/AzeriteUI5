@@ -38,6 +38,7 @@ local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 local ipairs = ipairs
 local pairs = pairs
 local string_format = string.format
+local table_remove = table.remove
 local table_sort = table.sort
 local type = type
 
@@ -157,31 +158,37 @@ Options.AddGroup = function(self, name, group)
 	if (not self.objects) then
 		self.objects = {}
 	end
-	self.objects[#self.objects + 1] = { name = name, group = group }
+	if (group) then
+		self.objects[#self.objects + 1] = { name = name, group = group }
+	end
 end
 
 Options.GenerateOptionsMenu = function(self)
 	if (not self.objects) then return end
 
+	-- Generate the menus, remove empty objects.
+	for i = #self.objects,1,-1 do
+		local data = self.objects[i]
+		if (type(data.group) == "function") then
+			data.group = data.group()
+			if (not data.group) then
+				table_remove(self.objects, i)
+			end
+		end
+	end
+
 	-- Sort groups by localized name.
-	table_sort(self.objects, function(a,b) return a.name < b.name end)
+	table_sort(self.objects, function(a,b) return a.group.name < b.group.name end)
 
 	-- Generate the options table.
 	local options = self:GenerateProfileMenu()
 	local order = 0
 	for i,data in ipairs(self.objects) do
-
-		local group
-		if (type(data.group) == "function") then
-			group = data.group()
-		else
-			group = data.group
-		end
-		if (group) then
+		if (data.group) then
 			order = order + 10
-			group.order = order
-			group.childGroups = group.childGroups or "tab"
-			options.args[data.name] = group
+			data.group.order = order
+			data.group.childGroups = data.group.childGroups or "tab"
+			options.args[data.name] = data.group
 		end
 	end
 
