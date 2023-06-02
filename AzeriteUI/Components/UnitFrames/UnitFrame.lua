@@ -36,7 +36,12 @@ local LibSpinBar = LibStub("LibSpinBar-1.0")
 local LibOrb = LibStub("LibOrb-1.0")
 
 -- Lua API
-local pairs, next = pairs, next
+local next = next
+local pairs = pairs
+local unpack = unpack
+
+-- GLOBALS: UIParent
+-- GLOBALS: InCombatLockdown, UnitFrame_OnEnter, UnitFrame_OnLeave
 
 -- Private API
 local Colors = ns.Colors
@@ -83,17 +88,17 @@ local UnitFrame_OnHide = function(self, ...)
 	end
 end
 
--- UnitFrame Module Defauts
-local unitFrameDefaults = {
-	enabled = true,
-	scale = 1
-}
-
 -- UnitFrame Prototype
 ---------------------------------------------------
 oUF:RegisterMetaFunction("CreateBar", UnitFrame_CreateBar)
 oUF:RegisterMetaFunction("CreateRing", UnitFrame_CreateRing)
 oUF:RegisterMetaFunction("CreateOrb", UnitFrame_CreateOrb)
+
+-- UnitFrame Module Defauts
+local unitFrameDefaults = {
+	enabled = true,
+	scale = 1
+}
 
 ns.UnitFrames = {}
 ns.UnitFrame = {}
@@ -133,6 +138,7 @@ ns.UnitFrame.modulePrototype = {
 		if (frame and frame.Enable) then
 			frame:Enable()
 		else
+			-- We want to spawn it even when disabled.
 			if (self.Spawn) then
 				self:Spawn()
 
@@ -144,7 +150,7 @@ ns.UnitFrame.modulePrototype = {
 			end
 		end
 
-		-- Is this needed?
+		-- Apply actual settings now that the frame is in place.
 		self:UpdateSettings()
 
 		self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
