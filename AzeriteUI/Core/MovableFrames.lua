@@ -562,6 +562,7 @@ Anchor.OnClick = function(self, button)
 			CURRENT = nil
 			self.isSelected = nil
 			self:OnLeave()
+
 			MovableFramesManager:RefreshMFMFrame()
 		end
 		self:SetFrameLevel(40)
@@ -1069,11 +1070,9 @@ MovableFramesManager.OpenMFMFrame = function(self)
 	AceConfigDialog:SetDefaultSize(self.appName, 440, ns.IsRetail and 420 or 360)
 	AceConfigDialog:Open(self.appName, self.app)
 
-	if (not self.positioned) then
-		self.app.frame:ClearAllPoints()
-		self.app.frame:SetPoint("LEFT", UIParent, "LEFT", 160, 100)
-		self.positioned = true
-	end
+	-- TODO: Store position in our own saved settings.
+	self.app.frame:ClearAllPoints()
+	self.app.frame:SetPoint("LEFT", UIParent, "LEFT", 160, 100)
 end
 
 MovableFramesManager.CloseMFMFrame = function(self)
