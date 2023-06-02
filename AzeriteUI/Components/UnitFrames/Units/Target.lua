@@ -1265,6 +1265,7 @@ TargetFrameMod.Spawn = function(self)
 	anchor:SetSize(550, 210)
 	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
 	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
+	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
 	anchor:SetEditModeAccountSetting(ns.IsRetail and Enum.EditModeAccountSetting.ShowTargetAndFocus)
 	anchor.PreUpdate = function() self:UpdateAnchor() end
 	anchor.UpdateDefaults = function() self:UpdateDefaults() end
