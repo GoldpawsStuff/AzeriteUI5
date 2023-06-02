@@ -864,6 +864,7 @@ local UnitFrame_UpdateTextures = function(self)
 		auras:ForceUpdate()
 	end
 
+	ns:Fire("UnitFrame_Target_Updated", unit, key)
 end
 
 local UnitFrame_PostUpdate = function(self)

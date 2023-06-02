@@ -47,7 +47,7 @@ local profileDefaults = function()
 		scale = ns.API.GetEffectiveScale(),
 		[1] = "TOPRIGHT",
 		[2] = -492 * ns.API.GetEffectiveScale(),
-		[3] = -(90+23) * ns.API.GetEffectiveScale()
+		[3] = -67 * ns.API.GetEffectiveScale()
 	}
 end
 
@@ -301,13 +301,7 @@ local Unitframe_PostUpdateAlpha = function(self, event, unit, ...)
 
 	unit = unit or self.unit
 
-	local shouldHide
-	if (UnitIsUnit(unit, "player"))
-	or (UnitIsUnit(unit, unit.."target"))
-	or (not UnitIsPlayer(unit) and level == 1 and UnitHealthMax(unit) < 10) then
-		shouldHide = true
-	end
-
+	local shouldHide = ((event == "UnitFrame_Target_Updated") and (... == "Critter")) or UnitIsUnit(unit, "player") or UnitIsUnit(unit, unit.."target")
 	if (shouldHide == self.shouldHide) then
 		return
 	end
@@ -315,10 +309,11 @@ local Unitframe_PostUpdateAlpha = function(self, event, unit, ...)
 	self.shouldHide = shouldHide
 	self:SetAlpha(shouldHide and 0 or 1)
 
-	ns:Fire("UnitFrame_ToT_Updated", unit, fullName)
+	ns:Fire("UnitFrame_ToT_Updated", unit)
 end
 
 local UnitFrame_PostUpdate = function(self, event, unit, ...)
+	if (event == "UnitFrame_Target_Updated") then unit = nil end
 	if (unit and unit ~= self.unit) then return end
 
 	Unitframe_PostUpdateAlpha(self, event, unit, ...)
@@ -326,7 +321,7 @@ local UnitFrame_PostUpdate = function(self, event, unit, ...)
 end
 
 local UnitFrame_OnEvent = function(self, event, unit, ...)
-	UnitFrame_PostUpdate(self)
+	UnitFrame_PostUpdate(self, event, ...)
 end
 
 local style = function(self, unit)
@@ -481,6 +476,9 @@ local style = function(self, unit)
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED", UnitFrame_OnEvent, true)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", UnitFrame_OnEvent, true)
 
+	-- Notify the environment about the texture change.
+	ns.RegisterCallback(self, "UnitFrame_Target_Updated", "PostUpdate")
+
 end
 
 ToTFrameMod.Spawn = function(self)
@@ -508,6 +506,7 @@ ToTFrameMod.Spawn = function(self)
 	anchor.UpdateDefaults = function() self:UpdateDefaults() end
 
 	self.anchor = anchor
+
 end
 
 ToTFrameMod.OnInitialize = function(self)
