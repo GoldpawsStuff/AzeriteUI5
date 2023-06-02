@@ -31,11 +31,21 @@ local MFM = ns:GetModule("MovableFramesManager")
 -- Lua API
 local _G = _G
 local ipairs = ipairs
+local pairs = pairs
+local rawset = rawset
 local select = select
+local setmetatable = setmetatable
 local string_find = string.find
 local string_format = string.format
 local string_match = string.match
 local tonumber = tonumber
+local unpack = unpack
+
+-- GLOBALS: C_UnitAuras, CreateFrame, GetMouseFocus, hooksecurefunc
+-- GLOBALS: GameTooltip, GameTooltipTextLeft1, GameTooltipStatusBar
+-- GLOBALS: UnitIsDeadOrGhost, UnitIsPlayer
+-- GLOBALS: UnitAura, UnitClass, UnitExists, UnitEffectiveLevel, UnitHealth, UnitHealthMax, UnitName, UnitRealmRelationship
+-- GLOBALS: LE_REALM_RELATION_COALESCED, LE_REALM_RELATION_VIRTUAL, FOREIGN_SERVER_LABEL, INTERACTIVE_SERVER_LABEL
 
 -- Addon API
 local Colors = ns.Colors
@@ -393,7 +403,6 @@ Tooltips.OnTooltipSetUnit = function(self, tooltip, data)
 
 
 			if (unitRealm and unitRealm ~= "") then
-
 				local relationship = UnitRealmRelationship(unit)
 				if (relationship == _G.LE_REALM_RELATION_COALESCED) then
 					displayName = displayName ..gray.. _G.FOREIGN_SERVER_LABEL .."|r"
