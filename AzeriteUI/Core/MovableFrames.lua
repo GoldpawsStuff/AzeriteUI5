@@ -748,9 +748,6 @@ MovableFramesManager.RegisterPreset = function(self, layoutName)
 
 	-- Add the preset to our list.
 	self.layouts[layoutName] = true
-
-	-- Update the manager frame.
-	--self:UpdateMFMFrame()
 end
 
 -- Register a table of layout names at once.
@@ -779,9 +776,6 @@ MovableFramesManager.ApplyPreset = function(self, layoutName)
 
 	-- Send message to modules to switch to the selected preset.
 	ns:Fire("MFM_LayoutsUpdated", LAYOUT)
-
-	-- Update the manager frame.
-	--self:UpdateMFMFrame()
 end
 
 -- Send a message to the modules to reset a saved preset.
@@ -816,9 +810,6 @@ MovableFramesManager.DeletePreset = function(self, layoutName)
 
 	-- Send message to all moduels to remove the selected preset.
 	ns:Fire("MFM_LayoutDeleted", LAYOUT)
-
-	-- Update the manager frame.
-	--self:UpdateMFMFrame()
 end
 
 MovableFramesManager.GenerateMFMFrame = function(self)
@@ -1220,8 +1211,6 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 
 		SCALE = scale
 	end
-
-	--self:UpdateMFMFrame()
 end
 
 MovableFramesManager.OnInitialize = function(self)
