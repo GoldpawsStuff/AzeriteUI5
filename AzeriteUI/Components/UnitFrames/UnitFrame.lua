@@ -144,6 +144,9 @@ ns.UnitFrame.modulePrototype = {
 			end
 		end
 
+		-- Is this needed?
+		self:UpdateSettings()
+
 		self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 		self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
@@ -179,13 +182,13 @@ ns.UnitFrame.modulePrototype = {
 	OnEvent = function(self, event, ...)
 		if (event == "PLAYER_ENTERING_WORLD") then
 			self.incombat = nil
-			self:UpdatePositionAndScale()
+			self:UpdateSettings()
 
 		elseif (event == "PLAYER_REGEN_ENABLED") then
 			if (InCombatLockdown()) then return end
 			self.incombat = nil
 			if (self.needupdate) then
-				self:UpdatePositionAndScale()
+				self:UpdateSettings()
 			end
 
 		elseif (event == "PLAYER_REGEN_DISABLED") then
@@ -198,7 +201,7 @@ ns.UnitFrame.modulePrototype = {
 				self.db.profile.savedPosition[LAYOUT] = self.profileDefaults()
 			end
 
-			self:UpdatePositionAndScale()
+			self:UpdateSettings()
 			self:UpdateAnchor()
 
 			GUI:Refresh()
@@ -216,7 +219,7 @@ ns.UnitFrame.modulePrototype = {
 				db[i] = v
 			end
 
-			self:UpdatePositionAndScale()
+			self:UpdateSettings()
 			self:UpdateAnchor()
 
 			GUI:Refresh()
@@ -230,7 +233,7 @@ ns.UnitFrame.modulePrototype = {
 			self.db.profile.savedPosition[LAYOUT][2] = x
 			self.db.profile.savedPosition[LAYOUT][3] = y
 
-			self:UpdatePositionAndScale()
+			self:UpdateSettings()
 
 			GUI:Refresh()
 
@@ -245,7 +248,7 @@ ns.UnitFrame.modulePrototype = {
 			if (anchor ~= self.anchor) then return end
 
 			self.db.profile.savedPosition[LAYOUT].scale = scale
-			self:UpdatePositionAndScale()
+			self:UpdateSettings()
 
 			GUI:Refresh()
 
@@ -258,7 +261,7 @@ ns.UnitFrame.modulePrototype = {
 			self.db.profile.savedPosition[LAYOUT][2] = x
 			self.db.profile.savedPosition[LAYOUT][3] = y
 
-			self:UpdatePositionAndScale()
+			self:UpdateSettings()
 		end
 	end,
 
@@ -297,8 +300,33 @@ ns.UnitFrame.modulePrototype = {
 		defaults[1], defaults[2], defaults[3] = self.anchor:GetDefaultPosition()
 	end,
 
+	UpdateEnabled = function(self)
+		if (not self.frame or not self.frame.IsEnabled) then return end -- headers don't have this
+
+		local config = self.db.profile.savedPosition[MFM:GetLayout()]
+		if (config.enabled and not self.frame:IsEnabled()) or (not config.enabled and self.frame:IsEnabled()) then
+			if (InCombatLockdown()) then
+				self.needupdate = true
+				return
+			end
+			if (config.enabled) then
+				self.frame:Enable()
+			else
+				self.frame:Disable()
+			end
+		end
+
+		return config.enabled
+	end,
+
 	UpdateSettings = function(self)
+		if (not self:UpdateEnabled()) then return end
+
 		self:UpdatePositionAndScale()
+
+		if (self.PostUpdateSettings) then
+			self:PostUpdateSettings()
+		end
 	end
 
 }
