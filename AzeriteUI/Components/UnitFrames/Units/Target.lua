@@ -108,8 +108,7 @@ local config = {
 
 	-- General Settings
 	-----------------------------------------
-	Size = { 550, 210 }, -- 550, 210 -- 439, 93
-	--Position = { "TOPRIGHT", -153, -79 },
+	Size = { 550, 210 },
 	HitRectInsets = { 0, 0, -40, -26 },
 	IsFlippedHorizontally = true,
 
@@ -168,7 +167,7 @@ local config = {
 	CombatFeedbackFontSmall = GetFont(18, true), -- glancing blow font
 
 	-- Unit Name
-	NamePosition = { "TOPRIGHT", -40 - 113, 18 - 39 },
+	NamePosition = { "TOPRIGHT", -153, -21 },
 	NameSize = { 250, 18 },
 	NameJustifyH = "RIGHT",
 	NameJustifyV = "TOP",
@@ -176,17 +175,17 @@ local config = {
 	NameColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75 },
 
 	-- Portrait
-	PortraitPosition = { "TOPRIGHT", 73 - 113, 8 - 39 },
+	PortraitPosition = { "TOPRIGHT", -40, -31 },
 	PortraitSize = { 85, 85 },
 	PortraitAlpha = .85,
-	PortraitBackgroundPosition = { "TOPRIGHT", 116 - 113, 55 - 39 },
+	PortraitBackgroundPosition = { "TOPRIGHT", 3, 16 },
 	PortraitBackgroundSize = { 173, 173 },
 	PortraitBackgroundTexture = GetMedia("party_portrait_back"),
 	PortraitBackgroundColor = { .5, .5, .5 },
-	PortraitShadePosition = { "TOPRIGHT", 83 - 113, 21 - 39 },
+	PortraitShadePosition = { "TOPRIGHT", -30, -18 },
 	PortraitShadeSize = { 107, 107 },
 	PortraitShadeTexture = GetMedia("shade-circle"),
-	PortraitBorderPosition = { "TOPRIGHT", 123 - 113, 61 - 39 },
+	PortraitBorderPosition = { "TOPRIGHT", 10, 22 },
 	PortraitBorderSize = { 187, 187 },
 
 	-- PvP Indicator
@@ -205,7 +204,7 @@ local config = {
 	ClassificationRareTexture = GetMedia("icon_classification_rare"),
 
 	-- Target Indicator
-	TargetIndicatorPosition = { "TOPRIGHT", 38 - 113, 36 - 39 },
+	TargetIndicatorPosition = { "TOPRIGHT", -75, -3 },
 	TargetIndicatorSize = { 96, 48 },
 	TargetIndicatorColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 	TargetIndicatorPetByEnemyTexture = GetMedia("icon_target_blue"),
@@ -214,9 +213,9 @@ local config = {
 
 	-- Auras
 	-----------------------------------------
-	AurasPosition = { "TOPRIGHT", -37 - 113, -87 - 39 },
-	AurasSize = { 40*8 - 4, 40*2 - 4 },
-	AurasSizeBoss = { 40*10 - 4, 40*2 - 4 },
+	AurasPosition = { "TOPRIGHT", -150, -126 },
+	AurasSize = { 316, 76 },
+	AurasSizeBoss = { 396, 76 },
 	AuraSize = 36,
 	AuraSpacing = 4,
 	AurasNumTotal = 16,
@@ -238,7 +237,7 @@ local config = {
 	-----------------------------------------
 	Seasonal = {
 		-- Love Festival Target Eye
-		LoveFestivalCombatIndicatorPosition = { "TOPRIGHT", 14 - 113, 36 - 39 },
+		LoveFestivalCombatIndicatorPosition = { "TOPRIGHT", -99, -3 },
 		LoveFestivalTargetIndicatorSize = { 48, 48 },
 		LoveFestivalTargetIndicatorPetByEnemyTexture = GetMedia("icon-heart-blue"),
 		LoveFestivalTargetIndicatorYouByEnemyTexture = GetMedia("icon-heart-red"),
