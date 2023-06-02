@@ -1036,8 +1036,8 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 	if (not self.CloseSpecialWindows) then
 		self.CloseSpecialWindows = CloseSpecialWindows
 		CloseSpecialWindows = function()
-			self:CloseMFMFrame()
-			return self.CloseSpecialWindows()
+			local found = self.CloseSpecialWindows()
+			return self:CloseMFMFrame() or found
 		end
 	end
 
@@ -1080,6 +1080,7 @@ MovableFramesManager.CloseMFMFrame = function(self)
 	if (not AceConfigRegistry:GetOptionsTable(self.appName)) then return end
 	if (self.app and self.app.frame and self.app.frame:IsShown()) then
 		self.app.frame:Hide()
+		return true -- prevents game menu from being shown
 	end
 end
 
