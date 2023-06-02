@@ -68,6 +68,11 @@ local globalgetter = function(info)
 	return getmodule().db.profile[info[#info]]
 end
 
+local globalisdisabled = function(info)
+	return info[#info] ~= "enabled" and not getmodule().db.profile.enabled
+end
+
+
 local GenerateOptions = function()
 	if (not getmodule()) then return end
 
@@ -85,7 +90,7 @@ local GenerateOptions = function()
 				desc = string_format(L["Enable to use a 24 hour clock, disable to show a 12 hour clock with %s/%s suffixes."], TIMEMANAGER_AM, TIMEMANAGER_PM),
 				order = 10,
 				type = "toggle", width = "full",
-				hidden = isdisabled,
+				hidden = globalisdisabled,
 				set = function(info,val) globalsetter(info, not val) end,
 				get = function(info) return not globalgetter(info) end
 			},
@@ -94,7 +99,7 @@ local GenerateOptions = function()
 				desc = L["Set the clock to your computer's local time, disable to show the server time instead."],
 				order = 11,
 				type = "toggle", width = "full",
-				hidden = isdisabled,
+				hidden = globalisdisabled,
 				set = function(info,val) globalsetter(info, not val) end,
 				get = function(info) return not globalgetter(info) end
 			}
