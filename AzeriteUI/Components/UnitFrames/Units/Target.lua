@@ -788,9 +788,6 @@ local UnitFrame_UpdateTextures = function(self)
 	health:SetFlippedHorizontally(isFlipped)
 
 	local healthPreview = self.Health.Preview
-	--healthPreview:ClearAllPoints()
-	--healthPreview:SetPoint(unpack(db.HealthBarPosition))
-	--healthPreview:SetSize(unpack(db.HealthBarSize))
 	healthPreview:SetStatusBarTexture(db.HealthBarTexture)
 	healthPreview:SetOrientation(db.HealthBarOrientation)
 	healthPreview:SetFlippedHorizontally(isFlipped)
@@ -805,7 +802,6 @@ local UnitFrame_UpdateTextures = function(self)
 
 	local healPredict = self.HealthPrediction
 	healPredict:SetTexture(db.HealthBarTexture)
-	--healPredict:SetOrientation(db.HealthBarOrientation)
 
 	local absorb = self.Health.Absorb
 	if (absorb) then
@@ -840,24 +836,27 @@ local UnitFrame_UpdateTextures = function(self)
 	portraitBorder:SetTexture(db.PortraitBorderTexture)
 	portraitBorder:SetVertexColor(unpack(db.PortraitBorderColor))
 
-	if (key == "Critter" and currentStyle ~= "Critter") then
+	if (key == "Critter") then
 		health.Value:Hide()
 		health.Percent:Hide()
 		cast:ForceUpdate()
-	elseif (key ~= "Critter" and currentStyle == "Critter") then
+		self:DisableElement("Auras")
+	else
 		health.Value:Show()
 		health.Percent:Show()
 		cast:ForceUpdate()
+		self:EnableElement("Auras")
+		self.Auras:ForceUpdate()
 	end
 
-	if (key == "Boss" and currentStyle ~= "Boss") then
+	if (key == "Boss") then
 		local db = config
 		local auras = self.Auras
 		auras.numTotal = db.AurasNumTotalBoss
 		auras:SetSize(unpack(db.AurasSizeBoss))
 		auras:ForceUpdate()
 
-	elseif (key ~= "Boss" and currentStyle == "Boss") then
+	elseif (key ~= "Boss") then
 		local db = config
 		local auras = self.Auras
 		auras.numTotal = db.AurasNumTotal
