@@ -599,6 +599,7 @@ ClassPowerMod.Spawn = function(self)
 	anchor:SetSize(124, 168)
 	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
 	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
+	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
 	anchor.PreUpdate = function() self:UpdateAnchor() end
 	anchor.UpdateDefaults = function() self:UpdateDefaults() end
 
