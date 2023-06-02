@@ -32,9 +32,14 @@ local MFM = ns:GetModule("MovableFramesManager")
 
 -- Lua API
 local math_floor = math.floor
+local next = next
 local string_match = string.match
+local table_sort = table.sort
+local table_remove = table.remove
 local tonumber = tonumber
 local tostring = tostring
+
+-- GLOBALS: GetSpecialization
 
 local getmodule = function(name)
 	return ns:GetModule(name or "UnitFrames", true)
@@ -220,8 +225,8 @@ local GenerateOptions = function()
 
 	local order = 100
 	for id,data in next,{
-		player = { PLAYER, "PlayerFrame", 0 }, -- Player
-		playerCastBar = { L["Cast Bar"], "PlayerCastBarFrame", 1 }, -- Player Cast Bar
+		player = { L["Player"], "PlayerFrame", 0 }, -- Player
+		playerCastBar = { L["Cast Bar"], "PlayerCastBarFrame", 100 }, -- Player Cast Bar
 		playerClassPower = { function(info) -- generates an appropriate display name
 			if (ns.PlayerClass == "MAGE") then
 				if (GetSpecialization() == (SPEC_MAGE_ARCANE or 3)) then
@@ -246,11 +251,11 @@ local GenerateOptions = function()
 				return L["Runes"]
 			end
 			return L["Combo Points"]
-		end, "PlayerClassPowerFrame", 2 }, -- Player Class Power
-		pet = { PET, "PetFrame", 10 }, -- Pet
-		target = { TARGET, "TargetFrame", 20 }, -- Target
-		tot = { SHOW_TARGET_OF_TARGET_TEXT, "ToTFrame", 30 }, -- ToT
-		focus = { FOCUS, "FocusFrame", 40 }, -- Focus
+		end, "PlayerClassPowerFrame", 110 }, -- Player Class Power
+		pet = { L["Pet"], "PetFrame", 10 }, -- Pet
+		target = { L["Target"], "TargetFrame", 20 }, -- Target
+		tot = { L["Target of Target"], "ToTFrame", 30 }, -- ToT
+		focus = { L["Focus"], "FocusFrame", 40 }, -- Focus
 		party = { L["Party Frames"], "PartyFrames", 50 }, -- Party
 		raid = { L["Raid Frames"], "RaidFrames", 60 }, -- Raid
 		boss = { L["Boss Frames"], "BossFrames", 70 }, -- Boss
