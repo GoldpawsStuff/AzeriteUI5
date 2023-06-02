@@ -267,13 +267,13 @@ local config = {
 
 		-- Health Bar
 		HealthBarSize = { 40, 36 },
-		HealthBarPosition = { "TOPRIGHT", -24 - 113, -24 - 39 },
+		HealthBarPosition = { "TOPRIGHT", -137, -66 },
 		HealthBarTexture = GetMedia("hp_critter_bar"),
 		HealthBarColor = { Colors.health[1], Colors.health[2], Colors.health[3] },
 		HealthBarOrientation = "LEFT",
 		HealthBarSparkMap = tinyBarSparkMap,
 		HealthBackdropSize = { 105, 104 },
-		HealthBackdropPosition = { "TOPRIGHT", 105/2 + 63 - 439/2, 104/2 -34 -93/2 }, -- "CENTER", 63, -34
+		HealthBackdropPosition = { "TOPRIGHT", -104, -28.5 },
 		HealthBackdropTexture = GetMedia("hp_critter_case"),
 		HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 		HealthAbsorbColor = { 1, 1, 1, .35 },
@@ -287,12 +287,12 @@ local config = {
 
 		-- Health Bar
 		HealthBarSize = { 385, 37 },
-		HealthBarPosition = { "TOPRIGHT", -27 - 113, -27 - 39 },
+		HealthBarPosition = { "TOPRIGHT", -140, -66 },
 		HealthBarTexture = GetMedia("hp_lowmid_bar"),
 		HealthBarOrientation = "LEFT",
 		HealthBarSparkMap = barSparkMap,
 		HealthBackdropSize = { 716, 188 },
-		HealthBackdropPosition = { "TOPRIGHT", 716/2 - 116 - 439/2, 188/2 -40 -93/2 }, -- "CENTER", -116, -40
+		HealthBackdropPosition = { "TOPRIGHT", 24.5, 8.5 },
 		HealthBackdropTexture = GetMedia("hp_low_case"),
 		HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 		HealthAbsorbColor = { 1, 1, 1, .35 },
@@ -308,12 +308,12 @@ local config = {
 
 		-- Health Bar
 		HealthBarSize = { 385, 37 },
-		HealthBarPosition = { "TOPRIGHT", -27 - 113, -27 - 39 },
+		HealthBarPosition = { "TOPRIGHT", -140, -66 },
 		HealthBarTexture = GetMedia("hp_lowmid_bar"),
 		HealthBarOrientation = "LEFT",
 		HealthBarSparkMap = barSparkMap,
 		HealthBackdropSize = { 716, 188 },
-		HealthBackdropPosition = { "TOPRIGHT", 716/2 - 116 - 439/2, 188/2 -40 -93/2 }, -- "CENTER", -116, -40
+		HealthBackdropPosition = { "TOPRIGHT", 24.5, 7.5 },
 		HealthBackdropTexture = GetMedia("hp_mid_case"),
 		HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 		HealthAbsorbColor = { 1, 1, 1, .35 },
@@ -329,12 +329,12 @@ local config = {
 
 		-- Health Bar
 		HealthBarSize = { 385, 37 },
-		HealthBarPosition = { "TOPRIGHT", -27 - 113, -27 - 39 },
+		HealthBarPosition = { "TOPRIGHT", -140, -66 },
 		HealthBarTexture = GetMedia("hp_cap_bar"),
 		HealthBarOrientation = "LEFT",
 		HealthBarSparkMap = barSparkMap,
 		HealthBackdropSize = { 716, 188 },
-		HealthBackdropPosition = { "TOPRIGHT", 716/2 - 115 - 439/2, 188/2 -40 -93/2 }, -- "CENTER", -116, -40
+		HealthBackdropPosition = { "TOPRIGHT", 23.5, 8.5 },
 		HealthBackdropTexture = GetMedia("hp_cap_case"),
 		HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 		HealthAbsorbColor = { 1, 1, 1, .35 },
@@ -350,12 +350,12 @@ local config = {
 
 		-- Health Bar
 		HealthBarSize = { 533, 40 },
-		HealthBarPosition = { "TOPRIGHT", -27 - 113, -27 - 39 },
+		HealthBarPosition = { "TOPRIGHT", -140, -66 },
 		HealthBarTexture = GetMedia("hp_boss_bar"),
 		HealthBarOrientation = "LEFT",
 		HealthBarSparkMap = bigBarSparkMap,
 		HealthBackdropSize = { 697, 192 },
-		HealthBackdropPosition = { "TOPRIGHT", 697/2 - 187 - 439/2, 192/2 -39 -93/2 }, -- "CENTER", -187, -39
+		HealthBackdropPosition = { "TOPRIGHT", -58, 10.5 },
 
 		HealthBackdropTexture = GetMedia("hp_boss_case"),
 		HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
