@@ -26,6 +26,19 @@
 local Addon, ns = ...
 local ChatFrames = ns:NewModule("ChatFrames", "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
 
+-- Lua API
+local next = next
+local pairs = pairs
+local rawget = rawget
+local rawset = rawset
+local select = select
+local setmetatable = setmetatable
+
+-- GLOBALS: ChatFrame1, ChatFrame2
+-- GLOBALS: CHAT_FRAMES, CHAT_FONT_HEIGHTS, NUM_CHAT_WINDOWS
+-- GLOBALS: CreateFrame, FCF_GetCurrentChatFrame, FCF_GetChatWindowInfo
+-- GLOBALS: QuickJoinToastButton, CombatLogQuickButtonFrame_Custom
+
 -- Addon API
 local GetFont = ns.API.GetFont
 local IsAddOnEnabled = ns.API.IsAddOnEnabled
@@ -79,13 +92,11 @@ local Elements = setmetatable({}, { __index = function(t,k) rawset(t,k,{}) retur
 local Tab_PostEnter = function(tab)
 	local frame = _G["ChatFrame"..tab:GetID()]
 	Elements[frame].isMouseOverTab = true
-	--ChatFrames:UpdateClutter()
 end
 
 local Tab_PostLeave = function(tab)
 	local frame = _G["ChatFrame"..tab:GetID()]
 	Elements[frame].isMouseOverTab = false
-	--ChatFrames:UpdateClutter()
 end
 
 -------------------------------------------------------
@@ -137,6 +148,7 @@ ChatFrame.GetToBottomButton = function(self)
 	return Elements[self].scrollToBottomButton
 end
 
+-- TODO: Update for 10.1.5
 ChatFrame.GetScrollBar = function(self)
 	if (not Elements[self].scrollBar) then
 		Elements[self].scrollBar = self.ScrollBar
@@ -270,7 +282,6 @@ ChatFrames.Embed = function(self, frame)
 		frame[method] = func
 	end
 end
-
 
 ChatFrames.StyleFrame = function(self, frame)
 	if (frame.isSkinned) then return end
