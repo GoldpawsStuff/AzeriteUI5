@@ -35,6 +35,10 @@ local string_gsub = string.gsub
 local type = type
 local unpack = unpack
 
+-- GLOBALS: Enum, PlayerPowerBarAlt
+-- GLOBALS: CreateFrame, GetSpecialization, IsXPUserDisabled, IsLevelAtEffectiveMaxLevel
+-- GLOBALS: UnitFactionGroup, UnitLevel, UnitPowerType, UnitHasVehicleUI, UnitIsMercenary, UnitIsPVP, UnitIsPVPFreeForAll
+
 -- Addon API
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
