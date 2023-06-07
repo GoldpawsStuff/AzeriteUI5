@@ -33,7 +33,7 @@ ns.L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
 ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false)
 ns.Hider = CreateFrame("Frame"); ns.Hider:Hide()
 ns.Noop = function() end
-ns.SETTINGS_VERSION = 20
+ns.SETTINGS_VERSION = 22
 
 _G[Addon] = ns
 
@@ -159,12 +159,12 @@ end
 
 ns.OnInitialize = function(self)
 	self.db = LibStub("AceDB-3.0-GE"):New("AzeriteUI5_DB", defaults, self:GetDefaultProfile())
-	self.db:ResetDB(self:GetDefaultProfile())
+	--self.db:ResetDB(self:GetDefaultProfile())
 
-	--if (self.db.global.version ~= ns.SETTINGS_VERSION) then
-	--	self.db:ResetDB(self:GetDefaultProfile())
-	--	self.db.global.version = ns.SETTINGS_VERSION
-	--end
+	if (self.db.global.version ~= ns.SETTINGS_VERSION) then
+		self.db:ResetDB(self:GetDefaultProfile())
+		self.db.global.version = ns.SETTINGS_VERSION
+	end
 
 	self.db.RegisterCallback(self, "OnNewProfile", "RefreshConfig")
 	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
