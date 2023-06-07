@@ -568,7 +568,7 @@ ChatFrames.OnEvent = function(self, event, ...)
 			local kill = CreateFrame("Frame")
 			kill.count = 0
 			kill:SetScript("OnUpdate", function(self)
-				--ChatFrame1:Clear()
+				ChatFrame1:Clear()
 				self.count = self.count + 1
 				if (self.count > 1) then
 					self:SetScript("OnUpdate", nil)
