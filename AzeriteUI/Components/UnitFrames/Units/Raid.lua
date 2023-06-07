@@ -29,8 +29,7 @@ local oUF = ns.oUF
 LoadAddOn("Blizzard_CUFProfiles")
 LoadAddOn("Blizzard_CompactRaidFrames")
 
-local RaidFrameMod = ns:Merge(ns:NewModule("RaidFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
-local MFM = ns:GetModule("MovableFramesManager")
+local RaidFrameMod = ns:NewModule("RaidFrames", ns.UnitFrameModule, "LibMoreEvents-1.0")
 
 -- Lua API
 local string_gsub = string.gsub
@@ -45,22 +44,18 @@ local GetMedia = ns.API.GetMedia
 -- Constants
 local playerClass = ns.PlayerClass
 
-local profileDefaults = function()
-	return {
-		enabled = true,
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+
+RaidFrameMod.GenerateDefaults = function(self)
+	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),
 		[1] = "TOPLEFT",
 		[2] = 50 * ns.API.GetEffectiveScale(),
 		[3] = -42 * ns.API.GetEffectiveScale()
 	}
+	return defaults
 end
 
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
-	}
-}, ns.UnitFrame.defaults) }
 
 local config = {
 
@@ -716,6 +711,11 @@ end
 GroupHeader.Disable = function(self)
 	if (InCombatLockdown()) then return end
 	RegisterAttributeDriver(self, "state-visibility", "hide")
+	self.visibility = nil
+end
+
+GroupHeader.IsEnabled = function(self)
+	return self.visibility and true or false
 end
 
 -- PARTYRAID_LABEL
@@ -756,19 +756,16 @@ RaidFrameMod.UpdateAll = function(self)
 	end
 end
 
-RaidFrameMod.Spawn = function(self)
+RaidFrameMod.CreateUnitFrames = function(self)
 end
 
-RaidFrameMod.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("RaidFrames", defaults)
-	self.profileDefaults = profileDefaults
-
-	self:SetEnabledState(self.db.profile.enabled)
-
-	-- Register the available layout names
-	-- with the movable frames manager.
-	MFM:RegisterPresets(self.db.profile.savedPosition)
+RaidFrameMod.OnEnable = function(self)
 
 	-- Leave these enabled for now.
 	--self:DisableBlizzard()
+
+	self:CreateUnitFrames()
+	--self:CreateAnchor(PARTYRAID_LABEL)
+
+	ns.Module.OnEnable(self)
 end

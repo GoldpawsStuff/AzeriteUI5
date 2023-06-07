@@ -26,52 +26,25 @@
 local Addon, ns = ...
 local Development = ns:NewModule("Development", "AceConsole-3.0", "LibMoreEvents-1.0")
 
--- Addon API
-local Colors = ns.Colors
-local GetFont = ns.API.GetFont
-local GetDefaultScale = ns.API.GetDefaultScale
-
-Development.ToggleDevMode = function(self)
-	ns.db.global.core.enableDevelopmentMode = not ns.db.global.core.enableDevelopmentMode
-	ReloadUI()
-end
-
 Development.OnInitialize = function(self)
 
-	local showVersion = ns.db.profile.enableDevelopmentMode or ns.IsDevelopment or ns.IsAlpha or ns.IsBeta or ns.IsRC
+	local showVersion = ns.db.global.enableDevelopmentMode or ns.IsDevelopment or ns.IsAlpha or ns.IsBeta -- or ns.IsRC
 	if (showVersion) then
-		local versionLabel = UIParent:CreateFontString()
-		versionLabel:SetIgnoreParentScale(true)
-		versionLabel:SetScale(GetDefaultScale())
-		versionLabel:SetDrawLayer("OVERLAY", 1)
-		versionLabel:SetFontObject(GetFont(12,true))
-		versionLabel:SetTextColor(unpack(Colors.offwhite))
-		versionLabel:SetAlpha(.85)
-		versionLabel:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 20, 10)
-		if (ns.IsDevelopment) then
-			versionLabel:SetText("Git Version")
-		else
-			versionLabel:SetText(ns.Version)
-		end
-		self.VersionLabel = versionLabel
+
+		local label = UIParent:CreateFontString()
+		label:SetIgnoreParentScale(true)
+		label:SetScale(ns.API.GetEffectiveScale())
+		label:SetDrawLayer("HIGHLIGHT", 1)
+		label:SetFontObject(ns.API.GetFont(12,true))
+		label:SetTextColor(ns.Colors.offwhite[1], ns.Colors.offwhite[2], ns.Colors.offwhite[3], .85)
+		label:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 20, 10)
+		label:SetText((ns.db.global.enableDevelopmentMode and "Dev Mode|n" or "") .. (ns.IsDevelopment and "Git Version" or ns.Version))
+
+		--self.VersionLabel = label
 	end
 
-	if (ns.db.profile.enableDevelopmentMode) then
-		local devLabel = UIParent:CreateFontString()
-		devLabel:SetIgnoreParentScale(true)
-		devLabel:SetScale(GetDefaultScale())
-		devLabel:SetDrawLayer("OVERLAY", 1)
-		devLabel:SetFontObject(GetFont(12,true))
-		devLabel:SetTextColor(unpack(Colors.gray))
-		devLabel:SetAlpha(.85)
-		devLabel:SetText("Dev Mode")
-		if (showVersion) then
-			devLabel:SetPoint("BOTTOMLEFT", self.VersionLabel, "TOPLEFT", 0, 4)
-		else
-			devLabel:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 20, 10)
-		end
-		self.DevLabel = devLabel
-	end
-
-	self:RegisterChatCommand("devmode", "ToggleDevMode")
+	self:RegisterChatCommand("devmode", function(self)
+		ns.db.global.enableDevelopmentMode = not ns.db.global.enableDevelopmentMode
+		ReloadUI()
+	end)
 end

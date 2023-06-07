@@ -26,8 +26,7 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local PartyFrameMod = ns:Merge(ns:NewModule("PartyFrames", "LibMoreEvents-1.0", "AceHook-3.0"), ns.UnitFrame.modulePrototype)
-local MFM = ns:GetModule("MovableFramesManager")
+local PartyFrameMod = ns:NewModule("PartyFrames", ns.UnitFrameModule, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Lua API
 local string_gsub = string.gsub
@@ -42,22 +41,18 @@ local GetMedia = ns.API.GetMedia
 -- Constants
 local playerClass = ns.PlayerClass
 
-local profileDefaults = function()
-	return {
-		enabled = true,
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+
+PartyFrameMod.GenerateDefaults = function(self)
+	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),
 		[1] = "TOPLEFT",
 		[2] = 50 * ns.API.GetEffectiveScale(),
 		[3] = -42 * ns.API.GetEffectiveScale()
 	}
+	return defaults
 end
 
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
-	}
-}, ns.UnitFrame.defaults) }
 
 local barSparkMap = {
 	top = {
@@ -812,8 +807,10 @@ end
 
 GroupHeader.Enable = function(self)
 	if (InCombatLockdown()) then return end
-	local visibility = select(3, self:GetHeaderAttributes())
+
+	local visibility = select(3, PartyFrameMod:GetHeaderAttributes())
 	local type, list = string.split(" ", visibility, 2)
+
 	if (list and type == "custom") then
 		RegisterAttributeDriver(self, "state-visibility", list)
 		self.visibility = list
@@ -827,6 +824,11 @@ end
 GroupHeader.Disable = function(self)
 	if (InCombatLockdown()) then return end
 	RegisterAttributeDriver(self, "state-visibility", "hide")
+	self.visibility = NineSlicePanelMixin
+end
+
+GroupHeader.IsEnabled = function(self)
+	return self.visibility and true or false
 end
 
 PartyFrameMod.GetHeaderAttributes = function(self)
@@ -858,17 +860,15 @@ PartyFrameMod.UpdateAll = function(self)
 	end
 end
 
-PartyFrameMod.Spawn = function(self)
+PartyFrameMod.CreateUnitFrames = function(self)
 
-	-- UnitFrames
-	---------------------------------------------------
 	local unit, name = "party", "Party"
 
 	oUF:RegisterStyle(ns.Prefix..name, style)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
 	self.frame = oUF:SpawnHeader(self:GetHeaderAttributes())
-	self.frame:SetSize(unpack(config.UnitSize))
+	self.frame:SetSize(unpack(config.Size))
 
 	-- Embed our custom methods
 	for method,func in next,GroupHeader do
@@ -889,36 +889,17 @@ PartyFrameMod.Spawn = function(self)
 	-- Sometimes offline coloring remains when a member comes back online. Why?
 	-- Not sure if this is something we should force update as the health element
 	-- is already registered for this event. Leaving this comment here while I decide.
-
-	-- Movable Frame Anchor
-	---------------------------------------------------
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(PARTY)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.25, 2.5, .05)
-	anchor:SetSize(130*4, 130)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-	anchor:SetEditModeAccountSetting(ns.IsRetail and Enum.EditModeAccountSetting.ShowPartyFrames)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.UpdateDefaults = function() self:UpdateDefaults() end
-
-	self.anchor = anchor
 end
 
-PartyFrameMod.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("PartyFrames", defaults)
-	self.profileDefaults = profileDefaults
-
-	self:SetEnabledState(self.db.profile.enabled)
-
-	-- Register the available layout names
-	-- with the movable frames manager.
-	MFM:RegisterPresets(self.db.profile.savedPosition)
+PartyFrameMod.OnEnable = function(self)
 
 	-- Disable Blizzard party frames
-	for i = 1, MEMBERS_PER_RAID_GROUP do
+	for i = 1, MEMBERS_PER_RAID_GROUP do -- wrong constant
 		oUF:DisableBlizzard("party"..i)
 	end
+
+	self:CreateUnitFrames()
+	self:CreateAnchor(PARTY)
+
+	ns.Module.OnEnable(self)
 end

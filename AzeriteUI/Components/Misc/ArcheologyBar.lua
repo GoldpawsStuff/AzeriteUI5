@@ -24,72 +24,36 @@
 
 --]]
 local Addon, ns = ...
+
 if (ns.IsClassic) then return end
 
-local ArcheologyBar = ns:NewModule("ArcheologyBar", "LibMoreEvents-1.0", "AceHook-3.0")
-local MFM = ns:GetModule("MovableFramesManager")
+local ArcheologyBar = ns:NewModule("ArcheologyBar", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Lua API
 local pairs, unpack = pairs, unpack
 
-local profileDefaults = function()
-	return {
-		scale = ns.API.GetEffectiveScale(),
-		[1] = "BOTTOM",
-		[2] = 0 * ns.API.GetEffectiveScale(),
-		[3] = 390 * ns.API.GetEffectiveScale()
-	}
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+
+ArcheologyBar.GenerateDefaults = function(self)
+	if (not ns.WoW10) then
+		defaults.profile.savedPosition = {
+			scale = ns.API.GetEffectiveScale(),
+			[1] = "BOTTOM",
+			[2] = 0,
+			[3] = 390 * ns.API.GetEffectiveScale()
+		}
+	end
+	return defaults
 end
 
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
-	}
-}, ns.moduleDefaults) }
-
-ArcheologyBar.InitializeArcheologyBar = function(self)
+ArcheologyBar.PrepareFrames = function(self)
 	self.frame = ArcheologyDigsiteProgressBar
 end
 
-ArcheologyBar.InitializeMovableFrameAnchor = function(self)
-
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(PROFESSIONS_ARCHAEOLOGY)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.25, 2.5, .05)
-	anchor:SetSize(240, 24)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.UpdateDefaults = function() self:UpdateDefaults() end
-
-	self.anchor = anchor
-end
-
-ArcheologyBar.UpdateDefaults = function(self)
-	if (not self.anchor or not self.db) then return end
-
-	local defaults = self.db.defaults.profile.savedPosition[MFM:GetDefaultLayout()]
-	if (not defaults) then return end
-
-	defaults.scale = self.anchor:GetDefaultScale()
-	defaults[1], defaults[2], defaults[3] = self.anchor:GetDefaultPosition()
-end
-
-ArcheologyBar.UpdatePositionAndScale = function(self)
-	if (not self.frame) then return end
-
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
-
-	self.frame:SetScale(config.scale)
-	self.frame:ClearAllPoints()
-	self.frame:SetPoint(config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
-end
-
 ArcheologyBar.UpdateAnchor = function(self)
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
+	if (not self.anchor) then return end
+
+	local config = self.db.profile.savedPosition
 	self.anchor:SetScale(config.scale)
 	self.anchor:ClearAllPoints()
 	self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
@@ -97,112 +61,21 @@ end
 
 ArcheologyBar.OnEvent = function(self, event, ...)
 	if (event == "ADDON_LOADED") then
-		local addon = ...
+		if (... ~= "Blizzard_ArchaeologyUI") then return end
 
-		if (addon ~= "Blizzard_ArchaeologyUI") then return end
-
-		self:InitializeArcheologyBar()
-		self:UpdatePositionAndScale()
 		self:UnregisterEvent("ADDON_LOADED", "OnEvent")
-
-	elseif (event == "PLAYER_ENTERING_WORLD") then
-		self.incombat = nil
-		self:UpdatePositionAndScale()
-
-	elseif (event == "PLAYER_REGEN_ENABLED") then
-		if (InCombatLockdown()) then return end
-		self.incombat = nil
-
-	elseif (event == "PLAYER_REGEN_DISABLED") then
-		self.incombat = true
-
-	elseif (event == "MFM_LayoutsUpdated") then
-		local LAYOUT = ...
-
-		if (not self.db.profile.savedPosition[LAYOUT]) then
-			self.db.profile.savedPosition[LAYOUT] = profileDefaults()
-		end
-
-		self:UpdatePositionAndScale()
-		self:UpdateAnchor()
-
-	elseif (event == "MFM_LayoutDeleted") then
-		local LAYOUT = ...
-
-		self.db.profile.savedPosition[LAYOUT] = nil
-
-	elseif (event == "MFM_LayoutReset") then
-		local LAYOUT = ...
-
-		local db = self.db.profile.savedPosition[LAYOUT]
-		for i,v in pairs(profileDefaults()) do
-			db[i] = v
-		end
-
-		self:UpdatePositionAndScale()
-		self:UpdateAnchor()
-
-	elseif (event == "MFM_PositionUpdated") then
-		local LAYOUT, anchor, point, x, y = ...
-
-		if (anchor ~= self.anchor) then return end
-
-		self.db.profile.savedPosition[LAYOUT][1] = point
-		self.db.profile.savedPosition[LAYOUT][2] = x
-		self.db.profile.savedPosition[LAYOUT][3] = y
-
-		self:UpdatePositionAndScale()
-
-	elseif (event == "MFM_AnchorShown") then
-		local LAYOUT, anchor, point, x, y = ...
-
-		if (anchor ~= self.anchor) then return end
-
-	elseif (event == "MFM_ScaleUpdated") then
-		local LAYOUT, anchor, scale = ...
-
-		if (anchor ~= self.anchor) then return end
-
-		self.db.profile.savedPosition[LAYOUT].scale = scale
-		self:UpdatePositionAndScale()
-
-	elseif (event == "MFM_Dragging") then
-		if (not self.incombat) then
-			if (select(2, ...) ~= self.anchor) then return end
-
-			self:OnEvent("MFM_PositionUpdated", ...)
-		end
-	end
-end
-
-ArcheologyBar.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("ArcheologyBar", defaults)
-
-	self:SetEnabledState(self.db.profile.enabled)
-
-	-- Register the available layout names
-	-- with the movable frames manager.
-	MFM:RegisterPresets(self.db.profile.savedPosition)
-
-	self:InitializeArcheologyBar()
-	self:InitializeMovableFrameAnchor()
-
-	if (not self.frame) then
-		self:RegisterEvent("ADDON_LOADED", "OnEvent")
+		self:PrepareFrames()
+		self:OnRefreshConfig()
 	end
 end
 
 ArcheologyBar.OnEnable = function(self)
+	self:PrepareFrames()
+	self:CreateAnchor(PROFESSIONS_ARCHAEOLOGY)
 
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	if (not self.frame) then
+		return self:RegisterEvent("ADDON_LOADED", "OnEvent")
+	end
 
-	ns.RegisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
-	ns.RegisterCallback(self, "MFM_LayoutReset", "OnEvent")
-	ns.RegisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_PositionUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_AnchorShown", "OnEvent")
-	ns.RegisterCallback(self, "MFM_ScaleUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_Dragging", "OnEvent")
+	ns.Module.OnEnable(self)
 end

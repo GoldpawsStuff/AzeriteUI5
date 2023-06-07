@@ -25,15 +25,27 @@
 --]]
 local Addon, ns = ...
 
+-- Lua API
+local next = next
+local pairs = pairs
+local select = select
+local setmetatable = setmetatable
+local string_format = string.format
+local tostring = tostring
+
+-- GLOBALS: UIParent
+-- GLOBALS: UnregisterStateDriver, RegisterStateDriver
+-- GLOBALS: ClearOverrideBindings, GetBindingKey, SetOverrideBindingClick
+-- GLOBALS: InCombatLockdown, PetDismiss, UnitExists, VehicleExit
+-- GLOBALS: BOTTOMLEFT_ACTIONBAR_PAGE, BOTTOMRIGHT_ACTIONBAR_PAGE, RIGHT_ACTIONBAR_PAGE, LEFT_ACTIONBAR_PAGE
+-- GLOBALS: MULTIBAR_5_ACTIONBAR_PAGE, MULTIBAR_6_ACTIONBAR_PAGE, MULTIBAR_7_ACTIONBAR_PAGE, LEAVE_VEHICLE
+
 local ButtonBar = ns.ButtonBar.prototype
 
 local ActionBar = setmetatable({}, { __index = ButtonBar })
 local ActionBar_MT = { __index = ActionBar }
 
 local LFF = LibStub("LibFadingFrames-1.0")
-local MFM = ns:GetModule("MovableFramesManager")
-
-local select, string_format = select, string.format
 
 local playerClass = ns.PlayerClass
 
@@ -60,7 +72,7 @@ local exitButton = {
 			PetDismiss()
 		end
 	end,
-	tooltip = _G.LEAVE_VEHICLE,
+	tooltip = LEAVE_VEHICLE,
 	texture = [[Interface\Icons\achievement_bg_kill_carrier_opposing_flagroom]]
 }
 
@@ -86,10 +98,12 @@ local defaults = ns:Merge({
 		overridebar = false,
 		vehicleui = false
 	},
-	scale = ns.API.GetEffectiveScale(),
-	[1] = "CENTER",
-	[2] = 0,
-	[3] = 0
+	savedPosition = {
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "CENTER",
+		[2] = 0,
+		[3] = 0
+	}
 }, ns.ButtonBar.defaults)
 
 ns.ActionBar = {}
@@ -97,6 +111,7 @@ ns.ActionBar.prototype = ActionBar
 ns.ActionBar.defaults = defaults
 
 ns.ActionBar.Create = function(self, id, config, name)
+
 	local bar = setmetatable(ns.ButtonBar:Create(id, config, name), ActionBar_MT)
 
 	bar:SetAttribute("UpdateVisibility", [[
@@ -167,6 +182,7 @@ ActionBar.CreateButton = function(self, buttonConfig)
 	button:SetAttribute("statehidden", nil)
 	button:UpdateAction()
 
+	-- Add in a vehicle exit button at slot 7 for Wrath and Retail.
 	if ((ns.IsWrath or ns.IsRetail) and (self.id == 1 and button.id == 7)) then
 		button:SetState(16, "custom", exitButton)
 		button:SetState(17, "custom", exitButton)
@@ -195,7 +211,7 @@ end
 ActionBar.Update = function(self)
 	if (InCombatLockdown()) then return end
 
-	self:UpdatePosition()
+	--self:UpdatePosition()
 	self:UpdateButtons()
 	self:UpdateButtonLayout()
 	self:UpdateStateDriver()
@@ -205,18 +221,29 @@ ActionBar.Update = function(self)
 end
 
 ActionBar.UpdateFading = function(self)
-	if (self.config.enabled and self.config.enableBarFading) then
-		for id = 1, #self.buttons do
-			LFF:UnregisterFrameForFading(self.buttons[id])
+
+	local config, buttons = self.config, self.buttons
+
+	if (config.enabled and config.enableBarFading) then
+
+		-- Remove any previous fade registrations.
+		for id = 1, #buttons do
+			LFF:UnregisterFrameForFading(buttons[id])
 		end
-		for id = self.config.fadeFrom or 1, #self.buttons do
-			LFF:RegisterFrameForFading(self.buttons[id], "actionbuttons", unpack(self.config.hitrects))
+
+		-- Register fading for selected buttons.
+		for id = config.fadeFrom or 1, #buttons do
+			LFF:RegisterFrameForFading(buttons[id], "actionbuttons", unpack(config.hitrects))
 		end
+
 	else
-		for id, button in next,self.buttons do
-			LFF:UnregisterFrameForFading(self.buttons[id])
+
+		-- Unregister all fading.
+		for id, button in next,buttons do
+			LFF:UnregisterFrameForFading(buttons[id])
 		end
 	end
+
 	-- Our fade frame unregistration sets alpha back to full opacity,
 	-- this conflicts with how actionbuttons work so we're faking events to fix it.
 	local LAB = LibStub("LibActionButton-1.0-GE")
@@ -230,24 +257,25 @@ end
 ActionBar.UpdatePosition = function(self)
 	if (InCombatLockdown()) then return end
 
-	self:SetScale(self.config.scale)
+	local config = self.config.savedPosition
+	if (not config) then
+		return print(self:GetName(), "has no saved pos")
+	end
+
+	self:SetScale(config.scale)
 	self:ClearAllPoints()
-	self:SetPoint(self.config[1], UIParent, self.config[1], self.config[2]/self.config.scale, self.config[3]/self.config.scale)
-end
-
-ActionBar.UpdateDefaults = function(self)
-	if (not self.anchor or not self.defaults) then return end
-
-	self.defaults.scale = self.anchor:GetDefaultScale()
-	self.defaults[1], self.defaults[2], self.defaults[3] = self.anchor:GetDefaultPosition()
+	self:SetPoint(config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
 end
 
 ActionBar.UpdateAnchor = function(self)
 	if (self.anchor) then
+
+		local config = self.config.savedPosition
+
 		self.anchor:SetSize(self:GetSize())
-		self.anchor:SetScale(self.config.scale)
+		self.anchor:SetScale(config.scale)
 		self.anchor:ClearAllPoints()
-		self.anchor:SetPoint(self.config[1], UIParent, self.config[1], self.config[2], self.config[3])
+		self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
 	end
 end
 
@@ -332,7 +360,7 @@ ActionBar.UpdateVisibilityDriver = function(self)
 	local config = self.config
 
 	local visdriver
-	if (self.config.enabled) then
+	if (config.enabled) then
 
 		visdriver = "[petbattle]hide;"
 

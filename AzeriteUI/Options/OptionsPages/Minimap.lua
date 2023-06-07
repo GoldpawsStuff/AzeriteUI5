@@ -38,40 +38,26 @@ local getmodule = function()
 end
 
 local setter = function(info,val)
-	getmodule().db.profile.savedPosition[MFM:GetLayout()][info[#info]] = val
-	getmodule():UpdateSettings()
-end
-
-local getter = function(info)
-	return getmodule().db.profile.savedPosition[MFM:GetLayout()][info[#info]]
-end
-
-local isdisabled = function(info)
-	return info[#info] ~= "enabled" and not getmodule().db.profile.savedPosition[MFM:GetLayout()].enabled
-end
-
-local setoption = function(info,option,val)
-	getmodule().db.profile.savedPosition[MFM:GetLayout()][option] = val
-	getmodule():UpdateSettings()
-end
-
-local getoption = function(info,option)
-	return getmodule().db.profile.savedPosition[MFM:GetLayout()][option]
-end
-
-local globalsetter = function(info,val)
 	getmodule().db.profile[info[#info]] = val
 	getmodule():UpdateSettings()
 end
 
-local globalgetter = function(info)
+local getter = function(info)
 	return getmodule().db.profile[info[#info]]
 end
 
-local globalisdisabled = function(info)
+local isdisabled = function(info)
 	return info[#info] ~= "enabled" and not getmodule().db.profile.enabled
 end
 
+local setoption = function(info,option,val)
+	getmodule().db.profile[option] = val
+	getmodule():UpdateSettings()
+end
+
+local getoption = function(info,option)
+	return getmodule().db.profile[option]
+end
 
 local GenerateOptions = function()
 	if (not getmodule()) then return end
@@ -90,18 +76,18 @@ local GenerateOptions = function()
 				desc = string_format(L["Enable to use a 24 hour clock, disable to show a 12 hour clock with %s/%s suffixes."], TIMEMANAGER_AM, TIMEMANAGER_PM),
 				order = 10,
 				type = "toggle", width = "full",
-				hidden = globalisdisabled,
-				set = function(info,val) globalsetter(info, not val) end,
-				get = function(info) return not globalgetter(info) end
+				hidden = isdisabled,
+				set = function(info,val) setter(info, not val) end,
+				get = function(info) return not getter(info) end
 			},
 			useServerTime = {
 				name = L["Use Local Time"],
 				desc = L["Set the clock to your computer's local time, disable to show the server time instead."],
 				order = 11,
 				type = "toggle", width = "full",
-				hidden = globalisdisabled,
-				set = function(info,val) globalsetter(info, not val) end,
-				get = function(info) return not globalgetter(info) end
+				hidden = isdisabled,
+				set = function(info,val) setter(info, not val) end,
+				get = function(info) return not getter(info) end
 			}
 		}
 	}

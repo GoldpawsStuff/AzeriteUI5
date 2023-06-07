@@ -26,8 +26,36 @@
 local Addon, ns = ...
 local Experimental = ns:NewModule("Experimental", "LibMoreEvents-1.0", "AceConsole-3.0")
 
--- Addon API
-local GetScale = ns.API.GetScale
+--Experimental.SwitchUI = function(self, input)
+--	if (not self.IsDevelopment) then return end
+--	if (not self._ui_list) then
+--		-- Create a list of currently installed UIs.
+--		self._ui_list = {}
+--		for ui,cmds in next,{
+--			["AzeriteUI"] = { "azerite", "azui" },
+--			["DiabolicUI"] = { "diabolic", "diablo", "dui" }
+--		} do
+--			-- Only include existing UIs that can be switched to.
+--			if (ui ~= Addon) and (ns.API.IsAddOnAvailable(ui)) then
+--				for _,cmd in next,cmds do
+--					self._ui_list[cmd] = ui
+--				end
+--			end
+--		end
+--	end
+--	local arg = self:GetArgs(string_lower(input))
+--	local target = arg and self._ui_list[arg]
+--	if (target) then
+--		EnableAddOn(target) -- Enable the desired UI
+--		for cmd,ui in next,self._ui_list do
+--			if (ui and ui ~= target) then -- Don't disable target UI
+--				DisableAddOn(ui) -- Disable all other UIs
+--			end
+--		end
+--		DisableAddOn(Addon) -- Disable the current UI
+--		ReloadUI() -- Reload interface to the selected UI
+--	end
+--end
 
 Experimental.ToggleBlips = function(self)
 	local show = not self.Blips:IsShown()
@@ -46,7 +74,7 @@ Experimental.SpawnBlips = function(self)
 	-- the texture is shown in its original size and dimensions!
 	local f = UIParent:CreateTexture()
 	f:SetIgnoreParentScale(true)
-	f:SetScale(GetScale())
+	f:SetScale(ns.API.GetScale())
 	f:Hide()
 	f:SetTexture([[Interface\MiniMap\ObjectIconsAtlas.blp]])
 	f:SetPoint("CENTER")

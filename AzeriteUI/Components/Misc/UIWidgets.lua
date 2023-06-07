@@ -26,19 +26,12 @@
 local Addon, ns = ...
 if (ns.IsRetail) then return end
 
-local UIWidgets = ns:NewModule("UIWidgets", "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
+local UIWidgets = ns:NewModule("UIWidgets", ns.Module, "LibMoreEvents-1.0")
 
 local defaults = { profile = ns:Merge({
 	enabled = true,
-}, ns.moduleDefaults) }
+}, ns.Module.defaults) }
 
--- Addon API
-local GetMedia = ns.API.GetMedia
-
-UIWidgets.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("UIWidgets", defaults)
-end
-
-
-UIWidgets.OnEnable = function(self)
+UIWidgets.GenerateDefaults = function(self)
+	return defaults
 end

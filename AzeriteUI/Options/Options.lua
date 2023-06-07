@@ -26,13 +26,11 @@
 local Addon, ns = ...
 
 local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
-
-local Options = ns:NewModule("Options", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
-local MFM = ns:GetModule("MovableFramesManager")
-local EMP = ns:GetModule("EditMode", true)
-
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
+
+local Options = ns:NewModule("Options", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
+local EMP = ns:GetModule("EditMode", true)
 
 -- Lua API
 local ipairs = ipairs
@@ -55,16 +53,16 @@ Options.GenerateProfileMenu = function(self)
 				order = 0,
 				values = function(info)
 					local values = {}
-					for layout in pairs(MFM.layouts) do
-						values[layout] = layout
+					for i,profileKey in ipairs(ns:GetProfiles()) do
+						values[profileKey] = profileKey
 					end
 					return values
 				end,
 				set = function(info, val)
-					MFM:ApplyPreset(val)
+					ns:SetProfile(val)
 				end,
 				get = function(info)
-					return MFM:GetLayout()
+					return ns:GetProfile()
 				end
 			},
 			space1 = {
@@ -75,7 +73,7 @@ Options.GenerateProfileMenu = function(self)
 				type = "execute",
 				order = 11,
 				func = function(info)
-					MFM:ResetPreset(MFM:GetLayout())
+					ns:ResetProfile(ns:GetProfile())
 				end
 			},
 			delete = {
@@ -83,13 +81,13 @@ Options.GenerateProfileMenu = function(self)
 				type = "execute",
 				order = 12,
 				confirm = function(info)
-					return string_format(L["Are you sure you want to delete the preset '%s'? This cannot be undone."], MFM:GetLayout())
+					return string_format(L["Are you sure you want to delete the preset '%s'? This cannot be undone."], ns:GetProfile())
 				end,
 				disabled = function(info)
-					return MFM:GetLayout() == MFM:GetDefaultLayout()
+					return ns:GetProfile() == ns:GetDefaultProfile()
 				end,
 				func = function(info)
-					MFM:DeletePreset(MFM:GetLayout())
+					ns:DeleteProfile(ns:GetProfile())
 				end
 			},
 			space2 = {
@@ -110,7 +108,7 @@ Options.GenerateProfileMenu = function(self)
 					if (not val or val == "") then
 						return L["The new profile needs a name."]
 					end
-					if (MFM:PresetExists(val)) then
+					if (ns:ProfileExists(val)) then
 						return L["Profile already exists."]
 					end
 					return true
@@ -122,20 +120,45 @@ Options.GenerateProfileMenu = function(self)
 					info.option.arg = val
 				end
 			},
+			space3 = {
+				name = "", order = 22, type = "description"
+			},
 			create = {
 				name = L["Create"],
+				desc = L["Create a new profile with the chosen name."],
 				type = "execute",
-				order = 22,
+				order = 23,
+				disabled = function(info)
+					local val = info.options.args.newprofileName.arg
+					return (not val or val == "" or ns:ProfileExists(val))
+				end,
 				func = function(info)
 					local layoutName = info.options.args.newprofileName.arg
 					if (layoutName) then
-						MFM:RegisterPreset(layoutName)
-						MFM:ApplyPreset(layoutName)
+						ns:SetProfile(layoutName)
+						info.options.args.newprofileName.arg = ""
 					end
 				end
 			},
-			space3 = {
-				name = "", order = 23, type = "description"
+			duplicate = {
+				name = L["Duplicate"],
+				desc = L["Create a new profile with the chosen name and copy the settings from the currently active one."],
+				type = "execute",
+				order = 24,
+				disabled = function(info)
+					local val = info.options.args.newprofileName.arg
+					return (not val or val == "" or ns:ProfileExists(val))
+				end,
+				func = function(info)
+					local layoutName = info.options.args.newprofileName.arg
+					if (layoutName) then
+						ns:DuplicateProfile(layoutName)
+						info.options.args.newprofileName.arg = ""
+					end
+				end
+			},
+			space4 = {
+				name = "", order = 25, type = "description"
 			}
 		}
 	}

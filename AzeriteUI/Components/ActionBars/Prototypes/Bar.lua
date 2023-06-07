@@ -41,7 +41,7 @@ ns.Bar.Create = function(self, id, config, name)
 	local bar = setmetatable(CreateFrame("Frame", name, UIParent, "SecureHandlerStateTemplate"), Bar_MT)
 	bar.id = id
 	bar.name = name or id
-	bar.config = config or ns:Merge({}, defaults)
+	bar.config = config or ns:Copy(ns.Bar.defaults)
 
 	return bar
 end

@@ -27,8 +27,8 @@ local Addon, ns = ...
 
 LoadAddOn("Blizzard_TimeManager")
 
-local MinimapMod = ns:NewModule("Minimap", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0", "AceConsole-3.0")
-local MFM = ns:GetModule("MovableFramesManager")
+local MinimapMod = ns:NewModule("Minimap", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0", "AceConsole-3.0")
+
 local LibDD = LibStub("LibUIDropDownMenu-4.0")
 
 -- Lua API
@@ -39,6 +39,7 @@ local math_floor = math.floor
 local math_pi = math.pi
 local half_pi = math_pi/2
 local math_sin = math.sin
+local next = next
 local pairs = pairs
 local select = select
 local string_format = string.format
@@ -47,6 +48,15 @@ local string_match = string.match
 local string_upper = string.upper
 local table_insert = table.insert
 local unpack = unpack
+
+-- GLOBALS: AddonCompartmentFrame, GameTimeFrame, MiniMapBattlefieldFrame, MiniMapMailFrame, MiniMapLFGFrame
+-- GLOBALS: C_CraftingOrders, GameTooltip, GameTooltip_SetDefaultAnchor, GarrisonLandingPage_Toggle
+-- GLOBALS: GetFramerate, GetNetStats, GetPlayerFacing, GetMinimapZoneText, GetRealZoneText, GetZonePVPInfo
+-- GLOBALS: ExpansionLandingPageMinimapButton, GarrisonLandingPageMinimapButton, MinimapZoneTextButton, MiniMapWorldMapButton, TimeManagerClockButton, QueueStatusButton
+-- GLOBALS: InCombatLockdown, IsResting, HasNewMail, PlaySound, ToggleCalendar, ToggleDropDownMenu
+-- GLOBALS: MinimapZoomIn, MinimapZoomOut, Minimap_OnClick
+-- GLOBALS: Minimap, MinimapBackdrop, MinimapCluster, MinimapBorder, MinimapBorderTop, MicroButtonAndBagsBar, MinimapCompassTexture, MiniMapInstanceDifficulty, MiniMapTracking
+-- GLOBALS: SOUNDKIT, GAMETIME_TOOLTIP_TOGGLE_CALENDAR, MINIMAP_LABEL, PROFESSIONS_CRAFTING, TIMEMANAGER_TOOLTIP_TITLE, TIMEMANAGER_TOOLTIP_LOCALTIME, TIMEMANAGER_TOOLTIP_REALMTIME
 
 -- Addon API
 local Colors = ns.Colors
@@ -72,51 +82,27 @@ local L_WORLD = string_upper(string_match(WORLD, "^.")) -- "World"
 -- Constants
 local TORGHAST_ZONE_ID = 2162
 local IN_TORGHAST = (not IsResting()) and (GetRealZoneText() == GetRealZoneText(TORGHAST_ZONE_ID))
-
-local getSize = function()
-	if (ns.WoW10) then
-		return 198,198
-	else
-		return 140,140
-	end
-end
-
-local getScale = function()
-	if (ns.WoW10) then return 1 end
-	return (198 / getSize())
-end
-
-local getDefaultScale = function()
-	return getScale() * ns.API.GetEffectiveScale()
-end
-
-MinimapMod.GetScale = function(self)
-	return getScale()
-end
-
-MinimapMod.GetDefaultScale = function(self)
-	return getDefaultScale()
-end
-
-local profileDefaults = function()
-	return {
-		scale = getDefaultScale(),
-		[1] = "BOTTOMRIGHT",
-		[2] = -40 / getDefaultScale(),
-		[3] = 40 / getDefaultScale()
-	}
-end
+local mapScale = ns.WoW10 and 1 or 198/140
 
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	theme = "Azerite",
 	useHalfClock = true,
 	useServerTime = false
-}, ns.moduleDefaults) }
-if (not ns.WoW10) then
+}, ns.Module.defaults) }
+
+MinimapMod.GetScale = function(self)
+	return mapScale
+end
+
+MinimapMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
+		scale = mapScale * ns.API.GetEffectiveScale(),
+		[1] = "BOTTOMRIGHT",
+		[2] = -40 / (mapScale * ns.API.GetEffectiveScale()),
+		[3] = 40 / (mapScale * ns.API.GetEffectiveScale())
 	}
+	return defaults
 end
 
 local DEFAULT_THEME = "Blizzard"
@@ -389,7 +375,7 @@ local Skins = {
 		Version = 1,
 		Shape = "Round"
 	},
-	[MFM:GetDefaultLayout()] = {
+	["Azerite"] = {
 		Version = 1,
 		Shape = "RoundTransparent",
 		HideElements = {
@@ -418,7 +404,7 @@ local Skins = {
 				DrawLayer = "BACKGROUND",
 				DrawLevel = -7,
 				Path = GetMedia("minimap-mask-opaque"),
-				Size = function() return (198 / getScale()), (198 / getScale()) end,
+				Size = function() return (198 / mapScale), (198 / mapScale) end,
 				Point = { "CENTER" },
 				Color = { 0, 0, 0, .75 },
 			},
@@ -427,7 +413,7 @@ local Skins = {
 				DrawLayer = "BORDER",
 				DrawLevel = 1,
 				Path = GetMedia("minimap-border"),
-				Size = function() return (404 / getScale()), (404 / getScale()) end,
+				Size = function() return (404 / mapScale), (404 / mapScale) end,
 				Point = { "CENTER", -1, 0 },
 				Color = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 			},
@@ -494,7 +480,7 @@ local Unskinned = {
 	MailColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .85 },
 
 	-- Dungeon Eye
-	EyePosition = { "CENTER", math.cos((225 / getScale())*(math.pi/180)) * ((280 / getScale())/2 + 10), math.sin((225 / getScale())*(math.pi/180)) * ((280 / getScale())/2 + 10) },
+	EyePosition = { "CENTER", math.cos((225 / mapScale)*(math.pi/180)) * ((280 / mapScale)/2 + 10), math.sin((225 / mapScale)*(math.pi/180)) * ((280 / mapScale)/2 + 10) },
 	EyeSize = { 64, 64 },
 	EyeTexture = GetMedia("group-finder-eye-green"),
 	EyeTextureColor = { .90, .95, 1 },
@@ -503,141 +489,6 @@ local Unskinned = {
 	EyeGroupSizeFont = GetFont(15,true),
 	EyeGroupStatusFramePosition = { "TOPRIGHT", QueueStatusMinimapButton, "BOTTOMLEFT", 0, 0 },
 }
-
--- Theme Prototype
---------------------------------------------
-local Prototype = {}
-
-Prototype.RegisterTheme = function(self, name, skin)
-	if (Skins[name] or name == DEFAULT_THEME) then return end
-	Skins[name] = skin
-end
-
-Prototype.SetTheme = function(self, requestedTheme)
-	if (InCombatLockdown()) then return end
-
-	-- Theme names are case sensitive,
-	-- but we don't want the input to be.
-	local name
-	for theme in next,Skins do
-		if (string.lower(theme) == string.lower(requestedTheme)) then
-			name = theme
-			break
-		end
-	end
-	if (not name or not Skins[name] or name == CURRENT_THEME) then return end
-
-	local current, new = Skins[CURRENT_THEME], Skins[name]
-
-	-- Disable unused custom elements.
-	if (current.Elements) then
-		for element,data in next,current.Elements do
-			if (data) and (not new.Elements or not new.Elements[element]) then
-				Elements[element]:SetParent(UIHider)
-				if (ObjectSnippets[element]) then
-					ObjectSnippets[element].Disable(Objects[element])
-				end
-			end
-		end
-	end
-
-	-- Update Blizzard element visibility.
-	for element,object in next,Objects do
-		if (new.HideElements and new.HideElements[element]) then
-			object:SetParent(UIHider)
-			if (ObjectSnippets[element]) then
-				ObjectSnippets[element].Disable(object)
-			end
-		else
-			object:SetParent(ObjectOwners[element])
-			if (ObjectSnippets[element]) then
-				ObjectSnippets[element].Enable(object)
-				ObjectSnippets[element].Update(object)
-			end
-		end
-	end
-
-	-- Set the minimap mask for the new theme.
-	local mask = new.Shape and Shapes[new.Shape] or Shapes.Round
-	Minimap:SetMaskTexture(mask)
-
-	-- Enable new theme's custom elements.
-	if (new.Elements) then
-		for element,data in next,new.Elements do
-
-			if (data) then
-
-				-- Retrieve the owner of the object
-				local owner = data and data.Owner and ObjectOwners[data.Owner] or Minimap
-
-				-- Retrieve the object
-				local object, objectParent = Elements[element]
-
-				-- If a custom object does not exist, create it.
-				if (not object) then
-
-					-- Figure out what our custom object should be parented to.
-					objectParent = data and data.Owner and Objects[data.Owner] or Minimap
-
-					-- Create!
-					if (ElementTypes[element] == "Texture") then
-						object = objectParent:CreateTexture()
-						Elements[element] = object
-					end
-				end
-
-				-- Silently ignore non-supported objects.
-				if (object) then
-
-					object:SetParent(objectParent or owner)
-
-					if (data.Size) then
-						if (type(data.Size) == "function") then
-							object:SetSize(data.Size())
-						else
-							object:SetSize(unpack(data.Size))
-						end
-					else
-						object:SetSize(Minimap:GetSize())
-					end
-
-					if (data.Point) then
-						object:ClearAllPoints()
-						if (type(data.Point) == "function") then
-							object:SetPoint(data.Point())
-						else
-							object:SetPoint(unpack(data.Point))
-						end
-					end
-
-					if (ElementTypes[element] == "Texture") then
-						object:SetTexture(data.Path)
-						object:SetDrawLayer(data.DrawLayer or "ARTWORK", data.DrawLevel or 0)
-						if (data.Color) then
-							object:SetVertexColor(unpack(data.Color))
-						else
-							object:SetVertexColor(1, 1, 1, 1)
-						end
-					end
-
-					-- Run object callbacks.
-					if (ObjectSnippets[element]) then
-						ObjectSnippets[element].Enable(Elements[element])
-						ObjectSnippets[element].Update(Elements[element])
-					end
-				end
-			end
-		end
-	end
-
-	CURRENT_THEME = name
-
-	-- Store the theme setting
-	MinimapMod.db.profile.theme = name
-
-	-- Update custom element visibility
-	MinimapMod:UpdateCustomElements()
-end
 
 -- Element Callbacks
 --------------------------------------------
@@ -1058,45 +909,159 @@ MinimapMod.InitializeNarcissus = function(self)
 
 end
 
-MinimapMod.InitializeAddon = function(self, addon, ...)
-	if (addon == "ADDON_LOADED") then
-		addon = ...
-	end
-	if (not self.Addons[addon]) then
+MinimapMod.InitializeAddon = function(self, addon)
+	if (not IsAddOnEnabled(addon)) then
 		return
 	end
 	local method = self["Initialize"..addon]
 	if (method) then
+		if (not IsAddOnLoaded(addon)) then
+			LoadAddOn(addon)
+		end
 		method(self)
 	end
-	self.Addons[addon] = nil
-end
-
-MinimapMod.InitializeMovableFrameAnchor = function(self)
-	self.frame = Minimap
-
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(MINIMAP_LABEL)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.25, 2.5, .05)
-	anchor:SetSize(240, 240)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor:SetDefaultScale(getDefaultScale)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-
-	self.anchor = anchor
 end
 
 -- Module Theme API (really...?)
 --------------------------------------------
+MinimapMod.RegisterTheme = function(self, name, skin)
+	if (Skins[name] or name == DEFAULT_THEME) then return end
+	Skins[name] = skin
+end
+
 MinimapMod.SetMinimapTheme = function(self, input)
 	if (InCombatLockdown()) then return end
-	local theme = self:GetArgs(string.lower(input))
+	local theme = self:GetArgs(string_lower(input))
 	if (not ns.IsRetail and theme == "Blizzard") then
 		theme = "Azerite"
 	end
-	Minimap:SetTheme(theme)
+	self:SetTheme(theme)
+end
+
+MinimapMod.SetTheme = function(self, requestedTheme)
+	if (InCombatLockdown()) then return end
+
+	-- Theme names are case sensitive,
+	-- but we don't want the input to be.
+	local name
+	for theme in next,Skins do
+		if (string_lower(theme) == string_lower(requestedTheme)) then
+			name = theme
+			break
+		end
+	end
+	if (not name or not Skins[name] or name == CURRENT_THEME) then return end
+
+	local current, new = Skins[CURRENT_THEME], Skins[name]
+
+	-- Disable unused custom elements.
+	if (current.Elements) then
+		for element,data in next,current.Elements do
+			if (data) and (not new.Elements or not new.Elements[element]) then
+				Elements[element]:SetParent(UIHider)
+				if (ObjectSnippets[element]) then
+					ObjectSnippets[element].Disable(Objects[element])
+				end
+			end
+		end
+	end
+
+	-- Update Blizzard element visibility.
+	for element,object in next,Objects do
+		if (new.HideElements and new.HideElements[element]) then
+			object:SetParent(UIHider)
+			if (ObjectSnippets[element]) then
+				ObjectSnippets[element].Disable(object)
+			end
+		else
+			object:SetParent(ObjectOwners[element])
+			if (ObjectSnippets[element]) then
+				ObjectSnippets[element].Enable(object)
+				ObjectSnippets[element].Update(object)
+			end
+		end
+	end
+
+	-- Set the minimap mask for the new theme.
+	local mask = new.Shape and Shapes[new.Shape] or Shapes.Round
+	Minimap:SetMaskTexture(mask)
+
+	-- Enable new theme's custom elements.
+	if (new.Elements) then
+		for element,data in next,new.Elements do
+
+			if (data) then
+
+				-- Retrieve the owner of the object
+				local owner = data and data.Owner and ObjectOwners[data.Owner] or Minimap
+
+				-- Retrieve the object
+				local object, objectParent = Elements[element]
+
+				-- If a custom object does not exist, create it.
+				if (not object) then
+
+					-- Figure out what our custom object should be parented to.
+					objectParent = data and data.Owner and Objects[data.Owner] or Minimap
+
+					-- Create!
+					if (ElementTypes[element] == "Texture") then
+						object = objectParent:CreateTexture()
+						Elements[element] = object
+					end
+				end
+
+				-- Silently ignore non-supported objects.
+				if (object) then
+
+					object:SetParent(objectParent or owner)
+
+					if (data.Size) then
+						if (type(data.Size) == "function") then
+							object:SetSize(data.Size())
+						else
+							object:SetSize(unpack(data.Size))
+						end
+					else
+						object:SetSize(Minimap:GetSize())
+					end
+
+					if (data.Point) then
+						object:ClearAllPoints()
+						if (type(data.Point) == "function") then
+							object:SetPoint(data.Point())
+						else
+							object:SetPoint(unpack(data.Point))
+						end
+					end
+
+					if (ElementTypes[element] == "Texture") then
+						object:SetTexture(data.Path)
+						object:SetDrawLayer(data.DrawLayer or "ARTWORK", data.DrawLevel or 0)
+						if (data.Color) then
+							object:SetVertexColor(unpack(data.Color))
+						else
+							object:SetVertexColor(1, 1, 1, 1)
+						end
+					end
+
+					-- Run object callbacks.
+					if (ObjectSnippets[element]) then
+						ObjectSnippets[element].Enable(Elements[element])
+						ObjectSnippets[element].Update(Elements[element])
+					end
+				end
+			end
+		end
+	end
+
+	CURRENT_THEME = name
+
+	-- Store the theme setting
+	self.db.profile.theme = name
+
+	-- Update custom element visibility
+	self:UpdateCustomElements()
 end
 
 -- Minimap Widget Settings
@@ -1283,168 +1248,59 @@ MinimapMod.UpdateCustomElements = function(self)
 	end
 end
 
--- Embed theme methods into the Minimap.
--- *Might have to stop doing this if it taints.
-MinimapMod.Embed = function(self)
-	Minimap:EnableMouseWheel(true)
-	Minimap:SetScript("OnMouseWheel", Minimap_OnMouseWheel)
-	Minimap:SetScript("OnMouseUp", Minimap_OnMouseUp)
-
-	for method,func in next,Prototype do
-		_G.Minimap[method] = func
-	end
+MinimapMod.PreUpdatePositionAndScale = function(self)
+	if (ns.WoW10) then return true end
+	self.frame:SetMovable(true)
 end
 
--- Classic API
---------------------------------------------
-MinimapMod.UpdatePosition = function(self)
-	if (ns.WoW10) then return end
-	Minimap:SetMovable(true)
-end
-
-MinimapMod.UpdateSize = function(self)
-	--do return end
-	if (ns.WoW10) then return end
-
-	local classicW,classicH = 140,140
-	local retailW,retailH = 198,198
-	local azeriteW, azeriteH = 213,213
-
-	Minimap:SetScale(self.db.profile.savedPosition[MFM:GetLayout()].scale)
-	--Minimap:SetSize(classicW,classicH)
-end
-
-MinimapMod.UpdatePositionAndScale = function(self)
-	if (not self.frame) then return end
-
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
-
-	self.frame:SetScale(config.scale)
-	self.frame:ClearAllPoints()
-	self.frame:SetPoint(config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
+MinimapMod.PostUpdatePositionAndScale = function(self)
+	local config = self.db.profile.savedPosition
 	self.widgetFrame:SetScale(ns.API.GetEffectiveScale() / config.scale)
-
 	self:UpdateCustomElements()
 end
 
 MinimapMod.UpdateAnchor = function(self)
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
-	self.anchor:SetSize(self.frame:GetSize())
-	self.anchor:SetScale(config.scale)
-	self.anchor:ClearAllPoints()
-	self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
+	if (ns.WoW10 or not self.frame) then return end
+	ns.Module.UpdateAnchor(self)
 end
 
 MinimapMod.UpdateSettings = function(self)
 	self:UpdateClock()
+	self:UpdateCompass()
+	self:UpdateMail()
+	self:UpdatePerformance()
+	self:UpdateTimers()
+	self:UpdateZone()
+	self:UpdateCustomElements()
 end
 
--- Module Initialization & Events
---------------------------------------------
+MinimapMod.RefreshConfig = function(self)
+	self:SetTheme(self.db.profile.theme)
+end
+
 MinimapMod.OnEvent = function(self, event, ...)
-	if (event == "PLAYER_ENTERING_WORLD") then
-		self.incombat = nil
-		self:UpdateSize()
-		self:UpdatePosition()
-		self:UpdateZone()
-		self:UpdateMail()
-		self:UpdateTimers()
-		self:UpdateCustomElements()
-
-		if (not ns.WoW10) then
-			self:UpdatePositionAndScale()
-		end
-
-	elseif (event == "VARIABLES_LOADED") then
-		self:UpdateSize()
-		self:UpdatePosition()
-		self:UpdateTimers()
-		self:UpdateCustomElements()
+	if (event == "PLAYER_ENTERING_WORLD" or event == "VARIABLES_LOADED") then
+		self:UpdateAnchor()
+		self:UpdateSettings()
 
 	elseif (event == "EDIT_MODE_LAYOUTS_UPDATED") then
 		self:UpdateCustomElements()
-
-	elseif (event == "PLAYER_REGEN_ENABLED") then
-		if (InCombatLockdown()) then return end
-		self.incombat = nil
-
-	elseif (event == "PLAYER_REGEN_DISABLED") then
-		self.incombat = true
-
-	elseif (event == "MFM_LayoutsUpdated") then
-		local LAYOUT = ...
-
-		if (not self.db.profile.savedPosition[LAYOUT]) then
-			self.db.profile.savedPosition[LAYOUT] = profileDefaults()
-		end
-
-		self:UpdatePositionAndScale()
-		self:UpdateAnchor()
-
-	elseif (event == "MFM_LayoutDeleted") then
-		local LAYOUT = ...
-
-		self.db.profile.savedPosition[LAYOUT] = nil
-
-	elseif (event == "MFM_LayoutReset") then
-		local LAYOUT = ...
-
-		local db = self.db.profile.savedPosition[LAYOUT]
-		for i,v in pairs(profileDefaults()) do
-			db[i] = v
-		end
-
-		self:UpdatePositionAndScale()
-		self:UpdateAnchor()
-
-	elseif (event == "MFM_PositionUpdated") then
-		local LAYOUT, anchor, point, x, y = ...
-
-		if (anchor ~= self.anchor) then return end
-
-		self.db.profile.savedPosition[LAYOUT][1] = point
-		self.db.profile.savedPosition[LAYOUT][2] = x
-		self.db.profile.savedPosition[LAYOUT][3] = y
-
-		self:UpdatePositionAndScale()
-
-	elseif (event == "MFM_AnchorShown") then
-		local LAYOUT, anchor, point, x, y = ...
-
-		if (anchor ~= self.anchor) then return end
-
-	elseif (event == "MFM_ScaleUpdated") then
-		local LAYOUT, anchor, scale = ...
-
-		if (anchor ~= self.anchor) then return end
-
-		self.db.profile.savedPosition[LAYOUT].scale = scale
-		self:UpdatePositionAndScale()
-
-	elseif (event == "MFM_Dragging") then
-		if (not self.incombat) then
-			if (select(2, ...) ~= self.anchor) then return end
-
-			self:OnEvent("MFM_PositionUpdated", ...)
-		end
 	end
 end
 
-MinimapMod.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("Minimap", defaults)
+MinimapMod.OnEnable = function(self)
+	self.frame = Minimap
+	self.frame:EnableMouseWheel(true)
+	self.frame:SetScript("OnMouseWheel", Minimap_OnMouseWheel)
+	self.frame:SetScript("OnMouseUp", Minimap_OnMouseUp)
 
-	-- This theme only works for retail currently.
-	if (not ns.WoW10 and self.db.profile.theme == "Blizzard") then
-		self.db.profile.theme = "Azerite"
-	end
-
-	self:SetEnabledState(self.db.profile.enabled)
-	self:Embed()
 	self:CreateCustomElements()
 
 	if (not ns.WoW10) then
-		self:InitializeMovableFrameAnchor()
+		self:CreateAnchor(MINIMAP_LABEL):SetDefaultScale(function() return mapScale * ns.API.GetEffectiveScale() end)
 	end
+
+	ns.Module.OnEnable(self)
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("VARIABLES_LOADED", "OnEvent")
@@ -1458,44 +1314,8 @@ MinimapMod.OnInitialize = function(self)
 		self:RegisterEvent("CRAFTINGORDERS_UPDATE_PERSONAL_ORDER_COUNTS", "UpdateMail")
 	end
 
-	if (not ns.WoW10) then
-		self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
-		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-
-		ns.RegisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
-		ns.RegisterCallback(self, "MFM_LayoutReset", "OnEvent")
-		ns.RegisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
-		ns.RegisterCallback(self, "MFM_PositionUpdated", "OnEvent")
-		ns.RegisterCallback(self, "MFM_AnchorShown", "OnEvent")
-		ns.RegisterCallback(self, "MFM_ScaleUpdated", "OnEvent")
-		ns.RegisterCallback(self, "MFM_Dragging", "OnEvent")
-	end
-
 	self:RegisterChatCommand("setminimaptheme", "SetMinimapTheme")
 
-	self.Addons = {}
-
-	local addons, queued = { "MBB", "Narcissus" }
-	for _,addon in ipairs(addons) do
-		if (IsAddOnEnabled(addon)) then
-			self.Addons[addon] = true
-			if (IsAddOnLoaded(addon)) then
-				self:InitializeAddon(addon)
-			else
-				-- Forcefully load addons
-				-- *This helps work around an issue where
-				--  Narcissus can bug out when started in combat.
-				LoadAddOn(addon)
-				self:InitializeAddon(addon)
-			end
-		end
-	end
-end
-
-MinimapMod.OnEnable = function(self)
-	if (not ns.WoW10) then
-		self:UpdateSize()
-		self:UpdatePosition()
-	end
-	self:SetMinimapTheme(self.db.profile.theme)
+	self:InitializeAddon("MBB")
+	self:InitializeAddon("Narcissus")
 end

@@ -28,8 +28,7 @@ if (ns.IsClassic) then return end
 
 local oUF = ns.oUF
 
-local FocusFrameMod = ns:Merge(ns:NewModule("FocusFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
-local MFM = ns:GetModule("MovableFramesManager")
+local FocusFrameMod = ns:NewModule("FocusFrame", ns.UnitFrameModule, "LibMoreEvents-1.0")
 
 -- Lua API
 local unpack = unpack
@@ -43,22 +42,17 @@ local GetMedia = ns.API.GetMedia
 -- Constants
 local playerClass = ns.PlayerClass
 
-local profileDefaults = function()
-	return {
-		enabled = true,
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+
+FocusFrameMod.GenerateDefaults = function(self)
+	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),
 		[1] = "BOTTOMLEFT",
 		[2] = (332-136) * ns.API.GetEffectiveScale(),
 		[3] = (270-23) * ns.API.GetEffectiveScale()
 	}
+	return defaults
 end
-
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
-	}
-}, ns.UnitFrame.defaults) }
 
 local barSparkMap = {
 	top = {
@@ -460,44 +454,23 @@ local style = function(self, unit)
 
 end
 
-FocusFrameMod.Spawn = function(self)
+FocusFrameMod.CreateUnitFrames = function(self)
 
-	-- UnitFrame
-	---------------------------------------------------
 	local unit, name = "focus", "Focus"
 
 	oUF:RegisterStyle(ns.Prefix..name, style)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
 	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
-
-	-- Movable Frame Anchor
-	---------------------------------------------------
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(FOCUS) -- crazy long
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.25, 2.5, .05)
-	anchor:SetSize(136, 47)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-	anchor:SetEditModeAccountSetting(ns.IsRetail and Enum.EditModeAccountSetting.ShowTargetAndFocus)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.UpdateDefaults = function() self:UpdateDefaults() end
-
-	self.anchor = anchor
 end
 
-FocusFrameMod.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("FocusFrame", defaults)
-	self.profileDefaults = profileDefaults
-
-	self:SetEnabledState(self.db.profile.enabled)
-
-	-- Register the available layout names
-	-- with the movable frames manager.
-	MFM:RegisterPresets(self.db.profile.savedPosition)
+FocusFrameMod.OnEnable = function(self)
 
 	-- Disable Blizzard focus frame
 	oUF:DisableBlizzard("focus")
+
+	self:CreateUnitFrames()
+	self:CreateAnchor(FOCUS)
+
+	ns.Module.OnEnable(self)
 end

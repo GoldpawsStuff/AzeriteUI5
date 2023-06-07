@@ -24,29 +24,15 @@
 
 --]]
 local Addon, ns = ...
+
 if (not ns.IsRetail and not ns.IsWrath) then return end
 
-local VehicleSeat = ns:NewModule("VehicleSeat", "AceHook-3.0", "LibMoreEvents-1.0")
-local MFM = ns:GetModule("MovableFramesManager")
+local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
+
+local VehicleSeat = ns:NewModule("VehicleSeat", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Lua API
 local pairs, unpack = pairs, unpack
-
-local profileDefaults = function()
-	return {
-		scale = ns.API.GetEffectiveScale(),
-		[1] = "BOTTOMRIGHT",
-		[2] = -(480+64) * ns.API.GetEffectiveScale(),
-		[3] = (210-64) * ns.API.GetEffectiveScale()
-	}
-end
-
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
-	}
-}, ns.moduleDefaults) }
 
 -- Frame Metamethods
 local clearAllPoints = getmetatable(CreateFrame("Frame")).__index.ClearAllPoints
@@ -58,159 +44,46 @@ local clearSetPoint = function(frame, ...)
 	setPoint(frame, ...)
 end
 
-VehicleSeat.InitializeVehicleSeatIndicator = function(self)
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
 
-	VehicleSeatIndicator:ClearAllPoints()
-	VehicleSeatIndicator:SetParent(UIParent)
-	VehicleSeatIndicator:SetFrameStrata("BACKGROUND")
+VehicleSeat.GenerateDefaults = function(self)
+	defaults.profile.savedPosition = {
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "BOTTOMRIGHT",
+		[2] = -544 * ns.API.GetEffectiveScale(),
+		[3] = 146 * ns.API.GetEffectiveScale()
+	}
+	return defaults
+end
+
+VehicleSeat.PrepareFrames = function(self)
+
+	self.frame = VehicleSeatIndicator
+
+	self.frame:ClearAllPoints()
+	self.frame:SetParent(UIParent)
+	self.frame:SetFrameStrata("BACKGROUND")
 
 	-- This will prevent UIParent_ManageFramePositions() from being executed
 	-- *for some reason it's not working? Why not?
-	VehicleSeatIndicator.IsShown = function() return false end
+	self.frame.IsShown = function() return false end
 
-	self:SecureHook(VehicleSeatIndicator, "SetPoint", "UpdatePositionAndScale")
-
-	self.frame = VehicleSeatIndicator
-end
-
-VehicleSeat.InitializeMovableFrameAnchor = function(self)
-
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle("Vehicle Seat")
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.25, 2.5, .05)
-	anchor:SetSize(128, 128)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.UpdateDefaults = function() self:UpdateDefaults() end
-
-	self.anchor = anchor
-end
-
-VehicleSeat.UpdateDefaults = function(self)
-	if (not self.anchor or not self.db) then return end
-
-	local defaults = self.db.defaults.profile.savedPosition[MFM:GetDefaultLayout()]
-	if (not defaults) then return end
-
-	defaults.scale = self.anchor:GetDefaultScale()
-	defaults[1], defaults[2], defaults[3] = self.anchor:GetDefaultPosition()
-end
-
-VehicleSeat.UpdatePositionAndScale = function(self)
-	if (not self.frame) then return end
-
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
-
-	self.frame:SetScale(config.scale)
-
-	clearSetPoint(self.frame, config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
+	self:SecureHook(self.frame, "SetPoint", "UpdatePositionAndScale")
 end
 
 VehicleSeat.UpdateAnchor = function(self)
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
+	local config = self.db.profile.savedPosition
+	local point, x, y = unpack(config)
+
+	self.anchor:SetSize(128, 128)
 	self.anchor:SetScale(config.scale)
 	self.anchor:ClearAllPoints()
-	self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
-end
-
-VehicleSeat.OnEvent = function(self, event, ...)
-	if (event == "PLAYER_ENTERING_WORLD") then
-		self.incombat = nil
-		self:UpdatePositionAndScale()
-
-	elseif (event == "PLAYER_REGEN_ENABLED") then
-		if (InCombatLockdown()) then return end
-		self.incombat = nil
-
-	elseif (event == "PLAYER_REGEN_DISABLED") then
-		self.incombat = true
-
-	elseif (event == "MFM_LayoutsUpdated") then
-		local LAYOUT = ...
-
-		if (not self.db.profile.savedPosition[LAYOUT]) then
-			self.db.profile.savedPosition[LAYOUT] = profileDefaults()
-		end
-
-		self:UpdatePositionAndScale()
-		self:UpdateAnchor()
-
-	elseif (event == "MFM_LayoutDeleted") then
-		local LAYOUT = ...
-
-		self.db.profile.savedPosition[LAYOUT] = nil
-
-	elseif (event == "MFM_LayoutReset") then
-		local LAYOUT = ...
-
-		local db = self.db.profile.savedPosition[LAYOUT]
-		for i,v in pairs(profileDefaults()) do
-			db[i] = v
-		end
-
-		self:UpdatePositionAndScale()
-		self:UpdateAnchor()
-
-	elseif (event == "MFM_PositionUpdated") then
-		local LAYOUT, anchor, point, x, y = ...
-
-		if (anchor ~= self.anchor) then return end
-
-		self.db.profile.savedPosition[LAYOUT][1] = point
-		self.db.profile.savedPosition[LAYOUT][2] = x
-		self.db.profile.savedPosition[LAYOUT][3] = y
-
-		self:UpdatePositionAndScale()
-
-	elseif (event == "MFM_AnchorShown") then
-		local LAYOUT, anchor, point, x, y = ...
-
-		if (anchor ~= self.anchor) then return end
-
-	elseif (event == "MFM_ScaleUpdated") then
-		local LAYOUT, anchor, scale = ...
-
-		if (anchor ~= self.anchor) then return end
-
-		self.db.profile.savedPosition[LAYOUT].scale = scale
-		self:UpdatePositionAndScale()
-
-	elseif (event == "MFM_Dragging") then
-		if (not self.incombat) then
-			if (select(2, ...) ~= self.anchor) then return end
-
-			self:OnEvent("MFM_PositionUpdated", ...)
-		end
-	end
-end
-
-VehicleSeat.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("VehicleSeat", defaults)
-	self.profileDefaults = profileDefaults
-
-	self:SetEnabledState(self.db.profile.enabled)
-
-	-- Register the available layout names
-	-- with the movable frames manager.
-	MFM:RegisterPresets(self.db.profile.savedPosition)
-
-	self:InitializeVehicleSeatIndicator()
-	self:InitializeMovableFrameAnchor()
+	self.anchor:SetPoint(point, UIParent, point, x, y)
 end
 
 VehicleSeat.OnEnable = function(self)
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	self:PrepareFrames()
+	self:CreateAnchor(L["Vehicle Seat"])
 
-	ns.RegisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
-	ns.RegisterCallback(self, "MFM_LayoutReset", "OnEvent")
-	ns.RegisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_PositionUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_AnchorShown", "OnEvent")
-	ns.RegisterCallback(self, "MFM_ScaleUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_Dragging", "OnEvent")
+	ns.Module.OnEnable(self)
 end

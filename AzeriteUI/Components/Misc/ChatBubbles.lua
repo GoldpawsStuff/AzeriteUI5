@@ -24,6 +24,7 @@
 
 --]]
 local Addon, ns = ...
+
 if (ns.IsClassic or ns.IsTBC or ns.IsWrath or ns.IsRetail) then return end
 
 local ChatBubbles = ns:NewModule("ChatBubbles", "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
@@ -44,7 +45,7 @@ local defaults = { profile = ns:Merge({
 		instance = true,
 		instancecombat = false
 	}
-}, ns.moduleDefaults) }
+}, ns.Module.defaults) }
 
 -- Create a custom bubble.
 ChatBubbles.CreateCustomBubble = function(self, blizzBubble)

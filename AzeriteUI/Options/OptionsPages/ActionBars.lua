@@ -43,39 +43,39 @@ end
 
 local setter = function(info,val)
 	local id = tonumber((string_match(info[#info - 1],"(%d+)")))
-	local db = getmodule().db.profile.bars[id].savedPosition[MFM:GetLayout()]
+	local db = getmodule().db.profile.bars[id]
 	db[info[#info]] = val
 	getmodule():UpdateSettings()
 end
 
 local getter = function(info)
 	local id = tonumber((string_match(info[#info - 1],"(%d+)")))
-	local db = getmodule().db.profile.bars[id].savedPosition[MFM:GetLayout()]
+	local db = getmodule().db.profile.bars[id]
 	return db[info[#info]]
 end
 
 local isdisabled = function(info)
 	local id = tonumber((string_match(info[#info - 1],"(%d+)")))
-	local db = getmodule().db.profile.bars[id].savedPosition[MFM:GetLayout()]
+	local db = getmodule().db.profile.bars[id]
 	return info[#info] ~= "enabled" and not db.enabled
 end
 
 local getsetting = function(info, setting)
 	local id = tonumber((string_match(info[#info - 1],"(%d+)")))
-	local db = getmodule().db.profile.bars[id].savedPosition[MFM:GetLayout()]
+	local db = getmodule().db.profile.bars[id]
 	return db[setting]
 end
 
 local setoption = function(info,option,val)
 	local id = tonumber((string_match(info[#info - 1],"(%d+)")))
-	local db = getmodule().db.profile.bars[id].savedPosition[MFM:GetLayout()]
+	local db = getmodule().db.profile.bars[id]
 	db[option] = val
 	getmodule():UpdateSettings()
 end
 
 local getoption = function(info,option)
 	local id = tonumber((string_match(info[#info - 1],"(%d+)")))
-	local db = getmodule().db.profile.bars[id].savedPosition[MFM:GetLayout()]
+	local db = getmodule().db.profile.bars[id]
 	return db[option]
 end
 
@@ -255,7 +255,7 @@ local GenerateOptions = function()
 					},
 					set = setter,
 					get = getter
-				},
+				}--[[,
 				positionHeader = {
 					name = L["Position"],
 					order = 58,
@@ -335,7 +335,7 @@ local GenerateOptions = function()
 						val = math_floor(val * 1000 + .5)/1000
 						return tostring(val)
 					end
-				}
+				}]]
 			}
 		}
 	end

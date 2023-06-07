@@ -26,8 +26,7 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local PlayerFrameMod = ns:Merge(ns:NewModule("PlayerFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
-local MFM = ns:GetModule("MovableFramesManager")
+local PlayerFrameMod = ns:NewModule("PlayerFrame", ns.UnitFrameModule, "LibMoreEvents-1.0")
 
 -- Lua API
 local next = next
@@ -51,22 +50,17 @@ local playerXPDisabled = IsXPUserDisabled()
 local SPEC_PALADIN_RETRIBUTION = SPEC_PALADIN_RETRIBUTION or 3
 local playerIsRetribution = playerClass == "PALADIN" and (ns.IsRetail and GetSpecialization() == SPEC_PALADIN_RETRIBUTION)
 
-local profileDefaults = function()
-	return {
-		enabled = true,
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+
+PlayerFrameMod.GenerateDefaults = function(self)
+	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),
 		[1] = "BOTTOMLEFT",
 		[2] = 46 * ns.API.GetEffectiveScale(),
 		[3] = 100 * ns.API.GetEffectiveScale()
 	}
+	return defaults
 end
-
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
-	}
-}, ns.UnitFrame.defaults) }
 
 local barSparkMap = {
 	{ keyPercent =   0/512, topOffset = -24/64, bottomOffset = -39/64 },
@@ -1254,7 +1248,7 @@ local style = function(self, unit)
 
 end
 
-PlayerFrameMod.Spawn = function(self)
+PlayerFrameMod.CreateUnitFrames = function(self)
 
 	local unit, name = "player", "Player"
 
@@ -1262,32 +1256,9 @@ PlayerFrameMod.Spawn = function(self)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
 	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
-
-	-- Movable Frame Anchor
-	---------------------------------------------------
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(HUD_EDIT_MODE_PLAYER_FRAME_LABEL or PLAYER)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.25, 2.5, .05)
-	anchor:SetSize(560, 180)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.UpdateDefaults = function() self:UpdateDefaults() end
-
-	self.anchor = anchor
 end
 
-PlayerFrameMod.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("PlayerFrame", defaults)
-	self.profileDefaults = profileDefaults
-
-	self:SetEnabledState(self.db.profile.enabled)
-
-	-- Register the available layout names
-	-- with the movable frames manager.
-	MFM:RegisterPresets(self.db.profile.savedPosition)
+PlayerFrameMod.OnEnable = function(self)
 
 	-- Disable Blizzard player frame.
 	oUF:DisableBlizzard("player")
@@ -1299,4 +1270,9 @@ PlayerFrameMod.OnInitialize = function(self)
 		PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_HIDE")
 		PlayerPowerBarAlt:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	end
+
+	self:CreateUnitFrames()
+	self:CreateAnchor(HUD_EDIT_MODE_PLAYER_FRAME_LABEL or PLAYER)
+
+	ns.Module.OnEnable(self)
 end

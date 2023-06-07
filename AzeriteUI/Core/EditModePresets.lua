@@ -33,7 +33,7 @@ local ipairs = ipairs
 
 local defaults = { profile = ns:Merge({
 	enabled = true,
-}, ns.moduleDefaults) }
+}, ns.Module.defaults) }
 
 -- Mimicking the format used by Blizz in
 -- Interface\FrameXML\EditModePresetLayouts.lua

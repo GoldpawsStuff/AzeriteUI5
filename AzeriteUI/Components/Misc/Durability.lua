@@ -27,8 +27,7 @@ local Addon, ns = ...
 
 if (not DurabilityFrame or ns.IsRetail) then return end
 
-local Durability = ns:NewModule("Durability", "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
-local MFM = ns:GetModule("MovableFramesManager")
+local Durability = ns:NewModule("Durability", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
 
 -- Lua API
 local pairs, unpack = pairs, unpack
@@ -37,22 +36,7 @@ local pairs, unpack = pairs, unpack
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
-
-local profileDefaults = function()
-	return {
-		scale = ns.API.GetEffectiveScale(),
-		[1] = "BOTTOMRIGHT",
-		[2] = -(360 + 60/2) * ns.API.GetEffectiveScale(),
-		[3] = (190 -75/2) * ns.API.GetEffectiveScale()
-	}
-end
-
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
-	}
-}, ns.moduleDefaults) }
+local UIHider = ns.Hider
 
 -- Sourced from INVENTORY_ALERT_STATUS_SLOTS in FrameXML/DurabilityFrame.lua
 local inventorySlots = {
@@ -75,7 +59,19 @@ local inventoryColors = {
 	[2] = { .9, .3, .1 }
 }
 
-Durability.InitializeDurabilityFrame = function(self)
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+
+Durability.GenerateDefaults = function(self)
+	defaults.profile.savedPosition = {
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "BOTTOMRIGHT",
+		[2] = -390 * ns.API.GetEffectiveScale(),
+		[3] = 152.5 * ns.API.GetEffectiveScale()
+	}
+	return defaults
+end
+
+Durability.PrepareFrames = function(self)
 
 	-- Will this taint?
 	-- *This is to prevent the durability frame size
@@ -90,7 +86,7 @@ Durability.InitializeDurabilityFrame = function(self)
 	-- Create a carbon copy of the blizzard durability frame.
 	-- Everything here found in FrameXML/DurabilityFrame.xml
 	local frame = CreateFrame("Frame", nil, UIParent)
-	frame:SetSize(60,75)
+	frame:SetSize(60 + 20 + 14, 75)
 
 	local head = frame:CreateTexture()
 	head:SetSize(18,22)
@@ -193,49 +189,6 @@ Durability.InitializeDurabilityFrame = function(self)
 	self.frame = frame
 end
 
-Durability.InitializeMovableFrameAnchor = function(self)
-
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(DURABILITY)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.25, 2.5, .05)
-	anchor:SetSize(60 + 20 + 14, 75)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.UpdateDefaults = function() self:UpdateDefaults() end
-
-	self.anchor = anchor
-end
-
-Durability.UpdateDefaults = function(self)
-	if (not self.anchor or not self.db) then return end
-
-	local defaults = self.db.defaults.profile.savedPosition[MFM:GetDefaultLayout()]
-	if (not defaults) then return end
-
-	defaults.scale = self.anchor:GetDefaultScale()
-	defaults[1], defaults[2], defaults[3] = self.anchor:GetDefaultPosition()
-end
-
-Durability.UpdatePositionAndScale = function(self)
-	if (not self.frame) then return end
-
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
-
-	self.frame:SetScale(config.scale)
-	self.frame:ClearAllPoints()
-	self.frame:SetPoint(config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
-end
-
-Durability.UpdateAnchor = function(self)
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
-	self.anchor:SetScale(config.scale)
-	self.anchor:ClearAllPoints()
-	self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
-end
-
 Durability.UpdateWidget = function(self, forced)
 	if (not self.frame) then return end
 
@@ -315,104 +268,17 @@ Durability.UpdateWidget = function(self, forced)
 end
 
 Durability.OnEvent = function(self, event, ...)
-	if (event == "UPDATE_INVENTORY_ALERTS") then
+	if (event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_INVENTORY_ALERTS") then
 		self:UpdateWidget()
-
-	elseif (event == "PLAYER_ENTERING_WORLD") then
-		self.incombat = nil
-		self:UpdateWidget()
-		self:UpdatePositionAndScale()
-
-	elseif (event == "PLAYER_REGEN_ENABLED") then
-		if (InCombatLockdown()) then return end
-		self.incombat = nil
-
-	elseif (event == "PLAYER_REGEN_DISABLED") then
-		self.incombat = true
-
-	elseif (event == "MFM_LayoutsUpdated") then
-		local LAYOUT = ...
-
-		if (not self.db.profile.savedPosition[LAYOUT]) then
-			self.db.profile.savedPosition[LAYOUT] = profileDefaults()
-		end
-
-		self:UpdatePositionAndScale()
-		self:UpdateAnchor()
-
-	elseif (event == "MFM_LayoutDeleted") then
-		local LAYOUT = ...
-
-		self.db.profile.savedPosition[LAYOUT] = nil
-
-	elseif (event == "MFM_LayoutReset") then
-		local LAYOUT = ...
-
-		local db = self.db.profile.savedPosition[LAYOUT]
-		for i,v in pairs(profileDefaults()) do
-			db[i] = v
-		end
-
-		self:UpdatePositionAndScale()
-		self:UpdateAnchor()
-
-	elseif (event == "MFM_PositionUpdated") then
-		local LAYOUT, anchor, point, x, y = ...
-
-		if (anchor ~= self.anchor) then return end
-
-		self.db.profile.savedPosition[LAYOUT][1] = point
-		self.db.profile.savedPosition[LAYOUT][2] = x
-		self.db.profile.savedPosition[LAYOUT][3] = y
-
-		self:UpdatePositionAndScale()
-
-	elseif (event == "MFM_AnchorShown") then
-		local LAYOUT, anchor, point, x, y = ...
-
-		if (anchor ~= self.anchor) then return end
-
-	elseif (event == "MFM_ScaleUpdated") then
-		local LAYOUT, anchor, scale = ...
-
-		if (anchor ~= self.anchor) then return end
-
-		self.db.profile.savedPosition[LAYOUT].scale = scale
-		self:UpdatePositionAndScale()
-
-	elseif (event == "MFM_Dragging") then
-		if (not self.incombat) then
-			if (select(2, ...) ~= self.anchor) then return end
-
-			self:OnEvent("MFM_PositionUpdated", ...)
-		end
 	end
 end
 
-Durability.OnInitialize = function(self)
-
-	self.db = ns.db:RegisterNamespace("Durability", defaults)
-
-	self:SetEnabledState(self.db.profile.enabled)
-
-	-- Register the available layout names
-	-- with the movable frames manager.
-	MFM:RegisterPresets(self.db.profile.savedPosition)
-
-	self:InitializeDurabilityFrame()
-	self:InitializeMovableFrameAnchor()
-end
-
 Durability.OnEnable = function(self)
+	self:PrepareFrames()
+	self:CreateAnchor(DURABILITY)
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("UPDATE_INVENTORY_ALERTS", "OnEvent")
 
-	ns.RegisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
-	ns.RegisterCallback(self, "MFM_LayoutReset", "OnEvent")
-	ns.RegisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_PositionUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_AnchorShown", "OnEvent")
-	ns.RegisterCallback(self, "MFM_ScaleUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_Dragging", "OnEvent")
+	ns.Module.OnEnable(self)
 end

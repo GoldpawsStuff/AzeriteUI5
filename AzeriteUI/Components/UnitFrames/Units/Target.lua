@@ -26,8 +26,7 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local TargetFrameMod = ns:Merge(ns:NewModule("TargetFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
-local MFM = ns:GetModule("MovableFramesManager")
+local TargetFrameMod = ns:NewModule("TargetFrame", ns.UnitFrameModule, "LibMoreEvents-1.0")
 
 -- Lua API
 local next = next
@@ -43,23 +42,17 @@ local GetMedia = ns.API.GetMedia
 -- Constants
 local playerLevel = UnitLevel("player")
 
-local profileDefaults = function()
-	return {
-		enabled = true,
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+
+TargetFrameMod.GenerateDefaults = function(self)
+	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),
 		[1] = "TOPRIGHT",
 		[2] = -40 * ns.API.GetEffectiveScale(),
 		[3] = -40 * ns.API.GetEffectiveScale()
 	}
+	return defaults
 end
-
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
-	}
-}, ns.UnitFrame.defaults) }
-
 
 local barSparkMap = {
 	{ keyPercent =   0/512, topOffset = -24/64, bottomOffset = -39/64 },
@@ -1245,45 +1238,23 @@ local style = function(self, unit, id)
 
 end
 
-TargetFrameMod.Spawn = function(self)
+TargetFrameMod.CreateUnitFrames = function(self)
 
-	-- UnitFrame
-	---------------------------------------------------
 	local unit, name = "target", "Target"
 
 	oUF:RegisterStyle(ns.Prefix..name, style)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
 	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
-
-	-- Movable Frame Anchor
-	---------------------------------------------------
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(HUD_EDIT_MODE_TARGET_FRAME_LABEL or TARGET)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.25, 2.5, .05)
-	anchor:SetSize(550, 210)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-	anchor:SetEditModeAccountSetting(ns.IsRetail and Enum.EditModeAccountSetting.ShowTargetAndFocus)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.UpdateDefaults = function() self:UpdateDefaults() end
-
-	self.anchor = anchor
-
 end
 
-TargetFrameMod.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("TargetFrame", defaults)
-	self.profileDefaults = profileDefaults
-
-	self:SetEnabledState(self.db.profile.enabled)
-
-	-- Register the available layout names
-	-- with the movable frames manager.
-	MFM:RegisterPresets(self.db.profile.savedPosition)
+TargetFrameMod.OnEnable = function(self)
 
 	-- Disable Blizzard target frame.
 	oUF:DisableBlizzard("target")
+
+	self:CreateUnitFrames()
+	self:CreateAnchor(HUD_EDIT_MODE_TARGET_FRAME_LABEL or TARGET)
+
+	ns.Module.OnEnable(self)
 end

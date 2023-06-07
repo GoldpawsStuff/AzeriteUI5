@@ -35,25 +35,25 @@ local getmodule = function()
 end
 
 local setter = function(info,val)
-	getmodule().db.profile.savedPosition[MFM:GetLayout()][info[#info]] = val
+	getmodule().db.profile[info[#info]] = val
 	getmodule():UpdateSettings()
 end
 
 local getter = function(info)
-	return getmodule().db.profile.savedPosition[MFM:GetLayout()][info[#info]]
+	return getmodule().db.profile[info[#info]]
 end
 
 local isdisabled = function(info)
-	return info[#info] ~= "enabled" and not getmodule().db.profile.savedPosition[MFM:GetLayout()].enabled
+	return info[#info] ~= "enabled" and not getmodule().db.profile.enabled
 end
 
 local setoption = function(info,option,val)
-	getmodule().db.profile.savedPosition[MFM:GetLayout()][option] = val
+	getmodule().db.profile[option] = val
 	getmodule():UpdateSettings()
 end
 
 local getoption = function(info,option)
-	return getmodule().db.profile.savedPosition[MFM:GetLayout()][option]
+	return getmodule().db.profile[option]
 end
 
 local GenerateOptions = function()

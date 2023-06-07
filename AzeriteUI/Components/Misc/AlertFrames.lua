@@ -24,9 +24,10 @@
 
 --]]
 local Addon, ns = ...
+
 if (ns.IsRetail) then return end
 
-local AlertFrames = ns:NewModule("AlertFrames")
+local AlertFrames = ns:NewModule("AlertFrames", "AceHook-3.0")
 
 -- Lua API
 local ipairs = ipairs
@@ -139,8 +140,7 @@ AlertFrames.OnInitialize = function(self)
 
 	UIPARENT_MANAGED_FRAME_POSITIONS["GroupLootContainer"] = nil
 
-	hooksecurefunc(AlertFrame, "AddAlertFrameSubSystem", AlertSubSystem_AdjustPosition)
-	hooksecurefunc(AlertFrame, "UpdateAnchors", AlertFrame_PostUpdateAnchors)
-	hooksecurefunc("GroupLootContainer_Update", GroupLootContainer_PostUpdate)
-
+	self:SecureHook(AlertFrame, "AddAlertFrameSubSystem", AlertSubSystem_AdjustPosition)
+	self:SecureHook(AlertFrame, "UpdateAnchors", AlertFrame_PostUpdateAnchors)
+	self:SecureHook("GroupLootContainer_Update", GroupLootContainer_PostUpdate)
 end

@@ -25,8 +25,9 @@
 --]]
 local Addon, ns = ...
 
-local Tooltips = ns:NewModule("Tooltips", "LibMoreEvents-1.0", "AceHook-3.0")
-local MFM = ns:GetModule("MovableFramesManager")
+local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
+
+local Tooltips = ns:NewModule("Tooltips", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Lua API
 local _G = _G
@@ -72,30 +73,22 @@ local Backdrops = setmetatable({}, { __index = function(t,k)
 	return bg
 end })
 
-local profileDefaults = function()
-	if (ns.IsRetail) then
-		return {
-			showItemID = false, -- off by default to reduce clutter
-			showSpellID = false, -- off by default to reduce clutter
-		}
-	else
-		return {
+local defaults = { profile = ns:Merge({
+	showItemID = false, -- off by default to reduce clutter
+	showSpellID = false, -- off by default to reduce clutter
+}, ns.Module.defaults) }
+
+Tooltips.GenerateDefaults = function(self)
+	if (not ns.WoW10) then
+		defaults.profile.savedPosition = {
 			scale = ns.API.GetEffectiveScale(),
-			showItemID = false, -- off by default to reduce clutter
-			showSpellID = false, -- off by default to reduce clutter
 			[1] = "BOTTOMRIGHT",
 			[2] = -319 * ns.API.GetEffectiveScale(),
 			[3] = 166 * ns.API.GetEffectiveScale()
 		}
 	end
+	return defaults
 end
-
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
-	}
-}, ns.moduleDefaults) }
 
 Tooltips.SetBackdropStyle = function(self, tooltip)
 	if (not tooltip) or (tooltip.IsEmbedded) or (tooltip:IsForbidden()) then return end
@@ -344,7 +337,7 @@ Tooltips.OnTooltipSetSpell = function(self, tooltip, data)
 end
 
 Tooltips.OnTooltipSetItem = function(self, tooltip, data)
-	if (not self.db.profile.savedPosition[MFM:GetLayout()].showItemID) then return end
+	if (not self.db.profile.showItemID) then return end
 
 	if (not tooltip) or (tooltip:IsForbidden()) then return end
 
@@ -424,8 +417,21 @@ Tooltips.OnTooltipSetUnit = function(self, tooltip, data)
 
 end
 
+Tooltips.OnCompareItemShow = function(self, tooltip)
+	if (not tooltip) or (tooltip:IsForbidden()) then return end
+	local frameLevel = GameTooltip:GetFrameLevel()
+	for i = 1, 2 do
+		local tooltip = _G["ShoppingTooltip"..i]
+		if (tooltip:IsShown()) then
+			if (frameLevel == tooltip:GetFrameLevel()) then
+				tooltip:SetFrameLevel(i+1)
+			end
+		end
+	end
+end
+
 Tooltips.SetUnitAura = function(self, tooltip, unit, index, filter)
-	if (not self.db.profile.savedPosition[MFM:GetLayout()].showSpellID) then return end
+	if (not self.db.profile.showSpellID) then return end
 
 	if (not tooltip) or (tooltip:IsForbidden()) then return end
 
@@ -464,27 +470,15 @@ Tooltips.SetUnitAuraInstanceID = function(self, tooltip, unit, auraInstanceID)
 	tooltip:Show()
 end
 
-Tooltips.OnCompareItemShow = function(self, tooltip)
-	if (not tooltip) or (tooltip:IsForbidden()) then return end
-	local frameLevel = GameTooltip:GetFrameLevel()
-	for i = 1, 2 do
-		local tooltip = _G["ShoppingTooltip"..i]
-		if (tooltip:IsShown()) then
-			if (frameLevel == tooltip:GetFrameLevel()) then
-				tooltip:SetFrameLevel(i+1)
-			end
-		end
-	end
-end
-
 Tooltips.SetDefaultAnchor = function(self, tooltip, parent)
 	if (not tooltip) or (tooltip:IsForbidden()) then return end
 
-	local point, x, y = unpack(self.db.profile.savedPosition[MFM:GetLayout()])
+	local config = self.db.profile.savedPosition
 
 	tooltip:SetOwner(parent, "ANCHOR_NONE")
 	tooltip:ClearAllPoints()
-	tooltip:SetPoint(point, self.frame, point)
+	tooltip:SetPoint(config[1], self.anchor, config[1])
+	tooltip:SetScale(config.scale)
 end
 
 Tooltips.SetUnitColor = function(self, unit)
@@ -528,173 +522,31 @@ Tooltips.SetHooks = function(self)
 
 end
 
-Tooltips.OnEvent = function(self, event, ...)
-	if (event == "PLAYER_ENTERING_WORLD") then
-		self.incombat = nil
-		self:UpdatePositionAndScale()
+Tooltips.UpdateAnchor = function(self)
+	local config = self.db.profile.savedPosition
 
-	elseif (event == "PLAYER_REGEN_ENABLED") then
-		if (InCombatLockdown()) then return end
-		self.incombat = nil
-
-	elseif (event == "PLAYER_REGEN_DISABLED") then
-		self.incombat = true
-
-	elseif (event == "MFM_LayoutsUpdated") then
-		local LAYOUT = ...
-
-		if (not self.db.profile.savedPosition[LAYOUT]) then
-			self.db.profile.savedPosition[LAYOUT] = profileDefaults()
-		end
-
-		self:UpdatePositionAndScale()
-		self:UpdateAnchor()
-
-	elseif (event == "MFM_LayoutDeleted") then
-		local LAYOUT = ...
-
-		self.db.profile.savedPosition[LAYOUT] = nil
-
-	elseif (event == "MFM_LayoutReset") then
-		local LAYOUT = ...
-
-		local db = self.db.profile.savedPosition[LAYOUT]
-		for i,v in pairs(profileDefaults()) do
-			db[i] = v
-		end
-
-		self:UpdatePositionAndScale()
-		self:UpdateAnchor()
-
-	elseif (event == "MFM_PositionUpdated") then
-		local LAYOUT, anchor, point, x, y = ...
-
-		if (anchor ~= self.anchor) then return end
-
-		self.db.profile.savedPosition[LAYOUT][1] = point
-		self.db.profile.savedPosition[LAYOUT][2] = x
-		self.db.profile.savedPosition[LAYOUT][3] = y
-
-		self:UpdatePositionAndScale()
-
-	elseif (event == "MFM_AnchorShown") then
-		local LAYOUT, anchor, point, x, y = ...
-
-		if (anchor ~= self.anchor) then return end
-
-	elseif (event == "MFM_ScaleUpdated") then
-		local LAYOUT, anchor, scale = ...
-
-		if (anchor ~= self.anchor) then return end
-
-		self.db.profile.savedPosition[LAYOUT].scale = scale
-		self:UpdatePositionAndScale()
-
-	elseif (event == "MFM_Dragging") then
-		if (not self.incombat) then
-			if (select(2, ...) ~= self.anchor) then return end
-
-			self:OnEvent("MFM_PositionUpdated", ...)
-		end
-	end
+	self.anchor:SetSize(250, 120)
+	self.anchor:SetScale(config.scale)
+	self.anchor:ClearAllPoints()
+	self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
 end
 
-Tooltips.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("Tooltips", defaults)
+Tooltips.PostUpdatePositionAndScale = function(self)
+	--if (not self.frame) then return end
 
-	self:SetEnabledState(self.db.profile.enabled)
-	if (not self.db.profile.enabled) then return end
+	--GameTooltip:SetScale(self.db.profile.savedPosition.scale * ns.API.GetEffectiveScale())
+end
 
+Tooltips.OnEnable = function(self)
 	self:StyleStatusBar()
 	self:StyleTooltips()
 	self:SetHooks()
 
 	if (not ns.WoW10) then
-		self:InitializeMovableFrameAnchor()
+		self:CreateAnchor(L["Tooltips"])
 	end
-end
 
-Tooltips.OnEnable = function(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "StyleTooltips")
 
-	if (not ns.WoW10) then
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-		self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
-		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-
-		ns.RegisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
-		ns.RegisterCallback(self, "MFM_LayoutReset", "OnEvent")
-		ns.RegisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
-		ns.RegisterCallback(self, "MFM_PositionUpdated", "OnEvent")
-		ns.RegisterCallback(self, "MFM_AnchorShown", "OnEvent")
-		ns.RegisterCallback(self, "MFM_ScaleUpdated", "OnEvent")
-		ns.RegisterCallback(self, "MFM_Dragging", "OnEvent")
-	end
-end
-
-Tooltips.InitializeMovableFrameAnchor = function(self)
-
-	local frame = CreateFrame("Frame", nil, UIParent)
-	frame:SetSize(250,120)
-	frame:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-
-	self.frame = frame
-
-	-- Faking a global string for the label here.
-	-- We're assuming the common word in those
-	-- two strings is what we're looking for.
-	local words1 = { string.split(" ", USE_UBERTOOLTIPS) }
-	local words2 = { string.split(" ", SHOW_NEWBIE_TIPS_TEXT) }
-	local label
-	for _,word1 in ipairs(words1) do
-		for _,word2 in ipairs(words1) do
-			if (word1 == word2) then
-				label = word1
-				break
-			end
-		end
-	end
-
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(label or USE_UBERTOOLTIPS)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.25, 2.5, .05)
-	anchor:SetSize(250, 120)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.UpdateDefaults = function() self:UpdateDefaults() end
-
-	self.anchor = anchor
-end
-
-Tooltips.UpdateDefaults = function(self)
-	if (not self.anchor or not self.db) then return end
-
-	local defaults = self.db.defaults.profile.savedPosition[MFM:GetDefaultLayout()]
-	if (not defaults) then return end
-
-	defaults.scale = self.anchor:GetDefaultScale()
-	defaults[1], defaults[2], defaults[3] = self.anchor:GetDefaultPosition()
-end
-
-Tooltips.UpdatePositionAndScale = function(self)
-	if (not self.frame) then return end
-
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
-
-	self.frame:SetScale(config.scale)
-	self.frame:ClearAllPoints()
-	self.frame:SetPoint(config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
-
-	GameTooltip:SetScale(config.scale)
-end
-
-Tooltips.UpdateAnchor = function(self)
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
-
-	self.anchor:SetScale(config.scale)
-	self.anchor:ClearAllPoints()
-	self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
+	ns.Module.OnEnable(self)
 end

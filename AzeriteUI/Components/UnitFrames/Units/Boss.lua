@@ -26,8 +26,7 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local BossFrameMod = ns:Merge(ns:NewModule("BossFrames", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
-local MFM = ns:GetModule("MovableFramesManager")
+local BossFrameMod = ns:NewModule("BossFrames", ns.UnitFrameModule, "LibMoreEvents-1.0")
 
 -- Lua API
 local string_gsub = string.gsub
@@ -41,22 +40,17 @@ local GetMedia = ns.API.GetMedia
 -- Constants
 local playerClass = ns.PlayerClass
 
-local profileDefaults = function()
-	return {
-		enabled = true,
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+
+BossFrameMod.GenerateDefaults = function(self)
+	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),
 		[1] = "TOPRIGHT",
 		[2] = -64 * ns.API.GetEffectiveScale(),
 		[3] = -279 * ns.API.GetEffectiveScale()
 	}
+	return defaults
 end
-
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
-	}
-}, ns.UnitFrame.defaults) }
 
 local barSparkMap = {
 	top = {
@@ -592,10 +586,12 @@ GroupHeader.Disable = function(self)
 	end
 end
 
-BossFrameMod.Spawn = function(self)
+GroupHeader.IsEnabled = function(self)
+	return self.units[i]:IsEnabled()
+end
 
-	-- UnitFrames
-	---------------------------------------------------
+BossFrameMod.CreateUnitFrames = function(self)
+
 	local unit, name = "boss", "Boss"
 
 	oUF:RegisterStyle(ns.Prefix..name, style)
@@ -613,36 +609,25 @@ BossFrameMod.Spawn = function(self)
 	end
 
 	self.frame = frame
-
-	-- Movable Frame Anchor
-	---------------------------------------------------
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(BOSSES)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.25, 2.5, .05)
-	anchor:SetSize(250, 485)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-	anchor:SetEditModeAccountSetting(ns.IsRetail and Enum.EditModeAccountSetting.ShowBossFrames)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.UpdateDefaults = function() self:UpdateDefaults() end
-
-	self.anchor = anchor
 end
 
-BossFrameMod.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("BossFrames", defaults)
-	self.profileDefaults = profileDefaults
-
-	self:SetEnabledState(self.db.profile.enabled)
-
-	-- Register the available layout names
-	-- with the movable frames manager.
-	MFM:RegisterPresets(self.db.profile.savedPosition)
+BossFrameMod.OnEnable = function(self)
 
 	-- Disable Blizzard boss frames.
 	for i = 1, MAX_BOSS_FRAMES do
 		oUF:DisableBlizzard("boss"..i)
 	end
+
+	-- Disable Blizzard player alternate power bar,
+	-- as we're integrating this into the standard power crystal.
+	if (PlayerPowerBarAlt) then
+		PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_SHOW")
+		PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_HIDE")
+		PlayerPowerBarAlt:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	end
+
+	self:CreateUnitFrames()
+	self:CreateAnchor(BOSSES)
+
+	ns.Module.OnEnable(self)
 end

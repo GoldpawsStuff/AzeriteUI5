@@ -50,7 +50,7 @@ ns.NamePlates = {}
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	scale = 1
-}, ns.moduleDefaults) }
+}, ns.Module.defaults) }
 
 local barSparkMap = {
 	top = {
@@ -1236,7 +1236,6 @@ NamePlatesMod.HookNamePlates = function(self)
 	end)
 
 	clearClutter(NamePlateDriverFrame)
-
 end
 
 NamePlatesMod.OnInitialize = function(self)

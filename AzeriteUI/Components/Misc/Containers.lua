@@ -27,21 +27,18 @@ local Addon, ns = ...
 
 if (not C_Container) then return end
 
-local Containers = ns:NewModule("Containers", "LibMoreEvents-1.0")
-local MFM = ns:GetModule("MovableFramesManager")
+local Containers = ns:NewModule("Containers", ns.Module, "LibMoreEvents-1.0")
 
 local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = {
-			enabled = true,
-			sort = "ltr",
-			insert = "rtl"
-		}
-	}
-}, ns.moduleDefaults) }
+	sort = "ltr",
+	insert = "rtl"
+}, ns.Module.defaults) }
 
-Containers.UpdateSettings = function(self)
+Containers.GenerateDefaults = function(self)
+	return defaults
+end
+
+Containers.RefreshConfig = function(self)
 	if (C_Container.SetSortBagsRightToLeft) then
 		if (self.db.profile.sort == "rtl") then
 			C_Container.SetSortBagsRightToLeft(true)
@@ -56,13 +53,4 @@ Containers.UpdateSettings = function(self)
 			C_Container.SetInsertItemsLeftToRight(false)
 		end
 	end
-end
-
-Containers.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("Containers", defaults)
-	self:SetEnabledState(self.db.profile.enabled)
-end
-
-Containers.OnEnable = function(self)
-	self:UpdateSettings()
 end

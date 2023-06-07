@@ -25,9 +25,8 @@
 --]]
 local Addon, ns = ...
 
-local Auras = ns:NewModule("Auras", "LibMoreEvents-1.0", "AceTimer-3.0", "AceHook-3.0", "AceConsole-3.0", "LibSmoothBar-1.0")
+local Auras = ns:NewModule("Auras", ns.Module, "LibMoreEvents-1.0", "AceTimer-3.0", "AceHook-3.0", "AceConsole-3.0", "LibSmoothBar-1.0")
 local LFF = LibStub("LibFadingFrames-1.0")
-local MFM = ns:GetModule("MovableFramesManager")
 
 -- Lua API
 local math_ceil = math.ceil
@@ -43,31 +42,30 @@ local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 local RegisterCooldown = ns.Widgets.RegisterCooldown
 
-local profileDefaults = function()
-	return {
-		enabled = true,
-		enableAuraFading = true,
-		enableModifier = false,
-		modifier = "SHIFT",
-		anchorPoint = "TOPRIGHT",
-		growthX = "LEFT",
-		growthY = "DOWN",
-		paddingX = 6,
-		paddingY = 12,
-		wrapAfter = 6,
-		scale = ns.API.GetEffectiveScale(),
-		[1] = "TOPRIGHT",
-		[2] = -40 * ns.API.GetEffectiveScale(),
-		[3] = -40 * ns.API.GetEffectiveScale()
-	}
-end
-
 local defaults = { profile = ns:Merge({
 	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
-	}
-}, ns.moduleDefaults) }
+	enableAuraFading = true,
+	enableModifier = false,
+	modifier = "SHIFT",
+	anchorPoint = "TOPRIGHT",
+	growthX = "LEFT",
+	growthY = "DOWN",
+	paddingX = 6,
+	paddingY = 12,
+	wrapAfter = 8
+}, ns.Module.defaults) }
+
+Auras.GenerateDefaults = function(self)
+	if (not ns.WoW10) then
+		defaults.profile.savedPosition = {
+			scale = ns.API.GetEffectiveScale(),
+			[1] = "TOPRIGHT",
+			[2] = -40 * ns.API.GetEffectiveScale(),
+			[3] = -40 * ns.API.GetEffectiveScale()
+		}
+	end
+	return defaults
+end
 
 -- Aura Template
 --------------------------------------------
@@ -312,175 +310,15 @@ Aura.OnInitialize = function(self)
 	self:SetScript("OnAttributeChanged", self.OnAttributeChanged)
 end
 
--- Module API
---------------------------------------------
--- Embed the aura template methods
--- into an existing aura frame.
-Auras.Embed = function(self, aura)
-	for method,func in pairs(Aura) do
-		aura[method] = func
-	end
-end
-
--- Run a member method on all auras.
-Auras.ForAll = function(self, method, ...)
-	local buffs = self.buffs
-	if (not buffs) then
-		return
-	end
-	local child = buffs:GetAttribute("child1")
-	local i = 1
-	while (child) do
-		local func = child[method]
-		if (func) then
-			func(child, child:GetID(), ...)
-		end
-		i = i + 1
-		child = buffs:GetAttribute("child" .. i)
-	end
-end
-
--- Updates
---------------------------------------------
-Auras.UpdateAuraButtonAlpha = function(self)
-	local buffs = self.buffs
-	if (not buffs) then return end
-
-	local consolidateDuration = tonumber(buffs:GetAttribute("consolidateDuration")) or 30
-	local consolidateThreshold = tonumber(buffs:GetAttribute("consolidateThreshold")) or 10
-	local consolidateFraction = tonumber(buffs:GetAttribute("consolidateFraction")) or 0.1
-	local unit, filter = buffs:GetAttribute("unit"), buffs:GetAttribute("filter")
-	local slot, consolidated, time = 1, 0, GetTime()
-	local name, duration, expires, caster, shouldConsolidate, _
-
-	repeat
-		-- Sourced from FrameXML\SecureGroupHeaders.lua
-		name, _, _, _, duration, expires, caster, _, _, _, _, _, _, _, _, shouldConsolidate = UnitAura(unit, slot, filter)
-		if (name and shouldConsolidate) then
-			if (not expires or duration > consolidateDuration or (expires - time >= math_max(consolidateThreshold, duration * consolidateFraction)) ) then
-				consolidated = consolidated + 1
-			end
-		end
-		slot = slot + 1
-	until (not name)
-
-	-- Update count and counter.
-	buffs.numConsolidated = consolidated
-	buffs.proxy.count:SetText(buffs.numConsolidated > 0 and buffs.numConsolidated or "")
-
-	-- If there are currently consolidated buffs and both
-	-- the proxy button and the consolidation frame are shown,
-	-- reduce the alpha of the buff window.
-	if (buffs.numConsolidated > 0 and buffs.proxy:IsShown() and buffs.consolidation:IsShown()) then
-		buffs:SetAlpha(.5)
-	else
-		buffs:SetAlpha(1)
-	end
-end
-
-Auras.UpdatePositionAndScale = function(self)
-	if (InCombatLockdown()) then
-		self.needupdate = true
-		return
-	end
-	if (not self.frame) then return end
-
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
-
-	self.frame:SetScale(config.scale)
-	self.frame:ClearAllPoints()
-	self.frame:SetPoint(config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
-end
-
-Auras.UpdateAnchor = function(self)
-	if (not self.anchor) then return end
-
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
-	self.anchor:SetSize(self.frame:GetSize())
-	self.anchor:SetScale(config.scale)
-	self.anchor:ClearAllPoints()
-	self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
-end
-
-Auras.UpdateSettings = function(self)
-	if (InCombatLockdown()) then
-		self.needupdate = true
-		return
-	end
-	if (not self.frame) then return end
-
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
-
-	if (config.enabled and config.enableAuraFading) then
-		LFF:RegisterFrameForFading(self.frame, "playerauras")
-		LFF:RegisterFrameForFading(self.buffs.proxy, "playerauras")
-		LFF:RegisterFrameForFading(self.buffs.consolidation, "playerauras")
-	else
-		LFF:UnregisterFrameForFading(self.frame)
-		LFF:UnregisterFrameForFading(self.buffs.proxy)
-		LFF:UnregisterFrameForFading(self.buffs.consolidation)
-	end
-
-	self.frame:SetSize(config.wrapAfter * 36 + (config.wrapAfter - 1) * config.paddingX, (36 + config.paddingY) * math_ceil(BUFF_MAX_DISPLAY / config.wrapAfter))
-
-	self.buffs:SetAttribute("point", config.anchorPoint)
-	self.buffs:SetAttribute("xOffset", (36 + config.paddingX) * (config.growthX == "LEFT" and -1 or 1))
-	self.buffs:SetAttribute("wrapAfter", config.wrapAfter)
-	self.buffs:SetAttribute("wrapYOffset", (36 + config.paddingY) * (config.growthY == "DOWN" and -1 or 1))
-
-	self.buffs.consolidation:SetAttribute("point", self.buffs:GetAttribute("point"))
-	self.buffs.consolidation:SetAttribute("xOffset", self.buffs:GetAttribute("xOffset"))
-	self.buffs.consolidation:SetAttribute("wrapAfter", self.buffs:GetAttribute("wrapAfter"))
-	self.buffs.consolidation:SetAttribute("wrapYOffset", self.buffs:GetAttribute("wrapYOffset"))
-
-	self.visibility:SetAttribute("auramode", not config.enabled and "hide" or config.enableModifier and "modifier" or "show")
-	self.visibility:SetAttribute("modifierkey", string_lower(config.modifier))
-	self.visibility:Execute([[ self:RunAttribute("UpdateDriver"); ]])
-end
-
--- Initialization & Events
---------------------------------------------
-Auras.DisableBlizzard = function(self)
-
-	-- Not present in Wrath
-	if (BuffFrame.Update) then
-		BuffFrame:Update()
-		BuffFrame:UpdateAuras()
-		BuffFrame:UpdatePlayerBuffs()
-	end
-
-	BuffFrame:SetScript("OnLoad", nil)
-	BuffFrame:SetScript("OnUpdate", nil)
-	BuffFrame:SetScript("OnEvent", nil)
-	BuffFrame:SetParent(ns.Hider)
-	BuffFrame:UnregisterAllEvents()
-
-	-- Not present in Wrath
-	if (DebuffFrame) then
-		DebuffFrame:SetScript("OnLoad", nil)
-		DebuffFrame:SetScript("OnUpdate", nil)
-		DebuffFrame:SetScript("OnEvent", nil)
-		DebuffFrame:SetParent(ns.Hider)
-		DebuffFrame:UnregisterAllEvents()
-	end
-
-	-- Only present in Wrath
-	if (TemporaryEnchantFrame) then
-		TemporaryEnchantFrame:SetScript("OnUpdate", nil)
-		TemporaryEnchantFrame:SetParent(ns.Hider)
-	end
-
-end
-
-Auras.InitializeAuras = function(self)
+Auras.CreateBuffs = function(self)
 	if (not self.frame) then
 
-		local config = self.db.profile.savedPosition[MFM:GetLayout()]
+		local config = self.db.profile
 
 		local frame = CreateFrame("Frame", ns.Prefix.."BuffHeaderFrame", UIParent)
 		frame:SetSize(config.wrapAfter * (36 + config.paddingX), (36 + config.paddingY) * math_ceil(BUFF_MAX_DISPLAY / config.wrapAfter))
-		frame:SetPoint(config[1], UIParent, config[1], config[2], config[3])
-		frame:SetScale(config.scale)
+		frame:SetPoint(config.savedPosition[1], UIParent, config.savedPosition[1], config.savedPosition[2], config.savedPosition[3])
+		frame:SetScale(config.savedPosition.scale)
 
 		self.frame = frame
 
@@ -655,133 +493,169 @@ Auras.InitializeAuras = function(self)
 	end
 end
 
-Auras.InitializeMovableFrameAnchor = function(self)
+Auras.DisableBlizzard = function(self)
 
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(AURAS)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.25, 2.5, .05)
-	anchor:SetSize(240, 24)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.UpdateDefaults = function() self:UpdateDefaults() end
+	-- Not present in Wrath
+	if (BuffFrame.Update) then
+		BuffFrame:Update()
+		BuffFrame:UpdateAuras()
+		BuffFrame:UpdatePlayerBuffs()
+	end
 
-	self.anchor = anchor
+	BuffFrame:SetScript("OnLoad", nil)
+	BuffFrame:SetScript("OnUpdate", nil)
+	BuffFrame:SetScript("OnEvent", nil)
+	BuffFrame:SetParent(ns.Hider)
+	BuffFrame:UnregisterAllEvents()
+
+	-- Not present in Wrath
+	if (DebuffFrame) then
+		DebuffFrame:SetScript("OnLoad", nil)
+		DebuffFrame:SetScript("OnUpdate", nil)
+		DebuffFrame:SetScript("OnEvent", nil)
+		DebuffFrame:SetParent(ns.Hider)
+		DebuffFrame:UnregisterAllEvents()
+	end
+
+	-- Only present in Wrath
+	if (TemporaryEnchantFrame) then
+		TemporaryEnchantFrame:SetScript("OnUpdate", nil)
+		TemporaryEnchantFrame:SetParent(ns.Hider)
+	end
+
 end
 
-Auras.UpdateDefaults = function(self)
-	if (not self.anchor or not self.db) then return end
+Auras.Embed = function(self, aura)
+	for method,func in pairs(Aura) do
+		aura[method] = func
+	end
+end
 
-	local defaults = self.db.defaults.profile.savedPosition[MFM:GetDefaultLayout()]
-	if (not defaults) then return end
+Auras.ForAll = function(self, method, ...)
+	local buffs = self.buffs
+	if (not buffs) then
+		return
+	end
+	local child = buffs:GetAttribute("child1")
+	local i = 1
+	while (child) do
+		local func = child[method]
+		if (func) then
+			func(child, child:GetID(), ...)
+		end
+		i = i + 1
+		child = buffs:GetAttribute("child" .. i)
+	end
+end
 
-	defaults.scale = self.anchor:GetDefaultScale()
-	defaults[1], defaults[2], defaults[3] = self.anchor:GetDefaultPosition()
+Auras.UpdateAuraButtonAlpha = function(self)
+	local buffs = self.buffs
+	if (not buffs) then return end
+
+	local consolidateDuration = tonumber(buffs:GetAttribute("consolidateDuration")) or 30
+	local consolidateThreshold = tonumber(buffs:GetAttribute("consolidateThreshold")) or 10
+	local consolidateFraction = tonumber(buffs:GetAttribute("consolidateFraction")) or 0.1
+	local unit, filter = buffs:GetAttribute("unit"), buffs:GetAttribute("filter")
+	local slot, consolidated, time = 1, 0, GetTime()
+	local name, duration, expires, caster, shouldConsolidate, _
+
+	repeat
+		-- Sourced from FrameXML\SecureGroupHeaders.lua
+		name, _, _, _, duration, expires, caster, _, _, _, _, _, _, _, _, shouldConsolidate = UnitAura(unit, slot, filter)
+		if (name and shouldConsolidate) then
+			if (not expires or duration > consolidateDuration or (expires - time >= math_max(consolidateThreshold, duration * consolidateFraction)) ) then
+				consolidated = consolidated + 1
+			end
+		end
+		slot = slot + 1
+	until (not name)
+
+	-- Update count and counter.
+	buffs.numConsolidated = consolidated
+	buffs.proxy.count:SetText(buffs.numConsolidated > 0 and buffs.numConsolidated or "")
+
+	-- If there are currently consolidated buffs and both
+	-- the proxy button and the consolidation frame are shown,
+	-- reduce the alpha of the buff window.
+	if (buffs.numConsolidated > 0 and buffs.proxy:IsShown() and buffs.consolidation:IsShown()) then
+		buffs:SetAlpha(.5)
+	else
+		buffs:SetAlpha(1)
+	end
+end
+
+Auras.UpdateSettings = function(self)
+	if (InCombatLockdown()) then
+		self.needupdate = true
+		return
+	end
+	if (not self.frame) then return end
+
+	local config = self.db.profile
+
+	if (config.enabled and config.enableAuraFading) then
+		LFF:RegisterFrameForFading(self.frame, "playerauras")
+		LFF:RegisterFrameForFading(self.buffs.proxy, "playerauras")
+		LFF:RegisterFrameForFading(self.buffs.consolidation, "playerauras")
+	else
+		LFF:UnregisterFrameForFading(self.frame)
+		LFF:UnregisterFrameForFading(self.buffs.proxy)
+		LFF:UnregisterFrameForFading(self.buffs.consolidation)
+	end
+
+	self.frame:SetSize(config.wrapAfter * 36 + (config.wrapAfter - 1) * config.paddingX, (36 + config.paddingY) * math_ceil(BUFF_MAX_DISPLAY / config.wrapAfter))
+
+	self.buffs:SetAttribute("point", config.anchorPoint)
+	self.buffs:SetAttribute("xOffset", (36 + config.paddingX) * (config.growthX == "LEFT" and -1 or 1))
+	self.buffs:SetAttribute("wrapAfter", config.wrapAfter)
+	self.buffs:SetAttribute("wrapYOffset", (36 + config.paddingY) * (config.growthY == "DOWN" and -1 or 1))
+
+	self.buffs.consolidation:SetAttribute("point", self.buffs:GetAttribute("point"))
+	self.buffs.consolidation:SetAttribute("xOffset", self.buffs:GetAttribute("xOffset"))
+	self.buffs.consolidation:SetAttribute("wrapAfter", self.buffs:GetAttribute("wrapAfter"))
+	self.buffs.consolidation:SetAttribute("wrapYOffset", self.buffs:GetAttribute("wrapYOffset"))
+
+	self.visibility:SetAttribute("auramode", not config.enabled and "hide" or config.enableModifier and "modifier" or "show")
+	self.visibility:SetAttribute("modifierkey", string_lower(config.modifier))
+	self.visibility:Execute([[ self:RunAttribute("UpdateDriver"); ]])
+
+	self:UpdateAnchor()
 end
 
 Auras.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		self.incombat = nil
+
 		self:ForAll("Update")
 		self:UpdateAuraButtonAlpha()
-		self:UpdatePositionAndScale()
 
 	elseif (event == "PLAYER_REGEN_ENABLED") then
 		if (InCombatLockdown()) then return end
+
 		self.incombat = nil
+
 		if (self.needupdate) then
 			self:UpdateSettings()
-			self:UpdatePositionAndScale()
 		end
 
 	elseif (event == "PLAYER_REGEN_DISABLED") then
 		self.incombat = true
-
-	elseif (event == "MFM_LayoutsUpdated") then
-		local LAYOUT = ...
-
-		if (not self.db.profile.savedPosition[LAYOUT]) then
-			self.db.profile.savedPosition[LAYOUT] = profileDefaults()
-		end
-
-		self:UpdatePositionAndScale()
-		self:UpdateAnchor()
-
-	elseif (event == "MFM_LayoutDeleted") then
-		local LAYOUT = ...
-
-		self.db.profile.savedPosition[LAYOUT] = nil
-
-	elseif (event == "MFM_LayoutReset") then
-		local LAYOUT = ...
-
-		local db = self.db.profile.savedPosition[LAYOUT]
-		for i,v in pairs(profileDefaults()) do
-			db[i] = v
-		end
-
-		self:UpdatePositionAndScale()
-		self:UpdateAnchor()
-
-	elseif (event == "MFM_PositionUpdated") then
-		local LAYOUT, anchor, point, x, y = ...
-
-		if (anchor ~= self.anchor) then return end
-
-		self.db.profile.savedPosition[LAYOUT][1] = point
-		self.db.profile.savedPosition[LAYOUT][2] = x
-		self.db.profile.savedPosition[LAYOUT][3] = y
-
-		self:UpdatePositionAndScale()
-
-	elseif (event == "MFM_AnchorShown") then
-		local LAYOUT, anchor, point, x, y = ...
-
-		if (anchor ~= self.anchor) then return end
-
-	elseif (event == "MFM_ScaleUpdated") then
-		local LAYOUT, anchor, scale = ...
-
-		if (anchor ~= self.anchor) then return end
-
-		self.db.profile.savedPosition[LAYOUT].scale = scale
-		self:UpdatePositionAndScale()
-
-	elseif (event == "MFM_Dragging") then
-		if (not self.incombat) then
-			if (select(2, ...) ~= self.anchor) then return end
-
-			self:OnEvent("MFM_PositionUpdated", ...)
-		end
 	end
 end
 
-Auras.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("Auras", defaults)
-	self:SetEnabledState(self.db.profile.enabled)
-
-	if (not self.db.profile.enabled) then return end
+Auras.OnEnable = function(self)
 
 	self:DisableBlizzard()
-	self:InitializeAuras()
-	self:InitializeMovableFrameAnchor()
-end
 
-Auras.OnEnable = function(self)
-	self:UpdateSettings()
+	self:CreateBuffs()
+	self:CreateAnchor(AURAS)
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterUnitEvent("UNIT_AURA", "UpdateAuraButtonAlpha", "player", "vehicle")
 
-	ns.RegisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
-	ns.RegisterCallback(self, "MFM_LayoutReset", "OnEvent")
-	ns.RegisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_PositionUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_AnchorShown", "OnEvent")
-	ns.RegisterCallback(self, "MFM_ScaleUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_Dragging", "OnEvent")
+	ns.Module.OnEnable(self)
+
+	self:UpdateSettings()
 end

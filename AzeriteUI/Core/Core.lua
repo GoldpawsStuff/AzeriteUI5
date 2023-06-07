@@ -27,108 +27,153 @@
 -- GLOBALS: CreateFrame, EnableAddOn, DisableAddOn, ReloadUI
 
 local Addon, ns = ...
+
 ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "LibMoreEvents-1.0", "AceConsole-3.0")
 ns.L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
 ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false)
 ns.Hider = CreateFrame("Frame"); ns.Hider:Hide()
 ns.Noop = function() end
-
-ns.SETTINGS_VERSION = 19
+ns.SETTINGS_VERSION = 20
 
 _G[Addon] = ns
-
-local defaults = {
-	global = {},
-	profile = {
-		relativeScale = 1
-	}
-}
-
-local moduleDefaults = {
-	enabled = true
-}
-ns.moduleDefaults = moduleDefaults
 
 -- Lua API
 local next = next
 local string_lower = string.lower
+local type = type
+local unpack = unpack
 
--- Addon API
-local IsAddOnAvailable = ns.API.IsAddOnAvailable
+local defaults = {
+	char = {
+		profile = "Azerite"
+	},
+	global = {
+		version = ns.SETTINGS_VERSION
+	},
+	profile = {}
+}
 
 -- Proxy method to avoid modules using the callback object directly
 ns.Fire = function(self, name, ...)
 	self.callbacks:Fire(name, ...)
 end
 
-ns.SwitchUI = function(self, input)
-	if (not self.IsDevelopment) then return end
-	if (not self._ui_list) then
-		-- Create a list of currently installed UIs.
-		self._ui_list = {}
-		for ui,cmds in next,{
-			["AzeriteUI"] = { "azerite", "azui" },
-			["DiabolicUI"] = { "diabolic", "diablo", "dui" }
-		} do
-			-- Only include existing UIs that can be switched to.
-			if (ui ~= Addon) and (IsAddOnAvailable(ui)) then
-				for _,cmd in next,cmds do
-					self._ui_list[cmd] = ui
-				end
-			end
-		end
-	end
-	local arg = self:GetArgs(string_lower(input))
-	local target = arg and self._ui_list[arg]
-	if (target) then
-		EnableAddOn(target) -- Enable the desired UI
-		for cmd,ui in next,self._ui_list do
-			if (ui and ui ~= target) then -- Don't disable target UI
-				DisableAddOn(ui) -- Disable all other UIs
-			end
-		end
-		DisableAddOn(Addon) -- Disable the current UI
-		ReloadUI() -- Reload interface to the selected UI
-	end
-end
-
-ns.UpdateSettings = function(self, event, ...)
-	-- Fire callbacks to submodules.
-	self.callbacks:Fire("Saved_Settings_Updated")
-end
-
 ns.ResetSettings = function(self, noreload)
-	--local profiles, count = self.db:GetProfiles()
-	--local current = self.db:GetCurrentProfile()
-	self.db:ResetDB() -- Full db reset of all profiles. Destructive operation.
-	self.db.global.version = ns.SETTINGS_VERSION -- Store version in default profile.
-
-	-- We haven't connected the wires to all the modules yet,
-	-- so at this point a forced reload is the only way.
+	self.db:ResetDB(self:GetDefaultProfile())
+	self.db.global.version = ns.SETTINGS_VERSION
 	if (not noreload) then
 		ReloadUI()
 	end
 end
 
+ns.ProfileExists = function(self, targetProfileKey)
+	for _,profileKey in next,self:GetProfiles() do
+		if (profileKey == targetProfileKey) then
+			return true
+		end
+	end
+end
+
+ns.DuplicateProfile = function(self, newProfileKey, sourceProfileKey)
+	if (not sourceProfileKey) then
+		sourceProfileKey = self.db:GetCurrentProfile()
+	end
+	if (self:ProfileExists(newProfileKey) or not self:ProfileExists(sourceProfileKey)) then
+		return
+	end
+	self.db:SetProfile(newProfileKey)
+	self.db:CopyProfile(sourceProfileKey)
+end
+
+ns.CopyProfile = function(self, sourceProfileKey)
+	local currentProfileKey = self.db:GetCurrentProfile()
+	if (sourceProfileKey == currentProfileKey) then
+		return
+	end
+	for _,profileKey in next,self:GetProfiles() do
+		if (profileKey == sourceProfileKey) then
+			self.db:CopyProfile(sourceProfileKey)
+			return
+		end
+	end
+end
+
+ns.DeleteProfile = function(self, targetProfileKey)
+	local currentProfileKey = self.db:GetCurrentProfile()
+	if (targetProfileKey == "Default") then
+		return
+	end
+	for _,profileKey in next,self:GetProfiles() do
+		if (profileKey == targetProfileKey) then
+			if (profileKey == currentProfileKey) then
+				self.db:SetProfile("Default")
+			end
+			self.db:DeleteProfile(targetProfileKey)
+			return
+		end
+	end
+end
+
+ns.ResetProfile = function(self)
+	self.db:ResetProfile()
+end
+
+ns.SetProfile = function(self, newProfileKey)
+	local currentProfileKey = self.db:GetCurrentProfile()
+	if (newProfileKey == currentProfileKey) then
+		return
+	end
+	self.db:SetProfile(newProfileKey)
+end
+
+ns.GetProfile = function(self)
+	return self.db:GetCurrentProfile()
+end
+
+ns.GetProfiles = function(self)
+	local profiles, count = self.db:GetProfiles()
+	return profiles
+end
+
+ns.GetDefaultProfile = function(self)
+	return "Azerite"
+end
+
+ns.RefreshConfig = function(self, event, ...)
+	if (event == "OnNewProfile") then
+		local db, profileKey = ...
+
+	elseif (event == "OnProfileChanged") then
+		local db, newProfileKey = ...
+
+		db.char.profile = newProfileKey
+
+	elseif (event == "OnProfileCopied") then
+		local db, sourceProfileKey = ...
+
+	elseif (event == "OnProfileReset") then
+		local db = ...
+
+	end
+end
+
 ns.OnInitialize = function(self)
-	self.db = LibStub("AceDB-3.0"):New("AzeriteUI5_DB", defaults, true)
+	self.db = LibStub("AceDB-3.0-GE"):New("AzeriteUI5_DB", defaults, self:GetDefaultProfile())
+	self.db:ResetDB(self:GetDefaultProfile())
 
-	-- Force a settings reset on backwards incompatible changes.
-	if (self.db.global.version ~= ns.SETTINGS_VERSION) then
-		self:ResetSettings(true) -- no reload needed yet
-	end
+	--if (self.db.global.version ~= ns.SETTINGS_VERSION) then
+	--	self.db:ResetDB(self:GetDefaultProfile())
+	--	self.db.global.version = ns.SETTINGS_VERSION
+	--end
 
-	-- Setup the profile and register the callbacks.
-	self.db:SetProfile("Azerite")
-	self.db.RegisterCallback(self, "OnProfileChanged", "UpdateSettings")
-	self.db.RegisterCallback(self, "OnProfileCopied", "UpdateSettings")
-	self.db.RegisterCallback(self, "OnProfileReset", "UpdateSettings")
+	self.db.RegisterCallback(self, "OnNewProfile", "RefreshConfig")
+	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
+	self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
+	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
 
-	-- Create a command to force a full settings reset manually.
 	self:RegisterChatCommand("resetsettings", function() self:ResetSettings() end)
+end
 
-	-- At this point only I need this one.
-	if (ns.IsDevelopment) then
-		self:RegisterChatCommand("goto", "SwitchUI")
-	end
+ns.OnEnable = function(self)
+	self.db:SetProfile(self.db.char.profile)
 end

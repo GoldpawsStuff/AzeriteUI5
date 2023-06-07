@@ -24,10 +24,10 @@
 
 --]]
 local Addon, ns = ...
+
 if (not ns.IsClassic) then return end
 
-local Tracker = ns:NewModule("Tracker", "LibMoreEvents-1.0", "AceHook-3.0")
-local MFM = ns:GetModule("MovableFramesManager")
+local Tracker = ns:NewModule("Tracker", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Lua
 local math_min = math.min
@@ -42,26 +42,20 @@ local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 local IsAddOnEnabled = ns.API.IsAddOnEnabled
 
-local profileDefaults = function()
-	return {
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+
+Tracker.GenerateDefaults = function(self)
+	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),
 		[1] = "BOTTOMRIGHT",
 		[2] = -60 * ns.API.GetEffectiveScale(),
 		[3] = 380 * ns.API.GetEffectiveScale()
 	}
+	return defaults
 end
 
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
-	}
-}, ns.moduleDefaults) }
-
 local config = {
-	-- Size of the holder. Set to same width as our Minimap.
-	-- *Classic tracker is 280, our size should be 255
-	Size = { 306, 22 },
+	Width = 306,
 	BottomOffset = 380,
 	TopOffset = 260,
 	TrackerWidth = 255,
@@ -70,11 +64,12 @@ local config = {
 	FontObjectTitle = GetFont(15, true)
 }
 
-Tracker.InitializeTracker = function(self)
+Tracker.PrepareFrames = function(self)
 
 	 local frame = CreateFrame("Frame", nil, UIParent)
-	 frame:SetSize(config.Size[1], config.TrackerHeight)
-	 frame:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
+	 frame:SetSize(config.Width, config.TrackerHeight)
+	 frame:SetPoint(unpack(defaults.profile.savedPosition))
+
 	 self.frame = frame
 
 	-- Re-position after UIParent messes with it.
@@ -243,176 +238,46 @@ Tracker.InitializeTracker = function(self)
 
 end
 
-Tracker.InitializeMovableFrameAnchor = function(self)
-
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(TRACKER_HEADER_OBJECTIVE)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.25, 2.5, .05)
-	anchor:SetSize(config.Size[1], config.TrackerHeight)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.UpdateDefaults = function() self:UpdateDefaults() end
-
-	self.anchor = anchor
-end
-
-Tracker.UpdateDefaults = function(self)
-	if (not self.anchor or not self.db) then return end
-
-	local defaults = self.db.defaults.profile.savedPosition[MFM:GetDefaultLayout()]
-	if (not defaults) then return end
-
-	defaults.scale = self.anchor:GetDefaultScale()
-	defaults[1], defaults[2], defaults[3] = self.anchor:GetDefaultPosition()
-end
-
 Tracker.UpdateTrackerPosition = function(self)
 	if (not self.frame) then return end
 
 	QuestWatchFrame:SetParent(self.frame)
 	QuestWatchFrame:SetWidth(config.TrackerWidth)
-	--QuestWatchFrame:SetHeight(math_min(UIParent:GetHeight() - config.BottomOffset - config.TopOffset, config.TrackerHeight))
 	QuestWatchFrame:SetClampedToScreen(false)
 	QuestWatchFrame:SetAlpha(.9)
 	QuestWatchFrame:ClearAllPoints()
 	QuestWatchFrame:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", 0, 0)
 end
 
-Tracker.UpdatePositionAndScale = function(self)
-	if (not self.frame) then return end
+Tracker.PostAnchorEvent = function(self, event, ...)
+	if (event == "PLAYER_ENTERING_WORLD" or event == "VARIABLES_LOADED") then
+		self:UpdateTrackerPosition()
+		QuestWatchFrame:SetAlpha(.9)
 
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
-
-	self.frame:SetScale(config.scale)
-	self.frame:ClearAllPoints()
-	self.frame:SetPoint(config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
-end
-
-Tracker.UpdateAnchor = function(self)
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
-	self.anchor:SetScale(config.scale)
-	self.anchor:ClearAllPoints()
-	self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
+	elseif (event == "PLAYER_REGEN_ENABLED") then
+		self:UpdateTrackerPosition()
+	end
 end
 
 Tracker.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
-
-		QuestWatchFrame:SetAlpha(.9)
-
-		if (self.queueImmersionHook) then
-			local frame = ImmersionFrame
-			if (frame) then
-				self.queueImmersionHook = nil
-				frame:HookScript("OnShow", function() QuestWatchFrame:SetAlpha(0) end)
-				frame:HookScript("OnHide", function() QuestWatchFrame:SetAlpha(.9) end)
+		local isInitialLogin, isReloadingUi = ...
+		if (isInitialLogin or isReloadingUi) then
+			if (ImmersionFrame) then
+				if (not self:IsHooked(ImmersionFrame, "OnShow")) then
+					self:SecureHookScript(ImmersionFrame, "OnShow", function() WatchFrame:SetAlpha(0) end)
+				end
+				if (not self:IsHooked(ImmersionFrame, "OnHide")) then
+					self:SecureHookScript(ImmersionFrame, "OnHide", function() WatchFrame:SetAlpha(.9) end)
+				end
 			end
-		end
-
-		self.incombat = nil
-		self:UpdateTrackerPosition()
-		self:UpdatePositionAndScale()
-
-	elseif (event == "VARIABLES_LOADED") then
-		self:UpdateTrackerPosition()
-		self:UpdatePositionAndScale()
-
-	elseif (event == "PLAYER_REGEN_ENABLED") then
-		if (InCombatLockdown()) then return end
-		self.incombat = nil
-
-	elseif (event == "PLAYER_REGEN_DISABLED") then
-		self.incombat = true
-
-	elseif (event == "MFM_LayoutsUpdated") then
-		local LAYOUT = ...
-
-		if (not self.db.profile.savedPosition[LAYOUT]) then
-			self.db.profile.savedPosition[LAYOUT] = profileDefaults()
-		end
-
-		self:UpdatePositionAndScale()
-		self:UpdateAnchor()
-
-	elseif (event == "MFM_LayoutDeleted") then
-		local LAYOUT = ...
-
-		self.db.profile.savedPosition[LAYOUT] = nil
-
-	elseif (event == "MFM_LayoutReset") then
-		local LAYOUT = ...
-
-		local db = self.db.profile.savedPosition[LAYOUT]
-		for i,v in pairs(profileDefaults()) do
-			db[i] = v
-		end
-
-		self:UpdatePositionAndScale()
-		self:UpdateAnchor()
-
-	elseif (event == "MFM_PositionUpdated") then
-		local LAYOUT, anchor, point, x, y = ...
-
-		if (anchor ~= self.anchor) then return end
-
-		self.db.profile.savedPosition[LAYOUT][1] = point
-		self.db.profile.savedPosition[LAYOUT][2] = x
-		self.db.profile.savedPosition[LAYOUT][3] = y
-
-		self:UpdatePositionAndScale()
-
-	elseif (event == "MFM_AnchorShown") then
-		local LAYOUT, anchor, point, x, y = ...
-
-		if (anchor ~= self.anchor) then return end
-
-	elseif (event == "MFM_ScaleUpdated") then
-		local LAYOUT, anchor, scale = ...
-
-		if (anchor ~= self.anchor) then return end
-
-		self.db.profile.savedPosition[LAYOUT].scale = scale
-		self:UpdatePositionAndScale()
-
-	elseif (event == "MFM_Dragging") then
-		if (not self.incombat) then
-			if (select(2, ...) ~= self.anchor) then return end
-
-			self:OnEvent("MFM_PositionUpdated", ...)
 		end
 	end
 end
 
-Tracker.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("Tracker", defaults)
-
-	self:SetEnabledState(self.db.profile.enabled)
-
-	-- Register the available layout names
-	-- with the movable frames manager.
-	MFM:RegisterPresets(self.db.profile.savedPosition)
-
-	self:InitializeTracker()
-	self:InitializeMovableFrameAnchor()
-
-	self.queueImmersionHook = IsAddOnEnabled("Immersion")
-end
-
 Tracker.OnEnable = function(self)
+	self:PrepareFrames()
+	self:CreateAnchor(TRACKER_HEADER_OBJECTIVE, true)
 
-	self:RegisterEvent("VARIABLES_LOADED", "OnEvent")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-
-	ns.RegisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
-	ns.RegisterCallback(self, "MFM_LayoutReset", "OnEvent")
-	ns.RegisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_PositionUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_AnchorShown", "OnEvent")
-	ns.RegisterCallback(self, "MFM_ScaleUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_Dragging", "OnEvent")
+	ns.Module.OnEnable(self)
 end

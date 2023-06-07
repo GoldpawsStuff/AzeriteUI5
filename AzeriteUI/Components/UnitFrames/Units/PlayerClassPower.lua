@@ -26,8 +26,9 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local ClassPowerMod = ns:Merge(ns:NewModule("PlayerClassPowerFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
-local MFM = ns:GetModule("MovableFramesManager")
+local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
+
+local ClassPowerMod = ns:NewModule("PlayerClassPowerFrame", ns.Module, "LibMoreEvents-1.0")
 
 -- Lua API
 local next = next
@@ -47,22 +48,17 @@ local playerClass = ns.PlayerClass
 local playerLevel = UnitLevel("player")
 local playerXPDisabled = IsXPUserDisabled()
 
-local profileDefaults = function()
-	return {
-		enabled = true,
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+
+ClassPowerMod.GenerateDefaults = function(self)
+	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),
 		[1] = "CENTER",
-		[2] = -(285 - 124/2) * ns.API.GetEffectiveScale(),
-		[3] = -(168 - 168/2) * ns.API.GetEffectiveScale()
+		[2] = -223 * ns.API.GetEffectiveScale(),
+		[3] = -84 * ns.API.GetEffectiveScale()
 	}
+	return defaults
 end
-
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
-	}
-}, ns.UnitFrame.defaults) }
 
 -- Proper conversion constant.
 local deg2rad = math.pi / 180
@@ -578,10 +574,8 @@ local style = function(self, unit)
 
 end
 
-ClassPowerMod.Spawn = function(self)
+ClassPowerMod.CreateUnitFrames = function(self)
 
-	-- UnitFrame
-	---------------------------------------------------
 	local unit, name = "player", "PlayerClassPower"
 
 	oUF:RegisterStyle(ns.Prefix..name, style)
@@ -589,30 +583,47 @@ ClassPowerMod.Spawn = function(self)
 
 	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
 	self.frame:EnableMouse(false)
-
-	-- Movable Frame Anchor
-	---------------------------------------------------
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(CLASS)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.25, 2.5, .05)
-	anchor:SetSize(124, 168)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.UpdateDefaults = function() self:UpdateDefaults() end
-
-	self.anchor = anchor
 end
 
-ClassPowerMod.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("PlayerClassPowerFrame", defaults)
-	self.profileDefaults = profileDefaults
+ClassPowerMod.GetLabel = function(self)
+	if (ns.IsRetail) then
+		if (ns.PlayerClass == "MAGE") then
+			if (GetSpecialization() == (SPEC_MAGE_ARCANE or 3)) then
+				return L["Arcane Charges"]
+			end
+		elseif (ns.PlayerClass == "MONK") then
+			local spec = GetSpecialization()
+			if (spec == (SPEC_MONK_WINDWALKER or 3)) then
+				return L["Chi"]
+			elseif (spec == (SPEC_MONK_BREWMASTER or 1)) then
+				return L["Stagger"]
+			end
+		elseif (ns.PlayerClass == "PALADIN") then
+			return L["Holy Power"]
+		elseif (ns.PlayerClass == "WARLOCK") then
+			if (GetSpecialization() == (SPEC_WARLOCK_DESTRUCTION or 3)) then
+				return L["Soul Shards"]
+			end
+		elseif (ns.PlayerClass == "EVOKER") then
+			return L["Essence"]
+		elseif (ns.PlayerClass == "DEATHKNIGHT") then
+			return L["Runes"]
+		end
+	end
+	return L["Combo Points"]
+end
 
-	self:SetEnabledState(self.db.profile.enabled)
+ClassPowerMod.PostUpdateAnchor = function(self)
+	if (not self.anchor) then return end
 
-	-- Register the available layout names
-	-- with the movable frames manager.
-	MFM:RegisterPresets(self.db.profile.savedPosition)
+	self.anchor:SetTitle(self:GetLabel())
+end
+
+ClassPowerMod.OnEnable = function(self)
+
+	self:CreateUnitFrames()
+	self:CreateAnchor(self:GetLabel())
+
+
+	ns.Module.OnEnable(self)
 end

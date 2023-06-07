@@ -1,21 +1,19 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
 	<!-- Compatibility -->
-	<Script file="HideBlizzard.lua"/>
-	<Script file="HideBlizzardClassic.lua"/>
-	<Script file="HandleBartender.lua"/>
+	<Script file="Compatibility\HideBlizzard.lua"/>
+	<Script file="Compatibility\HideBlizzardClassic.lua"/>
+	<Script file="Compatibility\HandleBartender.lua"/>
 
-	<!-- Bar Prototypes -->
+	<!-- Bar & Button Prototypes -->
 	<Script file="Prototypes\Bar.lua"/>
 	<Script file="Prototypes\ButtonBar.lua"/>
 	<Script file="Prototypes\ActionBar.lua"/>
-
-	<!-- Button Prototypes -->
 	<Script file="Prototypes\ActionButton.lua"/>
 	<Script file="Prototypes\StanceButton.lua"/>
 	<Script file="Prototypes\PetButton.lua"/>
 
-	<!-- Bar Modules -->
+	<!-- Elements -->
 	<Script file="Elements\ActionBars.lua"/>
 	<Script file="Elements\StanceBar.lua"/>
 	<Script file="Elements\PetBar.lua"/>

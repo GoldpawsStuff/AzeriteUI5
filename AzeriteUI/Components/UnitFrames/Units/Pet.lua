@@ -26,8 +26,7 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local PetFrameMod = ns:Merge(ns:NewModule("PetFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
-local MFM = ns:GetModule("MovableFramesManager")
+local PetFrameMod = ns:NewModule("PetFrame", ns.UnitFrameModule, "LibMoreEvents-1.0")
 
 -- Lua API
 local unpack = unpack
@@ -41,22 +40,17 @@ local GetMedia = ns.API.GetMedia
 -- Constants
 local playerClass = ns.PlayerClass
 
-local profileDefaults = function()
-	return {
-		enabled = true,
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+
+PetFrameMod.GenerateDefaults = function(self)
+	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),
 		[1] = "BOTTOMLEFT",
 		[2] = 362 * ns.API.GetEffectiveScale(),
 		[3] = 102 * ns.API.GetEffectiveScale()
 	}
+	return defaults
 end
-
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
-	}
-}, ns.UnitFrame.defaults) }
 
 local barSparkMap = {
 	top = {
@@ -445,43 +439,23 @@ local style = function(self, unit)
 
 end
 
-PetFrameMod.Spawn = function(self)
+PetFrameMod.CreateUnitFrames = function(self)
 
-	-- UnitFrame
-	---------------------------------------------------
 	local unit, name = "pet", "Pet"
 
 	oUF:RegisterStyle(ns.Prefix..name, style)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
 	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
-
-	-- Movable Frame Anchor
-	---------------------------------------------------
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(PET)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.25, 2.5, .05)
-	anchor:SetSize(136, 47)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.UpdateDefaults = function() self:UpdateDefaults() end
-
-	self.anchor = anchor
 end
 
-PetFrameMod.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("PetFrame", defaults)
-	self.profileDefaults = profileDefaults
-
-	self:SetEnabledState(self.db.profile.enabled)
-
-	-- Register the available layout names
-	-- with the movable frames manager.
-	MFM:RegisterPresets(self.db.profile.savedPosition)
+PetFrameMod.OnEnable = function(self)
 
 	-- Disable Blizzard pet frame.
 	oUF:DisableBlizzard("pet")
+
+	self:CreateUnitFrames()
+	self:CreateAnchor(PET)
+
+	ns.Module.OnEnable(self)
 end

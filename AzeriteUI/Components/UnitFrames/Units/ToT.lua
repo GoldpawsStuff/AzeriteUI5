@@ -26,8 +26,7 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local ToTFrameMod = ns:Merge(ns:NewModule("ToTFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
-local MFM = ns:GetModule("MovableFramesManager")
+local ToTFrameMod = ns:NewModule("ToTFrame", ns.UnitFrameModule, "LibMoreEvents-1.0")
 
 -- Lua API
 local unpack = unpack
@@ -41,22 +40,17 @@ local GetMedia = ns.API.GetMedia
 -- Constants
 local playerClass = ns.PlayerClass
 
-local profileDefaults = function()
-	return {
-		enabled = true,
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+
+ToTFrameMod.GenerateDefaults = function(self)
+	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),
 		[1] = "TOPRIGHT",
 		[2] = -492 * ns.API.GetEffectiveScale(),
 		[3] = -67 * ns.API.GetEffectiveScale()
 	}
+	return defaults
 end
-
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
-	}
-}, ns.UnitFrame.defaults) }
 
 local barSparkMap = {
 	top = {
@@ -481,44 +475,23 @@ local style = function(self, unit)
 
 end
 
-ToTFrameMod.Spawn = function(self)
+ToTFrameMod.CreateUnitFrames = function(self)
 
-	-- UnitFrame
-	---------------------------------------------------
 	local unit, name = "targettarget", "ToT"
 
 	oUF:RegisterStyle(ns.Prefix..name, style)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
 	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
-
-	-- Movable Frame Anchor
-	---------------------------------------------------
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(SHOW_TARGET_OF_TARGET_TEXT) -- crazy long
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.25, 2.5, .05)
-	anchor:SetSize(136, 47)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.UpdateDefaults = function() self:UpdateDefaults() end
-
-	self.anchor = anchor
-
 end
 
-ToTFrameMod.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("ToTFrame", defaults)
-	self.profileDefaults = profileDefaults
-
-	self:SetEnabledState(self.db.profile.enabled)
-
-	-- Register the available layout names
-	-- with the movable frames manager.
-	MFM:RegisterPresets(self.db.profile.savedPosition)
+ToTFrameMod.OnEnable = function(self)
 
 	-- Disable Blizzard tot frame.
 	oUF:DisableBlizzard("targettarget")
+
+	self:CreateUnitFrames()
+	self:CreateAnchor(SHOW_TARGET_OF_TARGET_TEXT)
+
+	ns.Module.OnEnable(self)
 end

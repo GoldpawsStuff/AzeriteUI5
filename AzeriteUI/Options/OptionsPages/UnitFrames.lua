@@ -72,25 +72,25 @@ local GenerateUnitOptions = function(moduleName)
 	if (not module or not module.db.profile.enabled) then return end
 
 	local setter = function(info,val)
-		module.db.profile.savedPosition[MFM:GetLayout()][info[#info]] = val
+		module.db.profile[info[#info]] = val
 		module:UpdateSettings()
 	end
 
 	local getter = function(info)
-		return module.db.profile.savedPosition[MFM:GetLayout()][info[#info]]
+		return module.db.profile[info[#info]]
 	end
 
 	local isdisabled = function(info)
-		return info[#info] ~= "enabled" and not module.db.profile.savedPosition[MFM:GetLayout()].enabled
+		return info[#info] ~= "enabled" and not module.db.profile.enabled
 	end
 
 	local setoption = function(info,option,val)
-		module.db.profile.savedPosition[MFM:GetLayout()][option] = val
+		module.db.profile[option] = val
 		module:UpdateSettings()
 	end
 
 	local getoption = function(info,option)
-		return module.db.profile.savedPosition[MFM:GetLayout()][option]
+		return module.db.profile[option]
 	end
 
 	local options = {
@@ -103,7 +103,7 @@ local GenerateUnitOptions = function(moduleName)
 				type = "toggle", width = "full",
 				set = setter,
 				get = getter
-			},
+			}--[[,
 			positionHeader = {
 				name = L["Position"],
 				order = 60,
@@ -183,7 +183,7 @@ local GenerateUnitOptions = function(moduleName)
 					val = math_floor(val * 1000 + .5)/1000
 					return tostring(val)
 				end
-			}
+			}]]
 		}
 	}
 
@@ -228,29 +228,7 @@ local GenerateOptions = function()
 		player = { L["Player"], "PlayerFrame", 0 }, -- Player
 		playerCastBar = { L["Cast Bar"], "PlayerCastBarFrame", 100 }, -- Player Cast Bar
 		playerClassPower = { function(info) -- generates an appropriate display name
-			if (ns.PlayerClass == "MAGE") then
-				if (GetSpecialization() == (SPEC_MAGE_ARCANE or 3)) then
-					return L["Arcane Charges"]
-				end
-			elseif (ns.PlayerClass == "MONK") then
-				local spec = GetSpecialization()
-				if (spec == (SPEC_MONK_WINDWALKER or 3)) then
-					return L["Chi"]
-				elseif (spec == (SPEC_MONK_BREWMASTER or 1)) then
-					return L["Stagger"]
-				end
-			elseif (ns.PlayerClass == "PALADIN") then
-				return L["Holy Power"]
-			elseif (ns.PlayerClass == "WARLOCK") then
-				if (GetSpecialization() == (SPEC_WARLOCK_DESTRUCTION or 3)) then
-					return L["Soul Shards"]
-				end
-			elseif (ns.PlayerClass == "EVOKER") then
-				return L["Essence"]
-			elseif (ns.PlayerClass == "DEATHKNIGHT") then
-				return L["Runes"]
-			end
-			return L["Combo Points"]
+			return ns:GetModule("PlayerClassPowerFrame"):GetLabel()
 		end, "PlayerClassPowerFrame", 110 }, -- Player Class Power
 		pet = { L["Pet"], "PetFrame", 10 }, -- Pet
 		target = { L["Target"], "TargetFrame", 20 }, -- Target

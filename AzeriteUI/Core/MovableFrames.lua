@@ -40,6 +40,7 @@ local getmetatable = getmetatable
 local math_abs = math.abs
 local math_floor = math.floor
 local next = next
+local pairs = pairs
 local rawget = rawget
 local select = select
 local setmetatable = setmetatable
@@ -62,8 +63,6 @@ local UIHider = ns.Hider
 
 -- Constants & Flags
 local SCALE = UIParent:GetScale() -- current blizzard scale
-local DEFAULTLAYOUT = "Azerite" -- default layout name
-local LAYOUT = DEFAULTLAYOUT -- currently selected layout preset
 local CURRENT -- currently selected anchor frame
 local HOVERED -- currently mouseovered anchor frame
 
@@ -73,13 +72,6 @@ OUTLINE:SetBackdrop({ edgeFile = [[Interface\Tooltips\UI-Tooltip-Border]], edgeS
 OUTLINE:SetBackdropBorderColor(Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75)
 OUTLINE:SetFrameStrata("HIGH")
 OUTLINE:SetFrameLevel(10000)
-
--- Addon defaults. Don't change, does not affect what is saved.
-local defaults = {
-	char = {
-		layout = DEFAULTLAYOUT
-	}
-}
 
 -- Anchor cache
 local AnchorData = {}
@@ -265,10 +257,11 @@ Anchor.Create = function(self)
 		hasMoved = false,
 		--anchor = anchor,
 		scale = ns.API.GetEffectiveScale(), -- we're doing this?
-		minScale = .5,
-		maxScale = 1.5,
-		isScalable = false,
-		defaultScale = 1
+		minScale = .25,
+		maxScale = 2.5,
+		scaleStep = 0.025,
+		isScalable = true,
+		defaultScale = ns.API.GetEffectiveScale()
 	}
 
 	return anchor
@@ -322,13 +315,11 @@ Anchor.ResetLastChange = function(self)
 
 	anchorData.currentPosition = { point, x, y }
 
-	self:SetScale(anchorData.scale)
-
-	self:UpdateScale(LAYOUT, get(anchorData.lastScale or anchorData.scale or anchorData.defaultScale))
-	self:UpdatePosition(LAYOUT, point, x, y)
+	self:UpdateScale(get(anchorData.lastScale or anchorData.scale or anchorData.defaultScale))
+	self:UpdatePosition(point, x, y)
 	self:UpdateText()
 
-	ns:Fire("MFM_PositionUpdated", LAYOUT, self, point, x, y)
+	ns:Fire("MFM_PositionUpdated", self, point, x, y, anchorData.scale)
 end
 
 -- Reset to default position.
@@ -341,11 +332,11 @@ Anchor.ResetToDefault = function(self)
 	anchorData.currentPosition = { point, x, y }
 	anchorData.lastPosition = { point, x, y }
 
-	self:UpdateScale(LAYOUT, get(anchorData.defaultScale))
-	self:UpdatePosition(LAYOUT, point, x, y)
+	self:UpdateScale(get(anchorData.defaultScale))
+	self:UpdatePosition(point, x, y)
 	self:UpdateText()
 
-	ns:Fire("MFM_PositionUpdated", LAYOUT, self, point, x, y)
+	ns:Fire("MFM_PositionUpdated", self, point, x, y, anchorData.scale)
 end
 
 Anchor.UpdateText = function(self)
@@ -361,7 +352,7 @@ Anchor.UpdateText = function(self)
 	-- No texture rotation in Classic or TBC
 	if (ns.IsWrath or ns.IsRetail) then
 		local width,height = self:GetSize()
-		if (width/height < .8) then
+		if (width/height < .8) and (width > 100) then
 			self.Text:SetRotation(-math.pi/2)
 			self.Title:SetRotation(-math.pi/2)
 		else
@@ -390,6 +381,7 @@ Anchor.UpdateText = function(self)
 	end
 
 	self.Text:SetText(msg)
+
 	if (self:IsDragging()) then
 		self.Text:SetTextColor(unpack(Colors.normal))
 	else
@@ -397,7 +389,7 @@ Anchor.UpdateText = function(self)
 	end
 end
 
-Anchor.UpdatePosition = function(self, layoutName, point, x, y)
+Anchor.UpdatePosition = function(self, point, x, y)
 	local anchorData = AnchorData[self]
 
 	anchorData.currentPosition = { point, x, y }
@@ -406,10 +398,10 @@ Anchor.UpdatePosition = function(self, layoutName, point, x, y)
 	self:SetPointBase(point, UIParent, point, x, y)
 	self:UpdateText()
 
-	ns:Fire("MFM_PositionUpdated", layoutName, self, point, x, y)
+	ns:Fire("MFM_PositionUpdated", self, point, x, y, anchorData.scale)
 end
 
-Anchor.UpdateScale = function(self, layoutName, scale)
+Anchor.UpdateScale = function(self, scale)
 	local anchorData = AnchorData[self]
 	if (anchorData.scale == scale) then return end
 
@@ -420,7 +412,7 @@ Anchor.UpdateScale = function(self, layoutName, scale)
 		self:UpdateText()
 	end
 
-	ns:Fire("MFM_ScaleUpdated", layoutName, self, scale)
+	ns:Fire("MFM_ScaleUpdated", self, scale)
 end
 
 -- Anchor Getters
@@ -483,7 +475,7 @@ end
 -- Don't scale, just size based on it.
 Anchor.SetBaseScale = mt.SetScale
 Anchor.SetScale = function(self, scale)
-	self:UpdateScale(LAYOUT, scale)
+	self:UpdateScale(scale)
 end
 
 Anchor.SetSizeBase = mt.SetSize
@@ -519,7 +511,7 @@ Anchor.SetPoint = function(self, ...)
 	local point, x, y = getPosition(self)
 
 	-- Reset the position to our system.
-	self:UpdatePosition(LAYOUT, point, x, y)
+	self:UpdatePosition(point, x, y)
 
 	-- Set this as the default position
 	-- if none has been registered so far.
@@ -579,9 +571,11 @@ end
 
 Anchor.OnMouseWheel = function(self, delta)
 	if (not self.isSelected) then return end
+
 	local anchorData = AnchorData[self]
 	local scale = anchorData.scale
 	local step = anchorData.scaleStep or .1
+
 	if (delta > 0) then
 		if ((scale + step) > anchorData.maxScale) then
 			scale = anchorData.maxScale
@@ -596,12 +590,14 @@ Anchor.OnMouseWheel = function(self, delta)
 		end
 	end
 	self:SetScale(scale)
+
+	MovableFramesManager:RefreshMFMFrame()
 end
 
 Anchor.OnDragStart = function(self, button)
-
 	-- Treat the dragged frame as clicked.
 	CURRENT = self
+
 	self.isSelected = true
 	self:OnEnter()
 	self:SetFrameLevel(60)
@@ -627,7 +623,7 @@ Anchor.OnDragStop = function(self)
 
 	anchorData.currentPosition = { point, x, y }
 
-	self:UpdatePosition(LAYOUT, point, x, y)
+	self:UpdatePosition(point, x, y)
 
 	MovableFramesManager:RefreshMFMFrame()
 end
@@ -672,7 +668,7 @@ Anchor.OnShow = function(self)
 	self:SetPointBase(point, UIParent, point, x, y)
 	self:UpdateText()
 
-	ns:Fire("MFM_AnchorShown", LAYOUT, self, point, x, y)
+	ns:Fire("MFM_AnchorShown", self, point, x, y)
 end
 
 Anchor.OnHide = function(self)
@@ -682,7 +678,7 @@ end
 
 Anchor.OnUpdate = function(self, elapsed)
 	self.elapsed = self.elapsed + elapsed
-	if (self.elapsed < 0.02) then
+	if (self.elapsed < .05) then
 		return
 	end
 	self.elapsed = 0
@@ -698,7 +694,7 @@ Anchor.OnUpdate = function(self, elapsed)
 
 	self:UpdateText()
 
-	ns:Fire("MFM_Dragging", LAYOUT, self, point, x, y)
+	ns:Fire("MFM_Dragging", self, point, x, y)
 end
 
 local RequestMovableFrameAnchor = function(...)
@@ -738,80 +734,6 @@ MovableFramesManager.RequestAnchor = function(self, ...)
 	return RequestMovableFrameAnchor(...)
 end
 
-MovableFramesManager.PresetExists = function(self, layoutName)
-	return layoutName and self.layouts[layoutName] and true or false
-end
-
--- Register a preset name in our dropdown menu.
-MovableFramesManager.RegisterPreset = function(self, layoutName)
-	if (self.layouts[layoutName]) then return end
-
-	-- Add the preset to our list.
-	self.layouts[layoutName] = true
-end
-
--- Register a table of layout names at once.
--- *The keys represent the layout names.
-MovableFramesManager.RegisterPresets = function(self, layoutTable)
-	for layoutName in pairs(layoutTable) do
-		if (type(layoutName) == "string") then
-			if (not self.layouts[layoutName]) then
-				self:RegisterPreset(layoutName)
-			end
-		end
-	end
-end
-
--- Send a message to the modules to apply a saved preset.
--- Will switch to the preset in our dropdown menu.
-MovableFramesManager.ApplyPreset = function(self, layoutName)
-	if (layoutName == LAYOUT) then return end
-	if (not self.layouts[layoutName]) then return end
-
-	-- Switch currently selected preset.
-	LAYOUT = layoutName
-
-	-- Store the setting.
-	self.db.char.layout = LAYOUT
-
-	-- Send message to modules to switch to the selected preset.
-	ns:Fire("MFM_LayoutsUpdated", LAYOUT)
-end
-
--- Send a message to the modules to reset a saved preset.
-MovableFramesManager.ResetPreset = function(self, layoutName)
-	if (not self.layouts[layoutName]) then return end
-
-	-- Send message to modules to reset the selected preset.
-	ns:Fire("MFM_LayoutReset", layoutName)
-end
-
--- Send a message to modules to delete a saved preset.
-MovableFramesManager.DeletePreset = function(self, layoutName)
-	if (layoutName == DEFAULTLAYOUT) then return end
-	if (not self.layouts[layoutName]) then return end
-
-	-- Check if preset is the current one,
-	-- we'll have to swith to the default preset if it is.
-	if (layoutName == LAYOUT) then
-
-		-- Switch currently selected preset.
-		LAYOUT = DEFAULTLAYOUT
-
-		-- Store the setting.
-		self.db.char.layout = LAYOUT
-
-		-- Send message to modules to switch to the selected preset.
-		ns:Fire("MFM_LayoutsUpdated", LAYOUT)
-	end
-
-	-- Remove from our preset list.
-	self.layouts[layoutName] = nil
-
-	-- Send message to all moduels to remove the selected preset.
-	ns:Fire("MFM_LayoutDeleted", LAYOUT)
-end
-
 MovableFramesManager.GenerateMFMFrame = function(self)
 	if (self.appName and AceConfigRegistry:GetOptionsTable(self.appName)) then
 		return
@@ -828,6 +750,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		if (not CURRENT) then return end
 
 		local point, x, y = CURRENT:GetPosition()
+		local scale = CURRENT:GetScale()
 
 		local arg = info[#info]
 		if (arg == "point") then
@@ -838,6 +761,9 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 
 		elseif (arg == "offsetY") then
 			return tostring(math_floor(y * 1000 + .5)/1000)
+
+		elseif (arg == "scale") then
+			return tostring(math_floor(scale * 1000 + .5)/1000)
 		end
 	end
 
@@ -845,6 +771,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		if (not CURRENT) then return end
 
 		local point, x, y = CURRENT:GetPosition()
+		local scale = CURRENT:GetScale()
 
 		local arg = info[#info]
 		if (arg == "point") then
@@ -863,10 +790,17 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 			if (not val) then return end
 
 			y = val
+
+		elseif (arg == "scale") then
+			local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
+			if (not val) then return end
+
+			scale = val
 		end
 
 		CURRENT:ClearAllPoints()
 		CURRENT:SetPoint(point, x, y)
+		CURRENT:SetScale(scale)
 	end
 
 	local validate = function(info,val)
@@ -956,8 +890,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		hidden = function(info) return not isdisabled(info) end
 	}
 
-
-	-- Frame Positioning
+	-- Frame positioning & scaling.
 	options.args.positionHeader = {
 		name = function(info)
 			return CURRENT and CURRENT.Title:GetText() or L["Position"]
@@ -1016,8 +949,20 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		set = setter,
 		get = getter
 	}
-
-	self.app = AceGUI:Create("Frame")
+	options.args.scale = {
+		name = L["Scale"],
+		desc = L["Sets the relative scale of this element. Default scale is set to match AzeriteUI ideal size."],
+		order = 140,
+		type = "range", width = "full", min = 0.25 * 100, max = 2.5 * 100, step = 0.1, bigStep = 1,
+		hidden = isdisabled,
+		validate = validate,
+		set = function(info,val)
+			setter(info,tostring(val/100))
+		end,
+		get = function(info)
+			return tonumber(getter(info)*100)
+		end
+	}
 
 	self:SecureHook(self.app.frame, "Show", "UpdateMovableFrameAnchors")
 	self:SecureHook(self.app.frame, "Hide", "HideMovableFrameAnchors")
@@ -1040,16 +985,16 @@ end
 
 MovableFramesManager.RefreshMFMFrame = function(self)
 	if (AceConfigRegistry:GetOptionsTable(self.appName)) then
-		if (self.app and self.app.frame) then
+		if (self.app.frame:IsShown()) then
 			-- When using a custom window for the dialog,
 			-- the notify callback does not fire for it.
 			-- So we need to fake a refresh by hiding and showing.
-			if (self.app.frame:IsShown()) then
-				self:CloseMFMFrame()
-				self:OpenMFMFrame()
+			if (self:IsHooked(self.app.frame, "Hide")) then
+				self:Unhook(self.app.frame, "Hide")
 			end
-		else
-			AceConfigRegistry:NotifyChange(self.appName)
+			self.app.frame:Hide()
+			self:SecureHook(self.app.frame, "Hide", "HideMovableFrameAnchors")
+			self:OpenMFMFrame()
 		end
 	end
 end
@@ -1058,40 +1003,28 @@ MovableFramesManager.OpenMFMFrame = function(self)
 	if (not AceConfigRegistry:GetOptionsTable(self.appName)) then
 		self:GenerateMFMFrame()
 	end
-	AceConfigDialog:SetDefaultSize(self.appName, 440, ns.IsRetail and 420 or 360)
+	AceConfigDialog:SetDefaultSize(self.appName, self.app.status.width, self.app.status.height)
 	AceConfigDialog:Open(self.appName, self.app)
-
-	-- TODO: Store position in our own saved settings.
-	self.app.frame:ClearAllPoints()
-	self.app.frame:SetPoint("LEFT", UIParent, "LEFT", 160, 100)
 end
 
 MovableFramesManager.CloseMFMFrame = function(self)
 	if (not AceConfigRegistry:GetOptionsTable(self.appName)) then return end
-	if (self.app and self.app.frame and self.app.frame:IsShown()) then
+	if (self.app.frame:IsShown()) then
 		self.app.frame:Hide()
 		return true -- prevents game menu from being shown
 	end
 end
 
 MovableFramesManager.IsMFMFrameOpen = function(self)
-	return AceConfigRegistry:GetOptionsTable(self.appName) and self.app and self.app.frame and self.app.frame:IsShown()
+	return self.app.frame:IsShown()
 end
 
 MovableFramesManager.ToggleMFMFrame = function(self)
-	if (self.app and self.app.frame and self.app.frame:IsShown()) then
+	if (self.app.frame:IsShown()) then
 		self:CloseMFMFrame()
 	else
 		self:OpenMFMFrame()
 	end
-end
-
-MovableFramesManager.GetLayout = function(self)
-	return LAYOUT
-end
-
-MovableFramesManager.GetDefaultLayout = function(self)
-	return DEFAULTLAYOUT
 end
 
 MovableFramesManager.UpdateMovableFrameAnchors = function(self, ...)
@@ -1099,7 +1032,9 @@ MovableFramesManager.UpdateMovableFrameAnchors = function(self, ...)
 end
 
 MovableFramesManager.HideMovableFrameAnchors = function(self)
-	HideMovableFrameAnchors()
+	if (not self.app.frame:IsShown()) then
+		HideMovableFrameAnchors()
+	end
 end
 
 MovableFramesManager.IsInEditMode = function(self)
@@ -1153,7 +1088,7 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 		end
 		self.incombat = InCombatLockdown()
 
-		ns:Fire("MFM_LayoutsUpdated", LAYOUT)
+		ns:Fire("MFM_LayoutsUpdated")
 
 	elseif (event == "EDIT_MODE_LAYOUTS_UPDATED") then
 		local layoutInfo, fromServer = ...
@@ -1214,13 +1149,18 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 end
 
 MovableFramesManager.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("MovableFrames", defaults)
-	self.db.profile = nil
 
-	self.layouts = {}
+
+	self.app = AceGUI:Create("Frame")
+	self.app:Hide()
+	self.app:SetStatusTable({
+		width = 440,
+		height = ns.IsRetail and 510 or 450,
+		left = 160,
+		top = UIParent:GetTop() / 2 + 100
+	})
 	self.appName = L["Movable Frames Manager"]
 
-	LAYOUT = self.db.char.layout
 	SCALE = UIParent:GetScale()
 
 	if (ns.WoW10) then

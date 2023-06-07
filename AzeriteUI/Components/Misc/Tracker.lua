@@ -28,12 +28,9 @@ if (not ns.IsRetail) then return end
 
 LoadAddOn("Blizzard_ObjectiveTracker")
 
-local Tracker = ns:NewModule("Tracker", "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0")
-local MFM = ns:GetModule("MovableFramesManager")
+local Tracker = ns:NewModule("Tracker", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0")
 
--- WoW API
-local IsAddOnLoaded = IsAddOnLoaded
-local SetOverrideBindingClick = SetOverrideBindingClick
+-- GLOBALS: IsAddOnLoaded, SetOverrideBindingClick
 
 -- Addon API
 local Colors = ns.Colors
@@ -53,13 +50,16 @@ local Custom = {}
 -- currently just the keys need to exist though.
 local Skins = {
 	Blizzard = {},
-	[MFM:GetDefaultLayout()] = {}
+	Azerite = {}
 }
 
 local defaults = { profile = ns:Merge({
-	enabled = true,
 	theme = "Azerite"
-}, ns.moduleDefaults) }
+}, ns.Module.defaults) }
+
+Tracker.GenerateDefaults = function(self)
+	return defaults
+end
 
 local UpdateObjectiveTracker = function()
 	local frame = ObjectiveTrackerFrame.MODULES
@@ -632,45 +632,41 @@ Tracker.HookTracker = function(self)
 	driver = "[@boss1,exists][@boss2,exists][@boss3,exists][@boss4,exists][@boss5,exists]" .. driver
 
 	RegisterStateDriver(ObjectiveTrackerFrame.autoHider, "vis", driver)
-
-	if (IsAddOnEnabled("Immersion")) then
-		if (IsPlayerInWorld()) then
-			self:HookImmersion()
-		else
-			self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-		end
-	end
-
-end
-
-Tracker.HookImmersion = function(self)
-	if (not ImmersionFrame) then return end
-	if (not self:IsHooked(ImmersionFrame, "OnShow")) then
-		self:SecureHookScript(ImmersionFrame, "OnShow", Immersion_OnShow)
-	end
-	if (not self:IsHooked(ImmersionFrame, "OnHide")) then
-		self:SecureHookScript(ImmersionFrame, "OnHide", Immersion_OnHide)
-	end
 end
 
 Tracker.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		local isInitialLogin, isReloadingUi = ...
 		if (isInitialLogin or isReloadingUi) then
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-			self:HookImmersion()
+			if (ImmersionFrame) then
+				if (not self:IsHooked(ImmersionFrame, "OnShow")) then
+					self:SecureHookScript(ImmersionFrame, "OnShow", function() WatchFrame:SetAlpha(0) end)
+				end
+				if (not self:IsHooked(ImmersionFrame, "OnHide")) then
+					self:SecureHookScript(ImmersionFrame, "OnHide", function() WatchFrame:SetAlpha(.9) end)
+				end
+			end
 		end
 	end
 end
 
-Tracker.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("ObjectivesTracker", defaults)
-
-	self:SetEnabledState(self.db.profile.enabled)
-	self:HookTracker()
-	self:RegisterChatCommand("settrackertheme", "SetObjectivesTrackerTheme")
+Tracker.RefreshConfig = function(self)
+	self:SetObjectivesTrackerTheme(self.db.profile.theme)
 end
 
+local OnEnable = Tracker.OnEnable
+
 Tracker.OnEnable = function(self)
-	self:SetObjectivesTrackerTheme(self.db.profile.theme)
+	ns.Module.OnEnable(self)
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
+end
+
+Tracker.OnInitialize = function(self)
+	ns.Module.OnInitialize(self)
+
+	if (not self.db.profile.enabled) then return end
+
+	self:HookTracker()
+	self:RegisterChatCommand("settrackertheme", "SetObjectivesTrackerTheme")
 end

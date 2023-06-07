@@ -24,6 +24,7 @@
 
 --]]
 local Addon, ns = ...
+
 if (ns.IsRetail) then return end
 
 local Timers = ns:NewModule("Timers", "LibMoreEvents-1.0", "AceTimer-3.0", "AceHook-3.0")
@@ -130,5 +131,4 @@ Timers.OnInitialize = function(self)
 
 	-- Update all on world entering
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateAll")
-
 end

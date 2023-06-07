@@ -52,7 +52,7 @@ ns.Copy = function(self, target, source)
 	end
 	for k,v in pairs(source) do
 		if (type(v) == "table") then
-			target[k] = ns:Copy(target[k], v)
+			target[k] = ns:Copy(v)
 		else
 			target[k] = v
 		end

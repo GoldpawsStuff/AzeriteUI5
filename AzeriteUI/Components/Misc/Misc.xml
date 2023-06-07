@@ -2,7 +2,7 @@
 
 	<Script file="AlertFrames.lua"/>
 	<Script file="ArcheologyBar.lua"/>
-	<Script file="ChatBubbles.lua"/>
+	<!--<Script file="ChatBubbles.lua"/>-->
 	<Script file="ChatFrames.lua"/>
 	<Script file="Containers.lua"/>
 	<Script file="Durability.lua"/>
@@ -15,7 +15,7 @@
 	<Script file="Tracker.lua"/>
 	<Script file="TrackerVanilla.lua"/>
 	<Script file="TrackerWrath.lua"/>
-	<Script file="Tutorials.lua"/>
+	<!--<Script file="Tutorials.lua"/>-->
 	<Script file="UIWidgets.lua"/>
 	<Script file="VehicleSeat.lua"/>
 

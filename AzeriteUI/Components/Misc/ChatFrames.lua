@@ -46,7 +46,7 @@ local UIHider = ns.Hider
 
 local defaults = { profile = ns:Merge({
 	enabled = true
-}, ns.moduleDefaults) }
+}, ns.Module.defaults) }
 
 -- Global buttons not unique to any frame
 local GLOBAL_BUTTONS = {
@@ -568,7 +568,7 @@ ChatFrames.OnEvent = function(self, event, ...)
 			local kill = CreateFrame("Frame")
 			kill.count = 0
 			kill:SetScript("OnUpdate", function(self)
-				ChatFrame1:Clear()
+				--ChatFrame1:Clear()
 				self.count = self.count + 1
 				if (self.count > 1) then
 					self:SetScript("OnUpdate", nil)
@@ -580,7 +580,7 @@ ChatFrames.OnEvent = function(self, event, ...)
 end
 
 ChatFrames.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("ChatFrames", defaults)
+	self.db = ns.db:RegisterNamespace(self:GetName(), defaults)
 
 	self:SetEnabledState(not IsAddOnEnabled("Prat-3.0") and not IsAddOnEnabled("ls_Glass") and self.db.profile.enabled)
 

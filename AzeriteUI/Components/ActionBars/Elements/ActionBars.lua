@@ -25,16 +25,14 @@
 --]]
 local Addon, ns = ...
 
+if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return end
+
 local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
 local LAB_Name = "LibActionButton-1.0-GE"
 local LAB, LAB_Version = LibStub(LAB_Name)
 
 local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "LibFadingFrames-1.0", "AceConsole-3.0", "AceTimer-3.0")
-
 local GUI = ns:GetModule("Options")
-local MFM = ns:GetModule("MovableFramesManager")
-
-local CPB = ns.API.IsAddOnEnabled("ConsolePort_Bar")
 
 -- Lua API
 local pairs = pairs
@@ -45,6 +43,9 @@ local string_lower = string.lower
 local string_split = string.split
 local string_upper = string.upper
 local tonumber = tonumber
+local unpack = unpack
+
+-- GLOBALS: C_LevelLink, hooksecurefunc, InCombatLockdown, IsMounted, IsSpellOverlayed, UnitIsDeadOrGhost
 
 -- Addon API
 local Colors = ns.Colors
@@ -57,6 +58,17 @@ local noop = ns.Noop
 
 -- Just not there in Wrath
 local IsSpellOverlayed = IsSpellOverlayed or function() end
+
+-- Frame Metamethods
+local mt = getmetatable(CreateFrame("Frame"))
+local clearAllPoints = mt.__index.ClearAllPoints
+local setPoint = mt.__index.SetPoint
+
+-- Utility
+local clearSetPoint = function(frame, ...)
+	clearAllPoints(frame)
+	setPoint(frame, ...)
+end
 
 -- Return blizzard barID by barnum.
 local BAR_TO_ID = {
@@ -75,13 +87,15 @@ end
 local ID_TO_BAR = {}
 for i,j in pairs(BAR_TO_ID) do ID_TO_BAR[j] = i end
 
--- TODO:
--- Save layout, maptype and all bar options
--- in the savePosition subtables to allow profiling of all options!
-local barDefaults = {
-	[1] = { --[[ primary action bar ]]
-		savedPosition = {
-			[MFM:GetDefaultLayout()] = ns:Merge({
+-- Module defaults.
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+
+ActionBarMod.GenerateDefaults = function(self)
+
+	defaults = { profile = ns:Merge({
+		enabled = true,
+		bars = {
+			[1] = ns:Merge({ --[[ primary action bar ]]
 				enabled = true,
 				enableBarFading = true,
 				fadeFrom = 8,
@@ -96,16 +110,15 @@ local barDefaults = {
 					overridebar = true,
 					vehicleui = true
 				},
-				scale = ns.API.GetEffectiveScale(),
-				[1] = "BOTTOMLEFT",
-				[2] = 60 * ns.API.GetEffectiveScale(),
-				[3] = 42 * ns.API.GetEffectiveScale()
-			}, ns.ActionBar.defaults)
-		}
-	},
-	[2] = { --[[ bottomleft multibar ]]
-		savedPosition = {
-			[MFM:GetDefaultLayout()] = ns:Merge({
+				savedPosition = {
+					scale = ns.API.GetEffectiveScale(),
+					[1] = "BOTTOMLEFT",
+					[2] = 60 * ns.API.GetEffectiveScale(),
+					[3] = 42 * ns.API.GetEffectiveScale()
+				}
+			}, ns.ActionBar.defaults),
+
+			[2] = ns:Merge({ --[[ bottomleft multibar ]]
 				enabled = false,
 				enableBarFading = true,
 				fadeFrom = 1,
@@ -115,118 +128,110 @@ local barDefaults = {
 				growthHorizontal = "RIGHT", -- the bar's horizontal growth direction
 				growthVertical = "DOWN", -- the bar's vertical growth direction
 				offset = (64 - 44 + 8)/64, -- 28
-				scale = ns.API.GetEffectiveScale(),
-				[1] = "BOTTOMLEFT",
-				[2] = 752 * ns.API.GetEffectiveScale(),
-				[3] = 42 * ns.API.GetEffectiveScale()
-			}, ns.ActionBar.defaults)
-		}
-	},
-	[3] = { --[[ bottomright multibar ]]
-		enabled = false,
-		savedPosition = {
-			[MFM:GetDefaultLayout()] = ns:Merge({
-				layout = "grid",
-				breakpoint = 6,
-				growth = "vertical",
-				growthHorizontal = "RIGHT",
-				growthVertical = "DOWN",
-				scale = ns.API.GetEffectiveScale(),
-				[1] = "RIGHT",
-				[2] = -40 * ns.API.GetEffectiveScale(),
-				[3] = 0 * ns.API.GetEffectiveScale()
-			}, ns.ActionBar.defaults)
-		}
-	},
-	[4] = { --[[ right multibar 1 ]]
-		enabled = false,
-		savedPosition = {
-			[MFM:GetDefaultLayout()] = ns:Merge({
-				layout = "grid",
-				breakpoint = 6,
-				growth = "vertical",
-				growthHorizontal = "RIGHT",
-				growthVertical = "DOWN",
-				scale = ns.API.GetEffectiveScale(),
-				[1] = "RIGHT",
-				[2] = -(40 + 10 + 72*2) * ns.API.GetEffectiveScale(),
-				[3] = 0 * ns.API.GetEffectiveScale()
-			}, ns.ActionBar.defaults)
-		}
-	},
-	[5] = { --[[ right multibar 2 ]]
-		enabled = false,
-		savedPosition = {
-			[MFM:GetDefaultLayout()] = ns:Merge({
-				layout = "grid",
-				breakpoint = 6,
-				growth = "vertical",
-				growthHorizontal = "RIGHT",
-				growthVertical = "DOWN",
-				scale = ns.API.GetEffectiveScale(),
-				[1] = "RIGHT",
-				[2] = -(40 + 10 + 72*2 + 10 + 72*2) * ns.API.GetEffectiveScale(),
-				[3] = 0 * ns.API.GetEffectiveScale()
-			}, ns.ActionBar.defaults)
-		}
-	}
-}
-if (ns.IsRetail) then
-	barDefaults[6] = { --[[]]
-		savedPosition = {
-			[MFM:GetDefaultLayout()] = ns:Merge({
-				enabled = false,
-				layout = "grid",
-				breakpoint = 12,
-				growth = "horizontal",
-				growthHorizontal = "RIGHT",
-				growthVertical = "DOWN",
-				scale = ns.API.GetEffectiveScale(),
-				[1] = "CENTER",
-				[2] = 0 * ns.API.GetEffectiveScale(),
-				[3] = 82 * ns.API.GetEffectiveScale()
-			}, ns.ActionBar.defaults)
-		}
-	}
-	barDefaults[7] = { --[[]]
-		savedPosition = {
-			[MFM:GetDefaultLayout()] = ns:Merge({
-				enabled = false,
-				layout = "grid",
-				breakpoint = 12,
-				growth = "horizontal",
-				growthHorizontal = "RIGHT",
-				growthVertical = "DOWN",
-				scale = ns.API.GetEffectiveScale(),
-				[1] = "CENTER",
-				[2] = 0 * ns.API.GetEffectiveScale(),
-				[3] = 0 * ns.API.GetEffectiveScale()
-			}, ns.ActionBar.defaults)
-		}
-	}
-	barDefaults[8] = { --[[]]
-		savedPosition = {
-			[MFM:GetDefaultLayout()] = ns:Merge({
-				enabled = false,
-				layout = "grid",
-				breakpoint = 12,
-				growth = "horizontal",
-				growthHorizontal = "RIGHT",
-				growthVertical = "DOWN",
-				scale = ns.API.GetEffectiveScale(),
-				[1] = "CENTER",
-				[2] = 0 * ns.API.GetEffectiveScale(),
-				[3] = -82 * ns.API.GetEffectiveScale()
-			}, ns.ActionBar.defaults)
-		}
-	}
-end
+				savedPosition = {
+					scale = ns.API.GetEffectiveScale(),
+					[1] = "BOTTOMLEFT",
+					[2] = 752 * ns.API.GetEffectiveScale(),
+					[3] = 42 * ns.API.GetEffectiveScale()
+				}
+			}, ns.ActionBar.defaults),
 
--- Module defaults.
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	bars = ns:Merge({}, barDefaults)
-}, ns.moduleDefaults) }
+			[3] = ns:Merge({ --[[ bottomright multibar ]]
+				enabled = false,
+				layout = "grid",
+				breakpoint = 6,
+				growth = "vertical",
+				growthHorizontal = "RIGHT",
+				growthVertical = "DOWN",
+				savedPosition = {
+					scale = ns.API.GetEffectiveScale(),
+					[1] = "RIGHT",
+					[2] = -40 * ns.API.GetEffectiveScale(),
+					[3] = 0
+				}
+			}, ns.ActionBar.defaults),
+
+			[4] = ns:Merge({ --[[ right multibar 1 ]]
+				enabled = false,
+				layout = "grid",
+				breakpoint = 6,
+				growth = "vertical",
+				growthHorizontal = "RIGHT",
+				growthVertical = "DOWN",
+				savedPosition = {
+					scale = ns.API.GetEffectiveScale(),
+					[1] = "RIGHT",
+					[2] = -194 * ns.API.GetEffectiveScale(),
+					[3] = 0
+				}
+			}, ns.ActionBar.defaults),
+
+			[5] = ns:Merge({ --[[ right multibar 2 ]]
+				enabled = false,
+				layout = "grid",
+				breakpoint = 6,
+				growth = "vertical",
+				growthHorizontal = "RIGHT",
+				growthVertical = "DOWN",
+				savedPosition = {
+					scale = ns.API.GetEffectiveScale(),
+					[1] = "RIGHT",
+					[2] = -348 * ns.API.GetEffectiveScale(),
+					[3] = 0
+				}
+			}, ns.ActionBar.defaults)
+		}
+	}, ns.Module.defaults) }
+
+	if (ns.IsRetail) then
+		defaults.profile.bars[6] = ns:Merge({ --[[]]
+			enabled = false,
+			layout = "grid",
+			breakpoint = 12,
+			growth = "horizontal",
+			growthHorizontal = "RIGHT",
+			growthVertical = "DOWN",
+			savedPosition = {
+				scale = ns.API.GetEffectiveScale(),
+				[1] = "CENTER",
+				[2] = 0,
+				[3] = 82 * ns.API.GetEffectiveScale()
+			}
+		}, ns.ActionBar.defaults)
+
+		defaults.profile.bars[7] = ns:Merge({ --[[]]
+			enabled = false,
+			layout = "grid",
+			breakpoint = 12,
+			growth = "horizontal",
+			growthHorizontal = "RIGHT",
+			growthVertical = "DOWN",
+			savedPosition = {
+				scale = ns.API.GetEffectiveScale(),
+				[1] = "CENTER",
+				[2] = 0,
+				[3] = 0
+			}
+		}, ns.ActionBar.defaults)
+
+		defaults.profile.bars[8] = ns:Merge({ --[[]]
+			enabled = false,
+			layout = "grid",
+			breakpoint = 12,
+			growth = "horizontal",
+			growthHorizontal = "RIGHT",
+			growthVertical = "DOWN",
+			savedPosition = {
+				scale = ns.API.GetEffectiveScale(),
+				[1] = "CENTER",
+				[2] = 0,
+				[3] = -82 * ns.API.GetEffectiveScale()
+			}
+		}, ns.ActionBar.defaults)
+	end
+
+	return defaults
+end
 
 local config = {
 
@@ -283,7 +288,6 @@ local ShowMaxDps = function(self)
 			self.spellHighlight:SetVertexColor(249/255, 188/255, 65/255, .75)
 		end
 		self.spellHighlight:Show()
-		--LAB.callbacks:Fire("OnButtonShowOverlayGlow", self)
 	end
 end
 
@@ -291,7 +295,6 @@ local HideMaxDps = function(self)
 	if (self.spellHighlight) then
 		if (not self.maxDpsGlowShown) then
 			self.spellHighlight:Hide()
-			--LAB.callbacks:Fire("OnButtonHideOverlayGlow", self)
 		end
 	end
 end
@@ -597,15 +600,110 @@ local style = function(button)
 	return button
 end
 
-ActionBarMod.HandleMaxDps = function(self)
+ActionBarMod.CreateBars = function(self)
+	if (next(self.bars)) then return end
 
-	MaxDps:RegisterLibActionButton(LAB_Name) -- LAB_Version
+	for i = 1,#BAR_TO_ID do
+
+		local config = self.db.profile.bars[i]
+
+		local bar = ns.ActionBar:Create(BAR_TO_ID[i], config, ns.Prefix.."ActionBar"..i)
+		bar.defaults = defaults.profile.bars[i]
+
+		for id,button in next,bar.buttons do
+			style(button)
+			self.buttons[button] = true
+		end
+
+		--bar:Update()
+
+		self.bars[i] = bar
+	end
+
+end
+
+ActionBarMod.CreateAnchors = function(self)
+	if (not next(self.bars)) then return end
+	if (next(self.lookup.anchor)) then return end
+
+	local defaults = self:GetDefaults()
+
+	for i,bar in ipairs(self.bars) do
+
+		local bar = bar
+		local config = defaults.profile.bars[i]
+
+		local anchor = ns:GetModule("MovableFramesManager"):RequestAnchor()
+		anchor:SetScalable(true)
+		anchor:SetSize(2,2)
+		anchor:SetPoint(config.savedPosition[1], config.savedPosition[2], config.savedPosition[3])
+		anchor:SetScale(config.savedPosition.scale)
+		anchor:SetDefaultScale(function() return ns.API.GetEffectiveScale() end)
+		anchor:SetTitle(self:GenerateBarDisplayName(i))
+
+		anchor.PreUpdate = function()
+			self:UpdateAnchors()
+		end
+
+		anchor.UpdateDefaults = function()
+			self:UpdateDefaults()
+		end
+
+		local r, g, b = unpack(Colors.anchor.actionbars)
+		anchor.Overlay:SetBackdropColor(r, g, b, .75)
+		anchor.Overlay:SetBackdropBorderColor(r, g, b, 1)
+
+		bar.anchor = anchor
+
+		self.lookup.bar[anchor] = bar
+		self.lookup.anchor[bar] = anchor
+	end
+end
+
+ActionBarMod.CreatePetBattleController = function(self)
+	if (self.petBattleController) then return end
+	if (not self.bars[1]) then return end
+
+	local petBattleController = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+	petBattleController:SetAttribute("_onstate-petbattle", string_format([[
+		if (newstate == "petbattle") then
+			b = b or table.new();
+			b[1], b[2], b[3], b[4], b[5], b[6] = "%s", "%s", "%s", "%s", "%s", "%s";
+			for i = 1,6 do
+				local button, vbutton = "CLICK "..b[i]..":LeftButton", "ACTIONBUTTON"..i
+				for k=1,select("#", GetBindingKey(button)) do
+					local key = select(k, GetBindingKey(button))
+					self:SetBinding(true, key, vbutton)
+				end
+				-- do the same for the default UIs bindings
+				for k=1,select("#", GetBindingKey(vbutton)) do
+					local key = select(k, GetBindingKey(vbutton))
+					self:SetBinding(true, key, vbutton)
+				end
+			end
+		else
+			self:ClearBindings()
+		end
+	]], (function(b) local t={}; for i=1,6 do t[i]=b[i]:GetName() end; return unpack(t) end)(self.bars[1].buttons)))
+
+	self.petBattleController = petBattleController
+end
+
+ActionBarMod.CreateMaxDpsOverlays = function(self, event, addon)
+
+	-- Just in case this was loaded on demand.
+	if (addon and addon ~= "MaxDps") then return end
+	if (addon == "MaxDps") then
+		self:UnregisterEvent("ADDON_LOADED", "CreateMaxDpsOverlays")
+	end
+
+	-- Register our actionbutton library fork with MaxDps.
+	MaxDps:RegisterLibActionButton(LAB_Name) -- Used to be LAB_Version, needs name now.
 
 	-- This will hide the MaxDps overlays for the most part.
-	local MaxDps_GetTexture = MaxDps.GetTexture
 	MaxDps.GetTexture = function() end
 
-	local Glow = MaxDps.Glow
+	local maxDpsGlow = MaxDps.Glow
 	MaxDps.Glow = function(this, button, id, texture, type, color)
 		if (not self.buttons[button]) then
 			return Glow(this, button, id, texture, type, color)
@@ -626,7 +724,7 @@ ActionBarMod.HandleMaxDps = function(self)
 		UpdateMaxDps(button)
 	end
 
-	local HideGlow = MaxDps.HideGlow
+	local maxDpsHideGlow = MaxDps.HideGlow
 	MaxDps.HideGlow = function(this, button, id)
 		if (not self.buttons[button]) then
 			return HideGlow(this, button, id)
@@ -636,17 +734,16 @@ ActionBarMod.HandleMaxDps = function(self)
 		UpdateMaxDps(button)
 	end
 
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", "OnEvent")
-	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM", "OnEvent")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnMaxDPSEvent")
+	self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", "OnMaxDPSEvent")
+	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM", "OnMaxDPSEvent")
 
-	LAB.RegisterCallback(self, "OnButtonShowOverlayGlow", "OnEvent")
-	LAB.RegisterCallback(self, "OnButtonHideOverlayGlow", "OnEvent")
+	LAB.RegisterCallback(self, "OnButtonShowOverlayGlow", "OnMaxDPSEvent")
+	LAB.RegisterCallback(self, "OnButtonHideOverlayGlow", "OnMaxDPSEvent")
 
 	self.MaxDps = true
 end
 
--- Returns a localized named usable for our movable frame anchor.
 ActionBarMod.GenerateBarDisplayName = function(self, id)
 	local barID = tonumber(id)
 	if (barID == RIGHT_ACTIONBAR_PAGE) then
@@ -659,12 +756,17 @@ ActionBarMod.GenerateBarDisplayName = function(self, id)
 	end
 end
 
--- Returns a table with default bar settings
-ActionBarMod.GenerateBarSettings = function(self, settings)
-	return ns:Merge(settings or {}, ns.ActionBar.defaults)
+ActionBarMod.GetDefaults = function(self)
+	if (self.GenerateDefaults) then
+		return self:GenerateDefaults(self.defaults)
+	end
+	return self.defaults
 end
 
--- fucking charge cooldown styling
+ActionBarMod.SetDefaults = function(self, defaults)
+	self.db:RegisterDefaults(defaults)
+end
+
 ActionBarMod.UpdateChargeCooldowns = function(self)
 	if (not self.chargeCooldowns) then
 		self.chargeCooldowns = {}
@@ -715,6 +817,26 @@ ActionBarMod.UpdateChargeCooldowns = function(self)
 
 end
 
+ActionBarMod.UpdateAnchors = function(self)
+	if (not next(self.lookup.anchor)) then return end
+
+	for i,bar in ipairs(self.bars) do
+
+		local anchor = self.lookup.anchor[bar]
+		if (anchor) then
+
+			local config = self.db.profile.bars[i].savedPosition
+			if (config) then
+				anchor:SetSize(bar:GetSize())
+				anchor:SetScale(config.scale)
+				anchor:ClearAllPoints()
+				anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
+			end
+		end
+
+	end
+end
+
 ActionBarMod.UpdateBindings = function(self)
 	for i,bar in next,self.bars do
 		if (bar:IsEnabled()) then
@@ -723,170 +845,155 @@ ActionBarMod.UpdateBindings = function(self)
 	end
 end
 
+ActionBarMod.UpdateDefaults = function(self)
+	local defaults = self:GetDefaults()
+
+	for i,bar in ipairs(self.bars) do
+
+		local anchor = self.lookup.anchor[bar]
+		if (anchor) then
+
+			local config = defaults.profile.bars[i].savedPosition
+
+			config.scale = anchor:GetDefaultScale()
+			config[1], config[2], config[3] = anchor:GetDefaultPosition()
+		end
+	end
+
+	self:SetDefaults(defaults)
+
+	-- We need to update links on config change!
+	for i,bar in ipairs(self.bars) do
+		bar.config = self.db.profile.bars[i]
+	end
+end
+
+ActionBarMod.UpdatePositionAndScales = function(self)
+	if (not next(self.bars)) then return end
+
+	if (InCombatLockdown()) then
+		self.updateneeded = true
+		return
+	end
+
+	self.updateneeded = nil
+
+	for i,bar in ipairs(self.bars) do
+
+		local config = self.db.profile.bars[i].savedPosition --bar.config.savedPosition
+		if (config) then
+
+			if (type(config) ~= "table") then
+				print(bar:GetName(), "has no config table?")
+			end
+
+			if (not config[1] or not config[2] or not config[3] or not config.scale) then
+				print(bar:GetName(), "has a faulty config table?")
+				--print(config[1], config[2], config[3], config.scale)
+			end
+
+			bar:SetScale(config.scale)
+			bar:ClearAllPoints()
+			bar:SetPoint(config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
+		end
+	end
+
+end
+
 ActionBarMod.UpdateSettings = function(self)
 	if (InCombatLockdown()) then
 		self.needupdate = true
 		return
 	end
 	for id,bar in next,self.bars do
-		if (not CPB) then
-			bar:Update()
-			bar:UpdateAnchor()
-		end
+		bar:Update()
+		bar:UpdateAnchor()
 	end
 end
 
+ActionBarMod.RefreshConfig = function(self)
+	self:UpdateSettings()
+	self:UpdateBindings()
+	self:UpdatePositionAndScales()
+	self:UpdateAnchors()
+end
+
 ActionBarMod.OnEvent = function(self, event, ...)
-	if (event == "ADDON_LOADED") then
-		local addon = ...
-		if (addon == "MaxDps") then
-			self:UnregisterEvent("ADDON_LOADED", "OnEvent")
-			self:HandleMaxDps()
-		end
-	elseif (event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UPDATE_SHAPESHIFT_FORM") then
-
-		if (event == "PLAYER_ENTERING_WORLD") then
-			local isInitialLogin, isReloadingUi = ...
-			if (isInitialLogin or isReloadingUi) then
-				self:CreateBars()
-			end
-			self:UpdateSettings()
-			self.incombat = nil
-		end
-
-		if (self.MaxDps) then
-			for button in next, LAB.activeButtons do
-				if (self.buttons[button]) then
-					if (button.maxDpsGlowShown) then
-						button.maxDpsGlowColor = nil
-						button.maxDpsGlowShown = nil
-						UpdateMaxDps(button)
-					end
-				end
-			end
-		end
+	if (event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UPDATE_SHAPESHIFT_FORM") then
+		self:UpdateSettings()
 
 	elseif (event == "PLAYER_REGEN_ENABLED") then
 		if (InCombatLockdown()) then return end
-		self.incombat = nil
-		if (self.needupdate) then
-			self:UpdateSettings()
-			GUI:Refresh()
-		end
 
-	elseif (event == "PLAYER_REGEN_DISABLED") then
-		self.incombat = true
+		if (self.needupdate) then
+			self.needupdate = nil
+			self:UpdateSettings()
+		end
 
 	elseif (event == "UPDATE_BINDINGS") then
 		for id,bar in next,self.bars do
 			bar:UpdateBindings()
 		end
+	end
+end
 
-	elseif (event == "MFM_LayoutsUpdated") then
-		local LAYOUT = ...
+ActionBarMod.OnAnchorEvent = function(self, event, ...)
+	if (event == "PLAYER_ENTERING_WORLD" or event == "VARIABLES_LOADED") then
+		self.incombat = nil
 
-		if (InCombatLockdown()) then
-			self.needupdate = true
+		self:UpdatePositionAndScales()
+		self:UpdateAnchors()
+
+	elseif (event == "PLAYER_REGEN_ENABLED") then
+		if (InCombatLockdown()) then return end
+
+		self.incombat = nil
+
+		if (self.updateneeded) then
+			self:UpdatePositionAndScales()
+			self:UpdateAnchors()
 		end
 
-		for id,bar in next,self.bars do
-			local layouts = self.db.profile.bars[id].savedPosition
-			if (not layouts[LAYOUT]) then
-				-- Watch if this bugs out or work. The default tables here should be complete. But.
-				layouts[LAYOUT] = ns:Merge({}, barDefaults[id].savedPosition[MFM:GetDefaultLayout()])
-			end
-			bar.config = layouts[LAYOUT]
-			bar:Update()
-			bar:UpdateAnchor()
-			GUI:Refresh()
-		end
-
-	elseif (event == "MFM_LayoutDeleted") then
-		local LAYOUT = ...
-		for id,bar in next,self.bars do
-			self.db.profile.bars[id].savedPosition[LAYOUT] = nil
-		end
-
-	elseif (event == "MFM_LayoutReset") then
-		local LAYOUT = ...
-
-		for id,bar in next,self.bars do
-			local db = self.db.profile.bars[id].savedPosition[LAYOUT]
-			for i,v in pairs(barDefaults[id].savedPosition[MFM:GetDefaultLayout()]) do
-				db[i] = v
-			end
-			if (MFM:GetLayout() == LAYOUT) then
-				if (not InCombatLockdown()) then
-					bar:UpdatePosition()
-				end
-			end
-		end
-
-		if (MFM:GetLayout() == LAYOUT) then
-			if (InCombatLockdown()) then
-				self.needupdate = true
-				return
-			end
-		end
-
-		GUI:Refresh()
+	elseif (event == "PLAYER_REGEN_DISABLED") then
+		self.incombat = true
 
 	elseif (event == "MFM_PositionUpdated") then
-		local LAYOUT, anchor, point, x, y = ...
-		local bar = self.anchorLookup[anchor]
+		local anchor, point, x, y = ...
 
+		local bar = self.lookup.bar[anchor]
 		if (not bar) then return end
 
-		bar.config[1], bar.config[2], bar.config[3] = point, x, y
+		--print(event, point, x, y)
+		bar.config.savedPosition[1] = point
+		bar.config.savedPosition[2] = x
+		bar.config.savedPosition[3] = y
 
-		if (InCombatLockdown()) then
-			self.needupdate = true
-			return
-		end
-
-		bar:UpdatePosition()
-
-		GUI:Refresh()
-
-	elseif (event == "MFM_AnchorShown") then
-		local LAYOUT, anchor, point, x, y = ...
-		local bar = self.anchorLookup[anchor]
-
-		if (not bar) then return end
+		self:UpdatePositionAndScales()
 
 	elseif (event == "MFM_ScaleUpdated") then
-		local LAYOUT, anchor, scale = ...
-		local bar = self.anchorLookup[anchor]
+		local anchor, scale = ...
 
+		local bar = self.lookup.bar[anchor]
 		if (not bar) then return end
 
-		bar.config.scale = scale
-
-		if (InCombatLockdown()) then
-			self.needupdate = true
-			return
-		end
-
-		bar:UpdatePosition()
-
-		GUI:Refresh()
+		bar.savedPosition.scale = scale
+		self:UpdatePositionAndScales()
 
 	elseif (event == "MFM_Dragging") then
-		local LAYOUT, anchor, point, x, y = ...
-		local bar = self.anchorLookup[anchor]
+		if (not self.incombat) then
 
-		if (not bar) then return end
+			local anchor = ...
+			local bar = self.lookup.bar[anchor]
+			if (not bar) then return end
 
-		bar.config[1], bar.config[2], bar.config[3] = point, x, y
-
-		if (InCombatLockdown()) then
-			self.needupdate = true
-			return
+			self:OnAnchorEvent("MFM_PositionUpdated", ...)
 		end
+	end
+end
 
-		bar:UpdatePosition()
+ActionBarMod.OnButtonEvent = function(self, event, ...)
 
-	elseif (event == "OnButtonUpdate") then
+	if (event == "OnButtonUpdate") then
 		local button = ...
 		if (self.buttons[button]) then
 			button.cooldown:ClearAllPoints()
@@ -948,158 +1055,76 @@ ActionBarMod.OnEvent = function(self, event, ...)
 			end
 		end
 	end
+
 end
 
-ActionBarMod.CreateBars = function(self)
+ActionBarMod.OnMaxDPSEvent = function(self, event, ...)
 
-	-- Retrieve name of the current layout.
-	local LAYOUT = MFM:GetLayout()
-
-	-- Spawn all bars
-	for i = 1,#BAR_TO_ID do
-
-		local config = self.db.profile.bars[i].savedPosition[LAYOUT]
-		local bar = ns.ActionBar:Create(BAR_TO_ID[i], config, ns.Prefix.."ActionBar"..i)
-
-		bar.defaults = self.db.defaults.profile.bars[i].savedPosition[MFM:GetDefaultLayout()]
-
-		for id,button in next,bar.buttons do
-			style(button)
-			self.buttons[button] = true
-		end
-
-		if (i == 1) then
-
-			-- Pet Battle Keybind Fixer
-			-------------------------------------------------------
-			local buttons = bar.buttons
-			local controller = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-			controller:SetAttribute("_onstate-petbattle", string_format([[
-				if (newstate == "petbattle") then
-					b = b or table.new();
-					b[1], b[2], b[3], b[4], b[5], b[6] = "%s", "%s", "%s", "%s", "%s", "%s";
-					for i = 1,6 do
-						local button, vbutton = "CLICK "..b[i]..":LeftButton", "ACTIONBUTTON"..i
-						for k=1,select("#", GetBindingKey(button)) do
-							local key = select(k, GetBindingKey(button))
-							self:SetBinding(true, key, vbutton)
-						end
-						-- do the same for the default UIs bindings
-						for k=1,select("#", GetBindingKey(vbutton)) do
-							local key = select(k, GetBindingKey(vbutton))
-							self:SetBinding(true, key, vbutton)
-						end
-					end
-				else
-					self:ClearBindings()
+	if (event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UPDATE_SHAPESHIFT_FORM") then
+		for button in next, LAB.activeButtons do
+			if (self.buttons[button]) then
+				if (button.maxDpsGlowShown) then
+					button.maxDpsGlowColor = nil
+					button.maxDpsGlowShown = nil
+					UpdateMaxDps(button)
 				end
-			]], buttons[1]:GetName(), buttons[2]:GetName(), buttons[3]:GetName(), buttons[4]:GetName(), buttons[5]:GetName(), buttons[6]:GetName()))
-
-			self.petBattleController = controller
-
+			end
 		end
-
-		local anchor = MFM:RequestAnchor()
-		anchor:SetTitle(self:GenerateBarDisplayName(i))
-		anchor:SetScalable(true)
-		anchor:SetMinMaxScale(.25, 2.5, .05)
-		anchor:SetSize(bar:GetSize())
-		anchor:SetPoint(unpack(defaults.profile.bars[i].savedPosition[MFM:GetDefaultLayout()]))
-		anchor:SetScale(defaults.profile.bars[i].savedPosition[MFM:GetDefaultLayout()].scale)
-		anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-		anchor.PreUpdate = function(self) bar:UpdateAnchor() end
-		anchor.UpdateDefaults = function() bar:UpdateDefaults() end
-
-		local r, g, b = unpack(Colors.anchor.actionbars)
-		anchor.Overlay:SetBackdropColor(r, g, b, .75)
-		anchor.Overlay:SetBackdropBorderColor(r, g, b, 1)
-
-		bar.anchor = anchor
-		bar:Update()
-
-		self.bars[i] = bar
-		self.anchorLookup[anchor] = bar
-	end
-
-	if (ns.IsRetail) then
-		if (MaxDps) then
-			self:HandleMaxDps()
-		elseif (IsAddOnEnabled("MaxDps")) then
-			self:RegisterEvent("ADDON_LOADED", "OnEvent")
-		end
-	end
-
-end
-
-ActionBarMod.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("ActionBars", defaults)
-
-	self.bars = {}
-	self.anchorLookup = {}
-	self.buttons = {}
-
-	self:SetEnabledState(self.db.profile.enabled)
-	if (not self.db.profile.enabled) then return end
-
-	-- Register the available layout names
-	-- with the movable frames manager.
-	for i = 1,#BAR_TO_ID do
-		MFM:RegisterPresets(self.db.profile.bars[i].savedPosition)
 	end
 
 end
 
 ActionBarMod.OnEnable = function(self)
-	--self:CreateBars()
-	self:UpdateSettings()
-	self:UpdateBindings()
+	self:CreateBars()
+	self:CreateAnchors()
+	self:RefreshConfig()
+
+	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
+	self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
+	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-	self:RegisterEvent("UPDATE_BINDINGS", "UpdateBindings")
+
+	self:RegisterEvent("UPDATE_BINDINGS", "OnButtonEvent")
 
 	if (not IsAddOnEnabled("MaxDps")) then
-		self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW", "OnEvent")
-		self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE", "OnEvent")
+		self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW", "OnButtonEvent")
+		self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE", "OnButtonEvent")
 	end
 
-	ns.RegisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
-	ns.RegisterCallback(self, "MFM_LayoutReset", "OnEvent")
-	ns.RegisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_PositionUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_AnchorShown", "OnEvent")
-	ns.RegisterCallback(self, "MFM_ScaleUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_Dragging", "OnEvent")
+	LAB.RegisterCallback(self, "OnButtonUpdate", "OnButtonEvent")
+	LAB.RegisterCallback(self, "OnButtonUsable", "OnButtonEvent")
 
-	LAB.RegisterCallback(self, "OnButtonUpdate", "OnEvent")
-	LAB.RegisterCallback(self, "OnButtonUsable", "OnEvent")
 
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnAnchorEvent")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnAnchorEvent")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnAnchorEvent")
+
+	ns.RegisterCallback(self, "MFM_PositionUpdated", "OnAnchorEvent")
+	ns.RegisterCallback(self, "MFM_AnchorShown", "OnAnchorEvent")
+	ns.RegisterCallback(self, "MFM_ScaleUpdated", "OnAnchorEvent")
+	ns.RegisterCallback(self, "MFM_Dragging", "OnAnchorEvent")
 end
 
-ActionBarMod.OnDisable = function(self)
-	for i,bar in next,self.bars do
-		bar:Disable()
+ActionBarMod.OnInitialize = function(self)
+	self.db = ns.db:RegisterNamespace(self:GetName(), self:GetDefaults())
+	self:SetEnabledState(self.db.profile.enabled)
+
+	if (not self.db.profile.enabled) then return end
+
+	self.bars = {}
+	self.buttons = {}
+	self.lookup = { bar = {}, anchor = {} }
+
+	if (ns.IsRetail) then
+		if (IsAddOnEnabled("MaxDps")) then
+			if (IsAddOnLoaded("MaxDps")) then
+				self:CreateMaxDpsOverlays()
+			else
+				self:RegisterEvent("ADDON_LOADED", "CreateMaxDpsOverlays")
+			end
+		end
 	end
-
-	self:UnregisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
-	self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-	self:UnregisterEvent("UPDATE_BINDINGS", "UpdateBindings")
-
-	if (not IsAddOnEnabled("MaxDps")) then
-		self:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW", "OnEvent")
-		self:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE", "OnEvent")
-	end
-
-	ns.UnregisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
-	ns.UnregisterCallback(self, "MFM_LayoutReset", "OnEvent")
-	ns.UnregisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
-	ns.UnregisterCallback(self, "MFM_PositionUpdated", "OnEvent")
-	ns.UnregisterCallback(self, "MFM_AnchorShown", "OnEvent")
-	ns.UnregisterCallback(self, "MFM_ScaleUpdated", "OnEvent")
-	ns.UnregisterCallback(self, "MFM_Dragging", "OnEvent")
-
-	LAB.UnregisterCallback(self, "OnButtonUpdate")
-	LAB.UnregisterCallback(self, "OnButtonUsable")
 
 end

@@ -24,32 +24,19 @@
 
 --]]
 local Addon, ns = ...
-local ErrorsFrame = ns:NewModule("ErrorsFrame", "LibMoreEvents-1.0", "AceHook-3.0")
-local MFM = ns:GetModule("MovableFramesManager")
+
+local ErrorsFrame = ns:NewModule("ErrorsFrame", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Lua API
 local pairs, unpack = pairs, unpack
+
+-- GLOBALS: UIErrorsFrame, UIParent
+-- GLOBALS: GetCVarBool, GetGameMessageInfo, PlaySound, PlayVocalErrorSoundID
 
 -- Addon API
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
-
-local profileDefaults = function()
-	return {
-		scale = ns.API.GetEffectiveScale(),
-		[1] = "TOP",
-		[2] = 0 * ns.API.GetEffectiveScale(),
-		[3] = -600 * ns.API.GetEffectiveScale()
-	}
-end
-
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
-	}
-}, ns.moduleDefaults) }
 
 local blackList = {
 	msgTypes = {
@@ -105,61 +92,50 @@ local blackList = {
 	[ SPELL_FAILED_UNIT_NOT_BEHIND ] = true, 				-- Target needs to be behind you.
 }
 
-ErrorsFrame.InitializeErrorsFrame = function(self)
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+
+ErrorsFrame.GenerateDefaults = function(self)
+	defaults.profile.savedPosition = {
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "TOP",
+		[2] = 0,
+		[3] = -600 * ns.API.GetEffectiveScale()
+	}
+	return defaults
+end
+
+ErrorsFrame.PrepareFrames = function(self)
 
 	self.frame = UIErrorsFrame
 
-	UIErrorsFrame:UnregisterAllEvents()
-	UIErrorsFrame:SetFrameStrata("HIGH")
-	UIErrorsFrame:SetHeight(22)
-	UIErrorsFrame:SetAlpha(.75)
-	UIErrorsFrame:SetFontObject(GetFont(18, true))
-	UIErrorsFrame:SetShadowColor(0, 0, 0, .5)
+	self.frame:UnregisterAllEvents()
+	self.frame:SetFrameStrata("HIGH")
+	self.frame:SetHeight(22)
+	self.frame:SetAlpha(.75)
+	self.frame:SetFontObject(GetFont(18, true))
+	self.frame:SetShadowColor(0, 0, 0, .5)
 
 	self:RegisterEvent("SYSMSG", "OnEvent")
 	self:RegisterEvent("UI_ERROR_MESSAGE", "OnEvent")
 	self:RegisterEvent("UI_INFO_MESSAGE", "OnEvent")
 
 	-- Macros can toggle this, so we need to hook into it.
-	self:SecureHook(UIErrorsFrame, "RegisterEvent", "OnRegisterEvent")
-	self:SecureHook(UIErrorsFrame, "UnregisterEvent", "OnUnregisterEvent")
+	self:SecureHook(self.frame, "RegisterEvent", "OnRegisterEvent")
+	self:SecureHook(self.frame, "UnregisterEvent", "OnUnregisterEvent")
 
-end
-
-ErrorsFrame.InitializeMovableFrameAnchor = function(self)
-
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(SYSTEM_MESSAGES)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.25, 2.5, .05)
-	anchor:SetSize(760, 22)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-
-	self.anchor = anchor
-end
-
-ErrorsFrame.UpdatePositionAndScale = function(self)
-	if (not self.frame) then return end
-
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
-
-	self.frame:SetScale(config.scale)
-	self.frame:ClearAllPoints()
-	self.frame:SetPoint(config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
 end
 
 ErrorsFrame.UpdateAnchor = function(self)
-	local config = self.db.profile.savedPosition[MFM:GetLayout()]
+	local config = self.db.profile.savedPosition
+
+	self.anchor:SetSize(760, 22)
 	self.anchor:SetScale(config.scale)
 	self.anchor:ClearAllPoints()
 	self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
 end
 
 ErrorsFrame.OnRegisterEvent = function(self, event, ...)
-	UIErrorsFrame:UnregisterEvent(event)
+	self.frame:UnregisterEvent(event)
 	self:RegisterEvent(event, "OnEvent", ...)
 end
 
@@ -169,21 +145,25 @@ end
 
 ErrorsFrame.OnEvent = function(self, event, ...)
 	if (event == "SYSMSG") then
+
 		local msg, r, g, b = ...
 		if (not msg or blackList[msg]) then return end
-		UIErrorsFrame:CheckAddMessage(msg, r, g, b, 1)
+		self.frame:CheckAddMessage(msg, r, g, b, 1)
 
 	elseif (event == "UI_ERROR_MESSAGE") then
+
 		local messageType, msg = ...
 		if (not msg or blackList.msgTypes[messageType] or blackList[msg]) then return end
-		if (UIErrorsFrame.TryDisplayMessage) then
-			UIErrorsFrame:TryDisplayMessage(messageType, msg, 1, 0, 0, 1)
+
+		if (self.frame.TryDisplayMessage) then
+			self.frame:TryDisplayMessage(messageType, msg, 1, 0, 0, 1)
 		else
-			UIErrorsFrame:AddMessage(msg, 1, 0, 0, 1)
+			self.frame:AddMessage(msg, 1, 0, 0, 1)
 		end
 		-- Play an error sound if the appropriate cvars allows it.
 		-- Blizzard plays these sound too, but they don't slave it to the error speech setting. We do.
 		if (GetCVarBool("Sound_EnableDialog") and GetCVarBool("Sound_EnableErrorSpeech")) then
+
 			local errorStringId, soundKitID, voiceID = GetGameMessageInfo(messageType)
 			if (voiceID) then
 				-- No idea what channel this ends up in.
@@ -196,107 +176,21 @@ ErrorsFrame.OnEvent = function(self, event, ...)
 		end
 
 	elseif (event == "UI_INFO_MESSAGE") then
+
 		local messageType, msg = ...
 		if (not msg or blackList.msgTypes[messageType] or blackList[msg]) then return end
-		if (UIErrorsFrame.TryDisplayMessage) then
-			UIErrorsFrame:TryDisplayMessage(messageType, msg, 1, .82, 0, 1)
+
+		if (self.frame.TryDisplayMessage) then
+			self.frame:TryDisplayMessage(messageType, msg, 1, .82, 0, 1)
 		else
-			UIErrorsFrame:AddMessage(msg, 1, .82, 0, 1)
-		end
-
-	elseif (event == "PLAYER_ENTERING_WORLD") then
-		self.incombat = nil
-		self:UpdatePositionAndScale()
-
-	elseif (event == "PLAYER_REGEN_ENABLED") then
-		if (InCombatLockdown()) then return end
-		self.incombat = nil
-
-	elseif (event == "PLAYER_REGEN_DISABLED") then
-		self.incombat = true
-
-	elseif (event == "MFM_LayoutsUpdated") then
-		local LAYOUT = ...
-
-		if (not self.db.profile.savedPosition[LAYOUT]) then
-			self.db.profile.savedPosition[LAYOUT] = profileDefaults()
-		end
-
-		self:UpdatePositionAndScale()
-		self:UpdateAnchor()
-
-	elseif (event == "MFM_LayoutDeleted") then
-		local LAYOUT = ...
-
-		self.db.profile.savedPosition[LAYOUT] = nil
-
-	elseif (event == "MFM_LayoutReset") then
-		local LAYOUT = ...
-
-		local db = self.db.profile.savedPosition[LAYOUT]
-		for i,v in pairs(profileDefaults()) do
-			db[i] = v
-		end
-
-		self:UpdatePositionAndScale()
-		self:UpdateAnchor()
-
-	elseif (event == "MFM_PositionUpdated") then
-		local LAYOUT, anchor, point, x, y = ...
-
-		if (anchor ~= self.anchor) then return end
-
-		self.db.profile.savedPosition[LAYOUT][1] = point
-		self.db.profile.savedPosition[LAYOUT][2] = x
-		self.db.profile.savedPosition[LAYOUT][3] = y
-
-		self:UpdatePositionAndScale()
-
-	elseif (event == "MFM_AnchorShown") then
-		local LAYOUT, anchor, point, x, y = ...
-
-		if (anchor ~= self.anchor) then return end
-
-	elseif (event == "MFM_ScaleUpdated") then
-		local LAYOUT, anchor, scale = ...
-
-		if (anchor ~= self.anchor) then return end
-
-		self.db.profile.savedPosition[LAYOUT].scale = scale
-		self:UpdatePositionAndScale()
-
-	elseif (event == "MFM_Dragging") then
-		if (not self.incombat) then
-			if (select(2, ...) ~= self.anchor) then return end
-
-			self:OnEvent("MFM_PositionUpdated", ...)
+			self.frame:AddMessage(msg, 1, .82, 0, 1)
 		end
 	end
 end
 
-ErrorsFrame.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("ErrorsFrame", defaults)
-
-	self:SetEnabledState(self.db.profile.enabled)
-
-	-- Register the available layout names
-	-- with the movable frames manager.
-	MFM:RegisterPresets(self.db.profile.savedPosition)
-
-	self:InitializeErrorsFrame()
-	self:InitializeMovableFrameAnchor()
-end
-
 ErrorsFrame.OnEnable = function(self)
+	self:PrepareFrames()
+	self:CreateAnchor(SYSTEM_MESSAGES)
 
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	self:RegisterEvent("UPDATE_INVENTORY_ALERTS", "OnEvent")
-
-	ns.RegisterCallback(self, "MFM_LayoutDeleted", "OnEvent")
-	ns.RegisterCallback(self, "MFM_LayoutReset", "OnEvent")
-	ns.RegisterCallback(self, "MFM_LayoutsUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_PositionUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_AnchorShown", "OnEvent")
-	ns.RegisterCallback(self, "MFM_ScaleUpdated", "OnEvent")
-	ns.RegisterCallback(self, "MFM_Dragging", "OnEvent")
+	ns.Module.OnEnable(self)
 end

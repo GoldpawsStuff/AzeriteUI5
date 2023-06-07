@@ -26,8 +26,7 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local CastBarMod = ns:Merge(ns:NewModule("PlayerCastBarFrame", "LibMoreEvents-1.0"), ns.UnitFrame.modulePrototype)
-local MFM = ns:GetModule("MovableFramesManager")
+local CastBarMod = ns:NewModule("PlayerCastBarFrame", ns.Module, "LibMoreEvents-1.0")
 
 -- Lua API
 local next = next
@@ -47,22 +46,17 @@ local playerClass = ns.PlayerClass
 local playerLevel = UnitLevel("player")
 local playerXPDisabled = IsXPUserDisabled()
 
-local profileDefaults = function()
-	return {
-		enabled = true,
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+
+CastBarMod.GenerateDefaults = function(self)
+	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),
 		[1] = "BOTTOM",
-		[2] = 0 * ns.API.GetEffectiveScale(),
+		[2] = 0,
 		[3] = (290 - 16/2) * ns.API.GetEffectiveScale()
 	}
+	return defaults
 end
-
-local defaults = { profile = ns:Merge({
-	enabled = true,
-	savedPosition = {
-		[MFM:GetDefaultLayout()] = profileDefaults()
-	}
-}, ns.UnitFrame.defaults) }
 
 local castBarSparkMap = {
 	top = {
@@ -243,10 +237,8 @@ local style = function(self, unit)
 
 end
 
-CastBarMod.Spawn = function(self)
+CastBarMod.CreateUnitFrames = function(self)
 
-	-- UnitFrame
-	---------------------------------------------------
 	local unit, name = "player", "PlayerCastBar"
 
 	oUF:RegisterStyle(ns.Prefix..name, style)
@@ -254,22 +246,6 @@ CastBarMod.Spawn = function(self)
 
 	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
 	self.frame:EnableMouse(false)
-
-	-- Movable Frame Anchor
-	---------------------------------------------------
-	local anchor = MFM:RequestAnchor()
-	anchor:SetTitle(HUD_EDIT_MODE_CAST_BAR_LABEL or SHOW_ARENA_ENEMY_CASTBAR_TEXT)
-	anchor:SetScalable(true)
-	anchor:SetMinMaxScale(.25, 2.5, .05)
-	anchor:SetSize(112 + 16, 11 + 16)
-	anchor:SetPoint(unpack(defaults.profile.savedPosition[MFM:GetDefaultLayout()]))
-	anchor:SetScale(defaults.profile.savedPosition[MFM:GetDefaultLayout()].scale)
-	anchor:SetDefaultScale(ns.API.GetEffectiveScale)
-	anchor:SetEditModeAccountSetting(ns.IsRetail and Enum.EditModeAccountSetting.ShowCastBar)
-	anchor.PreUpdate = function() self:UpdateAnchor() end
-	anchor.UpdateDefaults = function() self:UpdateDefaults() end
-
-	self.anchor = anchor
 end
 
 CastBarMod.UpdateVisibility = function(self, event, ...)
@@ -288,19 +264,7 @@ CastBarMod.UpdateVisibility = function(self, event, ...)
 	end
 end
 
-CastBarMod.OnInitialize = function(self)
-	if (IsAddOnEnabled("Quartz")) then
-		return self:Disable()
-	end
-
-	self.db = ns.db:RegisterNamespace("PlayerCastBarFrame", defaults)
-	self.profileDefaults = profileDefaults
-
-	self:SetEnabledState(self.db.profile.enabled)
-
-	-- Register the available layout names
-	-- with the movable frames manager.
-	MFM:RegisterPresets(self.db.profile.savedPosition)
+CastBarMod.OnEnable = function(self)
 
 	if (ns.IsRetail) then
 
@@ -318,7 +282,17 @@ CastBarMod.OnInitialize = function(self)
 		PetCastingBarFrame:Hide()
 	end
 
+	self:CreateUnitFrames()
+	self:CreateAnchor(HUD_EDIT_MODE_CAST_BAR_LABEL or SHOW_ARENA_ENEMY_CASTBAR_TEXT)
+
 	self:RegisterEvent("CVAR_UPDATE", "UpdateVisibility")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateVisibility")
 
+	ns.Module.OnEnable(self)
+end
+
+CastBarMod.OnInitialize = function(self)
+	if (IsAddOnEnabled("Quartz")) then return self:Disable() end
+
+	ns.Module.OnInitialize(self)
 end

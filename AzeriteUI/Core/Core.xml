@@ -35,6 +35,7 @@
 	<Script file="Core.lua"/>
 	<Script file="EditModePresets.lua"/>
 	<Script file="MovableFrames.lua"/>
+	<Script file="MovableFrameModule.lua"/>
 	<Script file="Tutorials.lua"/>
 	<Script file="FixBlizzardBugs.lua"/>
 	<Script file="FixFlavorDifferences.lua"/>
