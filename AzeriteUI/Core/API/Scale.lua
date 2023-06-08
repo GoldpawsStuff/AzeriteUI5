@@ -27,41 +27,17 @@ local Addon, ns = ...
 local API = ns.API or {}
 ns.API = API
 
--- Lua API
-local next = next
-local tonumber = tonumber
-
 -- GLOBALS: UIParent
-
--- Cache
-local Scaled = {}
-local ScaledToUIParent = {}
 
 -- Global API
 ---------------------------------------------------------
 -- Get the scale to set when ignoring parent scale
 API.GetScale = function()
-	return ns.UIScale
-end
-
--- Return the default scale to set when ignoring parent scale
-API.GetDefaultScale = function()
-	return ns.UIDefaultScale
-end
-
--- Returns the ideal scale for blizzard elements.
-API.GetDefaultBlizzardScale = function(self)
-	return ns.UIDefaultBlizzardScale
-end
-
--- Returns the scale we should set our own elements to
--- for them to have a correct scale relative to the blizzard elements.
-API.GetDefaultElementScale = function(self)
-	return ns.API.GetDefaultScale()/ns.API.GetDefaultBlizzardScale()
+	return 768/1080
 end
 
 -- Get the scale to use on custom elements when slaved to UIParent
 -- in order for them to match the scale of custom elements ignoring the parent scale.
 API.GetEffectiveScale = function()
-	return API.GetScale() * 1/UIParent:GetScale()
+	return (768/1080) / UIParent:GetScale()
 end

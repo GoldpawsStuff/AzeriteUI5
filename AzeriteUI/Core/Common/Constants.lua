@@ -82,9 +82,3 @@ local _,playerClass = UnitClass("player")
 ns.Private.PlayerClass = playerClass
 ns.Private.PlayerRealm = GetRealmName()
 ns.Private.PlayerName = UnitNameUnmodified("player")
-
--- Scaling Constants
-------------------------------------------------------
-ns.UIScale = 768/1080
-ns.Private.UIDefaultScale = 768/1080
-ns.Private.UIDefaultBlizzardScale = 768/1080

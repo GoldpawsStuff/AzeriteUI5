@@ -366,7 +366,7 @@ end
 --			widget:GetParent():Hide()
 --
 --			-- change the game's interface scale
---			SetCVar("uiScale", ns.API.GetDefaultBlizzardScale())
+--			SetCVar("uiScale", ns.API.GetScale())
 --
 --			-- setup chat frames
 --			ChatFrame1:SetUserPlaced(true)
