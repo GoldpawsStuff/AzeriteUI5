@@ -526,6 +526,8 @@ Tooltips.SetHooks = function(self)
 end
 
 Tooltips.UpdateAnchor = function(self)
+	if (ns.WoW10) then return end
+
 	local config = self.db.profile.savedPosition
 
 	self.anchor:SetSize(250, 120)

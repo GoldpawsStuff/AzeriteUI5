@@ -35,14 +35,12 @@ local pairs, unpack = pairs, unpack
 local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
 
 ArcheologyBar.GenerateDefaults = function(self)
-	if (not ns.WoW10) then
-		defaults.profile.savedPosition = {
-			scale = ns.API.GetEffectiveScale(),
-			[1] = "BOTTOM",
-			[2] = 0,
-			[3] = 390 * ns.API.GetEffectiveScale()
-		}
-	end
+	defaults.profile.savedPosition = {
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "BOTTOM",
+		[2] = 0,
+		[3] = 390 * ns.API.GetEffectiveScale()
+	}
 	return defaults
 end
 

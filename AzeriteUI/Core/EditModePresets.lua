@@ -31,9 +31,7 @@ local LEMO = LibStub("LibEditModeOverride-1.0")
 
 local ipairs = ipairs
 
-local defaults = { profile = ns:Merge({
-	enabled = true,
-}, ns.Module.defaults) }
+local defaults = { profile = { enabled = true } }
 
 -- Mimicking the format used by Blizz in
 -- Interface\FrameXML\EditModePresetLayouts.lua
@@ -82,7 +80,7 @@ local azeriteSystems = {
 		settings = {
 			[Enum.EditModeMinimapSetting.HeaderUnderneath] = 0,
 			[Enum.EditModeMinimapSetting.RotateMinimap] = 1,
-			[Enum.EditModeMinimapSetting.Size] = 5
+			[Enum.EditModeMinimapSetting.Size] = 5 -- 100 ?
 		},
 		anchorInfo = {
 			point = "BOTTOMRIGHT",

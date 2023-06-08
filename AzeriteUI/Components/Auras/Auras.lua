@@ -56,14 +56,12 @@ local defaults = { profile = ns:Merge({
 }, ns.Module.defaults) }
 
 Auras.GenerateDefaults = function(self)
-	if (not ns.WoW10) then
-		defaults.profile.savedPosition = {
-			scale = ns.API.GetEffectiveScale(),
-			[1] = "TOPRIGHT",
-			[2] = -40 * ns.API.GetEffectiveScale(),
-			[3] = -40 * ns.API.GetEffectiveScale()
-		}
-	end
+	defaults.profile.savedPosition = {
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "TOPRIGHT",
+		[2] = -40 * ns.API.GetEffectiveScale(),
+		[3] = -40 * ns.API.GetEffectiveScale()
+	}
 	return defaults
 end
 

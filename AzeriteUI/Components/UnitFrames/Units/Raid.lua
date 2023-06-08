@@ -29,7 +29,7 @@ local oUF = ns.oUF
 LoadAddOn("Blizzard_CUFProfiles")
 LoadAddOn("Blizzard_CompactRaidFrames")
 
-local RaidFrameMod = ns:NewModule("RaidFrames", ns.UnitFrameModule, "LibMoreEvents-1.0")
+local RaidFrameMod = ns:NewModule("RaidFrames", ns.UnitFrameModule, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Lua API
 local string_gsub = string.gsub

@@ -15,7 +15,7 @@
 	<Script file="Tracker.lua"/>
 	<Script file="TrackerVanilla.lua"/>
 	<Script file="TrackerWrath.lua"/>
-	<!--<Script file="Tutorials.lua"/>-->
+	<Script file="Tutorials.lua"/>
 	<Script file="UIWidgets.lua"/>
 	<Script file="VehicleSeat.lua"/>
 

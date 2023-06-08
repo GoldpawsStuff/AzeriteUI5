@@ -186,11 +186,11 @@ Tutorials.ShowEditModeTutorial = function(self)
 		accept:SetScript("OnClick", function(widget)
 
 			-- Apply default layout preset
-			local layoutName = "Azerite"
-			if (layoutName and not MFM.layouts[layoutName]) then
-				MFM:RegisterPreset(layoutName)
-				MFM:ApplyPreset(layoutName)
-			end
+			--local layoutName = "Azerite"
+			--if (layoutName and not MFM.layouts[layoutName]) then
+			--	MFM:RegisterPreset(layoutName)
+			--	MFM:ApplyPreset(layoutName)
+			--end
 
 			-- create or reset editmode preset
 			if (EMP:DoesDefaultLayoutExist()) then
