@@ -888,10 +888,12 @@ ActionBarMod.UpdateEnabled = function(self)
 	for id,bar in next,self.bars do
 		local config = bar.config
 		if (config.enabled and not bar:IsEnabled()) or (not config.enabled and bar:IsEnabled()) then
+
 			if (InCombatLockdown()) then
 				self.needupdate = true
 				return
 			end
+
 			if (config.enabled) then
 				bar:Enable()
 			else
