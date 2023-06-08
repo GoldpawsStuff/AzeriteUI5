@@ -312,6 +312,11 @@ Methods[prefix("*:Offline")] = function(unit)
 	return not UnitIsConnected(unit) and L_OFFLINE
 end
 
+Events[prefix("*:DeadOrOffline")] = "UNIT_CONNECTION UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION"
+Methods[prefix("*:DeadOrOffline")] = function(unit)
+	return not UnitIsConnected(unit) and L_OFFLINE or UnitIsDeadOrGhost(unit) and L_DEAD
+end
+
 Events[prefix("*:Level")] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_CHANGED"
 if (oUF.isClassic or oUF.isTBC or oUF.isWrath) then
 	Methods[prefix("*:Level")] = function(unit, asPrefix)
