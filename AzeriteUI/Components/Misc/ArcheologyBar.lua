@@ -25,7 +25,7 @@
 --]]
 local Addon, ns = ...
 
-if (ns.IsClassic) then return end
+if (ns.IsClassic or ns.IsWrath) then return end
 
 local ArcheologyBar = ns:NewModule("ArcheologyBar", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
 
