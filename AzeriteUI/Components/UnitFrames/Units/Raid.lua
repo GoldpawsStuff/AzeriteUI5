@@ -46,9 +46,22 @@ local playerClass = ns.PlayerClass
 
 local defaults = { profile = ns:Merge({
 
+	point = "LEFT", -- anchor point of unitframe, group members within column grow opposite
+	xOffset = 10, -- horizontal offset within the same column
+	yOffset = 0, -- vertical offset within the same column
+
+	groupBy = "ROLE", -- GROUP, CLASS, ROLE
+	groupingOrder = "TANK,HEALER,DAMAGER", -- must match choice in groupBy
+
+	unitsPerColumn = 5, -- maximum units per column
+	maxColumns = 8, -- should be 40/unitsPerColumn
+	columnSpacing = -12, -- spacing between columns
+	columnAnchorPoint = "TOP" -- anchor point of column, columns grow opposite
+
+	--[[
 	point = "TOP", -- anchor point of unitframe, group members within column grow opposite
 	xOffset = 0, -- horizontal offset within the same column
-	yOffset = 0, -- vertical offset within the same column
+	yOffset = 16, -- vertical offset within the same column
 
 	groupBy = "ROLE", -- GROUP, CLASS, ROLE
 	groupingOrder = "TANK,HEALER,DAMAGER,NONE", -- must match choice in groupBy
@@ -57,7 +70,7 @@ local defaults = { profile = ns:Merge({
 	maxColumns = 8, -- should be 40/unitsPerColumn
 	columnSpacing = 0, -- spacing between columns
 	columnAnchorPoint = "LEFT" -- anchor point of column, columns grow opposite
-
+	]]
 }, ns.Module.defaults) }
 
 RaidFrameMod.GenerateDefaults = function(self)
@@ -744,13 +757,11 @@ RaidFrameMod.GetHeaderAttributes = function(self)
 		self:SetWidth(header:GetAttribute("initial-width"));
 		self:SetHeight(header:GetAttribute("initial-height"));
 		self:SetFrameLevel(self:GetFrameLevel() + 10);
-		self:SetAttribute('oUF-guessUnit', "player");
-		self:SetAttribute("unit", "player");
-		UnregisterUnitWatch(self);
-		RegisterUnitWatch(self);
 	]],
 	"initial-width", config.UnitSize[1],
 	"initial-height", config.UnitSize[2],
+
+	--'https://wowprogramming.com/docs/secure_template/Group_Headers.html
 
 	-- Visibility
 	"showRaid", true,
