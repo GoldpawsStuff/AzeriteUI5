@@ -21,6 +21,7 @@ L["Up"] = "Oben"
 
 -- Movable Frames & EditMode interaction
 --------------------------------------------------
+L["Movable Frames Manager"] = true
 L["Are you sure you want to delete the preset '%s'? This cannot be undone."] = true
 L["Create New Profile"] = true
 L["Create a new settings profile."] = true
