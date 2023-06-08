@@ -787,7 +787,7 @@ local style = function(self, unit, id)
 
 	self:SetPoint("CENTER",0,0)
 	self:SetSize(unpack(db.Size))
-	self:SetScale(ns.API.GetDefaultBlizzardScale())
+	self:SetScale(ns.API.GetScale())
 	self:SetFrameLevel(self:GetFrameLevel() + 2)
 
 	self:SetScript("OnHide", NamePlate_OnHide)

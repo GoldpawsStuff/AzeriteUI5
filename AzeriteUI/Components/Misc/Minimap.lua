@@ -1297,7 +1297,7 @@ MinimapMod.OnEnable = function(self)
 	self:CreateCustomElements()
 
 	if (not ns.WoW10) then
-		self:CreateAnchor(MINIMAP_LABEL):SetDefaultScale(function() return mapScale * ns.API.GetEffectiveScale() end)
+		self:CreateAnchor(MINIMAP_LABEL):SetDefaultScale(mapScale * ns.API.GetEffectiveScale())
 	end
 
 	ns.Module.OnEnable(self)

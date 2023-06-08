@@ -638,15 +638,12 @@ ActionBarMod.CreateAnchors = function(self)
 		anchor:SetSize(2,2)
 		anchor:SetPoint(config.savedPosition[1], config.savedPosition[2], config.savedPosition[3])
 		anchor:SetScale(config.savedPosition.scale)
-		anchor:SetDefaultScale(function() return ns.API.GetEffectiveScale() end)
 		anchor:SetTitle(self:GenerateBarDisplayName(i))
+
+		anchor:SetDefaultScale(ns.API.GetEffectiveScale())
 
 		anchor.PreUpdate = function()
 			self:UpdateAnchors()
-		end
-
-		anchor.UpdateDefaults = function()
-			self:UpdateDefaults()
 		end
 
 		local r, g, b = unpack(Colors.anchor.actionbars)
@@ -846,6 +843,7 @@ ActionBarMod.UpdateBindings = function(self)
 end
 
 ActionBarMod.UpdateDefaults = function(self)
+
 	local defaults = self:GetDefaults()
 
 	for i,bar in ipairs(self.bars) do
@@ -861,11 +859,6 @@ ActionBarMod.UpdateDefaults = function(self)
 	end
 
 	self:SetDefaults(defaults)
-
-	-- We need to update links on config change!
-	for i,bar in ipairs(self.bars) do
-		bar.config = self.db.profile.bars[i]
-	end
 end
 
 ActionBarMod.UpdatePositionAndScales = function(self)
@@ -880,17 +873,8 @@ ActionBarMod.UpdatePositionAndScales = function(self)
 
 	for i,bar in ipairs(self.bars) do
 
-		local config = self.db.profile.bars[i].savedPosition --bar.config.savedPosition
+		local config = bar.config.savedPosition
 		if (config) then
-
-			if (type(config) ~= "table") then
-				print(bar:GetName(), "has no config table?")
-			end
-
-			if (not config[1] or not config[2] or not config[3] or not config.scale) then
-				print(bar:GetName(), "has a faulty config table?")
-				--print(config[1], config[2], config[3], config.scale)
-			end
 
 			bar:SetScale(config.scale)
 			bar:ClearAllPoints()
@@ -976,7 +960,8 @@ ActionBarMod.OnAnchorEvent = function(self, event, ...)
 		local bar = self.lookup.bar[anchor]
 		if (not bar) then return end
 
-		bar.savedPosition.scale = scale
+		bar.config.savedPosition.scale = scale
+
 		self:UpdatePositionAndScales()
 
 	elseif (event == "MFM_Dragging") then
@@ -988,6 +973,9 @@ ActionBarMod.OnAnchorEvent = function(self, event, ...)
 
 			self:OnAnchorEvent("MFM_PositionUpdated", ...)
 		end
+
+	elseif (event == "MFM_UIScaleChanged") then
+		self:UpdateDefaults()
 	end
 end
 
@@ -1105,6 +1093,8 @@ ActionBarMod.OnEnable = function(self)
 	ns.RegisterCallback(self, "MFM_AnchorShown", "OnAnchorEvent")
 	ns.RegisterCallback(self, "MFM_ScaleUpdated", "OnAnchorEvent")
 	ns.RegisterCallback(self, "MFM_Dragging", "OnAnchorEvent")
+	ns.RegisterCallback(self, "MFM_UIScaleChanged", "OnAnchorEvent")
+
 end
 
 ActionBarMod.OnInitialize = function(self)

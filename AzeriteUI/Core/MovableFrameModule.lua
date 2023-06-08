@@ -62,19 +62,13 @@ Module.CreateAnchor = function(self, label, watchVariables)
 	if (defaults.profile.savedPosition) then
 		anchor:SetPoint(unpack(defaults.profile.savedPosition))
 		anchor:SetScale(defaults.profile.savedPosition.scale)
-		anchor:SetDefaultScale(function() return ns.API.GetEffectiveScale() end)
+		anchor:SetDefaultScale(ns.API.GetEffectiveScale())
 		anchor:SetTitle(label)
 	end
 
 	anchor.PreUpdate = function()
 		if (self.UpdateAnchor) then
 			self:UpdateAnchor()
-		end
-	end
-
-	anchor.UpdateDefaults = function()
-		if (self.UpdateDefaults) then
-			self:UpdateDefaults()
 		end
 	end
 
@@ -92,6 +86,7 @@ Module.CreateAnchor = function(self, label, watchVariables)
 	ns.RegisterCallback(self, "MFM_AnchorShown", "OnAnchorEvent")
 	ns.RegisterCallback(self, "MFM_ScaleUpdated", "OnAnchorEvent")
 	ns.RegisterCallback(self, "MFM_Dragging", "OnAnchorEvent")
+	ns.RegisterCallback(self, "MFM_UIScaleChanged", "OnAnchorEvent")
 
 	return self.anchor
 end
@@ -105,17 +100,29 @@ Module.UpdateAnchor = function(self)
 
 	local config = self.db.profile.savedPosition
 	if (config) then
-		local point, x, y = unpack(config)
-
 		self.anchor:SetSize(self.frame:GetSize())
 		self.anchor:SetScale(config.scale)
 		self.anchor:ClearAllPoints()
-		self.anchor:SetPoint(point, UIParent, point, x, y)
+		self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
 	end
 
 	if (self.PostUpdateAnchor) then
 		self:PostUpdateAnchor()
 	end
+end
+
+Module.UpdateDefaults = function(self)
+	if (not self.frame) then return end
+	if (not self.anchor) then return end
+
+	local defaults = self:GetDefaults()
+
+	local config = defaults.profile.savedPosition
+
+	config.scale = self.anchor:GetDefaultScale()
+	config[1], config[2], config[3] = self.anchor:GetDefaultPosition()
+
+	self:SetDefaults(defaults)
 end
 
 Module.UpdatePositionAndScale = function(self)
@@ -134,11 +141,9 @@ Module.UpdatePositionAndScale = function(self)
 
 	local config = self.db.profile.savedPosition
 	if (config) then
-		local point, x, y = unpack(config)
-
 		self.frame:SetScale(config.scale)
 
-		clearSetPoint(self.frame, point, UIParent, point, x/config.scale, y/config.scale)
+		clearSetPoint(self.frame, config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
 	end
 
 	if (self.PostUpdatePositionAndScale) then
@@ -196,6 +201,9 @@ Module.OnAnchorEvent = function(self, event, ...)
 			if (... ~= self.anchor) then return end
 			self:OnAnchorEvent("MFM_PositionUpdated", ...)
 		end
+
+	elseif (event == "MFM_UIScaleChanged") then
+		self:UpdateDefaults()
 	end
 
 	if (self.PostAnchorEvent) then

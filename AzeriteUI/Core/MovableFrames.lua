@@ -82,6 +82,9 @@ local AnchorData = {}
 -- return the function result as the value,
 -- or just the pass the value otherwise.
 local get = function(...)
+	do
+		return ...
+	end
 	local numArgs = select("#", ...)
 	if (numArgs == "1") then
 		return type(...) == "function" and (...)() or ...
@@ -254,14 +257,12 @@ Anchor.Create = function(self)
 	anchor.Title = title
 
 	AnchorData[anchor] = {
-		hasMoved = false,
-		--anchor = anchor,
-		scale = ns.API.GetEffectiveScale(), -- we're doing this?
+		isScalable = true,
+		scale = ns.API.GetEffectiveScale(),
+		defaultScale = ns.API.GetEffectiveScale(),
 		minScale = .25,
 		maxScale = 2.5,
-		scaleStep = 0.025,
-		isScalable = true,
-		defaultScale = ns.API.GetEffectiveScale()
+		scaleStep = .1
 	}
 
 	return anchor
@@ -319,7 +320,7 @@ Anchor.ResetLastChange = function(self)
 	self:UpdatePosition(point, x, y)
 	self:UpdateText()
 
-	ns:Fire("MFM_PositionUpdated", self, point, x, y, anchorData.scale)
+	ns:Fire("MFM_PositionUpdated", self, point, x, y, get(anchorData.scale))
 end
 
 -- Reset to default position.
@@ -336,7 +337,7 @@ Anchor.ResetToDefault = function(self)
 	self:UpdatePosition(point, x, y)
 	self:UpdateText()
 
-	ns:Fire("MFM_PositionUpdated", self, point, x, y, anchorData.scale)
+	ns:Fire("MFM_PositionUpdated", self, point, x, y, get(anchorData.scale))
 end
 
 Anchor.UpdateText = function(self)
@@ -398,7 +399,7 @@ Anchor.UpdatePosition = function(self, point, x, y)
 	self:SetPointBase(point, UIParent, point, x, y)
 	self:UpdateText()
 
-	ns:Fire("MFM_PositionUpdated", self, point, x, y, anchorData.scale)
+	ns:Fire("MFM_PositionUpdated", self, point, x, y, get(anchorData.scale))
 end
 
 Anchor.UpdateScale = function(self, scale)
@@ -412,7 +413,7 @@ Anchor.UpdateScale = function(self, scale)
 		self:UpdateText()
 	end
 
-	ns:Fire("MFM_ScaleUpdated", self, scale)
+	ns:Fire("MFM_ScaleUpdated", self, get(anchorData.scale))
 end
 
 -- Anchor Getters
@@ -426,11 +427,11 @@ Anchor.GetScale = function(self)
 end
 
 Anchor.GetDefaultScale = function(self, scale)
-	return get(AnchorData[self].defaultScale)
+	return AnchorData[self].defaultScale
 end
 
 Anchor.GetDefaultPosition = function(self, point, x, y)
-	return AnchorData[self].defaultPosition
+	return AnchorData[self].defaultPosition[1], AnchorData[self].defaultPosition[2], AnchorData[self].defaultPosition[3]
 end
 
 -- Anchor Setters
@@ -1103,7 +1104,6 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 
 		for anchor,anchorData in next,AnchorData do
 
-			--local isDefault = anchor:IsInDefaultPosition()
 			local anchorscale = anchor:GetScale()
 			local point, x, y = anchor:GetPosition()
 
@@ -1118,33 +1118,25 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 			anchorData.lastPosition = { npoint, nx, ny }
 			anchorData.currentPosition = { npoint, nx, ny }
 
-			-- If the default position has been set, adjust it.
 			if (anchorData.defaultPosition) then
 				local anchorscale = anchorData.defaultScale
-				local calculatedscale = type(anchorscale) == "function" and anchorscale()
 				local point, x, y = anchorData.defaultPosition[1], anchorData.defaultPosition[2], anchorData.defaultPosition[3]
 
-				local nscale = ((calculatedscale or anchorscale) * SCALE) / scale
+				local nscale = (anchorscale * SCALE) / scale
 				local npoint, nx, ny = point, (x * SCALE) / scale, (y * SCALE) / scale
 
 				anchorData.defaultPosition[1] = npoint
 				anchorData.defaultPosition[2] = nx
 				anchorData.defaultPosition[3] = ny
-
-				-- Only update this is the scale is a number,
-				-- assume functions are meant as overrides.
-				if (type(anchorscale) == "number") then
-					anchorData.defaultScale = nscale
-				end
-
-				-- Callback to modules so they can update their default tables.
-				if (anchor.UpdateDefaults) then
-					anchor:UpdateDefaults()
-				end
+				anchorData.defaultScale = nscale
 			end
 		end
 
+		-- Store the new scale.
 		SCALE = scale
+
+		-- Fire for all at once, since it's a fairly huge operation.
+		ns:Fire("MFM_UIScaleChanged")
 	end
 end
 
