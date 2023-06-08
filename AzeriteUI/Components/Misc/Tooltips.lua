@@ -475,10 +475,13 @@ Tooltips.SetDefaultAnchor = function(self, tooltip, parent)
 
 	local config = self.db.profile.savedPosition
 
+	local x = string_find(config[1], "LEFT") and 10 or string_find(config[1], "RIGHT") and -10 or 0
+	local y = string_find(config[1], "TOP") and -18 or string_find(config[1], "BOTTOM") and 18 or 0
+
 	tooltip:SetOwner(parent, "ANCHOR_NONE")
-	tooltip:ClearAllPoints()
-	tooltip:SetPoint(config[1], self.anchor, config[1])
 	tooltip:SetScale(config.scale)
+	tooltip:ClearAllPoints()
+	tooltip:SetPoint(config[1], UIParent, config[1], (config[2] + x)/config.scale, (config[3] + y)/config.scale)
 end
 
 Tooltips.SetUnitColor = function(self, unit)
