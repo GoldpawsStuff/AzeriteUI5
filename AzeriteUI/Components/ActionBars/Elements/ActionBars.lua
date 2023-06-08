@@ -884,11 +884,32 @@ ActionBarMod.UpdatePositionAndScales = function(self)
 
 end
 
+ActionBarMod.UpdateEnabled = function(self)
+	for id,bar in next,self.bars do
+		local config = bar.config
+		if (config.enabled and not bar:IsEnabled()) or (not config.enabled and bar:IsEnabled()) then
+			if (InCombatLockdown()) then
+				self.needupdate = true
+				return
+			end
+			if (config.enabled) then
+				bar:Enable()
+			else
+				bar:Disable()
+			end
+		end
+
+	end
+end
+
 ActionBarMod.UpdateSettings = function(self)
 	if (InCombatLockdown()) then
 		self.needupdate = true
 		return
 	end
+
+	self:UpdateEnabled()
+
 	for id,bar in next,self.bars do
 		bar:Update()
 		bar:UpdateAnchor()
