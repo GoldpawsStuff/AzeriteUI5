@@ -44,7 +44,21 @@ local GetMedia = ns.API.GetMedia
 -- Constants
 local playerClass = ns.PlayerClass
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({
+
+	point = "TOP", -- anchor point of unitframe, group members within column grow opposite
+	xOffset = 0, -- horizontal offset within the same column
+	yOffset = 0, -- vertical offset within the same column
+
+	groupBy = "ROLE", -- GROUP, CLASS, ROLE
+	groupingOrder = "TANK,HEALER,DAMAGER,NONE", -- must match choice in groupBy
+
+	unitsPerColumn = 5, -- maximum units per column
+	maxColumns = 8, -- should be 40/unitsPerColumn
+	columnSpacing = 0, -- spacing between columns
+	columnAnchorPoint = "LEFT" -- anchor point of column, columns grow opposite
+
+}, ns.Module.defaults) }
 
 RaidFrameMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
@@ -62,21 +76,21 @@ local config = {
 	-- Header Position & Layut
 	-----------------------------------------
 	Position = { "TOPLEFT", UIParent, "TOPLEFT", 50, -42 }, -- raid header position
-	Size = { 130*5, 30*8 }, -- size of the entire header frame area (must adjust to raid size?)
-	Anchor = "LEFT", -- raid member frame anchor
-	GrowthX = 0, -- raid member horizontal offset
-	GrowthY = 0, -- raid member vertical offset
-	Sorting = "INDEX", -- sort method
-	SortDirection = "ASC", -- sort direction
+	Size = { 103*5, 56*8 }, -- size of the entire header frame area (must adjust to raid size?)
+	--Anchor = "LEFT", -- raid member frame anchor
+	--GrowthX = 0, -- raid member horizontal offset
+	--GrowthY = 0, -- raid member vertical offset
+	--Sorting = "INDEX", -- sort method
+	--SortDirection = "ASC", -- sort direction
 
-	UnitSize = { 130, 30 }, -- raid member size
+	UnitSize = { 103, 30 + 16 + 10 }, -- raid member size
 	PartyHitRectInsets = { 0, 0, 0, -10 }, -- raid member mouseover hit box
 	OutOfRangeAlpha = .6, -- Alpha of out of range raid members
 
 	-- Health
 	-----------------------------------------
-	HealthBarPosition = { "BOTTOM", 0, 0 },
-	HealthBarSize = { 80, 14 },
+	HealthBarPosition = { "BOTTOM", 0, 0 + 16 },
+	HealthBarSize = { 75, 13 }, -- 80, 14
 	HealthBarTexture = GetMedia("cast_bar"),
 	HealthBarOrientation = "RIGHT",
 	HealthBarSparkMap = barSparkMap,
@@ -84,23 +98,31 @@ local config = {
 	HealthCastOverlayColor = { 1, 1, 1, .5 },
 
 	HealthBackdropPosition = { "CENTER", 1, -2 },
-	HealthBackdropSize = { 140,90 },
+	HealthBackdropSize = { 132, 85 }, -- 140,90
 	HealthBackdropTexture = GetMedia("cast_back"),
 	HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 
-	HealthValuePosition = { "CENTER", 0, 0 },
-	HealthValueJustifyH = "CENTER",
-	HealthValueJustifyV = "MIDDLE",
-	HealthValueFont = GetFont(13, true),
-	HealthValueColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .75 },
+	--HealthValuePosition = { "CENTER", 0, 0 },
+	--HealthValueJustifyH = "CENTER",
+	--HealthValueJustifyV = "MIDDLE",
+	--HealthValueFont = GetFont(13, true),
+	--HealthValueColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .75 },
+
+	-- Player Status
+	-----------------------------------------
+	StatusPosition = { "CENTER", 0, 0 },
+	StatusJustifyH = "CENTER",
+	StatusJustifyV = "MIDDLE",
+	StatusFont = GetFont(13, true),
+	StatusColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .75 },
 
 	-- Power
 	-----------------------------------------
-	PowerBarSize = { 72, 1 },
-	PowerBarPosition = { "BOTTOM", 0, -1.5 },
+	PowerBarSize = { 72 -5, 1 },
+	PowerBarPosition = { "BOTTOM", 0, -1.5  + 16 },
 	PowerBarTexture = [[Interface\ChatFrame\ChatFrameBackground]],
 	PowerBarOrientation = "RIGHT",
-	PowerBackdropSize = { 74, 3 },
+	PowerBackdropSize = { 74 -5, 3 },
 	PowerBackdropPosition = { "CENTER", 0, 0 },
 	PowerBackdropTexture = [[Interface\ChatFrame\ChatFrameBackground]],
 	PowerBackdropColor = { 0, 0, 0, .75 },
@@ -113,9 +135,17 @@ local config = {
 	TargetHighlightTargetColor = { 255/255, 239/255, 169/255, 1 },
 	TargetHighlightFocusColor = { 144/255, 195/255, 255/255, 1 },
 
+	-- Unit Name
+	-----------------------------------------
+	NamePosition = { "TOP", 0, -10 },
+	NameJustifyH = "CENTER",
+	NameJustifyV = "TOP",
+	NameFont = GetFont(11, true),
+	NameColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75 },
+
 	-- Ready Check
 	-----------------------------------------
-	ReadyCheckPosition = { "CENTER", 0, -7 },
+	ReadyCheckPosition = { "CENTER", 0, 0 },
 	ReadyCheckSize = { 32, 32 },
 	ReadyCheckReadyTexture = [[Interface/RAIDFRAME/ReadyCheck-Ready]],
 	ReadyCheckNotReadyTexture = [[Interface/RAIDFRAME/ReadyCheck-NotReady]],
@@ -123,13 +153,13 @@ local config = {
 
 	-- Resurrection Indicator
 	-----------------------------------------
-	ResurrectIndicatorPosition = { "CENTER", 0, -7 },
+	ResurrectIndicatorPosition = { "CENTER", 0, 0 },
 	ResurrectIndicatorSize = { 32, 32 },
 	ResurrectIndicatorTexture = [[Interface\RaidFrame\Raid-Icon-Rez]],
 
 	-- Group Role
 	-----------------------------------------
-	GroupRolePosition = { "RIGHT", 10, -8 },
+	GroupRolePosition = { "RIGHT", 25, 0 },
 	GroupRoleSize = { 28, 28 },
 	GroupRoleBackdropPosition = { "CENTER", 0, 0 },
 	GroupRoleBackdropSize = { 54, 54 },
@@ -443,7 +473,7 @@ local style = function(self, unit)
 	self.Health.PostUpdateColor = Health_PostUpdateColor
 
 	local healthOverlay = CreateFrame("Frame", nil, health)
-	healthOverlay:SetFrameLevel(overlay:GetFrameLevel())
+	healthOverlay:SetFrameLevel(overlay:GetFrameLevel() - 1)
 	healthOverlay:SetAllPoints()
 
 	self.Health.Overlay = healthOverlay
@@ -495,15 +525,27 @@ local style = function(self, unit)
 
 	-- Health Value
 	--------------------------------------------
-	local healthValue = healthOverlay:CreateFontString(nil, "OVERLAY", nil, 1)
-	healthValue:SetPoint(unpack(db.HealthValuePosition))
-	healthValue:SetFontObject(db.HealthValueFont)
-	healthValue:SetTextColor(unpack(db.HealthValueColor))
-	healthValue:SetJustifyH(db.HealthValueJustifyH)
-	healthValue:SetJustifyV(db.HealthValueJustifyV)
-	self:Tag(healthValue, prefix("[*:Health(true, nil, nil, true)]"))
+	--local healthValue = healthOverlay:CreateFontString(nil, "OVERLAY", nil, 1)
+	--healthValue:SetPoint(unpack(db.HealthValuePosition))
+	--healthValue:SetFontObject(db.HealthValueFont)
+	--healthValue:SetTextColor(unpack(db.HealthValueColor))
+	--healthValue:SetJustifyH(db.HealthValueJustifyH)
+	--healthValue:SetJustifyV(db.HealthValueJustifyV)
+	--self:Tag(healthValue, prefix("[*:Health(true, nil, nil, true)]"))
 
-	self.Health.Value = healthValue
+	--self.Health.Value = healthValue
+
+	-- Player Status
+	--------------------------------------------
+	local status = healthOverlay:CreateFontString(nil, "OVERLAY", nil, 1)
+	status:SetPoint(unpack(db.StatusPosition))
+	status:SetFontObject(db.StatusFont)
+	status:SetTextColor(unpack(db.StatusColor))
+	status:SetJustifyH(db.StatusJustifyH)
+	status:SetJustifyV(db.StatusJustifyV)
+	self:Tag(status, prefix("[*:DeadOrOffline]"))
+
+	self.Health.Status = status
 
 	-- Power
 	--------------------------------------------
@@ -527,54 +569,6 @@ local style = function(self, unit)
 	powerBackdrop:SetVertexColor(unpack(db.PowerBackdropColor))
 
 	self.Power.Backdrop = powerBackdrop
-
-	-- Portrait
-	--------------------------------------------
-	local portraitFrame = CreateFrame("Frame", nil, self)
-	portraitFrame:SetFrameLevel(self:GetFrameLevel() - 2)
-	portraitFrame:SetAllPoints()
-
-	local portrait = CreateFrame("PlayerModel", nil, portraitFrame)
-	portrait:SetFrameLevel(portraitFrame:GetFrameLevel())
-	portrait:SetPoint(unpack(db.PortraitPosition))
-	portrait:SetSize(unpack(db.PortraitSize))
-	portrait:SetAlpha(db.PortraitAlpha)
-	portrait.distanceScale = db.PortraitDistanceScale
-	portrait.positionX = db.PortraitPositionX
-	portrait.positionY = db.PortraitPositionY
-	portrait.positionZ = db.PortraitPositionZ
-	portrait.rotation = db.PortraitRotation
-	portrait.showFallback2D = db.PortraitShowFallback2D
-
-	self.Portrait = portrait
-	self.Portrait.PostUpdate = Portrait_PostUpdate
-
-	local portraitBg = portraitFrame:CreateTexture(nil, "BACKGROUND", nil, 0)
-	portraitBg:SetPoint(unpack(db.PortraitBackgroundPosition))
-	portraitBg:SetSize(unpack(db.PortraitBackgroundSize))
-	portraitBg:SetTexture(db.PortraitBackgroundTexture)
-	portraitBg:SetVertexColor(unpack(db.PortraitBackgroundColor))
-
-	self.Portrait.Bg = portraitBg
-
-	local portraitOverlayFrame = CreateFrame("Frame", nil, self)
-	portraitOverlayFrame:SetFrameLevel(self:GetFrameLevel() - 1)
-	portraitOverlayFrame:SetAllPoints()
-
-	local portraitShade = portraitOverlayFrame:CreateTexture(nil, "BACKGROUND", nil, -1)
-	portraitShade:SetPoint(unpack(db.PortraitShadePosition))
-	portraitShade:SetSize(unpack(db.PortraitShadeSize))
-	portraitShade:SetTexture(db.PortraitShadeTexture)
-
-	self.Portrait.Shade = portraitShade
-
-	local portraitBorder = portraitOverlayFrame:CreateTexture(nil, "BACKGROUND", nil, 0)
-	portraitBorder:SetPoint(unpack(db.PortraitBorderPosition))
-	portraitBorder:SetSize(unpack(db.PortraitBorderSize))
-	portraitBorder:SetTexture(db.PortraitBorderTexture)
-	portraitBorder:SetVertexColor(unpack(db.PortraitBorderColor))
-
-	self.Portrait.Border = portraitBorder
 
 	-- Absorb Bar (Retail)
 	--------------------------------------------
@@ -614,7 +608,7 @@ local style = function(self, unit)
 
 	-- Ressurection Indicator
 	--------------------------------------------
-	local resurrectIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 1)
+	local resurrectIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 6)
 	resurrectIndicator:SetSize(unpack(db.ResurrectIndicatorSize))
 	resurrectIndicator:SetPoint(unpack(db.ResurrectIndicatorPosition))
 	resurrectIndicator:SetTexture(ResurrectIndicatorTexture)
@@ -623,13 +617,11 @@ local style = function(self, unit)
 
 	-- Group Role
 	-----------------------------------------
-    local groupRoleIndicator = CreateFrame("Frame", nil, overlay)
+    local groupRoleIndicator = CreateFrame("Frame", nil, healthOverlay)
 	groupRoleIndicator:SetSize(unpack(db.GroupRoleSize))
 	groupRoleIndicator:SetPoint(unpack(db.GroupRolePosition))
-	groupRoleIndicator.DAMAGER = db.GroupRoleDPSTexture
 	groupRoleIndicator.HEALER = db.GroupRoleHealerTexture
 	groupRoleIndicator.TANK = db.GroupRoleTankTexture
-	--groupRoleIndicator.NONE = groupRoleIndicator.DAMAGER -- fallback
 
 	local groupRoleBackdrop = groupRoleIndicator:CreateTexture(nil, "BACKGROUND", nil, 1)
 	groupRoleBackdrop:SetSize(unpack(db.GroupRoleBackdropSize))
@@ -669,6 +661,18 @@ local style = function(self, unit)
 	targetHighlight.colorFocus = db.TargetHighlightFocusColor
 
 	self.TargetHighlight = targetHighlight
+
+	-- Unit Name
+	--------------------------------------------
+	local name = overlay:CreateFontString(nil, "OVERLAY", nil, 1)
+	name:SetPoint(unpack(db.NamePosition))
+	name:SetFontObject(db.NameFont)
+	name:SetTextColor(unpack(db.NameColor))
+	name:SetJustifyH(db.NameJustifyH)
+	name:SetJustifyV(db.NameJustifyV)
+	self:Tag(name, prefix("[*:Name(12,nil,nil,true)]"))
+
+	self.Name = name
 
 	-- Textures need an update when frame is displayed.
 	self.PostUpdate = UnitFrame_PostUpdate
@@ -718,7 +722,6 @@ GroupHeader.IsEnabled = function(self)
 	return self.visibility and true or false
 end
 
--- PARTYRAID_LABEL
 RaidFrameMod.DisableBlizzard = function(self)
 	UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
 
@@ -730,22 +733,51 @@ RaidFrameMod.DisableBlizzard = function(self)
 end
 
 RaidFrameMod.GetHeaderAttributes = function(self)
+	local db = self.db.profile
+
 	return ns.Prefix.."Raid", nil,
+	--"custom [@player,exists,nogroup] show;hide", "showPlayer", true, "showSolo", true,
+	--"custom [group:party,nogroup:raid] show;hide", "showPlayer", false, "showSolo", false,
 	"custom [group,@raid5,exists] show;hide", "showPlayer", false, "showSolo", false,
 	"oUF-initialConfigFunction", [[
 		local header = self:GetParent();
 		self:SetWidth(header:GetAttribute("initial-width"));
 		self:SetHeight(header:GetAttribute("initial-height"));
 		self:SetFrameLevel(self:GetFrameLevel() + 10);
+		self:SetAttribute('oUF-guessUnit', "player");
+		self:SetAttribute("unit", "player");
+		UnregisterUnitWatch(self);
+		RegisterUnitWatch(self);
 	]],
 	"initial-width", config.UnitSize[1],
 	"initial-height", config.UnitSize[2],
+
+	-- Visibility
+	"showRaid", true,
 	"showParty", false,
-	"point", config.Anchor,
-	"xOffset", config.GrowthX,
-	"yOffset", config.GrowthY,
-	"sortMethod", config.Sorting,
-	"sortDir", config.SortDirection
+
+	-- Member sorting within each group
+	"sortMethod", "INDEX", -- INDEX, NAME
+	"sortDir", "ASC", -- ASC, DESC
+
+	-- Unit anchoring within each column
+	"point", db.point,
+	"xOffset", db.xOffset,
+	"yOffset", db.yOffset,
+
+	-- Group filter
+	"groupFilter", "1,2,3,4,5,6,7,8",
+
+	-- Grouping order and type
+	"groupBy", "ROLE",
+	"groupingOrder", db.groupingOrder,
+
+	-- Column setup and growth
+	"unitsPerColumn", db.unitsPerColumn,
+	"maxColumns", db.maxColumns,
+	"columnSpacing", db.columnSpacing,
+	"columnAnchorPoint", db.columnAnchorPoint
+
 end
 
 RaidFrameMod.UpdateAll = function(self)
@@ -757,15 +789,39 @@ RaidFrameMod.UpdateAll = function(self)
 end
 
 RaidFrameMod.CreateUnitFrames = function(self)
+
+	local unit, name = "raid", "Raid"
+
+	oUF:RegisterStyle(ns.Prefix..name, style)
+	oUF:SetActiveStyle(ns.Prefix..name)
+
+	self.frame = oUF:SpawnHeader(self:GetHeaderAttributes())
+	self.frame:SetSize(unpack(config.Size))
+
+	-- Embed our custom methods
+	for method,func in next,GroupHeader do
+		self.frame[method] = func
+	end
+
+	-- Sometimes some elements are wrong or "get stuck" upon exiting the editmode.
+	if (ns.WoW10) then
+		self:SecureHook(EditModeManagerFrame, "ExitEditMode", "UpdateAll")
+	end
+
+	-- Sometimes when changing group leader, only the group leader is updated,
+	-- leaving other units with a lot of wrong information displayed.
+	-- Should think that GROUP_ROSTER_UPDATE handled this, but it doesn't.
+	-- *Only experienced this is Wrath.But adding it as a general update anyway.
+	self:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateAll")
+
 end
 
 RaidFrameMod.OnEnable = function(self)
 
 	-- Leave these enabled for now.
-	--self:DisableBlizzard()
-
+	self:DisableBlizzard()
 	self:CreateUnitFrames()
-	--self:CreateAnchor(PARTYRAID_LABEL)
+	self:CreateAnchor(RAID) --[[PARTYRAID_LABEL RAID_AND_PARTY]]
 
 	ns.Module.OnEnable(self)
 end
