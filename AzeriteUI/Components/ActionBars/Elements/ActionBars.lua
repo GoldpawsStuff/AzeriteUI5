@@ -886,6 +886,7 @@ end
 
 ActionBarMod.UpdateEnabled = function(self)
 	for id,bar in next,self.bars do
+
 		local config = bar.config
 		if (config.enabled and not bar:IsEnabled()) or (not config.enabled and bar:IsEnabled()) then
 

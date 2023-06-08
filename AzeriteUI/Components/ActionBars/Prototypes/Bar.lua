@@ -49,21 +49,19 @@ end
 Bar.Enable = function(self)
 	if (InCombatLockdown()) then return end
 
-	self.config.enabled = true
+	self.enabled = true
 end
 
 Bar.Disable = function(self)
 	if (InCombatLockdown()) then return end
 
-	self.config.enabled = false
+	self.enabled = false
 end
 
 Bar.SetEnabled = function(self, enable)
 	if (InCombatLockdown()) then return end
 
-	self.config.enabled = not not enable -- strict booleans
-
-	if (self.config.enabled) then
+	if (enable) then
 		self:Enable()
 	else
 		self:Disable()
@@ -71,5 +69,5 @@ Bar.SetEnabled = function(self, enable)
 end
 
 Bar.IsEnabled = function(self)
-	return self.config.enabled
+	return self.enabled
 end
