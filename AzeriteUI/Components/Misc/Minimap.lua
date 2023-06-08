@@ -1257,6 +1257,19 @@ MinimapMod.PostUpdatePositionAndScale = function(self)
 	local config = self.db.profile.savedPosition
 	self.widgetFrame:SetScale(ns.API.GetEffectiveScale() / config.scale)
 	self:UpdateCustomElements()
+
+	-- TODO: Figure out all the elements I should rescale.
+	for name in next,{
+		MiniMapBattlefieldFrame = true,
+		MiniMapLFGFrame = true,
+		QueueStatusButton = true
+	} do
+		local element = _G[name]
+		if (element) then
+			element:SetScale(ns.API.GetEffectiveScale() / config.scale)
+		end
+	end
+
 end
 
 MinimapMod.UpdateAnchor = function(self)
