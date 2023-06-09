@@ -564,6 +564,8 @@ ChatFrames.OnEvent = function(self, event, ...)
 			self:SecureHook("FCFTab_UpdateAlpha", "UpdateTabAlpha")
 			self:SecureHook("FCF_DockUpdate","UpdateClutter")
 
+			-- Not an ideal solution for this,
+			-- but mouse scripts are just too unreliable here.
 			self:ScheduleRepeatingTimer("UpdateClutter", 1/10)
 
 			if (QuickJoinToastButton) then
@@ -572,18 +574,8 @@ ChatFrames.OnEvent = function(self, event, ...)
 				QuickJoinToastButton:Hide()
 			end
 
-			-- Use an old update timer to ensure we clear messages
-			-- posted by other addons at this very event.
-			local kill = CreateFrame("Frame")
-			kill.count = 0
-			kill:SetScript("OnUpdate", function(self)
-				ChatFrame1:Clear()
-				self.count = self.count + 1
-				if (self.count > 1) then
-					self:SetScript("OnUpdate", nil)
-					self:Hide()
-				end
-			end)
+			-- Clear the primary chatframe on the next frame.
+			C_Timer.After(0, function() ChatFrame1:Clear() end)
 		end
 	end
 end
