@@ -159,7 +159,6 @@ end
 
 ns.OnInitialize = function(self)
 	self.db = LibStub("AceDB-3.0-GE"):New("AzeriteUI5_DB", defaults, self:GetDefaultProfile())
-	--self.db:ResetDB(self:GetDefaultProfile())
 
 	if (self.db.global.version ~= ns.SETTINGS_VERSION) then
 		self.db:ResetDB(self:GetDefaultProfile())
