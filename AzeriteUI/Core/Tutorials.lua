@@ -24,11 +24,12 @@
 
 --]]
 local Addon, ns = ...
+do return end -- might not need this at all anymore
 
 local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
 
 local Tutorials = ns:NewModule("Tutorials", "LibMoreEvents-1.0", "AceConsole-3.0", "AceTimer-3.0")
-local EMP = ns:GetModule("EditMode", true)
+--local EMP = ns:GetModule("EditMode", true)
 local MFM = ns:GetModule("MovableFramesManager")
 
 -- Lua API
@@ -61,15 +62,6 @@ if (ns.WoW10) then
 		version = 1
 	})
 end
-
--- Temporarily disable this.
--- *don't need it with new scaling system.
---if (not ns.WoW10) then
---	table_insert(tutorials, {
---		name = "scale",
---		version = 1
---	})
---end
 
 -- Create frame backdrop
 local createBackdropFrame = function(frame)
@@ -185,13 +177,6 @@ Tutorials.ShowEditModeTutorial = function(self)
 		accept:SetPoint("RIGHT", hide, "LEFT", -10, 0)
 		accept:SetScript("OnClick", function(widget)
 
-			-- Apply default layout preset
-			--local layoutName = "Azerite"
-			--if (layoutName and not MFM.layouts[layoutName]) then
-			--	MFM:RegisterPreset(layoutName)
-			--	MFM:ApplyPreset(layoutName)
-			--end
-
 			-- create or reset editmode preset
 			if (EMP:DoesDefaultLayoutExist()) then
 				EMP:SetToDefaultLayout() -- switch to default layout
@@ -199,11 +184,6 @@ Tutorials.ShowEditModeTutorial = function(self)
 			else
 				EMP:ResetLayouts() -- create editmode layout
 			end
-
-			-- Update MFM module buttons.
-			--MFM:GetMFMFrame().ResetEditModeLayoutButton:SetDisabled(self.incombat or not EMP:CanEditActiveLayout())
-			--MFM:GetMFMFrame().CreateEditModeLayoutButton:SetDisabled(self.incombat or EMP:DoesDefaultLayoutExist())
-
 			-- close tutorial
 			widget:GetParent():Hide()
 
@@ -254,11 +234,6 @@ Tutorials.ShowEditModeTutorial = function(self)
 
 			-- apply frame size
 			frame:SetSize(width, height)
-
-			-- Update MFM module buttons.
-			--MFM:GetMFMFrame().ResetEditModeLayoutButton:SetDisabled(self.incombat or not EMP:CanEditActiveLayout())
-			--MFM:GetMFMFrame().CreateEditModeLayoutButton:SetDisabled(self.incombat or EMP:DoesDefaultLayoutExist())
-
 		end)
 
 		self.tutorials.editmode = frame
@@ -266,177 +241,9 @@ Tutorials.ShowEditModeTutorial = function(self)
 	self.tutorials.editmode:Show()
 end
 
---Tutorials.ShowWrathSetupTutorial = function(self)
---	if (not self.tutorials.scale) then
---		local db = self.db.char.tutorials.scale
---		if (not db) then
---			db = {}
---			self.db.char.tutorials.scale = db
---		end
---
---		local width, height = math_max(400, 140*3 + 10*2 + 20*2),200
---
---		local frame = CreateFrame("Frame", nil, UIParent)
---		frame:Hide()
---		frame:EnableMouse(true)
---		frame:SetFrameStrata("FULLSCREEN_DIALOG")
---		frame:SetToplevel(true)
---		frame:SetFrameLevel(1000)
---		frame:SetSize(width, height)
---		frame:SetPoint("CENTER", 0, 0)
---		frame.step = 1
---
---		local backdrop = createBackdropFrame(frame)
---		frame.Backdrop = backdrop
---
---		local addonName = GetAddOnMetadata(Addon, "Title")
---		addonName = string_gsub(addonName, "|T.*|t", "")
---		addonName = string_gsub(addonName, "^%s+", "")
---		addonName = string_gsub(addonName, "%s+$", "")
---
---		local heading = frame:CreateFontString(nil, "OVERLAY")
---		heading:SetPoint("TOP", 0, -20)
---		heading:SetPoint("LEFT", frame, "LEFT", 20, 0)
---		heading:SetPoint("RIGHT", frame, "RIGHT", -20, 0)
---		heading:SetFontObject(GetFont(26, true))
---		heading:SetJustifyH("CENTER")
---		heading:SetText(string_format(L["Welcome to %s"], addonName))
---		heading:SetTextColor(unpack(Colors.offwhite))
---		frame.Heading = heading
---
---		width = math_max(heading:GetStringWidth() + 40, width)
---
---		local currExpID = GetExpansionLevel()
---		local expName = _G["EXPANSION_NAME"..currExpID]
---
---		local subHeading = frame:CreateFontString(nil, "OVERLAY")
---		subHeading:SetPoint("TOP", heading, "BOTTOM", 0, 0)
---		subHeading:SetPoint("LEFT", frame, "LEFT", 20, 0)
---		subHeading:SetPoint("RIGHT", frame, "RIGHT", -20, 0)
---		subHeading:SetFontObject(GetFont(13, true))
---		subHeading:SetJustifyH("CENTER")
---		subHeading:SetText(string_format(BNET_FRIEND_ZONE_WOW_CLASSIC, expName))
---		subHeading:SetTextColor(unpack(Colors.gray))
---		frame.SubHeading = subHeading
---
---		width = math_max(subHeading:GetStringWidth() + 40, width)
---
---		local message = frame:CreateFontString(nil, "OVERLAY")
---		message:SetPoint("TOP", subHeading, "BOTTOM", 0, -10)
---		message:SetPoint("LEFT", frame, "LEFT", 20, 0)
---		message:SetPoint("RIGHT", frame, "RIGHT", -20, 0)
---		message:SetFontObject(GetFont(13, true))
---		message:SetTextColor(unpack(Colors.offwhite))
---		message:SetText("")
---		frame.Message = message
---
---		local hide = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
---		hide:SetSize(140, 30)
---		hide:SetNormalFontObject(GetFont(13,true))
---		hide:SetHighlightFontObject(GetFont(13,true))
---		hide:SetDisabledFontObject(GetFont(13,true))
---		hide:SetText(L["Hide"])
---		hide:SetPoint("BOTTOM", 0, 20)
---		hide:SetScript("OnClick", function(widget)
---
---			-- close tutorial
---			widget:GetParent():Hide()
---
---			-- save progress
---
---			-- store as not completed
---			self.db.char.tutorials.scale.completed = false
---
---		end)
---
---		frame.HideButton = hide
---
---		local accept = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
---		accept:SetSize(140, 30)
---		accept:SetNormalFontObject(GetFont(13,true))
---		accept:SetHighlightFontObject(GetFont(13,true))
---		accept:SetDisabledFontObject(GetFont(13,true))
---		accept:SetText(L["Apply"])
---		accept:ClearAllPoints()
---		accept:SetPoint("RIGHT", hide, "LEFT", -10, 0)
---		accept:SetScript("OnClick", function(widget)
---			if (InCombatLockdown()) then return end
---
---			-- close tutorial
---			widget:GetParent():Hide()
---
---			-- change the game's interface scale
---			SetCVar("uiScale", ns.API.GetScale())
---
---			-- setup chat frames
---			ChatFrame1:SetUserPlaced(true)
---			ChatFrame1:ClearAllPoints()
---			ChatFrame1:SetSize(499, 176)
---			ChatFrame1:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 85, 350)
---
---			-- save it
---			FCF_SavePositionAndDimensions(ChatFrame1)
---
---			-- mark as completed
---			self.db.char.tutorials.scale.completed = true
---
---			-- need a reset as the above can taint
---			ReloadUI()
---		end)
---
---		frame.AcceptButton = accept
---
---		local cancel = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
---		cancel:SetSize(140, 30)
---		cancel:SetNormalFontObject(GetFont(13,true))
---		cancel:SetHighlightFontObject(GetFont(13,true))
---		cancel:SetDisabledFontObject(GetFont(13,true))
---		cancel:SetText(L["Cancel"])
---		cancel:SetPoint("LEFT", hide, "RIGHT", 10, 0)
---		cancel:SetScript("OnClick", function(widget)
---
---			-- close tutorial
---			widget:GetParent():Hide()
---
---			-- save progress
---
---			-- store as completed(?)
---			self.db.char.tutorials.scale.completed = true
---
---		end)
---
---		frame.CancelButton = cancel
---
---		-- figure out current height
---		-- apply updated sizes
---		frame:SetSize(width, height)
---
---		frame:SetScript("OnShow", function(frame)
---
---			frame.Message:SetText(string_format(L["You are now running AzeriteUI for %s!|n|nTo set the game's general interface scale to AzeriteUI defaults and position the chat frames to match, click the '|cffffd200%s|r' button. To hide this window for now, click the '|cffffd200%s|r' button. To cancel this tutorial and handle interface scaling yourself, click the '|cffffd200%s|r' button."], expName, APPLY, HIDE, CANCEL))
---
---			-- calculate frame size
---			local top = frame.Heading:GetTop()
---			local bottom = frame.Message:GetBottom()
---			local width = math_max(400, 140*3 + 10*2 + 20*2)
---			local height = math_max(200, (top - bottom) + 20 + (20 + 30 + 20))
---
---			-- apply frame size
---			frame:SetSize(width, height)
---
---		end)
---
---		self.tutorials.scale = frame
---
---	end
---	self.tutorials.scale:Show()
---end
-
 Tutorials.RunTutorial = function(self, tutorial)
 	if (tutorial == "editmode") then
 		self:ShowEditModeTutorial()
-	elseif (tutorial == "scale") then
-		--self:ShowWrathSetupTutorial()
 	end
 end
 
