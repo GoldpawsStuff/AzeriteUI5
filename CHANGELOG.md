@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Added an options menu accessible through the command `/az` or `/azerite`.
-- Added the command `/resetsettings` to fully reset our user interface to its defaults.
+- Added the command `/resetsettings` to fully reset this addon's settings to its defaults.
 - Added the option to keep actionbars faded out in combat and only visible on mouseover.
 - Added threat glow to the player unit frame. More are coming.
 - Added nameplate highlight outline for soft targeting in Retail. Thanks Billybishop@GitHub for writing this!
