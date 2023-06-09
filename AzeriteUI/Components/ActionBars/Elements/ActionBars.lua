@@ -703,7 +703,7 @@ ActionBarMod.CreateMaxDpsOverlays = function(self, event, addon)
 	local maxDpsGlow = MaxDps.Glow
 	MaxDps.Glow = function(this, button, id, texture, type, color)
 		if (not self.buttons[button]) then
-			return Glow(this, button, id, texture, type, color)
+			return maxDpsGlow(this, button, id, texture, type, color)
 		end
 		local col = color and { color.r, color.g, color.b, color.a } or nil
 		if (not color) and (type) then
@@ -724,7 +724,7 @@ ActionBarMod.CreateMaxDpsOverlays = function(self, event, addon)
 	local maxDpsHideGlow = MaxDps.HideGlow
 	MaxDps.HideGlow = function(this, button, id)
 		if (not self.buttons[button]) then
-			return HideGlow(this, button, id)
+			return maxDpsHideGlow(this, button, id)
 		end
 		button.maxDpsGlowColor = nil
 		button.maxDpsGlowShown = nil
