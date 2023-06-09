@@ -27,6 +27,7 @@ local Addon, ns = ...
 local ChatFrames = ns:NewModule("ChatFrames", "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
 
 -- Lua API
+local ipairs = ipairs
 local next = next
 local pairs = pairs
 local rawget = rawget
@@ -148,7 +149,6 @@ ChatFrame.GetToBottomButton = function(self)
 	return Elements[self].scrollToBottomButton
 end
 
--- TODO: Update for 10.1.5
 ChatFrame.GetScrollBar = function(self)
 	if (not Elements[self].scrollBar) then
 		Elements[self].scrollBar = self.ScrollBar
@@ -277,19 +277,9 @@ end
 
 -- Module API
 -------------------------------------------------------
-ChatFrames.Embed = function(self, frame)
-	for method,func in next,ChatFrame do
-		frame[method] = func
-	end
-end
-
 ChatFrames.StyleFrame = function(self, frame)
 	if (frame.isSkinned) then return end
 
-	-- Embed our API
-	--self:Embed(frame)
-
-	-- Kill combatlog textures
 	if (frame:GetID() == 2) then
 		local buttonframe = CombatLogQuickButtonFrame_Custom
 		for i = 1, buttonframe:GetNumRegions() do
@@ -300,7 +290,6 @@ ChatFrames.StyleFrame = function(self, frame)
 		end
 	end
 
-	-- Kill frame textures.
 	for tex in ChatFrame.GetFrameTextures(frame) do
 		tex:SetTexture(nil)
 		tex:SetAlpha(0)
@@ -308,12 +297,6 @@ ChatFrames.StyleFrame = function(self, frame)
 
 	local buttonFrame = ChatFrame.GetButtonFrame(frame)
 
-	-- Take control of the tab's alpha changes
-	-- and disable blizzard's own fading.
-	--buttonFrame:SetAlpha(1)
-	--buttonFrame.SetAlpha = UIFrameFadeRemoveFrame
-
-	-- Kill the button frame textures.
 	for tex in ChatFrame.GetButtonFrameTextures(frame) do
 		tex:SetTexture(nil)
 		tex:SetAlpha(0)
@@ -322,11 +305,7 @@ ChatFrames.StyleFrame = function(self, frame)
 	local tab = ChatFrame.GetTab(frame)
 	local fontObject = GetFont(15,true,"Chat")
 
-	-- Take control of the tab's alpha changes
-	-- and disable blizzard's own fading.
 	tab:SetNormalFontObject(fontObject)
-	--tab:SetAlpha(1)
-	--tab.SetAlpha = UIFrameFadeRemoveFrame
 
 	for tex in ChatFrame.GetTabTextures(frame) do
 		tex:SetTexture(nil)
@@ -343,7 +322,6 @@ ChatFrames.StyleFrame = function(self, frame)
 		tabIcon:Hide()
 	end
 
-	-- Toggle tab text visibility on hover
 	tab:HookScript("OnEnter", Tab_PostEnter)
 	tab:HookScript("OnLeave", Tab_PostLeave)
 
