@@ -442,18 +442,27 @@ ChatFrames.UpdateButtons = function(self, event, ...)
 				isMouseOver = frame:IsMouseOver(30,0,-30,30)
 			end
 
+			local buttonFrame = ChatFrame.GetButtonFrame(frame)
+			local up = ChatFrame.GetUpButton(frame)
+			local down = ChatFrame.GetDownButton(frame)
+			local bottom = ChatFrame.GetToBottomButton(frame)
+			local scrollBar = ChatFrame.GetScrollBar(frame)
+
+			-- Blizzard script uses GetParent and we change the parent.
+			if (bottom and not bottom.hasFixedScript) then
+				bottom:SetScript("OnClick", function(self)
+					PlaySound(SOUNDKIT.IG_CHAT_BOTTOM)
+					frame:ScrollToBottom()
+				end)
+				bottom.hasFixedScript = true
+			end
+
 			if (isMouseOver) and (shown and shown ~= 0) and (not frame.minimized) then
 				if (docked or frame == ChatFrame1) then -- dock position or nil
 					atDock = true
 				end
 
 				if (not Elements[frame].isMouseOver) then
-
-					local buttonFrame = ChatFrame.GetButtonFrame(frame)
-					local up = ChatFrame.GetUpButton(frame)
-					local down = ChatFrame.GetDownButton(frame)
-					local bottom = ChatFrame.GetToBottomButton(frame)
-					local scrollBar = ChatFrame.GetScrollBar(frame)
 
 					if (up) then up:SetParent(buttonFrame) end
 					if (down) then down:SetParent(buttonFrame) end
