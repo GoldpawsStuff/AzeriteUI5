@@ -152,7 +152,8 @@ L["Enable Modifier Key"] = true
 L["Require a modifier key to show the auras."] = true
 L["Modifier Key"] = true
 L["Choose which modifier key to hold  down to show the aura buttons."] = true
-L["Sets the anchor point."] = true
+L["Ignore current target"] = true
+L["Normally auras will be hidden when you have a target, as their position directly conflicts with the position of the target frame. By enabling this the auras will ignore your target and remain visible."] = true
 L["Horizontal Growth"] = true
 L["Choose which horizontal direction the aura buttons should expand in."] = true
 L["Vertical Growth"] = true
@@ -163,7 +164,6 @@ L["Vertical Padding"] = true
 L["Sets the horizontal padding between your aura buttons."] = true
 L["Buttons Per Row"] = true
 L["Sets the maximum number of aura buttons per row."] = true
-L["Sets the anchor point."] = true
 
 -- Bag/Container Settings
 L["Bag Settings"] = true
