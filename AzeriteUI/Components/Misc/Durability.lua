@@ -25,12 +25,14 @@
 --]]
 local Addon, ns = ...
 
-if (not DurabilityFrame or ns.IsRetail) then return end
+if (not DurabilityFrame) then return end
 
 local Durability = ns:NewModule("Durability", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
 
 -- Lua API
 local pairs, unpack = pairs, unpack
+
+-- GLOBALS: C_PaperDollInfo, DurabilityFrame, GetInventoryAlertStatus, UIParent
 
 -- Addon API
 local Colors = ns.Colors
@@ -71,11 +73,25 @@ Durability.GenerateDefaults = function(self)
 	return defaults
 end
 
+Durability.UpdateAnchor = function(self)
+	local config = self.db.profile.savedPosition
+
+	self.anchor:SetSize(60 + 20 + 14, 75)
+	self.anchor:SetScale(config.scale)
+	self.anchor:ClearAllPoints()
+	self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
+end
+
 Durability.PrepareFrames = function(self)
 
 	-- Will this taint?
 	-- *This is to prevent the durability frame size
 	-- affecting other anchors
+	if (ns.WoW10) then
+		DurabilityFrame.HighlightSystem = ns.Noop
+		DurabilityFrame.ClearHighlight = ns.Noop
+	end
+
 	DurabilityFrame:UnregisterAllEvents()
 	DurabilityFrame:SetScript("OnShow", nil)
 	DurabilityFrame:SetScript("OnHide", nil)
@@ -195,11 +211,12 @@ Durability.UpdateWidget = function(self, forced)
 	local frame = self.frame
 
 	local numAlerts = 0
-	local texture, showDurability
+	local texture, showDurability, anyItemBroken
 	local hasLeft, hasRight
 
 	for index,value in pairs(inventorySlots) do
 		texture = frame[value.slot]
+
 		if (value.slot == "Shield") then
 			if (C_PaperDollInfo.OffhandHasWeapon()) then
 				frame.Shield:Hide()
@@ -212,9 +229,11 @@ Durability.UpdateWidget = function(self, forced)
 
 		local alert = GetInventoryAlertStatus(index)
 		local color = alert and inventoryColors[alert]
+
 		if (forced and not color) then
 			color = inventoryColors.default
 		end
+
 		if (color) then
 			texture:SetVertexColor(color[1], color[2], color[3], color[4] or 1)
 			if (value.showSeparate) then
@@ -228,6 +247,9 @@ Durability.UpdateWidget = function(self, forced)
 				showDurability = 1
 			end
 			numAlerts = numAlerts + 1
+			if (alert == 2) then
+				anyItemBroken = true
+			end
 		else
 			texture:SetVertexColor(unpack(inventoryColors.default))
 			if (value.showSeparate) then
@@ -240,14 +262,14 @@ Durability.UpdateWidget = function(self, forced)
 		if (not value.showSeparate) then
 			local texture = frame[value.slot]
 			if (showDurability) then
-				frame[value.slot]:Show()
+				texture:Show()
 			else
-				frame[value.slot]:Hide()
+				texture:Hide()
 			end
 		end
 	end
 
-	local width = 58
+	local width = 60
 	if (hasRight) then
 		frame.Head:SetPoint("TOPRIGHT", -40, 0)
 		width = width + 20
@@ -257,9 +279,12 @@ Durability.UpdateWidget = function(self, forced)
 	if (hasLeft) then
 		width = width + 14
 	end
-	frame:SetWidth(width)
+	--frame:SetWidth(width)
 
-	if (numAlerts > 0) or (forced) then
+	local noVehicleSeat = (not ns.IsWrath and not ns.IsRetail) or not VehicleSeatIndicator:IsShown()
+	local noArenaEnemies = not ArenaEnemyFramesContainer or not ArenaEnemyFramesContainer:IsShown()
+
+	if (numAlerts > 0 and noVehicleSeat and noArenaEnemies) or (forced) then
 		frame:Show()
 	else
 		frame:Hide()
