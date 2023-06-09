@@ -30,7 +30,7 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 
 local Options = ns:NewModule("Options", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
-local EMP = ns:GetModule("EditMode", true)
+--local EMP = ns:GetModule("EditMode", true)
 
 -- Lua API
 local ipairs = ipairs

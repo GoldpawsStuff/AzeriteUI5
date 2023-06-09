@@ -28,7 +28,7 @@ local Addon, ns = ...
 local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
 
 local MovableFramesManager = ns:NewModule("MovableFramesManager", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
-local EMP = ns:GetModule("EditMode", true)
+--local EMP = ns:GetModule("EditMode", true)
 
 local AceGUI = LibStub("AceGUI-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
@@ -434,14 +434,26 @@ Anchor.GetDefaultPosition = function(self, point, x, y)
 	return AnchorData[self].defaultPosition[1], AnchorData[self].defaultPosition[2], AnchorData[self].defaultPosition[3]
 end
 
+Anchor.GetPositionScaled = function(self)
+	local point, x, y = unpack(AnchorData[self].currentPosition)
+	local scale = AnchorData[self].scale
+	return point, x/scale, y/scale
+end
+
+Anchor.GetDefaultPositionScaled = function(self)
+	local point, x, y = unpack(AnchorData[self].defaultPosition)
+	local scale = AnchorData[self].defaultScale
+	return point, x/scale, y/scale
+end
+
 -- Anchor Setters
 --------------------------------------
 -- Link the visibility of the anchor to an editmode account setting.
 -- *The intention is to make anchors visible when the frame
 -- we have replaced is selected in the editmode.
-Anchor.SetEditModeAccountSetting = function(self, setting)
-	self.editModeAccountSetting = setting
-end
+--Anchor.SetEditModeAccountSetting = function(self, setting)
+--	self.editModeAccountSetting = setting
+--end
 
 -- Scale can still be set and changed,
 -- this setting only toggles mousewheel input.
@@ -520,6 +532,20 @@ Anchor.SetPoint = function(self, ...)
 	if (not anchorData.defaultPosition) then
 		anchorData.defaultPosition = { point, x, y }
 	end
+end
+
+Anchor.SetPointScaled = function(self, ...)
+
+	local scale = AnchorData[self].scale
+
+	local points = { ... }
+	for i = #points,1,-1 do
+		if (type(points[i]) == "number") then
+			points[i] = points[i]*scale
+		end
+	end
+
+	self:SetPoint(...)
 end
 
 Anchor.SetTitle = function(self, title)
@@ -698,41 +724,10 @@ Anchor.OnUpdate = function(self, elapsed)
 	ns:Fire("MFM_Dragging", self, point, x, y)
 end
 
-local RequestMovableFrameAnchor = function(...)
-	return Anchor:Create(...)
-end
-
--- This needs to be updated on layout changes.
-local UpdateMovableFrameAnchors = function()
-	for anchor in next,AnchorData do
-		-- Only hook anchor visibility to the editmode
-		-- if the editmode manager frame is actually visible.
-		if (ns.WoW10 and anchor.editModeAccountSetting and EditModeManagerFrame:IsShown()) then
-			if (EditModeManagerFrame:GetAccountSettingValueBool(anchor.editModeAccountSetting)) then
-				if (anchor:IsEnabled()) then
-					anchor:Show()
-				end
-			else
-				anchor:Hide()
-			end
-		else
-			if (anchor:IsEnabled()) then
-				anchor:Show()
-			end
-		end
-	end
-end
-
-local HideMovableFrameAnchors = function()
-	for anchor in next,AnchorData do
-		anchor:Hide()
-	end
-end
-
 -- Module API
 --------------------------------------
 MovableFramesManager.RequestAnchor = function(self, ...)
-	return RequestMovableFrameAnchor(...)
+	return Anchor:Create(...)
 end
 
 MovableFramesManager.GenerateMFMFrame = function(self)
@@ -813,6 +808,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 	local options = Options:GenerateProfileMenu()
 
 	-- EditMode integration
+	--[[--
 	if (EMP) then
 		options.args.editmodeHeader = {
 			type = "header",
@@ -862,6 +858,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 			end
 		}
 	end
+	--]]--
 
 	local colorize = function(msg)
 		msg = string.gsub(msg, "<", "|cffffd200<")
@@ -1028,33 +1025,19 @@ MovableFramesManager.ToggleMFMFrame = function(self)
 	end
 end
 
-MovableFramesManager.UpdateMovableFrameAnchors = function(self, ...)
-	UpdateMovableFrameAnchors()
+MovableFramesManager.UpdateMovableFrameAnchors = function(self)
+	for anchor in next,AnchorData do
+		if (anchor:IsEnabled()) then
+			anchor:Show()
+		end
+	end
 end
 
 MovableFramesManager.HideMovableFrameAnchors = function(self)
 	if (not self.app.frame:IsShown()) then
-		HideMovableFrameAnchors()
-	end
-end
-
-MovableFramesManager.IsInEditMode = function(self)
-	return self.inEditMode
-end
-
-MovableFramesManager.OnEnterEditMode = function(self)
-	self.inEditMode = true
-
-	if (not self:IsMFMFrameOpen()) then
-		self:OpenMFMFrame()
-	end
-end
-
-MovableFramesManager.OnExitEditMode = function(self)
-	self.inEditMode = nil
-
-	if (self:IsMFMFrameOpen()) then
-		self:CloseMFMFrame()
+		for anchor in next,AnchorData do
+			anchor:Hide()
+		end
 	end
 end
 
@@ -1076,28 +1059,28 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 		end
 
 	elseif (event == "PLAYER_LOGIN") then
-		if (EMP) then
-			return EMP:LoadLayouts()
-		end
+		--if (EMP) then
+		--	return EMP:LoadLayouts()
+		--end
 
 	elseif (event == "PLAYER_ENTERING_WORLD") then
-		local isInitialLogin, isReloadingUi = ...
-		if (isInitialLogin or isReloadingUi) then
-			if (EMP) then
-				self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
-			end
-		end
+		--local isInitialLogin, isReloadingUi = ...
+		--if (isInitialLogin or isReloadingUi) then
+		--	if (EMP) then
+		--		self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
+		--	end
+		--end
 		self.incombat = InCombatLockdown()
 
-		ns:Fire("MFM_LayoutsUpdated")
+		--ns:Fire("MFM_LayoutsUpdated")
 
 	elseif (event == "EDIT_MODE_LAYOUTS_UPDATED") then
-		local layoutInfo, fromServer = ...
-		if (fromServer) then
-			if (EMP) then
-				EMP:LoadLayouts()
-			end
-		end
+		--local layoutInfo, fromServer = ...
+		--if (fromServer) then
+		--	if (EMP) then
+		--		EMP:LoadLayouts()
+		--	end
+		--end
 
 	elseif (event == "UI_SCALE_CHANGED") then
 		local scale = UIParent:GetScale()
@@ -1132,45 +1115,29 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 			end
 		end
 
-		-- Store the new scale.
 		SCALE = scale
 
-		-- Fire for all at once, since it's a fairly huge operation.
 		ns:Fire("MFM_UIScaleChanged")
 	end
 end
 
 MovableFramesManager.OnInitialize = function(self)
 
+	SCALE = UIParent:GetScale()
 
-	self.app = AceGUI:Create("Frame")
-	self.app:Hide()
-	self.app:SetStatusTable({
+	local app = AceGUI:Create("Frame")
+	app:Hide()
+	app:SetStatusTable({
 		width = 440,
-		height = ns.IsRetail and 510 or 450,
+		height = 450,
 		left = 160,
 		top = UIParent:GetTop() / 2 + 100
 	})
+
+	self.app = app
 	self.appName = L["Movable Frames Manager"]
 
-	SCALE = UIParent:GetScale()
-
-	if (ns.WoW10) then
-		-- Hook our anchor frame's visibility to the editmode.
-		-- Note that we cannot simply parent it to the editmode manager,
-		-- as that will break the resizing and functionality of the editmode manager.
-		self:SecureHook(EditModeManagerFrame, "EnterEditMode", "OnEnterEditMode")
-		self:SecureHook(EditModeManagerFrame, "ExitEditMode", "OnExitEditMode")
-
-		-- Update our anchors on editmode changes,
-		-- since they might be related to anchor visibility.
-		self:SecureHook(EditModeManagerFrame, "OnEvent", "UpdateMovableFrameAnchors")
-		self:SecureHook(EditModeManagerFrame, "OnAccountSettingChanged", "UpdateMovableFrameAnchors")
-	end
-
-	-- Use this command for all versions now.
 	self:RegisterChatCommand("lock", "ToggleMFMFrame")
-
 	self:RegisterEvent("PLAYER_LOGIN", "OnEvent")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
