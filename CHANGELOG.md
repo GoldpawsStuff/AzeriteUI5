@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-06-09
-- This version is backwards incompatible and requires a full reset of its settings.
+- This version is backwards incompatible and will force a full reset of its settings.
 - This version is compatible with Wrath 3.4.2 PTR.
 
 ### Added
