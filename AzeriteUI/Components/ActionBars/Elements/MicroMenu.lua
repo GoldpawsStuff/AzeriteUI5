@@ -336,6 +336,12 @@ MicroMenu.OnInitialize = function(self)
 end
 
 MicroMenu.OnEnable = function(self)
+
+	if (ns.WoW10) then
+		MicroMenuContainer.HighlightSystem = ns.Noop
+		MicroMenuContainer.ClearHighlight = ns.Noop
+	end
+
 	self:SpawnButtons()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
