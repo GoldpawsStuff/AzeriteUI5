@@ -76,20 +76,20 @@ local azeriteSystems = {
 		}
 	},
 
-	[Enum.EditModeSystem.Minimap] = {
-		settings = {
-			[Enum.EditModeMinimapSetting.HeaderUnderneath] = 0,
-			[Enum.EditModeMinimapSetting.RotateMinimap] = 1,
-			[Enum.EditModeMinimapSetting.Size] = 5 -- 100 ?
-		},
-		anchorInfo = {
-			point = "BOTTOMRIGHT",
-			relativeTo = "UIParent",
-			relativePoint = "BOTTOMRIGHT",
-			offsetX = -20,
-			offsetY = 20
-		}
-	},
+	--[Enum.EditModeSystem.Minimap] = {
+	--	settings = {
+	--		[Enum.EditModeMinimapSetting.HeaderUnderneath] = 0,
+	--		[Enum.EditModeMinimapSetting.RotateMinimap] = 1,
+	--		[Enum.EditModeMinimapSetting.Size] = 5 -- 100 ?
+	--	},
+	--	anchorInfo = {
+	--		point = "BOTTOMRIGHT",
+	--		relativeTo = "UIParent",
+	--		relativePoint = "BOTTOMRIGHT",
+	--		offsetX = -20,
+	--		offsetY = 20
+	--	}
+	--},
 
 	[Enum.EditModeSystem.HudTooltip] = {
 		settings = {
@@ -103,38 +103,38 @@ local azeriteSystems = {
 		}
 	},
 
-	[Enum.EditModeUnitFrameSystemIndices.Party] = {
-		settings = {
-			[Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames] = 0, -- this is the important part
-			[Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground] = 0,
-			[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
-			[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
-			[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
-			[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
-			[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
-			[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
-		},
-		anchorInfo = {
-			point = "TOPLEFT",
-			relativeTo = "CompactRaidFrameManager",
-			relativePoint = "TOPRIGHT",
-			offsetX = 0,
-			offsetY = -7,
-		},
-	},
+	--[Enum.EditModeUnitFrameSystemIndices.Party] = {
+	--	settings = {
+	--		[Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames] = 0, -- this is the important part
+	--		[Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground] = 0,
+	--		[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
+	--		[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
+	--		[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
+	--		[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
+	--		[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
+	--		[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
+	--	},
+	--	anchorInfo = {
+	--		point = "TOPLEFT",
+	--		relativeTo = "CompactRaidFrameManager",
+	--		relativePoint = "TOPRIGHT",
+	--		offsetX = 0,
+	--		offsetY = -7,
+	--	},
+	--},
 
-	[Enum.EditModeSystem.ObjectiveTracker] = {
-		settings = {
-			[Enum.EditModeObjectiveTrackerSetting.Height] = 40 -- doesn't stick
-		},
-		anchorInfo = {
-			point = "TOPRIGHT",
-			relativeTo = "UIParent",
-			relativePoint = "TOPRIGHT",
-			offsetX = -60,
-			offsetY = -280
-		}
-	},
+	--[Enum.EditModeSystem.ObjectiveTracker] = {
+	--	settings = {
+	--		[Enum.EditModeObjectiveTrackerSetting.Height] = 40 -- doesn't stick
+	--	},
+	--	anchorInfo = {
+	--		point = "TOPRIGHT",
+	--		relativeTo = "UIParent",
+	--		relativePoint = "TOPRIGHT",
+	--		offsetX = -60,
+	--		offsetY = -280
+	--	}
+	--},
 
 	[Enum.EditModeSystem.TalkingHeadFrame] = {
 		settings = {
