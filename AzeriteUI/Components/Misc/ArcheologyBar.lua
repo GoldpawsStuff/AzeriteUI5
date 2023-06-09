@@ -27,6 +27,8 @@ local Addon, ns = ...
 
 if (ns.IsClassic or ns.IsWrath) then return end
 
+LoadAddOn("Blizzard_ArchaeologyUI")
+
 local ArcheologyBar = ns:NewModule("ArcheologyBar", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Lua API
@@ -45,35 +47,39 @@ ArcheologyBar.GenerateDefaults = function(self)
 end
 
 ArcheologyBar.PrepareFrames = function(self)
+
 	self.frame = ArcheologyDigsiteProgressBar
+
+	self.frame:SetScript("OnShow", function(self)
+		self.timeSinceLeftDigsiteCheck = 0;
+		self:SetScript("OnUpdate", ArcheologyDigsiteProgressBar_OnUpdate)
+		self:UnregisterEvent("ARCHAEOLOGY_SURVEY_CAST")
+		self:RegisterEvent("ARCHAEOLOGY_FIND_COMPLETE")
+		self:RegisterEvent("ARTIFACT_DIGSITE_COMPLETE")
+	end)
+
+	self.frame:SetScript("OnHide", function(self)
+		self:SetScript("OnUpdate", nil)
+		self:RegisterEvent("ARCHAEOLOGY_SURVEY_CAST")
+		self:UnregisterEvent("ARCHAEOLOGY_FIND_COMPLETE")
+		self:UnregisterEvent("ARTIFACT_DIGSITE_COMPLETE")
+	end)
+
 end
 
 ArcheologyBar.UpdateAnchor = function(self)
 	if (not self.anchor) then return end
 
 	local config = self.db.profile.savedPosition
+	self.anchor:SetSize(240 / config.scale, 24 / config.scale)
 	self.anchor:SetScale(config.scale)
 	self.anchor:ClearAllPoints()
 	self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
 end
 
-ArcheologyBar.OnEvent = function(self, event, ...)
-	if (event == "ADDON_LOADED") then
-		if (... ~= "Blizzard_ArchaeologyUI") then return end
-
-		self:UnregisterEvent("ADDON_LOADED", "OnEvent")
-		self:PrepareFrames()
-		self:OnRefreshConfig()
-	end
-end
-
 ArcheologyBar.OnEnable = function(self)
 	self:PrepareFrames()
 	self:CreateAnchor(PROFESSIONS_ARCHAEOLOGY)
-
-	if (not self.frame) then
-		return self:RegisterEvent("ADDON_LOADED", "OnEvent")
-	end
 
 	ns.Module.OnEnable(self)
 end
