@@ -74,19 +74,17 @@ local Backdrops = setmetatable({}, { __index = function(t,k)
 end })
 
 local defaults = { profile = ns:Merge({
-	showItemID = false, -- off by default to reduce clutter
-	showSpellID = false, -- off by default to reduce clutter
+	showItemID = false,
+	showSpellID = false,
 }, ns.Module.defaults) }
 
 Tooltips.GenerateDefaults = function(self)
-	if (not ns.WoW10) then
-		defaults.profile.savedPosition = {
-			scale = ns.API.GetEffectiveScale(),
-			[1] = "BOTTOMRIGHT",
-			[2] = -319 * ns.API.GetEffectiveScale(),
-			[3] = 166 * ns.API.GetEffectiveScale()
-		}
-	end
+	defaults.profile.savedPosition = {
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "BOTTOMRIGHT",
+		[2] = -319 * ns.API.GetEffectiveScale(),
+		[3] = 166 * ns.API.GetEffectiveScale()
+	}
 	return defaults
 end
 
@@ -496,10 +494,7 @@ Tooltips.SetHooks = function(self)
 	self:SecureHook("SharedTooltip_SetBackdropStyle", "SetBackdropStyle")
 	self:SecureHook("GameTooltip_UnitColor", "SetUnitColor")
 	self:SecureHook("GameTooltip_ShowCompareItem", "OnCompareItemShow")
-
-	if (not ns.WoW10) then
-		self:SecureHook("GameTooltip_SetDefaultAnchor", "SetDefaultAnchor")
-	end
+	self:SecureHook("GameTooltip_SetDefaultAnchor", "SetDefaultAnchor")
 
 	if (TooltipDataProcessor and TooltipDataProcessor.AddTooltipPostCall) then
 		TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Spell, function(tooltip, ...) self:OnTooltipSetSpell(tooltip, ...) end)
@@ -515,7 +510,7 @@ Tooltips.SetHooks = function(self)
 	self:SecureHook(GameTooltip, "SetUnitBuff", "SetUnitAura")
 	self:SecureHook(GameTooltip, "SetUnitDebuff", "SetUnitAura")
 
-	if (ns.IsRetail) then
+	if (ns.WoW10) then
 		self:SecureHook(GameTooltip, "SetUnitBuffByAuraInstanceID", "SetUnitAuraInstanceID")
 		self:SecureHook(GameTooltip, "SetUnitDebuffByAuraInstanceID", "SetUnitAuraInstanceID")
 	end
@@ -526,8 +521,6 @@ Tooltips.SetHooks = function(self)
 end
 
 Tooltips.UpdateAnchor = function(self)
-	if (ns.WoW10) then return end
-
 	local config = self.db.profile.savedPosition
 
 	self.anchor:SetSize(250, 120)
@@ -537,19 +530,21 @@ Tooltips.UpdateAnchor = function(self)
 end
 
 Tooltips.PostUpdatePositionAndScale = function(self)
-	--if (not self.frame) then return end
-
-	--GameTooltip:SetScale(self.db.profile.savedPosition.scale * ns.API.GetEffectiveScale())
+	GameTooltip:SetScale(self.db.profile.savedPosition.scale * ns.API.GetEffectiveScale())
 end
 
 Tooltips.OnEnable = function(self)
+
+	if (ns.WoW10) then
+		GameTooltipDefaultContainer.HighlightSystem = ns.Noop
+		GameTooltipDefaultContainer.ClearHighlight = ns.Noop
+	end
+
 	self:StyleStatusBar()
 	self:StyleTooltips()
 	self:SetHooks()
 
-	if (not ns.WoW10) then
-		self:CreateAnchor(L["Tooltips"])
-	end
+	self:CreateAnchor(L["Tooltips"])
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "StyleTooltips")
 

@@ -99,8 +99,8 @@ MinimapMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = mapScale * ns.API.GetEffectiveScale(),
 		[1] = "BOTTOMRIGHT",
-		[2] = -40 / (mapScale * ns.API.GetEffectiveScale()),
-		[3] = 40 / (mapScale * ns.API.GetEffectiveScale())
+		[2] = -(ns.IsRetail and 14 or 40) / (mapScale * ns.API.GetEffectiveScale()),
+		[3] = (ns.IsRetail and 14 or 40) / (mapScale * ns.API.GetEffectiveScale())
 	}
 	return defaults
 end
@@ -1238,25 +1238,32 @@ MinimapMod.UpdateCustomElements = function(self)
 	if (CURRENT_THEME ~= "Azerite") then
 		return self.widgetFrame:Hide()
 	end
-	if (not ns.IsRetail) then
+	--if (not ns.WoW10) then
 		self.widgetFrame:SetShown(self.anchor:IsInDefaultPosition(60))
-	else
-		local anchorInfo = ns:GetModule("EditMode"):GetDefaultSystems()[Enum.EditModeSystem.Minimap].anchorInfo
-		local point, anchor, rpoint, x, y = MinimapCluster:GetPoint()
-		local point2, x2, y2 = anchorInfo.point, anchorInfo.offsetX, anchorInfo.offsetY
-		self.widgetFrame:SetShown(((point == point2) and (math_abs(x - x2) < 60) and (math_abs(y - y2) < 60)))
-	end
+	--else
+	--	local anchorInfo = ns:GetModule("EditMode"):GetDefaultSystems()[Enum.EditModeSystem.Minimap].anchorInfo
+	--	local point, anchor, rpoint, x, y = MinimapCluster:GetPoint()
+	--	local point2, x2, y2 = anchorInfo.point, anchorInfo.offsetX, anchorInfo.offsetY
+	--	self.widgetFrame:SetShown(((point == point2) and (math_abs(x - x2) < 60) and (math_abs(y - y2) < 60)))
+	--end
 end
 
 MinimapMod.PreUpdatePositionAndScale = function(self)
-	if (ns.WoW10) then return true end
-	self.frame:SetMovable(true)
+	if (not self.frame) then return end
+	--if (ns.WoW10) then return true end
+	--self.frame:SetMovable(true)
 end
 
 MinimapMod.PostUpdatePositionAndScale = function(self)
 	local config = self.db.profile.savedPosition
 	self.widgetFrame:SetScale(ns.API.GetEffectiveScale() / config.scale)
 	self:UpdateCustomElements()
+
+	if (ns.IsRetail) then
+		--- really?
+		--MinimapCluster:SetScale(ns.API.GetEffectiveScale())
+		MinimapCluster.MinimapContainer:SetScale(1)
+	end
 
 	-- TODO: Figure out all the elements I should rescale.
 	for name in next,{
@@ -1273,8 +1280,52 @@ MinimapMod.PostUpdatePositionAndScale = function(self)
 end
 
 MinimapMod.UpdateAnchor = function(self)
-	if (ns.WoW10 or not self.frame) then return end
-	ns.Module.UpdateAnchor(self)
+	if (not self.anchor) then return end
+
+	if (self.PreUpdateAnchor) then
+		if (self:PreUpdateAnchor()) then return end
+	end
+
+	local config = self.db.profile.savedPosition
+	if (config) then
+		local w,h = self.frame:GetSize()
+		self.anchor:SetSize(w + (16*2)/config.scale, h + (16*2)/config.scale)
+		self.anchor:SetScale(config.scale)
+		self.anchor:ClearAllPoints()
+		self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
+	end
+
+	if (self.PostUpdateAnchor) then
+		self:PostUpdateAnchor()
+	end
+end
+
+MinimapMod.UpdatePositionAndScale = function(self)
+	if (not self.frame) then return end
+
+	if (InCombatLockdown()) then
+		self.updateneeded = true
+		return
+	end
+
+	self.updateneeded = nil
+
+	local config = self.db.profile.savedPosition
+	if (config) then
+
+		local string_find = string.find
+
+		local x = string_find(config[1], "LEFT") and 16 or string_find(config[1], "RIGHT") and -16 or 0
+		local y = string_find(config[1], "TOP") and -16 or string_find(config[1], "BOTTOM") and 16 or 0
+
+		self.frame:SetScale(config.scale)
+		self.frame:ClearAllPoints()
+		self.frame:SetPoint(config[1], UIParent, config[1], (x + config[2])/config.scale, (y + config[3])/config.scale)
+	end
+
+	if (self.PostUpdatePositionAndScale) then
+		self:PostUpdatePositionAndScale()
+	end
 end
 
 MinimapMod.UpdateSettings = function(self)
@@ -1302,16 +1353,26 @@ MinimapMod.OnEvent = function(self, event, ...)
 end
 
 MinimapMod.OnEnable = function(self)
+
+	if (ns.WoW10) then
+		MinimapCluster.HighlightSystem = ns.Noop
+		MinimapCluster.ClearHighlight = ns.Noop
+	end
+
+	MinimapCluster:EnableMouse(false)
+	MinimapCluster:SetFrameLevel(1)
+
 	self.frame = Minimap
+	self.frame:SetMovable(true)
 	self.frame:EnableMouseWheel(true)
 	self.frame:SetScript("OnMouseWheel", Minimap_OnMouseWheel)
 	self.frame:SetScript("OnMouseUp", Minimap_OnMouseUp)
 
 	self:CreateCustomElements()
 
-	if (not ns.WoW10) then
+	--if (not ns.WoW10) then
 		self:CreateAnchor(MINIMAP_LABEL):SetDefaultScale(mapScale * ns.API.GetEffectiveScale())
-	end
+	--end
 
 	ns.Module.OnEnable(self)
 
