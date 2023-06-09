@@ -467,7 +467,7 @@ ChatFrames.UpdateButtons = function(self, event, ...)
 					if (up) then up:SetParent(buttonFrame) end
 					if (down) then down:SetParent(buttonFrame) end
 					if (bottom) then bottom:SetParent(buttonFrame) end
-					if (scrollBar) then scrollBar:SetParent(buttonFrame) end
+					if (scrollBar) then scrollBar:SetParent(buttonFrame); scrollBar:Update() end
 
 					local tabText = ChatFrame.GetTabText(frame)
 					tabText:Show()
