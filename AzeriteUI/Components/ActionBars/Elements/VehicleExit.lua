@@ -44,7 +44,7 @@ local config = {
 	VehicleExitButtonPosition = function()
 		-- Trickery to work around the fact this cannot be parented to the Minimap,
 		-- as that would cause the Minimap to be become restricted from its secure children.
-		local m,w,h = ns.IsRetail and .59 or .79, 140, 140
+		local m,w,h = ns.IsRetail and .66 or .79, ns.IsRetail and 198 or 140, ns.IsRetail and 198 or 140
 		return { "CENTER", Minimap, "CENTER", -math_floor(math_cos(45*deg2rad) * w * m), math_floor(math_sin(45*deg2rad) * h * m) }
 	end,
 	VehicleExitButtonSize = { 32, 32 },
@@ -95,17 +95,20 @@ VehicleExit.UpdateScale = function(self)
 	if (self.Button) then
 		local point, anchor, rpoint, x, y = unpack(config.VehicleExitButtonPosition())
 
-		local scaleObject = ns.IsRetail and MinimapCluster.MinimapContainer or Minimap
+		--local scaleObject = ns.IsRetail and MinimapCluster.MinimapContainer or Minimap
+		local scaleObject = Minimap
 		local mscale = scaleObject:GetScale()
 		local escale = mscale / scaleObject:GetEffectiveScale()
 
-		self.Button:SetScale(ns.API.GetEffectiveScale() * mscale)
+		--self.Button:SetScale(ns.API.GetEffectiveScale() * mscale)
+		self.Button:SetScale(--[[ns.API.GetEffectiveScale() * ]]mscale)
 		self.Button:ClearAllPoints()
-		if (ns.IsRetail) then
-			self.Button:SetPoint(point, anchor, rpoint, x * escale, y * escale) -- makes no sense
-		else
+
+		--if (ns.IsRetail) then
+		--	self.Button:SetPoint(point, anchor, rpoint, x * escale, y * escale) -- makes no sense
+		--else
 			self.Button:SetPoint(point, anchor, rpoint, x / escale, y / escale)
-		end
+		--end
 	end
 end
 
@@ -166,5 +169,5 @@ VehicleExit.OnInitialize = function(self)
 	self:RegisterEvent("UI_SCALE_CHANGED", "OnEvent")
 
 	-- Monitor scale changes.
-	self:SecureHook(ns.IsRetail and MinimapCluster.MinimapContainer or Minimap, "SetScale", "UpdateScale")
+	self:SecureHook(--[[ns.IsRetail and MinimapCluster.MinimapContainer or ]]Minimap, "SetScale", "UpdateScale")
 end
