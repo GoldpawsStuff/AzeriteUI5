@@ -555,30 +555,6 @@ local UpdateQuestItem = function(_, block)
 	end
 end
 
-local AutoHider_OnHide = function()
-	if (not ObjectiveTrackerFrame.collapsed) then
-		ObjectiveTracker_Collapse()
-	end
-end
-
-local AutoHider_OnShow = function()
-	if (ObjectiveTrackerFrame.collapsed) then
-		ObjectiveTracker_Expand()
-	end
-end
-
-local Immersion_OnShow = function()
-	if (ObjectiveTrackerFrame) then
-		ObjectiveTrackerFrame:SetAlpha(0)
-	end
-end
-
-local Immersion_OnHide = function()
-	if (ObjectiveTrackerFrame) then
-		ObjectiveTrackerFrame:SetAlpha(.9)
-	end
-end
-
 local SetObjectivesTrackerTheme = function(self, requestedTheme)
 
 	-- Theme names are case sensitive,
@@ -604,10 +580,7 @@ Tracker.SetObjectivesTrackerTheme = function(self, input)
 	ObjectiveTrackerFrame:SetTheme((self:GetArgs(string.lower(input))))
 end
 
-Tracker.HookTracker = function(self)
-
-	ObjectiveTrackerUIWidgetContainer:SetFrameStrata("BACKGROUND")
-	ObjectiveTrackerFrame:SetFrameStrata("BACKGROUND")
+Tracker.PrepareFrames = function(self)
 
 	self:SecureHook("ObjectiveTracker_Update", UpdateObjectiveTracker)
 	self:SecureHook(QUEST_TRACKER_MODULE, "SetBlockHeader", UpdateQuestItem)
@@ -622,51 +595,54 @@ Tracker.HookTracker = function(self)
 
 	ObjectiveTrackerFrame.autoHider = CreateFrame("Frame", nil, ObjectiveTrackerFrame, "SecureHandlerStateTemplate")
 	ObjectiveTrackerFrame.autoHider:SetAttribute("_onstate-vis", [[ if (newstate == "hide") then self:Hide() else self:Show() end ]])
-	ObjectiveTrackerFrame.autoHider:SetScript("OnHide", AutoHider_OnHide)
-	ObjectiveTrackerFrame.autoHider:SetScript("OnShow", AutoHider_OnShow)
-
-	ObjectiveTrackerFrame.SetTheme = SetObjectivesTrackerTheme
+	ObjectiveTrackerFrame.autoHider:SetScript("OnHide", function()
+		if (not ObjectiveTrackerFrame.collapsed) then
+			ObjectiveTracker_Collapse()
+		end
+	end)
+	ObjectiveTrackerFrame.autoHider:SetScript("OnShow", function()
+		if (ObjectiveTrackerFrame.collapsed) then
+			ObjectiveTracker_Expand()
+		end
+	end)
 
 	local driver = "hide;show"
 	driver = "[@arena1,exists][@arena2,exists][@arena3,exists][@arena4,exists][@arena5,exists]" .. driver
 	driver = "[@boss1,exists][@boss2,exists][@boss3,exists][@boss4,exists][@boss5,exists]" .. driver
 
 	RegisterStateDriver(ObjectiveTrackerFrame.autoHider, "vis", driver)
+
+	ObjectiveTrackerUIWidgetContainer:SetFrameStrata("BACKGROUND")
+	ObjectiveTrackerFrame:SetFrameStrata("BACKGROUND")
+	ObjectiveTrackerFrame:SetFrameLevel(50)
+	ObjectiveTrackerFrame:SetClampedToScreen(false)
+	ObjectiveTrackerFrame:SetAlpha(.9)
+	ObjectiveTrackerFrame.SetTheme = SetObjectivesTrackerTheme
+
 end
 
 Tracker.OnEvent = function(self, event, ...)
+	if (event == "PLAYER_ENTERING_WORLD" or event == "SETTINGS_LOADED") then
+		ObjectiveTrackerFrame:SetAlpha(.9)
+	end
 	if (event == "PLAYER_ENTERING_WORLD") then
 		local isInitialLogin, isReloadingUi = ...
 		if (isInitialLogin or isReloadingUi) then
 			if (ImmersionFrame) then
 				if (not self:IsHooked(ImmersionFrame, "OnShow")) then
-					self:SecureHookScript(ImmersionFrame, "OnShow", function() WatchFrame:SetAlpha(0) end)
+					self:SecureHookScript(ImmersionFrame, "OnShow", function() ObjectiveTrackerFrame:SetAlpha(0) end)
 				end
 				if (not self:IsHooked(ImmersionFrame, "OnHide")) then
-					self:SecureHookScript(ImmersionFrame, "OnHide", function() WatchFrame:SetAlpha(.9) end)
+					self:SecureHookScript(ImmersionFrame, "OnHide", function() ObjectiveTrackerFrame:SetAlpha(.9) end)
 				end
 			end
 		end
 	end
 end
 
-Tracker.RefreshConfig = function(self)
-	self:SetObjectivesTrackerTheme(self.db.profile.theme)
-end
-
-local OnEnable = Tracker.OnEnable
-
 Tracker.OnEnable = function(self)
-	ns.Module.OnEnable(self)
-
+	self:PrepareFrames()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-end
-
-Tracker.OnInitialize = function(self)
-	ns.Module.OnInitialize(self)
-
-	if (not self.db.profile.enabled) then return end
-
-	self:HookTracker()
-	self:RegisterChatCommand("settrackertheme", "SetObjectivesTrackerTheme")
+	self:RegisterEvent("SETTINGS_LOADED", "OnEvent")
+	self:SetObjectivesTrackerTheme(self.db.profile.theme)
 end
