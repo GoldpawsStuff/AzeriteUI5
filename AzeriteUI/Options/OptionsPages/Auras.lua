@@ -129,6 +129,15 @@ local GenerateOptions = function()
 				set = setter,
 				get = getter
 			},
+			ignoreTarget = {
+				name = L["Ignore current target"],
+				desc = L["Normally auras will be hidden when you have a target, as their position directly conflicts with the position of the target frame. By enabling this the auras will ignore your target and remain visible."],
+				order = 22,
+				type = "toggle", width = "full",
+				hidden = isdisabled,
+				set = setter,
+				get = getter
+			},
 			layoutHeader = {
 				name = L["Layout"],
 				order = 30,

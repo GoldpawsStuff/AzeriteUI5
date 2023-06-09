@@ -47,6 +47,7 @@ local defaults = { profile = ns:Merge({
 	enableAuraFading = true,
 	enableModifier = false,
 	modifier = "SHIFT",
+	ignoreTarget = false,
 	anchorPoint = "TOPRIGHT",
 	growthX = "LEFT",
 	growthY = "DOWN",
@@ -474,13 +475,22 @@ Auras.CreateBuffs = function(self)
 			local visdriver;
 			local buffs = self:GetFrameRef("buffs");
 			local auramode = self:GetAttribute("auramode");
+			local ignoreTarget = self:GetAttribute("ignoreTarget");
 			if (auramode == "hide") then
 				visdriver = "hide";
 			elseif (auramode == "show") then
-				visdriver = "[petbattle]hide;[@target,exists]hide;show";
+				if (ignoreTarget) then
+					visdriver = "[petbattle]hide;show";
+				else
+					visdriver = "[petbattle]hide;[@target,exists]hide;show";
+				end
 			elseif (auramode == "modifier") then
 				local modifierkey = self:GetAttribute("modifierkey");
-				visdriver = "[petbattle]hide;[@target,exists]hide;[mod:"..modifierkey.."]show;hide";
+				if (ignoreTarget) then
+					visdriver = "[petbattle]hide;[mod:"..modifierkey.."]show;hide";
+				else
+					visdriver = "[petbattle]hide;[@target,exists]hide;[mod:"..modifierkey.."]show;hide";
+				end
 			end
 			self:SetAttribute("visdriver", visdriver);
 			UnregisterStateDriver(self, "vis");
@@ -613,6 +623,7 @@ Auras.UpdateSettings = function(self)
 	self.buffs.consolidation:SetAttribute("wrapAfter", self.buffs:GetAttribute("wrapAfter"))
 	self.buffs.consolidation:SetAttribute("wrapYOffset", self.buffs:GetAttribute("wrapYOffset"))
 
+	self.visibility:SetAttribute("ignoreTarget", config.ignoreTarget)
 	self.visibility:SetAttribute("auramode", not config.enabled and "hide" or config.enableModifier and "modifier" or "show")
 	self.visibility:SetAttribute("modifierkey", string_lower(config.modifier))
 	self.visibility:Execute([[ self:RunAttribute("UpdateDriver"); ]])
