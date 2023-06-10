@@ -47,10 +47,10 @@ local function Update(self, event)
 	-- own groups via UnitIsGroupLeader(unit, LE_PARTY_CATEGORY_HOME) or by members of other groups via
 	-- UnitLeadsAnyGroup(unit). Inside the group formed by the dungeon finder UnitIsGroupLeader(unit) will only return
 	-- true for the instance leader.
-	local isRestricted = HasLFGRestrictions and HasLFGRestrictions()
+	local isInLFGInstance = HasLFGRestrictions and HasLFGRestrictions()
 	local isLeader = UnitIsGroupLeader(unit)
 	if(isLeader) then
-		if(isRestricted) then
+		if(isInLFGInstance) then
 			element:SetTexture([[Interface\LFGFrame\UI-LFG-ICON-PORTRAITROLES]])
 			element:SetTexCoord(0, 0.296875, 0.015625, 0.3125)
 		else
