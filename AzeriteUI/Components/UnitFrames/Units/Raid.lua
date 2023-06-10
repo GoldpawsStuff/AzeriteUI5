@@ -422,6 +422,20 @@ local GroupRoleIndicator_Override = function(self, event)
 	end
 end
 
+local MasterLooterIndicator_PostUpdate = function(self, isShown)
+	local leaderIndicator = self.__owner.LeaderIndicator
+	leaderIndicator:ClearAllPoints()
+
+	if (isShown) then
+		if (not leaderIndicator.points) then
+			leaderIndicator.points = { leaderIndicator:GetPoint() }
+		end
+		leaderIndicator:SetPoint("RIGHT", self, "LEFT")
+	elseif (leaderIndicator.points) then
+		leaderIndicator:SetPoint(unpack(leaderIndicator.points))
+	end
+end
+
 -- Update targeting highlight outline
 local TargetHighlight_Update = function(self, event, unit, ...)
 	if (unit and unit ~= self.unit) then return end
@@ -686,6 +700,23 @@ local style = function(self, unit)
 	self:Tag(name, prefix("[*:Name(12,nil,nil,true)]"))
 
 	self.Name = name
+
+	-- Leader Indicator
+	--------------------------------------------
+	local leaderIndicator = overlay:CreateFontString(nil, "OVERLAY", nil, 2)
+	leaderIndicator:SetSize(16, 16)
+	leaderIndicator:SetPoint("RIGHT", self.Name, "LEFT")
+
+	self.LeaderIndicator = leaderIndicator
+
+	-- MasterLooter Indicator
+	--------------------------------------------
+	local masterLooterIndicator = overlay:CreateFontString(nil, "OVERLAY", nil, 2)
+	masterLooterIndicator:SetSize(16, 16)
+	masterLooterIndicator:SetPoint("RIGHT", self.Name, "LEFT")
+
+	self.MasterLooterIndicator = masterLooterIndicator
+	self.MasterLooterIndicator.PostUpdate = MasterLooterIndicator_PostUpdate
 
 	-- Textures need an update when frame is displayed.
 	self.PostUpdate = UnitFrame_PostUpdate
