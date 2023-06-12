@@ -1,0 +1,16 @@
+## Interface: 100005
+## Title: Lib: PlayerSpells-1.0
+## Notes: Additional information about player spells.
+## Author: Adirelle
+## Version: 1.1.0
+## LoadOnDemand: 1
+## OptionalDeps: AdiDebug
+## X-Date: 2023-05-06T19:49:22Z
+## X-Category: Library
+## X-License: GPL v3
+## X-eMail: adirelle@gmail.com
+
+## X-Curse-Project-ID: 72228
+
+LibStub.lua
+lib.xml

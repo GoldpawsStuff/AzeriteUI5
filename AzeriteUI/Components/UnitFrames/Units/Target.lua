@@ -270,10 +270,20 @@ local config = {
 		HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 		HealthAbsorbColor = { 1, 1, 1, .35 },
 		HealthCastOverlayColor = { 1, 1, 1, .35 },
+
+		-- Health Bar Threat
+		HealthThreatSize = { 105, 104 },
+		HealthThreatPosition = { "TOPRIGHT", -104, -28.5 },
 		HealthThreatTexture = GetMedia("hp_critter_case_glow"),
 
 		PortraitBorderTexture = GetMedia("portrait_frame_lo"),
 		PortraitBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
+
+		-- Portrait Threat
+		PortraitThreatSize = { 187, 187 },
+		PortraitThreatPosition = { "CENTER", -1, 3 },
+		PortraitThreatTexture = GetMedia("hp_critter_case_glow"),
+
 	},
 	Novice = {
 
@@ -289,11 +299,20 @@ local config = {
 		HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 		HealthAbsorbColor = { 1, 1, 1, .35 },
 		HealthCastOverlayColor = { 1, 1, 1, .35 },
+
+		-- Health Bar Threat
+		HealthThreatSize = { 716, 188 },
+		HealthThreatPosition = { "TOPRIGHT", 24.5, 8.5 },
 		HealthThreatTexture = GetMedia("hp_low_case_glow"),
 
 		-- Portrait
 		PortraitBorderTexture = GetMedia("portrait_frame_lo"),
 		PortraitBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
+
+		-- Portrait Threat
+		PortraitThreatSize = { 187, 187 },
+		PortraitThreatPosition = { "CENTER", -1, 3 },
+		PortraitThreatTexture = GetMedia("hp_critter_case_glow"),
 
 	},
 	Hardened = {
@@ -310,11 +329,20 @@ local config = {
 		HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 		HealthAbsorbColor = { 1, 1, 1, .35 },
 		HealthCastOverlayColor = { 1, 1, 1, .35 },
+
+		-- Health Bar Threat
+		HealthThreatSize = { 716, 188 },
+		HealthThreatPosition = { "TOPRIGHT", 24.5, 7.5 },
 		HealthThreatTexture = GetMedia("hp_mid_case_glow"),
 
 		-- Portrait
 		PortraitBorderTexture = GetMedia("portrait_frame_hi"),
 		PortraitBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
+
+		-- Portrait Threat
+		PortraitThreatSize = { 187, 187 },
+		PortraitThreatPosition = { "CENTER", -1, 3 },
+		PortraitThreatTexture = GetMedia("hp_critter_case_glow"),
 
 	},
 	Seasoned = {
@@ -331,11 +359,20 @@ local config = {
 		HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 		HealthAbsorbColor = { 1, 1, 1, .35 },
 		HealthCastOverlayColor = { 1, 1, 1, .35 },
+
+		-- Health Bar Threat
+		HealthThreatSize = { 716, 188 },
+		HealthThreatPosition = { "TOPRIGHT", 23.5, 8.5 },
 		HealthThreatTexture = GetMedia("hp_cap_case_glow"),
 
 		-- Portrait
 		PortraitBorderTexture = GetMedia("portrait_frame_hi"),
 		PortraitBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
+
+		-- Portrait Threat
+		PortraitThreatSize = { 187, 187 },
+		PortraitThreatPosition = { "CENTER", -1, 3 },
+		PortraitThreatTexture = GetMedia("hp_critter_case_glow"),
 
 	},
 	Boss = {
@@ -353,11 +390,21 @@ local config = {
 		HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 		HealthAbsorbColor = { 1, 1, 1, .35 },
 		HealthCastOverlayColor = { 1, 1, 1, .35 },
+
+		-- Health Bar Threat
+		HealthThreatSize = { 697, 192 },
+		HealthThreatPosition = { "TOPRIGHT", -58, 10.5 },
 		HealthThreatTexture = GetMedia("hp_boss_case_glow"),
 
 		-- Portrait
 		PortraitBorderTexture = GetMedia("portrait_frame_hi"),
 		PortraitBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
+
+		-- Portrait Threat
+		PortraitThreatSize = { 187, 187 },
+		PortraitThreatPosition = { "CENTER", -1, 3 },
+		PortraitThreatTexture = GetMedia("hp_critter_case_glow"),
+
 	}
 }
 
@@ -825,6 +872,16 @@ local UnitFrame_UpdateTextures = function(self)
 	cast:SetSparkMap(db.HealthBarSparkMap)
 	cast:SetFlippedHorizontally(isFlipped)
 
+	local threat = self.ThreatIndicator
+	if (threat) then
+		for key,texture in next,threat.textures do
+			texture:ClearAllPoints()
+			texture:SetPoint(unpack(db[key.."ThreatPosition"]))
+			texture:SetSize(unpack(db[key.."ThreatSize"]))
+			texture:SetTexture(db[key.."ThreatTexture"])
+		end
+	end
+
 	local portraitBorder = self.Portrait.Border
 	portraitBorder:SetTexture(db.PortraitBorderTexture)
 	portraitBorder:SetVertexColor(unpack(db.PortraitBorderColor))
@@ -1141,6 +1198,38 @@ local style = function(self, unit, id)
 
 	self.PvPIndicator = PvPIndicator
 	self.PvPIndicator.Override = PvPIndicator_Override
+
+	-- Threat Indicator
+	--------------------------------------------
+	local threatIndicator = CreateFrame("Frame", nil, self)
+	threatIndicator:SetFrameLevel(self:GetFrameLevel() - 2)
+	threatIndicator:SetAllPoints()
+
+	threatIndicator.textures = {
+		Health = threatIndicator:CreateTexture(nil, "BACKGROUND", nil, -3),
+		Portrait = portraitFrame:CreateTexture(nil, "BACKGROUND", nil, -1)
+	}
+	threatIndicator.Show = function(self)
+		self.isShown = true
+		for key,texture in next,self.textures do
+			texture:Show()
+		end
+	end
+	threatIndicator.Hide = function(self)
+		self.isShown = nil
+		for key,texture in next,self.textures do
+			texture:Hide()
+		end
+	end
+	threatIndicator.PostUpdate = function(self, unit, status, r, g, b)
+		if (self.isShown) then
+			for key,texture in next,self.textures do
+				texture:SetVertexColor(r, g, b)
+			end
+		end
+	end
+
+	self.ThreatIndicator = threatIndicator
 
 	-- Classification Badge
 	--------------------------------------------

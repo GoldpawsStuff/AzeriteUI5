@@ -587,7 +587,7 @@ GroupHeader.Disable = function(self)
 end
 
 GroupHeader.IsEnabled = function(self)
-	return self.units[i]:IsEnabled()
+	return self.units[1]:IsEnabled()
 end
 
 BossFrameMod.CreateUnitFrames = function(self)
@@ -598,14 +598,14 @@ BossFrameMod.CreateUnitFrames = function(self)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
 	local frame = setmetatable(CreateFrame("Frame", nil, UIParent), GroupHeader_MT)
-	frame:SetSize(250, 485)
+	frame:SetSize(250, 97 * MAX_BOSS_FRAMES)
 	frame.units = {}
 
 	for i = 1,MAX_BOSS_FRAMES do
 		local unitFrame = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)
 		unitFrame:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, -(i-1)*97)
 
-		frame.units[i] = frame
+		frame.units[i] = unitFrame
 	end
 
 	self.frame = frame
@@ -616,14 +616,6 @@ BossFrameMod.OnEnable = function(self)
 	-- Disable Blizzard boss frames.
 	for i = 1, MAX_BOSS_FRAMES do
 		oUF:DisableBlizzard("boss"..i)
-	end
-
-	-- Disable Blizzard player alternate power bar,
-	-- as we're integrating this into the standard power crystal.
-	if (PlayerPowerBarAlt) then
-		PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_SHOW")
-		PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_HIDE")
-		PlayerPowerBarAlt:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	end
 
 	self:CreateUnitFrames()

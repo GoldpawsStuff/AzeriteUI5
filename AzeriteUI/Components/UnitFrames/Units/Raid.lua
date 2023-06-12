@@ -46,6 +46,9 @@ local playerClass = ns.PlayerClass
 
 local defaults = { profile = ns:Merge({
 
+	showRaid = true,
+	showParty = false,
+
 	point = "LEFT", -- anchor point of unitframe, group members within column grow opposite
 	xOffset = 10, -- horizontal offset within the same column
 	yOffset = 0, -- vertical offset within the same column
@@ -622,6 +625,49 @@ local style = function(self, unit)
 		self.Health.Absorb = absorb
 	end
 
+	-- Dispellable Debuffs
+	--------------------------------------------
+	local dispellable = {}
+	dispellable.disableMouse = true
+
+	local dispelIcon = CreateFrame("Button", dispellable:GetDebugName() .. "Button", healthOverlay)
+	--dispelIcon:Hide()
+	dispelIcon:SetFrameLevel(overlay:GetFrameLevel() + 2)
+	dispelIcon:SetSize(24,24)
+	dispelIcon:SetPoint("CENTER")
+	dispellable.dispellIcon = dispelIcon
+
+	local dispelIconTexture = dispelIcon:CreateTexture(nil, "BACKGROUND", nil, 1)
+	dispelIconTexture:SetAllPoints()
+	dispelIconTexture:SetMask(GetMedia("actionbutton-mask-square"))
+	dispelIcon.icon = dispelIconTexture
+
+	local dispelIconCount = dispelIcon.Border:CreateFontString(nil, "OVERLAY")
+	dispelIconCount:SetFontObject(GetFont(12,true))
+	dispelIconCount:SetTextColor(Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3])
+	dispelIconCount:SetPoint("BOTTOMRIGHT", dispelIcon, "BOTTOMRIGHT", -2, 3)
+	dispelIcon.count = dispelIconCount
+
+	local dispelIconBorder = CreateFrame("Frame", nil, dispelIcon, ns.BackdropTemplate)
+	dispelIconBorder:SetBackdrop({ edgeFile = GetMedia("border-aura"), edgeSize = 12 })
+	dispelIconBorder:SetBackdropBorderColor(Colors.aura[1], Colors.aura[2], Colors.aura[3])
+	dispelIconBorder:SetPoint("TOPLEFT", -6, 6)
+	dispelIconBorder:SetPoint("BOTTOMRIGHT", 6, -6)
+	dispelIconBorder:SetFrameLevel(dispelIcon:GetFrameLevel() + 2)
+	dispelIcon.overlay = dispelIconBorder
+
+	local dispelIconTime = dispelIcon.overlay:CreateFontString(nil, "OVERLAY")
+	dispelIconTime:SetFontObject(GetFont(14,true))
+	dispelIconTime:SetTextColor(Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3])
+	dispelIconTime:SetPoint("TOPLEFT", dispelIcon, "TOPLEFT", -4, 4)
+	dispelIcon.time = dispelIconTime
+
+	-- Using a virtual cooldown element with the timer attached,
+	-- allowing them to piggyback on the back-end's cooldown updates.
+	dispelIcon.cd = ns.Widgets.RegisterCooldown(dispelIcon.time)
+
+	--self.Dispellable = dispellable
+
 	-- Readycheck
 	--------------------------------------------
 	local readyCheckIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 7)
@@ -718,6 +764,11 @@ local style = function(self, unit)
 	self.MasterLooterIndicator = masterLooterIndicator
 	self.MasterLooterIndicator.PostUpdate = MasterLooterIndicator_PostUpdate
 
+	--local threatIndicator = health:CreateTexture(nil, "BACKGROUND", nil, -2)
+	--threatIndicator:SetPoint(unpack(db.HealthBackdropPosition))
+	--threatIndicator:SetSize(unpack(db.HealthBackdropSize))
+	--threatIndicator:SetTexture(db.HealthBackdropTexture)
+
 	-- Textures need an update when frame is displayed.
 	self.PostUpdate = UnitFrame_PostUpdate
 
@@ -744,21 +795,21 @@ end
 
 GroupHeader.Enable = function(self)
 	if (InCombatLockdown()) then return end
-	local visibility = select(3, self:GetHeaderAttributes())
-	local type, list = string.split(" ", visibility, 2)
-	if (list and type == "custom") then
-		RegisterAttributeDriver(self, "state-visibility", list)
-		self.visibility = list
-	else
-		local condition = getCondition(string.split(",", visibility))
-		RegisterAttributeDriver(self, "state-visibility", condition)
-		self.visibility = condition
-	end
+
+	local visibility = RaidFrameMod:GetVisibilityDriver()
+
+	UnregisterAttributeDriver(self, "state-visibility")
+	RegisterAttributeDriver(self, "state-visibility", visibility)
+
+	self.visibility = visibility
 end
 
 GroupHeader.Disable = function(self)
 	if (InCombatLockdown()) then return end
+
+	UnregisterAttributeDriver(self, "state-visibility")
 	RegisterAttributeDriver(self, "state-visibility", "hide")
+
 	self.visibility = nil
 end
 
@@ -776,58 +827,89 @@ RaidFrameMod.DisableBlizzard = function(self)
 	CompactRaidFrameManager:SetParent(ns.Hider)
 end
 
+RaidFrameMod.OnEvent = function(self, event, ...)
+	if (event == "PLAYER_REGEN_ENABLED") then
+		if (InCombatLockdown()) then return end
+		if (self.needHeaderUpdate) then
+			self.needHeaderUpdate = nil
+			self:UpdateHeader()
+		end
+	end
+end
+
+RaidFrameMod.GetVisibilityDriver = function(self)
+	local db = self.db.profile
+
+end
+
 RaidFrameMod.GetHeaderAttributes = function(self)
 	local db = self.db.profile
 
-	return ns.Prefix.."Raid", nil,
-	--"custom [@player,exists,nogroup] show;hide", "showPlayer", true, "showSolo", true,
-	--"custom [group:party,nogroup:raid] show;hide", "showPlayer", false, "showSolo", false,
-	"custom [group,@raid5,exists] show;hide", "showPlayer", false, "showSolo", false,
+	return ns.Prefix.."Raid", nil, nil,
+	"initial-width", config.UnitSize[1],
+	"initial-height", config.UnitSize[2],
 	"oUF-initialConfigFunction", [[
 		local header = self:GetParent();
 		self:SetWidth(header:GetAttribute("initial-width"));
 		self:SetHeight(header:GetAttribute("initial-height"));
 		self:SetFrameLevel(self:GetFrameLevel() + 10);
 	]],
-	"initial-width", config.UnitSize[1],
-	"initial-height", config.UnitSize[2],
 
 	--'https://wowprogramming.com/docs/secure_template/Group_Headers.html
-
-	-- Visibility
-	"showRaid", true,
-	"showParty", false,
-
-	-- Member sorting within each group
-	"sortMethod", "INDEX", -- INDEX, NAME
+	"sortMethod", "INDEX", -- INDEX, NAME -- Member sorting within each group
 	"sortDir", "ASC", -- ASC, DESC
-
-	-- Unit anchoring within each column
-	"point", db.point,
+	"groupFilter", "1,2,3,4,5,6,7,8", -- Group filter
+	"showSolo", false, -- show while non-grouped
+	"showPlayer", true, -- show the player while in a party
+	"showRaid", db.showRaid, -- show while in a raid group
+	"showParty", db.showParty, -- show while in a party
+	"point", db.point, -- Unit anchoring within each column
 	"xOffset", db.xOffset,
 	"yOffset", db.yOffset,
-
-	-- Group filter
-	"groupFilter", "1,2,3,4,5,6,7,8",
-
-	-- Grouping order and type
-	"groupBy", "ROLE",
+	"groupBy", db.groupBy, -- ROLE, CLASS, GROUP -- Grouping order and type
 	"groupingOrder", db.groupingOrder,
-
-	-- Column setup and growth
-	"unitsPerColumn", db.unitsPerColumn,
+	"unitsPerColumn", db.unitsPerColumn, -- Column setup and growth
 	"maxColumns", db.maxColumns,
 	"columnSpacing", db.columnSpacing,
 	"columnAnchorPoint", db.columnAnchorPoint
 
 end
 
-RaidFrameMod.UpdateAll = function(self)
+RaidFrameMod.UpdateHeader = function(self)
+	if (not self.frame) then return end
+	if (InCombatLockdown()) then
+		self.needHeaderUpdate = true
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+		return
+	end
+	for _,attrib in next,{
+		"showRaid",
+		"showParty",
+		"point",
+		"xOffset",
+		"yOffset",
+		"groupBy",
+		"groupingOrder",
+		"unitsPerColumn",
+		"maxColumns",
+		"columnSpacing",
+		"columnAnchorPoint"
+	} do
+		self.frame:SetAttribute(attrib, self.db.profile[attrib])
+	end
+end
+
+RaidFrameMod.UpdateUnits = function(self)
 	if (not self.frame) then return end
 	for i = 1, self.frame:GetNumChildren() do
 		local frame = select(i, self.frame:GetChildren())
 		frame:UpdateAllElements("RefreshUnit")
 	end
+end
+
+RaidFrameMod.Update = function(self)
+	self:UpdateHeader()
+	self:UpdateUnits()
 end
 
 RaidFrameMod.CreateUnitFrames = function(self)
@@ -847,14 +929,14 @@ RaidFrameMod.CreateUnitFrames = function(self)
 
 	-- Sometimes some elements are wrong or "get stuck" upon exiting the editmode.
 	if (ns.WoW10) then
-		self:SecureHook(EditModeManagerFrame, "ExitEditMode", "UpdateAll")
+		self:SecureHook(EditModeManagerFrame, "ExitEditMode", "UpdateUnits")
 	end
 
 	-- Sometimes when changing group leader, only the group leader is updated,
 	-- leaving other units with a lot of wrong information displayed.
 	-- Should think that GROUP_ROSTER_UPDATE handled this, but it doesn't.
 	-- *Only experienced this is Wrath.But adding it as a general update anyway.
-	self:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateAll")
+	self:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateUnits")
 
 end
 

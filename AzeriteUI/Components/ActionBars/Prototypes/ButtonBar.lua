@@ -39,6 +39,7 @@ local math_ceil = math.ceil
 local math_floor = math.floor
 local math_max = math.max
 local math_min = math.min
+local setmetatable = setmetatable
 
 local defaults = ns:Merge({
 	numbuttons = 0
@@ -52,7 +53,7 @@ ns.ButtonBar.Create = function(self, id, config, name)
 	local bar = setmetatable(ns.Bar:Create(id, config, name), ButtonBar_MT)
 
 	bar.buttons = {}
-	bar.buttonConfig = ns:Merge({}, ns.ActionButton.defaults)
+	bar.buttonConfig = ns:Merge({}, ns.ButtonBar.defaults)
 	bar.buttonWidth = 64
 	bar.buttonHeight = 64
 

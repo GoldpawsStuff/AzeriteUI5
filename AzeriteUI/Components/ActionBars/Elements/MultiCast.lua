@@ -24,52 +24,66 @@
 
 --]]
 local Addon, ns = ...
+
+-- This poorly coded blizz bar taints like no tomorrow,
+-- so we'll just leave it fully to blizz for now.
+do return end
+
 if (not ns.IsWrath) or (not MultiCastActionBarFrame) or (ns.PlayerClass ~= "SHAMAN") then
 	return
 end
 
-local MultiCast = ns:NewModule("MultiCast", "LibMoreEvents-1.0", "AceHook-3.0")
+local MultiCast = ns:NewModule("MultiCast", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
+
+-- Lua API
+local unpack = unpack
+
+-- GLOBALS: CreateFrame, MultiCastActionBarFrame
 
 -- Addon API
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 
-local config = {
-	MultiCastPosition = { "CENTER", UIParent, "CENTER", 0, -200 },
-	MultiCastSize = { 230, 38 }
-}
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
 
-MultiCast.UpdateMultiCastBar = function(self)
-	if (InCombatLockdown()) then
-		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-	end
-	MultiCastActionBarFrame:ClearAllPoints()
-	MultiCastActionBarFrame:SetPoint("CENTER", self:GetParent(), "CENTER", 0, 0)
+MultiCast.GenerateDefaults = function(self)
+	defaults.profile.savedPosition = {
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "CENTER",
+		[2] = 0,
+		[3] = -200 * ns.API.GetEffectiveScale()
+	}
+	return defaults
 end
 
-MultiCast.OnEvent = function(self, event, ...)
-	if (event == "PLAYER_REGEN_ENABLED") then
-		if (InCombatLockdown()) then return end
-		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-		self:UpdateMultiCastBar()
-	end
-end
+MultiCast.PrepareFrames = function(self)
 
-MultiCast.OnInitialize = function(self)
-	local bar = CreateFrame("Frame", ns.Prefix.."MultiCastFrame", UIParent)
-	bar:SetSize(unpack(config.MultiCastSize))
-	bar:SetPoint(unpack(config.MultiCastPosition))
-	bar:SetScale(1.25)
+	local config = self.db.profile.savedPosition
+
+	local frame = CreateFrame("Frame", ns.Prefix.."MultiCastFrame", UIParent)
+	frame:SetSize(230, 38)
+	frame:SetPoint(unpack(defaults.profile.savedPosition))
+	frame:SetScale(1.25)
+
+	self.frame = frame
 
 	MultiCastActionBarFrame:SetScript("OnShow", nil)
 	MultiCastActionBarFrame:SetScript("OnHide", nil)
 	MultiCastActionBarFrame:SetScript("OnUpdate", nil)
-	MultiCastActionBarFrame:SetParent(bar)
+	MultiCastActionBarFrame:SetParent(self.frame)
+	MultiCastActionBarFrame:ClearAllPoints()
+	MultiCastActionBarFrame:SetPoint("CENTER", self.frame, "CENTER")
 
 	self:SecureHook("ShowMultiCastActionBar", "UpdateMultiCastBar")
 end
 
 MultiCast.OnEnable = function(self)
+
+	self:PrepareFrames()
+	self:CreateAnchor(L["Totem Bar"])
+
+	ns.Module.OnEnable(self)
+
 	self:UpdateMultiCastBar()
 end

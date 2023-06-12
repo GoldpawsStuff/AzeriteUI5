@@ -91,6 +91,23 @@ Module.CreateAnchor = function(self, label, watchVariables)
 	return self.anchor
 end
 
+-- Called when defaults somehow are changed,
+-- like when the user interface scale is modified.
+Module.UpdateDefaults = function(self)
+	if (not self.frame) then return end
+	if (not self.anchor) then return end
+
+	local defaults = self:GetDefaults()
+
+	local config = defaults.profile.savedPosition
+
+	config.scale = self.anchor:GetDefaultScale()
+	config[1], config[2], config[3] = self.anchor:GetDefaultPosition()
+
+	self:SetDefaults(defaults)
+end
+
+-- Called when anchor needs to be updated.
 Module.UpdateAnchor = function(self)
 	if (not self.anchor) then return end
 
@@ -111,20 +128,7 @@ Module.UpdateAnchor = function(self)
 	end
 end
 
-Module.UpdateDefaults = function(self)
-	if (not self.frame) then return end
-	if (not self.anchor) then return end
-
-	local defaults = self:GetDefaults()
-
-	local config = defaults.profile.savedPosition
-
-	config.scale = self.anchor:GetDefaultScale()
-	config[1], config[2], config[3] = self.anchor:GetDefaultPosition()
-
-	self:SetDefaults(defaults)
-end
-
+-- Called when frame position and scale needs to be updated.
 Module.UpdatePositionAndScale = function(self)
 	if (not self.frame) then return end
 
@@ -148,6 +152,35 @@ Module.UpdatePositionAndScale = function(self)
 
 	if (self.PostUpdatePositionAndScale) then
 		self:PostUpdatePositionAndScale()
+	end
+end
+
+-- This is called by the options menu on settings changes,
+-- and by the modules themselves on enabling and combat end.
+Module.UpdateSettings = function(self)
+
+end
+
+-- This is called by the addon on full profile changes,
+-- and should call a full settings update.
+Module.RefreshConfig = function(self)
+	self:UpdateSettings()
+end
+
+Module.OnRefreshConfig = function(self)
+	if (InCombatLockdown()) then
+		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnConfigEvent")
+	end
+	self:UpdatePositionAndScale()
+	self:UpdateAnchor()
+	self:RefreshConfig()
+end
+
+Module.OnConfigEvent = function(self, event, ...)
+	if (event == "PLAYER_REGEN_ENABLED") then
+		if (InCombatLockdown()) then return end
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnConfigEvent")
+		self:OnRefreshConfig()
 	end
 end
 
@@ -208,15 +241,6 @@ Module.OnAnchorEvent = function(self, event, ...)
 
 	if (self.PostAnchorEvent) then
 		return self:PostAnchorEvent(event, ...)
-	end
-end
-
-Module.OnRefreshConfig = function(self)
-	self:UpdatePositionAndScale()
-	self:UpdateAnchor()
-
-	if (self.RefreshConfig) then
-		self:RefreshConfig()
 	end
 end
 

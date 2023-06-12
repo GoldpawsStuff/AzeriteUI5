@@ -1005,6 +1005,15 @@ local style = function(self, unit, id)
 
 	self.Classification = classification
 
+	-- Threat
+	--------------------------------------------
+	local threatIndicator = health:CreateTexture(nil, "BACKGROUND", nil, -2)
+	threatIndicator:SetPoint(unpack(db.ThreatPosition))
+	threatIndicator:SetSize(unpack(db.ThreatSize))
+	threatIndicator:SetTexture(db.ThreatTexture)
+
+	self.ThreatIndicator = threatIndicator
+
 	-- Auras
 	--------------------------------------------
 	local auras = CreateFrame("Frame", nil, self)

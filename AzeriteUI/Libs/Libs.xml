@@ -22,7 +22,8 @@
 	<Script file="LibButtonGlow-1.0\LibButtonGlow-1.0.lua"/>
 	<Script file="LibActionButton-1.0-GE\LibActionButton-1.0-GE.lua"/>
 
-	<!-- UnitFrame Library -->
+	<!-- UnitFrame Libraries -->
+	<Include file="LibPlayerSpells-1.0\lib.xml"/>
 	<Include file="oUF\oUF.xml"/>
 	<Include file="oUF_Plugins\oUF_Plugins.xml"/>
 
@@ -31,7 +32,6 @@
 
 	<!-- EditMode Integration -->
 	<Include file="LibDropDown\embed.xml"/>
-	<!--<Include file="LibEditMode\embed.xml"/>-->
 	<Include file="LibEditModeOverride\LibEditModeOverride.xml"/>
 
 	<!-- My Custom Libraries -->

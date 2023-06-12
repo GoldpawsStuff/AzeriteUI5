@@ -38,7 +38,8 @@ local tostring = tostring
 -- GLOBALS: ClearOverrideBindings, GetBindingKey, SetOverrideBindingClick
 -- GLOBALS: InCombatLockdown, PetDismiss, UnitExists, VehicleExit
 -- GLOBALS: BOTTOMLEFT_ACTIONBAR_PAGE, BOTTOMRIGHT_ACTIONBAR_PAGE, RIGHT_ACTIONBAR_PAGE, LEFT_ACTIONBAR_PAGE
--- GLOBALS: MULTIBAR_5_ACTIONBAR_PAGE, MULTIBAR_6_ACTIONBAR_PAGE, MULTIBAR_7_ACTIONBAR_PAGE, LEAVE_VEHICLE
+-- GLOBALS: MULTIBAR_5_ACTIONBAR_PAGE, MULTIBAR_6_ACTIONBAR_PAGE, MULTIBAR_7_ACTIONBAR_PAGE
+-- GLOBALS: NUM_ACTIONBAR_BUTTONS, LEAVE_VEHICLE
 
 local ButtonBar = ns.ButtonBar.prototype
 
@@ -139,7 +140,7 @@ ns.ActionBar.Create = function(self, id, config, name)
 	bar:SetAttribute("_onstate-page", [[
 		-- Store the dragonriding state as a member value in lua
 		-- before actual page changes and button updates.
-		self:CallMethod("UpdateDragonRiding", newstate == "dragon" and true or false)
+		self:CallMethod("UpdateDragonRiding", newstate == "dragon" and true or false);
 		if (newstate == "possess" or newstate == "dragon" or newstate == "11") then
 			if HasVehicleActionBar() then
 				newstate = GetVehicleBarIndex()
@@ -160,7 +161,7 @@ ns.ActionBar.Create = function(self, id, config, name)
 		control:ChildUpdate("state", newstate);
 	]])
 
-	for i = 1,12 do
+	for i = 1,NUM_ACTIONBAR_BUTTONS do
 		bar:CreateButton()
 	end
 	bar:UpdateButtons()
@@ -174,10 +175,10 @@ ActionBar.CreateButton = function(self, buttonConfig)
 	local button = ButtonBar.CreateButton(self, buttonConfig)
 
 	for k = 1,18 do
-		button:SetState(k, "action", (k - 1) * 12 + button.id)
+		button:SetState(k, "action", (k - 1) * NUM_ACTIONBAR_BUTTONS + button.id)
 	end
 
-	button:SetState(0, "action", (self.id - 1) * 12 + button.id)
+	button:SetState(0, "action", (self.id - 1) * NUM_ACTIONBAR_BUTTONS + button.id)
 	button:Show()
 	button:SetAttribute("statehidden", nil)
 	button:UpdateAction()
@@ -211,7 +212,6 @@ end
 ActionBar.Update = function(self)
 	if (InCombatLockdown()) then return end
 
-	--self:UpdatePosition()
 	self:UpdateButtons()
 	self:UpdateButtonLayout()
 	self:UpdateStateDriver()
@@ -258,9 +258,6 @@ ActionBar.UpdatePosition = function(self)
 	if (InCombatLockdown()) then return end
 
 	local config = self.config.savedPosition
-	if (not config) then
-		return print(self:GetName(), "has no saved pos")
-	end
 
 	self:SetScale(config.scale)
 	self:ClearAllPoints()

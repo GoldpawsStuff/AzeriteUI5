@@ -25,7 +25,8 @@
 	<!-- Classic Heal Predictions -->
 	<Script file="LibHealComm-4.0\LibHealComm-4.0.lua"/>
 
-	<!-- UnitFrame Library -->
+	<!-- UnitFrame Libraries -->
+	<Include file="LibPlayerSpells-1.0\lib.xml"/>
 	<Include file="oUF_Classic\oUF_Wrath.xml"/>
 	<Include file="oUF_Plugins\oUF_Plugins.xml"/>
 

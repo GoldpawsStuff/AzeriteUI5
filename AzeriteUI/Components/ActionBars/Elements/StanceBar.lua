@@ -24,3 +24,5 @@
 
 --]]
 local Addon, ns = ...
+
+if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return end

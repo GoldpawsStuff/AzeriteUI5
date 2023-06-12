@@ -126,13 +126,20 @@ ns.UnitFrame.Spawn = function(unit, overrideName, ...)
 end
 
 ns.UnitFrameModule = ns:Merge({
+	OnEnabledEvent = function(self, event, ...)
+		if (event == "PLAYER_REGEN_ENABLED") then
+			if (InCombatLockdown()) then return end
+			self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnConfigEvent")
+			self:UpdateEnabled()
+		end
+	end,
+
 	UpdateEnabled = function(self)
 		local config = self.db.profile
 		if (config.enabled and not self.frame:IsEnabled()) or (not config.enabled and self.frame:IsEnabled()) then
 
 			if (InCombatLockdown()) then
-				self.needupdate = true
-				return
+				return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEnabledEvent")
 			end
 
 			if (config.enabled) then
@@ -147,8 +154,14 @@ ns.UnitFrameModule = ns:Merge({
 		self:UpdateEnabled()
 
 		if (self.db.profile.enabled) then
+			self:Update()
 			self:UpdatePositionAndScale()
+			self:UpdateAnchor()
 		end
+	end,
+
+	Update = function(self)
+		-- Placeholder. Update unitframe settings here.
 	end
 
 }, ns.Module)

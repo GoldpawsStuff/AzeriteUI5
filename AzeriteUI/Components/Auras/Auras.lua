@@ -633,22 +633,15 @@ end
 
 Auras.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
-		self.incombat = nil
-
 		self:ForAll("Update")
 		self:UpdateAuraButtonAlpha()
 
 	elseif (event == "PLAYER_REGEN_ENABLED") then
 		if (InCombatLockdown()) then return end
-
-		self.incombat = nil
-
 		if (self.needupdate) then
+			self.needupdate = true
 			self:UpdateSettings()
 		end
-
-	elseif (event == "PLAYER_REGEN_DISABLED") then
-		self.incombat = true
 	end
 end
 
@@ -660,7 +653,6 @@ Auras.OnEnable = function(self)
 	self:CreateAnchor(AURAS)
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterUnitEvent("UNIT_AURA", "UpdateAuraButtonAlpha", "player", "vehicle")
 

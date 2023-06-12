@@ -41,7 +41,25 @@ local GetMedia = ns.API.GetMedia
 -- Constants
 local playerClass = ns.PlayerClass
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({
+
+	showRaid = false,
+	showParty = true,
+	showPlayer = false,
+
+	point = "LEFT", -- anchor point of unitframe, group members within column grow opposite
+	xOffset = 0, -- horizontal offset within the same column
+	yOffset = 0, -- vertical offset within the same column
+
+	groupBy = "ROLE", -- GROUP, CLASS, ROLE
+	groupingOrder = "TANK,HEALER,DAMAGER", -- must match choice in groupBy
+
+	unitsPerColumn = 5, -- maximum units per column
+	maxColumns = 1, -- should be 5/unitsPerColumn
+	columnSpacing = 0, -- spacing between columns
+	columnAnchorPoint = "TOP" -- anchor point of column, columns grow opposite
+
+}, ns.Module.defaults) }
 
 PartyFrameMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
@@ -75,14 +93,7 @@ local config = {
 	-----------------------------------------
 	Position = { "TOPLEFT", UIParent, "TOPLEFT", 50, -42 }, -- party header position
 	Size = { 130*4, 130 }, -- size of the entire header frame area
-	Anchor = "LEFT", -- party member frame anchor
-	GrowthX = 0, -- party member horizontal offset
-	GrowthY = 0, -- party member vertical offset
-	Sorting = "INDEX", -- sort method
-	SortDirection = "ASC", -- sort direction
-
 	UnitSize = { 130, 140 }, -- party member size
-	--PartyHitRectInsets = { 0, 0, 0, -10 }, -- party member mouseover hit box
 	OutOfRangeAlpha = .6, -- Alpha of out of range party members
 
 	-- Health
@@ -808,56 +819,101 @@ end
 GroupHeader.Enable = function(self)
 	if (InCombatLockdown()) then return end
 
-	local visibility = select(3, PartyFrameMod:GetHeaderAttributes())
-	local type, list = string.split(" ", visibility, 2)
+	local visibility = PartyFrameMod:GetVisibilityDriver()
 
-	if (list and type == "custom") then
-		RegisterAttributeDriver(self, "state-visibility", list)
-		self.visibility = list
-	else
-		local condition = getCondition(string.split(",", visibility))
-		RegisterAttributeDriver(self, "state-visibility", condition)
-		self.visibility = condition
-	end
+	UnregisterAttributeDriver(self, "state-visibility")
+	RegisterAttributeDriver(self, "state-visibility", visibility)
+
+	self.visibility = visibility
 end
 
 GroupHeader.Disable = function(self)
 	if (InCombatLockdown()) then return end
+
+	UnregisterAttributeDriver(self, "state-visibility")
 	RegisterAttributeDriver(self, "state-visibility", "hide")
-	self.visibility = NineSlicePanelMixin
+
+	self.visibility = nil
 end
 
 GroupHeader.IsEnabled = function(self)
 	return self.visibility and true or false
 end
 
+PartyFrameMod.GetVisibilityDriver = function(self)
+	local db = self.db.profile
+
+end
+
 PartyFrameMod.GetHeaderAttributes = function(self)
-	return ns.Prefix.."Party", nil,
-	--"custom [@player,exists,nogroup:party] show;[group:party,nogroup:raid] show;hide", "showPlayer", true, "showSolo", true,
-	--"custom [group:party,nogroup:raid] show;hide", "showPlayer", false, "showSolo", false,
-	"custom [group,@raid6,noexists] show;hide", "showPlayer", false, "showSolo", false,
+	local db = self.db.profile
+
+	return ns.Prefix.."Party", nil, nil,
+	"initial-width", config.UnitSize[1],
+	"initial-height", config.UnitSize[2],
 	"oUF-initialConfigFunction", [[
 		local header = self:GetParent();
 		self:SetWidth(header:GetAttribute("initial-width"));
 		self:SetHeight(header:GetAttribute("initial-height"));
 		self:SetFrameLevel(self:GetFrameLevel() + 10);
 	]],
-	"initial-width", config.UnitSize[1],
-	"initial-height", config.UnitSize[2],
-	"showParty", true,
-	"point", config.Anchor,
-	"xOffset", config.GrowthX,
-	"yOffset", config.GrowthY,
-	"sortMethod", config.Sorting,
-	"sortDir", config.SortDirection
+
+	--'https://wowprogramming.com/docs/secure_template/Group_Headers.html
+	"sortMethod", "INDEX", -- INDEX, NAME -- Member sorting within each group
+	"sortDir", "ASC", -- ASC, DESC
+	"groupFilter", "1,2,3,4,5,6,7,8", -- Group filter
+	"showSolo", false, -- show while non-grouped
+	"showPlayer", db.showPlayer, -- show the player in the party
+	"showRaid", db.showRaid, -- show while in a raid group
+	"showParty", db.showParty, -- show while in a party
+	"point", db.point, -- Unit anchoring within each column
+	"xOffset", db.xOffset,
+	"yOffset", db.yOffset,
+	"groupBy", db.groupBy, -- ROLE, CLASS, GROUP -- Grouping order and type
+	"groupingOrder", db.groupingOrder,
+	"unitsPerColumn", db.unitsPerColumn, -- Column setup and growth
+	"maxColumns", db.maxColumns,
+	"columnSpacing", db.columnSpacing,
+	"columnAnchorPoint", db.columnAnchorPoint
+
 end
 
-PartyFrameMod.UpdateAll = function(self)
+PartyFrameMod.UpdateHeader = function(self)
+	if (not self.frame) then return end
+	if (InCombatLockdown()) then
+		self.needHeaderUpdate = true
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+		return
+	end
+	for _,attrib in next,{
+		"showPlayer",
+		"showRaid",
+		"showParty",
+		"point",
+		"xOffset",
+		"yOffset",
+		"groupBy",
+		"groupingOrder",
+		"unitsPerColumn",
+		"maxColumns",
+		"columnSpacing",
+		"columnAnchorPoint"
+	} do
+		self.frame:SetAttribute(attrib, self.db.profile[attrib])
+	end
+end
+
+PartyFrameMod.UpdateUnits = function(self)
 	if (not self.frame) then return end
 	for i = 1, self.frame:GetNumChildren() do
 		local frame = select(i, self.frame:GetChildren())
 		frame:UpdateAllElements("RefreshUnit")
 	end
+end
+
+PartyFrameMod.Update = function(self)
+	self:UpdateHeader()
+	self:UpdateUnits()
 end
 
 PartyFrameMod.CreateUnitFrames = function(self)
@@ -877,14 +933,14 @@ PartyFrameMod.CreateUnitFrames = function(self)
 
 	-- Sometimes some elements are wrong or "get stuck" upon exiting the editmode.
 	if (ns.WoW10) then
-		self:SecureHook(EditModeManagerFrame, "ExitEditMode", "UpdateAll")
+		self:SecureHook(EditModeManagerFrame, "ExitEditMode", "UpdateUnits")
 	end
 
 	-- Sometimes when changing group leader, only the group leader is updated,
 	-- leaving other units with a lot of wrong information displayed.
 	-- Should think that GROUP_ROSTER_UPDATE handled this, but it doesn't.
 	-- *Only experienced this is Wrath.But adding it as a general update anyway.
-	self:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateAll")
+	self:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateUnits")
 
 	-- Sometimes offline coloring remains when a member comes back online. Why?
 	-- Not sure if this is something we should force update as the health element

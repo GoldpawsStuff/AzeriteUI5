@@ -25,6 +25,8 @@
 --]]
 local Addon, ns = ...
 
+do return end
+
 if (ns.IsClassic) then return end
 
 local oUF = ns.oUF
@@ -43,11 +45,17 @@ ArenaFrameMod.GenerateDefaults = function(self)
 	return defaults
 end
 
+ArenaFrameMod.CreateUnitFrames = function(self)
+end
+
 ArenaFrameMod.OnEnable = function(self)
+
 	-- Disable Blizzard arena enemy frames.
-	--for i = 1, MAX_ARENA_ENEMIES or 5 do -- constant created by Blizzard_ArenaUI in wrath
-	--	oUF:DisableBlizzard("arena"..i)
-	--end
+	for i = 1, MAX_ARENA_ENEMIES or 5 do -- constant created by Blizzard_ArenaUI in wrath
+		oUF:DisableBlizzard("arena"..i)
+	end
+
+	self:CreateUnitFrames()
 
 	ns.Module.OnEnable(self)
 end

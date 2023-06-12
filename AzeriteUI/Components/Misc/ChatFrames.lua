@@ -553,7 +553,9 @@ ChatFrames.OnEvent = function(self, event, ...)
 			end
 
 			-- Clear the primary chatframe on the next frame.
-			C_Timer.After(0, function() ChatFrame1:Clear() end)
+			if (not IsShiftKeyDown()) then
+				C_Timer.After(0, function() ChatFrame1:Clear() end)
+			end
 		end
 	end
 end

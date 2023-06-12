@@ -187,3 +187,9 @@ L["Set the clock to your computer's local time, disable to show the server time 
 -- Fading & Explorer Mode Settings
 L["Frame Fading"] = true
 L["Frame Fade Settings"] = true
+
+-- ActionBars
+L["to level %s"] = true
+L["to %s"] = true
+L["Totem Bar"] = "Barra de tótems"
+L["Pet Bar"] = "Barra de mascotas"

@@ -1164,13 +1164,11 @@ MinimapMod.CreateCustomElements = function(self)
 	mail:SetJustifyH(db.MailJustifyH)
 	mail:SetJustifyV(db.MailJustifyV)
 	mail:SetFormattedText("%s", L_MAIL)
-	--mail:SetFormattedText("%s %s", L_NEW, L_MAIL)
 	mail:SetPoint(unpack(db.MailPosition))
 	mailFrame:SetAllPoints(mail)
 
 	self.mail = mail
 
-	--local dropdown = CreateFrame("Frame", ns.Prefix.."MiniMapTrackingDropDown", UIParent, "UIDropDownMenuTemplate")
 	local dropdown = LibDD:Create_UIDropDownMenu(ns.Prefix.."MiniMapTrackingDropDown", UIParent)
 	dropdown:SetID(1)
 	dropdown:SetClampedToScreen(true)
@@ -1220,6 +1218,7 @@ MinimapMod.CreateCustomElements = function(self)
 
 	self.dropdown = dropdown
 
+	-- TODO: Remove this once the info block is movable and configurable.
 	if (ns.WoW10) then
 		self:SecureHook(EditModeManagerFrame, "EnterEditMode", "UpdateCustomElements")
 		self:SecureHook(EditModeManagerFrame, "ExitEditMode", "UpdateCustomElements")
@@ -1232,36 +1231,22 @@ MinimapMod.CreateCustomElements = function(self)
 end
 
 -- Update the visibility of the custom elements
--- *This is based on minimap position.
+-- TODO: Make this a separate movable, configurable block.
 MinimapMod.UpdateCustomElements = function(self)
 	if (not self.widgetFrame) then return end
 	if (CURRENT_THEME ~= "Azerite") then
 		return self.widgetFrame:Hide()
 	end
-	--if (not ns.WoW10) then
-		self.widgetFrame:SetShown(self.anchor:IsInDefaultPosition(60))
-	--else
-	--	local anchorInfo = ns:GetModule("EditMode"):GetDefaultSystems()[Enum.EditModeSystem.Minimap].anchorInfo
-	--	local point, anchor, rpoint, x, y = MinimapCluster:GetPoint()
-	--	local point2, x2, y2 = anchorInfo.point, anchorInfo.offsetX, anchorInfo.offsetY
-	--	self.widgetFrame:SetShown(((point == point2) and (math_abs(x - x2) < 60) and (math_abs(y - y2) < 60)))
-	--end
-end
-
-MinimapMod.PreUpdatePositionAndScale = function(self)
-	if (not self.frame) then return end
-	--if (ns.WoW10) then return true end
-	--self.frame:SetMovable(true)
+	self.widgetFrame:SetShown(self.anchor:IsInDefaultPosition(60))
 end
 
 MinimapMod.PostUpdatePositionAndScale = function(self)
 	local config = self.db.profile.savedPosition
+
 	self.widgetFrame:SetScale(ns.API.GetEffectiveScale() / config.scale)
 	self:UpdateCustomElements()
 
 	if (ns.IsRetail) then
-		--- really?
-		--MinimapCluster:SetScale(ns.API.GetEffectiveScale())
 		MinimapCluster.MinimapContainer:SetScale(1)
 	end
 
@@ -1276,7 +1261,6 @@ MinimapMod.PostUpdatePositionAndScale = function(self)
 			element:SetScale(ns.API.GetEffectiveScale() / config.scale)
 		end
 	end
-
 end
 
 MinimapMod.UpdateAnchor = function(self)
@@ -1329,6 +1313,7 @@ MinimapMod.UpdatePositionAndScale = function(self)
 end
 
 MinimapMod.UpdateSettings = function(self)
+	self:SetTheme(self.db.profile.theme)
 	self:UpdateClock()
 	self:UpdateCompass()
 	self:UpdateMail()
@@ -1336,10 +1321,6 @@ MinimapMod.UpdateSettings = function(self)
 	self:UpdateTimers()
 	self:UpdateZone()
 	self:UpdateCustomElements()
-end
-
-MinimapMod.RefreshConfig = function(self)
-	self:SetTheme(self.db.profile.theme)
 end
 
 MinimapMod.OnEvent = function(self, event, ...)
@@ -1369,10 +1350,7 @@ MinimapMod.OnEnable = function(self)
 	self.frame:SetScript("OnMouseUp", Minimap_OnMouseUp)
 
 	self:CreateCustomElements()
-
-	--if (not ns.WoW10) then
-		self:CreateAnchor(MINIMAP_LABEL):SetDefaultScale(mapScale * ns.API.GetEffectiveScale())
-	--end
+	self:CreateAnchor(MINIMAP_LABEL):SetDefaultScale(mapScale * ns.API.GetEffectiveScale())
 
 	ns.Module.OnEnable(self)
 

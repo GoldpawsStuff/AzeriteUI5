@@ -95,20 +95,12 @@ VehicleExit.UpdateScale = function(self)
 	if (self.Button) then
 		local point, anchor, rpoint, x, y = unpack(config.VehicleExitButtonPosition())
 
-		--local scaleObject = ns.IsRetail and MinimapCluster.MinimapContainer or Minimap
-		local scaleObject = Minimap
-		local mscale = scaleObject:GetScale()
-		local escale = mscale / scaleObject:GetEffectiveScale()
+		local scale = Minimap:GetScale()
+		local escale = scale / Minimap:GetEffectiveScale()
 
-		--self.Button:SetScale(ns.API.GetEffectiveScale() * mscale)
-		self.Button:SetScale(--[[ns.API.GetEffectiveScale() * ]]mscale)
+		self.Button:SetScale(scale)
 		self.Button:ClearAllPoints()
-
-		--if (ns.IsRetail) then
-		--	self.Button:SetPoint(point, anchor, rpoint, x * escale, y * escale) -- makes no sense
-		--else
-			self.Button:SetPoint(point, anchor, rpoint, x / escale, y / escale)
-		--end
+		self.Button:SetPoint(point, anchor, rpoint, x / escale, y / escale)
 	end
 end
 
@@ -168,6 +160,5 @@ VehicleExit.OnInitialize = function(self)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterEvent("UI_SCALE_CHANGED", "OnEvent")
 
-	-- Monitor scale changes.
-	self:SecureHook(--[[ns.IsRetail and MinimapCluster.MinimapContainer or ]]Minimap, "SetScale", "UpdateScale")
+	self:SecureHook(Minimap, "SetScale", "UpdateScale")
 end
