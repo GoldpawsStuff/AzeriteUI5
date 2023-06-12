@@ -4,16 +4,17 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-06-11
+## [Unreleased] 2023-06-12
 - This version is backwards incompatible and will force a full reset of its settings.
 - This version is compatible with Wrath 3.4.2 PTR.
 
 ### Added
 - Added an options menu accessible through the command `/az` or `/azerite`.
-- Added the command `/resetsettings` to fully reset this addon's settings to its defaults.
+- Added a pet action bar.
 - Added threat glow to the nameplates and to the player- and target unit frames.
 - Added nameplate highlight outline for soft targeting in Retail. Thanks Billybishop@GitHub for writing this!
 - Added the option to keep actionbars faded out in combat and only visible on mouseover.
+- Added the command `/resetsettings` to fully reset this addon's settings to its defaults.
 - Started working on proper localization for the addon. A lot of general phrases copied from blizzard are already in place, but some phrases and longer texts remains untranslated for non-English locales. Work in progress.
 
 ### Changed
