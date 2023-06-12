@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Started working on proper localization for the addon. A lot of general phrases copied from blizzard are already in place, but some phrases and longer texts remains untranslated for non-English locales. Work in progress.
 
 ### Changed
-- The Movable Frames Manager can now be opened with `/lock` in all verisons of the game. Some elements in Retail are however slaved to the EditMode and requires that be open for adjustments. This includes the Retail Minimap.
+- The Movable Frames Manager can now be opened with `/lock` in all verisons of the game. Some elements in Retail are however slaved to the EditMode and requires that be open for adjustments. This includes the Retail Objectives Tracker.
 - Moved settings for unitframe aura sorting into the new options menu.
 - Moved settings for Retail bag sorting and new item insertion into the new options menu.
 - The player auras located in the upper right corner are now movable, and has new settings in the new option menu for visibility.
