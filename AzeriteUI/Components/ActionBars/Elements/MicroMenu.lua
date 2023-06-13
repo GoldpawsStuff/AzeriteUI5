@@ -151,7 +151,7 @@ MicroMenu.SpawnButtons = function(self)
 			local button = CreateFrame("Button", nil, bar, "SecureActionButtonTemplate")
 			button.ref = microButton
 
-			if (ns.IsRetail) then
+			if (ns.WoW10) then
 				button:RegisterForClicks("AnyUp","AnyDown")
 			else
 				button:RegisterForClicks("AnyUp")
@@ -161,7 +161,7 @@ MicroMenu.SpawnButtons = function(self)
 				button.nocombat = true
 				button:SetScript("OnClick", function(self, button, down)
 					if (InCombatLockdown()) then return end
-					if (ns.IsRetail) then
+					if (ns.WoW10) then
 						local castondown = GetCVarBool("ActionButtonUseKeyDown")
 						if (castondown and not down) or (not castondown and down) then return end
 					end
@@ -172,7 +172,7 @@ MicroMenu.SpawnButtons = function(self)
 				button.nocombat = true
 				button:SetScript("OnClick", function(self, button, down)
 					if (InCombatLockdown()) then return end
-					if (ns.IsRetail) then
+					if (ns.WoW10) then
 						local castondown = GetCVarBool("ActionButtonUseKeyDown")
 						if (castondown and not down) or (not castondown and down) then return end
 					end
