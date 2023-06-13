@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ]]
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 107
+local MINOR_VERSION = 107 --[[ [GE-Fix] Based on LibActionButton-1.0.106 ]]
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -50,8 +50,8 @@ local UseCustomFlyout = WoWRetail
 
 local KeyBound = LibStub("LibKeyBound-1.0", true)
 local CBH = LibStub("CallbackHandler-1.0")
-local LBG --= LibStub("LibButtonGlow-1.0", true) -- GE Fix: Remove
-local Masque --= LibStub("Masque", true) -- GE Fix: Remove
+local LBG --[[ [GE-Fix:Remove] = LibStub("LibButtonGlow-1.0", true) [/GE-Fix] ]]
+local Masque --[[ [GE-Fix:Remove] = LibStub("Masque", true) [/GE-Fix] ]]
 
 lib.eventFrame = lib.eventFrame or CreateFrame("Frame")
 lib.eventFrame:UnregisterAllEvents()
@@ -1798,12 +1798,12 @@ function UpdateCount(self)
 		if count > (self.maxDisplayCount or 9999) then
 			self.Count:SetText("*")
 		else
-			self.Count:SetText(count > 1 and count or "") -- GE Fix: Hide when no stacks
+			self.Count:SetText(count > 1 and count or "") --[[-- [GE-Fix]: Hide when no stacks --]]--
 		end
 	else
 		local charges, maxCharges, _chargeStart, _chargeDuration = self:GetCharges()
 		if charges and maxCharges and maxCharges > 1 then
-			self.Count:SetText(charges > 0 and charges or "") -- GE Fix: Hide when no stacks
+			self.Count:SetText(charges > 0 and charges or "") --[[-- [GE-Fix]: Hide when no stacks --]]--
 		else
 			self.Count:SetText("")
 		end
@@ -1844,10 +1844,11 @@ local function StartChargeCooldown(parent, chargeStart, chargeDuration, chargeMo
 		Masque:UpdateCharge(parent)
 	end
 
-	-- GE Fix: integrate better with regular styling
+	--[[ [GE Fix]: Integrate better with regular styling. ]]
 	if parent.UpdateCharge then
 		parent:UpdateCharge()
 	end
+	--[[ [/GE Fix] ]]
 
 	if not chargeStart or chargeStart == 0 then
 		EndChargeCooldown(parent.chargeCooldown)
@@ -2039,8 +2040,8 @@ function UpdateNewAction(self)
 		end
 	end
 end
--- GE Fix: disable
-function UpdateNewAction(self) end
+
+--[[ [GE Fix] ]] function UpdateNewAction(self) end --[[ [/GE Fix] ]]
 
 hooksecurefunc("UpdateOnBarHighlightMarksBySpell", function(spellID)
 	lib.ON_BAR_HIGHLIGHT_MARK_TYPE = "spell"
