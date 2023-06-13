@@ -1013,7 +1013,6 @@ ActionBarMod.OnButtonEvent = function(self, event, ...)
 				button.spellHighlight:Hide()
 			end
 
-			-- The update function calls this for valid actions
 			updateUsable(button)
 		end
 
@@ -1022,17 +1021,20 @@ ActionBarMod.OnButtonEvent = function(self, event, ...)
 		if (self.buttons[button]) then
 			updateUsable(button)
 		end
+
 	elseif (event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW") then
 		local arg1 = ...
 		for button in next, LAB.activeButtons do
-			local spellId = button:GetSpellId()
-			if (spellId and spellId == arg1) then
-				button.spellHighlight:Show()
-			else
-				if (button._state_type == "action") then
-					local actionType, id = GetActionInfo(button._state_action)
-					if (actionType == "flyout" and FlyoutHasSpell(id, arg1)) then
-						button.spellHighlight:Hide()
+			if (self.buttons[button]) then
+				local spellId = button:GetSpellId()
+				if (spellId and spellId == arg1) then
+					button.spellHighlight:Show()
+				else
+					if (button._state_type == "action") then
+						local actionType, id = GetActionInfo(button._state_action)
+						if (actionType == "flyout" and FlyoutHasSpell(id, arg1)) then
+							button.spellHighlight:Hide()
+						end
 					end
 				end
 			end
@@ -1041,14 +1043,16 @@ ActionBarMod.OnButtonEvent = function(self, event, ...)
 	elseif (event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE") then
 		local arg1 = ...
 		for button in next, LAB.activeButtons do
-			local spellId = button:GetSpellId()
-			if (spellId and spellId == arg1) then
-				button.spellHighlight:Hide()
-			else
-				if (button._state_type == "action") then
-					local actionType, id = GetActionInfo(button._state_action)
-					if (actionType == "flyout" and FlyoutHasSpell(id, arg1)) then
-						button.spellHighlight:Hide()
+			if (self.buttons[button]) then
+				local spellId = button:GetSpellId()
+				if (spellId and spellId == arg1) then
+					button.spellHighlight:Hide()
+				else
+					if (button._state_type == "action") then
+						local actionType, id = GetActionInfo(button._state_action)
+						if (actionType == "flyout" and FlyoutHasSpell(id, arg1)) then
+							button.spellHighlight:Hide()
+						end
 					end
 				end
 			end
