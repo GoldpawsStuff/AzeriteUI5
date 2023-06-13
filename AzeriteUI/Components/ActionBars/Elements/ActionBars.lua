@@ -34,14 +34,8 @@ local LAB, LAB_Version = LibStub(LAB_Name)
 local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "LibFadingFrames-1.0", "AceConsole-3.0", "AceTimer-3.0")
 
 -- Lua API
-local ipairs = ipairs
-local pairs = pairs
 local next = next
 local string_format = string.format
-local string_gsub = string.gsub
-local string_lower = string.lower
-local string_split = string.split
-local string_upper = string.upper
 local tonumber = tonumber
 local unpack = unpack
 
@@ -74,7 +68,7 @@ if (ns.IsRetail) then
 end
 
 local ID_TO_BAR = {}
-for i,j in pairs(BAR_TO_ID) do ID_TO_BAR[j] = i end
+for i,j in next,BAR_TO_ID do ID_TO_BAR[j] = i end
 
 -- Module defaults.
 local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
@@ -617,7 +611,7 @@ ActionBarMod.CreateAnchors = function(self)
 
 	local defaults = self:GetDefaults()
 
-	for i,bar in ipairs(self.bars) do
+	for i,bar in next,self.bars do
 
 		local bar = bar
 		local config = defaults.profile.bars[i]
@@ -805,7 +799,7 @@ ActionBarMod.UpdateChargeCooldowns = function(self)
 end
 
 ActionBarMod.UpdateAnchors = function(self)
-	for i,bar in ipairs(self.bars) do
+	for i,bar in next,self.bars do
 		if (bar.anchor) then
 			local config = self.db.profile.bars[i].savedPosition
 			if (config) then
@@ -838,7 +832,7 @@ end
 
 ActionBarMod.UpdateDefaults = function(self)
 	local defaults = self:GetDefaults()
-	for i,bar in ipairs(self.bars) do
+	for i,bar in next,self.bars do
 		if (bar.anchor) then
 			local config = defaults.profile.bars[i].savedPosition
 			config.scale = anchor:GetDefaultScale()
