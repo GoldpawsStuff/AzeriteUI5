@@ -613,7 +613,7 @@ end
 
 ActionBarMod.CreateAnchors = function(self)
 	if (not next(self.bars)) then return end
-	if (next(self.lookup.anchor)) then return end
+	if (next(self.anchors)) then return end
 
 	local defaults = self:GetDefaults()
 
@@ -639,10 +639,11 @@ ActionBarMod.CreateAnchors = function(self)
 		anchor.Overlay:SetBackdropColor(r, g, b, .75)
 		anchor.Overlay:SetBackdropBorderColor(r, g, b, 1)
 
+		anchor.bar = bar
 		bar.anchor = anchor
 
-		self.lookup.bar[anchor] = bar
-		self.lookup.anchor[bar] = anchor
+		self.achors[bar] = anchor
+
 	end
 end
 
@@ -804,22 +805,16 @@ ActionBarMod.UpdateChargeCooldowns = function(self)
 end
 
 ActionBarMod.UpdateAnchors = function(self)
-	if (not next(self.lookup.anchor)) then return end
-
 	for i,bar in ipairs(self.bars) do
-
-		local anchor = self.lookup.anchor[bar]
-		if (anchor) then
-
+		if (bar.anchor) then
 			local config = self.db.profile.bars[i].savedPosition
 			if (config) then
-				anchor:SetSize(bar:GetSize())
-				anchor:SetScale(config.scale)
-				anchor:ClearAllPoints()
-				anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
+				bar.anchor:SetSize(bar:GetSize())
+				bar.anchor:SetScale(config.scale)
+				bar.anchor:ClearAllPoints()
+				bar.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
 			end
 		end
-
 	end
 end
 
@@ -842,27 +837,19 @@ ActionBarMod.UpdateBindings = function(self)
 end
 
 ActionBarMod.UpdateDefaults = function(self)
-
 	local defaults = self:GetDefaults()
-
 	for i,bar in ipairs(self.bars) do
-
-		local anchor = self.lookup.anchor[bar]
-		if (anchor) then
-
+		if (bar.anchor) then
 			local config = defaults.profile.bars[i].savedPosition
-
 			config.scale = anchor:GetDefaultScale()
 			config[1], config[2], config[3] = anchor:GetDefaultPosition()
 		end
 	end
-
 	self:SetDefaults(defaults)
 end
 
 ActionBarMod.UpdatePositionAndScales = function(self)
 	if (not next(self.bars)) then return end
-
 	if (InCombatLockdown()) then
 		self.updateneeded = true
 		return
@@ -870,17 +857,14 @@ ActionBarMod.UpdatePositionAndScales = function(self)
 
 	self.updateneeded = nil
 
-	for i,bar in ipairs(self.bars) do
-
+	for i,bar in next,self.bars do
 		local config = bar.config.savedPosition
 		if (config) then
-
 			bar:SetScale(config.scale)
 			bar:ClearAllPoints()
 			bar:SetPoint(config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
 		end
 	end
-
 end
 
 ActionBarMod.UpdateEnabled = function(self)
@@ -956,32 +940,26 @@ ActionBarMod.OnAnchorEvent = function(self, event, ...)
 
 	elseif (event == "MFM_PositionUpdated") then
 		local anchor, point, x, y = ...
+		if (not anchor.bar) then return end
 
-		local bar = self.lookup.bar[anchor]
-		if (not bar) then return end
-
-		bar.config.savedPosition[1] = point
-		bar.config.savedPosition[2] = x
-		bar.config.savedPosition[3] = y
+		anchor.bar.config.savedPosition[1] = point
+		anchor.bar.config.savedPosition[2] = x
+		anchor.bar.config.savedPosition[3] = y
 
 		self:UpdatePositionAndScales()
 
 	elseif (event == "MFM_ScaleUpdated") then
 		local anchor, scale = ...
+		if (not anchor.bar) then return end
 
-		local bar = self.lookup.bar[anchor]
-		if (not bar) then return end
-
-		bar.config.savedPosition.scale = scale
+		anchor.bar.config.savedPosition.scale = scale
 
 		self:UpdatePositionAndScales()
 
 	elseif (event == "MFM_Dragging") then
 		if (not self.incombat) then
-
 			local anchor = ...
-			local bar = self.lookup.bar[anchor]
-			if (not bar) then return end
+			if (not anchor.bar) then return end
 
 			self:OnAnchorEvent("MFM_PositionUpdated", ...)
 		end
@@ -1000,14 +978,14 @@ ActionBarMod.OnButtonEvent = function(self, event, ...)
 			button.cooldown:SetDrawEdge(false)
 
 			local i = 1
-			while button.icon:GetMaskTexture(i) do
+			while (button.icon:GetMaskTexture(i)) do
 				button.icon:RemoveMaskTexture(button.icon:GetMaskTexture(i))
 				i = i + 1
 			end
 			button.icon:SetMask(config.ButtonMaskTexture)
 
-			local spellId = button:GetSpellId()
-			if spellId and IsSpellOverlayed(spellId) then
+			local spellID = button:GetSpellId()
+			if (spellID and IsSpellOverlayed(spellID)) then
 				button.spellHighlight:Show()
 			else
 				button.spellHighlight:Hide()
@@ -1026,8 +1004,8 @@ ActionBarMod.OnButtonEvent = function(self, event, ...)
 		local arg1 = ...
 		for button in next, LAB.activeButtons do
 			if (self.buttons[button]) then
-				local spellId = button:GetSpellId()
-				if (spellId and spellId == arg1) then
+				local spellID = button:GetSpellId()
+				if (spellID and spellID == arg1) then
 					button.spellHighlight:Show()
 				else
 					if (button._state_type == "action") then
@@ -1044,8 +1022,8 @@ ActionBarMod.OnButtonEvent = function(self, event, ...)
 		local arg1 = ...
 		for button in next, LAB.activeButtons do
 			if (self.buttons[button]) then
-				local spellId = button:GetSpellId()
-				if (spellId and spellId == arg1) then
+				local spellID = button:GetSpellId()
+				if (spellID and spellID == arg1) then
 					button.spellHighlight:Hide()
 				else
 					if (button._state_type == "action") then
@@ -1121,7 +1099,7 @@ ActionBarMod.OnInitialize = function(self)
 
 	self.bars = {}
 	self.buttons = {}
-	self.lookup = { bar = {}, anchor = {} }
+	self.anchors = {}
 
 	if (ns.IsRetail) then
 		if (IsAddOnEnabled("MaxDps")) then
@@ -1132,5 +1110,4 @@ ActionBarMod.OnInitialize = function(self)
 			end
 		end
 	end
-
 end
