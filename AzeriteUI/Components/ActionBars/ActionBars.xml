@@ -10,13 +10,13 @@
 	<Script file="Prototypes\ButtonBar.lua"/>
 	<Script file="Prototypes\ActionBar.lua"/>
 	<Script file="Prototypes\ActionButton.lua"/>
-	<Script file="Prototypes\StanceButton.lua"/>
 	<Script file="Prototypes\PetButton.lua"/>
+	<Script file="Prototypes\StanceButton.lua"/>
 
 	<!-- Elements -->
 	<Script file="Elements\ActionBars.lua"/>
-	<Script file="Elements\StanceBar.lua"/>
 	<Script file="Elements\PetBar.lua"/>
+	<Script file="Elements\StanceBar.lua"/>
 	<Script file="Elements\StatusBars.lua"/>
 	<Script file="Elements\ExtraButtons.lua"/>
 	<Script file="Elements\VehicleExit.lua"/>
