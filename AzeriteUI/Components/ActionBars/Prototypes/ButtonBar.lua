@@ -71,6 +71,18 @@ ButtonBar.CreateButton = function(self, buttonConfig)
 	return button
 end
 
+ButtonBar.Enable = function(self)
+	if (InCombatLockdown()) then return end
+
+	Bar.Enable(self)
+end
+
+ButtonBar.Disable = function(self)
+	if (InCombatLockdown()) then return end
+
+	Bar.Disable(self)
+end
+
 ButtonBar.UpdateButtons = function(self)
 	if (InCombatLockdown()) then return end
 
