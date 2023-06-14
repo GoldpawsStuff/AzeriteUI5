@@ -79,7 +79,7 @@ local getoption = function(info,option)
 	return db[option]
 end
 
-local GenerateBarOptions = function(moduleName, displayName, order)
+local GenerateIndexedBarOptions = function(moduleName, displayName, order)
 	local getmodule = function()
 		return ns:GetModule(moduleName, true)
 	end
@@ -336,6 +336,222 @@ local GenerateBarOptions = function(moduleName, displayName, order)
 	return options
 end
 
+local GenerateBarOptions = function(moduleName, displayName, order, maxButtons)
+	local getmodule = function()
+		return ns:GetModule(moduleName, true)
+	end
+	if (not getmodule(moduleName)) then return end
+
+	local setter = function(info,val)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = getmodule().db.profile
+		db[info[#info]] = val
+		getmodule():UpdateSettings()
+	end
+
+	local getter = function(info)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = getmodule().db.profile
+		return db[info[#info]]
+	end
+
+	local isdisabled = function(info)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = getmodule().db.profile
+		return info[#info] ~= "enabled" and not db.enabled
+	end
+
+	local getsetting = function(info, setting)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = getmodule().db.profile
+		return db[setting]
+	end
+
+	local setoption = function(info,option,val)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = getmodule().db.profile
+		db[option] = val
+		getmodule():UpdateSettings()
+	end
+
+	local getoption = function(info,option)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = getmodule().db.profile
+		return db[option]
+	end
+
+	local options = {
+		name = displayName,
+		order = order,
+		type = "group",
+		args = {
+			enabled = {
+				name = L["Enable"],
+				desc = L["Toggle whether to enable this action bar or not."],
+				order = 1,
+				type = "toggle", width = "full",
+				set = setter,
+				get = getter
+			},
+			visibilityHeader = {
+				name = L["Visibility"],
+				order = 2,
+				type = "header",
+				hidden = isdisabled
+			},
+			visibilityDesc = {
+				name = L["Choose when your auras will be visible."],
+				order = 3,
+				type = "description",
+				fontSize = "medium",
+				hidden = isdisabled
+			},
+			enableBarFading = {
+				name = L["Enable Bar Fading"],
+				desc = L["Toggle whether to enable the buttons of this action bar to fade out."],
+				order = 9,
+				type = "toggle", width = "full",
+				hidden = isdisabled,
+				set = setter,
+				get = getter
+			},
+			fadeInCombat = {
+				name = L["Only show on mouseover"],
+				desc = L["Enable this to only show faded bars on mouseover, and not force them visible in combat."],
+				order = 10,
+				type = "toggle", width = "full",
+				hidden = function(info) return isdisabled(info) or not getsetting(info, "enableBarFading") end,
+				set = setter,
+				get = getter
+			},
+			fadeFrom = {
+				name = L["Start Fading from"],
+				desc = L["Choose which button to start the fading from."],
+				order = 11,
+				type = "range", width = "full", min = 1, max = maxButtons or 12, step = 1,
+				hidden = function(info) return isdisabled(info) or not getsetting(info, "enableBarFading") end,
+				set = setter,
+				get = getter
+			},
+			layoutHeader = {
+				name = L["Layout"],
+				order = 18,
+				type = "header",
+				hidden = isdisabled
+			},
+			layoutDesc = {
+				name = L["Choose how your bar is displayed."],
+				order = 19,
+				type = "description",
+				fontSize = "medium",
+				hidden = isdisabled
+			},
+			layout = {
+				name = L["Bar Layout"],
+				desc = L["Choose the action bar layout type."],
+				order = 20,
+				type = "select", style = "dropdown",
+				hidden = isdisabled,
+				values = {
+					["grid"] = L["Grid Layout"],
+					["zigzag"] = L["ZigZag Layout"],
+				},
+				set = setter,
+				get = getter
+			},
+			startAt = {
+				name = L["First ZigZag Button"],
+				desc = L["Sets which button the zigzag pattern should begin at."],
+				order = 21,
+				type = "range", width = "full", min = 1, max = maxButtons or 12, step = 1,
+				hidden = function(info) return isdisabled(info) or getsetting(info, "layout") ~= "zigzag" end,
+				set = setter,
+				get = getter
+			},
+			numbuttons = {
+				name = L["Number of buttons"],
+				desc = L["Sets the number of action buttons on the action bar."],
+				order = 30,
+				type = "range", width = "full", min = 0, max = maxButtons or 12, step = 1,
+				hidden = isdisabled,
+				set = setter,
+				get = getter
+			},
+			padding = {
+				name = L["Button Padding"],
+				desc = L["Sets the padding between buttons on the same line."],
+				order = 31,
+				type = "range", width = "full", min = 0, max = 16, step = 1,
+				hidden = isdisabled,
+				set = setter,
+				get = getter
+			},
+			breakpadding = {
+				name = L["Line Padding"],
+				desc = L["Sets the padding between multiple lines of buttons."],
+				order = 32,
+				type = "range", width = "full", min = 0, max = 16, step = 1,
+				hidden = isdisabled,
+				set = setter,
+				get = getter
+			},
+			breakpoint = {
+				name = L["Line Break"],
+				desc = L["Sets when a new line of buttons should begin."],
+				order = 40,
+				type = "range", width = "full", min = 1, max = maxButtons or 12, step = 1,
+				hidden = function(info) return isdisabled(info) or getsetting(info, "layout") ~= "grid" end,
+				set = setter,
+				get = getter
+			},
+			growth = {
+				name = L["Initial Growth"],
+				desc = L["Choose whether the bar initially should expand horizontally or vertically."],
+				order = 50,
+				type = "select", style = "dropdown",
+				hidden = isdisabled,
+				values = {
+					["horizontal"] = L["Horizontal Layout"],
+					["vertical"] = L["Vertical Layout"],
+				},
+				set = setter,
+				get = getter
+			},
+			growthSpace = {
+				name = "", order = 51, type = "description",
+				hidden = isdisabled
+			},
+			growthHorizontal = {
+				name = L["Horizontal Growth"],
+				desc = L["Choose which horizontal direction the bar should expand in."],
+				order = 52,
+				type = "select", style = "dropdown",
+				hidden = isdisabled,
+				values = {
+					["RIGHT"] = L["Right"],
+					["LEFT"] = L["Left"],
+				},
+				set = setter,
+				get = getter
+			},
+			growthVertical = {
+				name = L["Vertical Growth"],
+				desc = L["Choose which vertical direction the bar should expand in."],
+				order = 53,
+				type = "select", style = "dropdown",
+				hidden = isdisabled,
+				values = {
+					["DOWN"] = L["Down"],
+					["UP"] = L["Up"],
+				},
+				set = setter,
+				get = getter
+			}
+		}
+	}
+	return options
+end
+
 local GenerateOptions = function()
 	if (not getmodule()) then return end
 
@@ -346,9 +562,9 @@ local GenerateOptions = function()
 	}
 
 	for id = 1,ns.IsRetail and 8 or 5 do
-		options.args["bar"..id] = GenerateBarOptions("ActionBars", string_format(L["Action Bar %d"], id), id*10)
+		options.args["bar"..id] = GenerateIndexedBarOptions("ActionBars", string_format(L["Action Bar %d"], id), id*10)
 	end
-	options.args["petbar"] = GenerateBarOptions("PetBar", L["Pet Bar"], 100)
+	options.args["petbar"] = GenerateBarOptions("PetBar", L["Pet Bar"], 100, NUM_PET_ACTION_SLOTS)
 
 	return options
 end
