@@ -115,6 +115,7 @@ ns.PetButton.Create = function(id, name, header, buttonConfig)
 end
 
 PetButton.UpdateConfig = function(self, buttonConfig)
+	self:Update()
 end
 
 PetButton.Update = function(self)

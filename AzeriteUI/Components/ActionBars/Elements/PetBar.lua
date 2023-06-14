@@ -156,8 +156,10 @@ local style = function(button)
 	end
 
 	-- Wrath overwrites the default texture
-	button.AutoCastable = _G[button:GetName().."AutoCastable"]
-	button.AutoCastShine = _G[button:GetName().."Shine"]
+	if (ns.IsWrath) then
+		button.AutoCastable = _G[button:GetName().."AutoCastable"]
+		button.AutoCastShine = _G[button:GetName().."Shine"]
+	end
 
 	local m = db.ButtonMaskTexture
 	local b = GetMedia("blank")
@@ -379,6 +381,10 @@ PetBar.Update = function(self)
 	self:UpdateVisibilityDriver()
 	self:UpdateBindings()
 	self:UpdateFading()
+
+	for id,button in next,self.buttons do
+		button:Update()
+	end
 end
 
 PetBar.UpdateFading = function(self)
@@ -443,17 +449,16 @@ PetBar.UpdateVisibilityDriver = function(self)
 
 		visdriver = "[petbattle]hide;"
 
-		local visibilityDriver
 		if (ns.IsClassic or ns.IsTBC) then
-			visibilityDriver = "[@pet,exists]show;"
+			visdriver = visdriver.."[@pet,exists]show;"
 
 		elseif (ns.IsWrath) then
 			-- UNTESTED!
-			visibilityDriver = "[@pet,exists,nopossessbar,nooverridebar,noshapeshift,novehicleui]show;"
+			visdriver = visdriver.."[@pet,exists,nopossessbar,nooverridebar,noshapeshift,novehicleui]show;"
 
 		elseif (ns.IsRetail) then
 			-- Experimental change to avoid duplicate bars on some world quests.
-			visibilityDriver = "[@pet,exists,nopossessbar,nooverridebar,noshapeshift,novehicleui]show;"
+			visdriver = visdriver.."[@pet,exists,nopossessbar,nooverridebar,noshapeshift,novehicleui]show;"
 		end
 
 		visdriver = visdriver.."hide"
@@ -473,9 +478,34 @@ PetBarMod.CreateBar = function(self)
 	bar.defaults = defaults.profile
 	bar.config = self.db.profile
 
+	bar:SetAttribute("UpdateVisibility", [[
+		local visibility = self:GetAttribute("visibility");
+		local userhidden = self:GetAttribute("userhidden");
+		if (visibility == "show") then
+			if (userhidden) then
+				self:Hide();
+			else
+				self:Show();
+			end
+		elseif (visibility == "hide") then
+			self:Hide();
+		end
+	]])
+
+	bar:SetAttribute("_onstate-vis", [[
+		if (not newstate) then
+			return
+		end
+		self:SetAttribute("visibility", newstate);
+		self:RunAttribute("UpdateVisibility");
+	]])
+
 	for id= 1,NUM_PET_ACTION_SLOTS do
 		style(bar:CreateButton())
 	end
+
+	--bar:UpdateButtons()
+	--bar:UpdateVisibilityDriver()
 
 	self.bar = bar
 end
@@ -585,7 +615,7 @@ PetBarMod.UpdateEnabled = function(self)
 	if (not self.bar) then return end
 
 	local config = self.bar.config
-	if (config.enabled and not self.bar:IsEnabled()) or (not config.enabled and self.bar:IsEnabled()) then
+	--if (config.enabled and not self.bar:IsEnabled()) or (not config.enabled and self.bar:IsEnabled()) then
 
 		if (InCombatLockdown()) then
 			self.needupdate = true
@@ -597,7 +627,7 @@ PetBarMod.UpdateEnabled = function(self)
 		else
 			self.bar:Disable()
 		end
-	end
+	--end
 end
 
 PetBarMod.UpdateSettings = function(self)
@@ -616,7 +646,7 @@ PetBarMod.RefreshConfig = function(self)
 	self:UpdateSettings()
 end
 
-PetBarMod.OnEvent = function(self, event, ...)
+PetBarMod.OnEvent = function(self, event, arg1)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		self:UpdateSettings()
 
