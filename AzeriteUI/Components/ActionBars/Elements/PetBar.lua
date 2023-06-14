@@ -613,21 +613,15 @@ end
 
 PetBarMod.UpdateEnabled = function(self)
 	if (not self.bar) then return end
-
-	local config = self.bar.config
-	--if (config.enabled and not self.bar:IsEnabled()) or (not config.enabled and self.bar:IsEnabled()) then
-
-		if (InCombatLockdown()) then
-			self.needupdate = true
-			return
-		end
-
-		if (config.enabled) then
-			self.bar:Enable()
-		else
-			self.bar:Disable()
-		end
-	--end
+	if (InCombatLockdown()) then
+		self.needupdate = true
+		return
+	end
+	if (self.bar.config.enabled) then
+		self.bar:Enable()
+	else
+		self.bar:Disable()
+	end
 end
 
 PetBarMod.UpdateSettings = function(self)
