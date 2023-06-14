@@ -4,13 +4,13 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-06-13
+## [Unreleased] 2023-06-14
 - This version is backwards incompatible and will force a full reset of its settings.
 - This version is compatible with Wrath 3.4.2 PTR.
 
 ### Added
 - Added an options menu accessible through the command `/az` or `/azerite`.
-- Added a pet action bar.
+- Added a pet action bar with layout- and visibility options.
 - Added threat glow to the nameplates and to the player- and target unit frames.
 - Added nameplate highlight outline for soft targeting in Retail. Thanks Billybishop@GitHub for writing this!
 - Added the option to keep actionbars faded out in combat and only visible on mouseover.
