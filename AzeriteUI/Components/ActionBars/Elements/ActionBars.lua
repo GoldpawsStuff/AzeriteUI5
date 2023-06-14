@@ -636,7 +636,7 @@ ActionBarMod.CreateAnchors = function(self)
 		anchor.bar = bar
 		bar.anchor = anchor
 
-		self.achors[bar] = anchor
+		self.anchors[bar] = anchor
 
 	end
 end
@@ -865,7 +865,7 @@ ActionBarMod.UpdateEnabled = function(self)
 	for id,bar in next,self.bars do
 
 		local config = bar.config
-		if (config.enabled and not bar:IsEnabled()) or (not config.enabled and bar:IsEnabled()) then
+		--if (config.enabled and not bar:IsEnabled()) or (not config.enabled and bar:IsEnabled()) then
 
 			if (InCombatLockdown()) then
 				self.needupdate = true
@@ -877,7 +877,7 @@ ActionBarMod.UpdateEnabled = function(self)
 			else
 				bar:Disable()
 			end
-		end
+		--end
 
 	end
 end
