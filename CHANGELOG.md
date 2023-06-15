@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Added an options menu accessible through the command `/az` or `/azerite`.
+- Added a stance/shapeshift bar with layout- and visibility options.
 - Added a pet action bar with layout- and visibility options.
 - Added threat glow to the nameplates and to the player- and target unit frames.
 - Added nameplate highlight outline for soft targeting in Retail. Thanks Billybishop@GitHub for writing this!
