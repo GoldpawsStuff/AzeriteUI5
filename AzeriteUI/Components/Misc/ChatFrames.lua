@@ -552,9 +552,20 @@ ChatFrames.OnEvent = function(self, event, ...)
 				QuickJoinToastButton:Hide()
 			end
 
-			-- Clear the primary chatframe on the next frame.
+			-- Clear the primary chatframe on login/reload.
 			if (not IsShiftKeyDown()) then
-				C_Timer.After(0, function() ChatFrame1:Clear() end)
+
+				-- Some addons add timers before spamming,
+				-- so we have to run this for a few seconds.
+				local quiettime = GetTime() + 5
+				CreateFrame("Frame"):SetScript("OnUpdate", function(self)
+					if (GetTime() > quiettime) then
+						self:Hide()
+						self:SetScript("OnUpdate", nil)
+						return
+					end
+					ChatFrame1:Clear()
+				end)
 			end
 		end
 	end
