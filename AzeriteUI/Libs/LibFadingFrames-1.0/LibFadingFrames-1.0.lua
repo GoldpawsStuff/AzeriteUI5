@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 10
+local MINOR_VERSION = 12
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -129,7 +129,7 @@ lib.CheckFadeFrames = function(self)
 		end
 	end
 	for frame,fadeGroup in next,self.fadeFrames do
-		if (not self.hoverFrames[frame] and frame:IsMouseOver(unpack(lib.fadeFrameHitRects[frame]))) then
+		if (not self.hoverFrames[frame] and frame:IsVisible() and frame:IsMouseOver(unpack(lib.fadeFrameHitRects[frame]))) then
 			self:OnFadeFrameEnter(frame, fadeGroup)
 			needupdate = true
 		end
