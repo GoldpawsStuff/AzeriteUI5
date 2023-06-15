@@ -215,7 +215,13 @@ Options.GenerateOptionsMenu = function(self)
 		end
 	end
 
+	self.options = options
+
 	AceConfigRegistry:RegisterOptionsTable(Addon, options)
+end
+
+Options.GetOptionsObject = function(self)
+	return self.options
 end
 
 Options.OnEvent = function(self, event, ...)

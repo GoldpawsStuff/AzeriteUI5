@@ -268,7 +268,7 @@ local GenerateOptions = function()
 				name = "", order = 63, type = "description", hidden = isdisabled
 			},
 			offsetX = {
-				name = L["Offset X"],
+				name = L["X Offset"],
 				desc = L["Sets the horizontal offset from your chosen anchor point. Positive values means right, negative values means left."],
 				order = 64,
 				type = "input",
@@ -290,7 +290,7 @@ local GenerateOptions = function()
 				end
 			},
 			offsetY = {
-				name = L["Offset Y"],
+				name = L["Y Offset"],
 				desc = L["Sets the vertical offset from your chosen anchor point. Positive values means up, negative values means down."],
 				order = 65,
 				type = "input",

@@ -32,6 +32,7 @@ local MFM = ns:GetModule("MovableFramesManager")
 
 -- Lua API
 local math_floor = math.floor
+local math_max = math.max
 local string_format = string.format
 local string_match = string.match
 local tonumber = tonumber
@@ -288,7 +289,7 @@ local GenerateIndexedBarOptions = function(moduleName, displayName, order)
 				name = "", order = 62, type = "description", hidden = isdisabled
 			},
 			offsetX = {
-				name = L["Offset X"],
+				name = L["X Offset"],
 				desc = L["Sets the horizontal offset from your chosen anchor point. Positive values means right, negative values means left."],
 				order = 63,
 				type = "input",
@@ -310,7 +311,7 @@ local GenerateIndexedBarOptions = function(moduleName, displayName, order)
 				end
 			},
 			offsetY = {
-				name = L["Offset Y"],
+				name = L["Y Offset"],
 				desc = L["Sets the vertical offset from your chosen anchor point. Positive values means up, negative values means down."],
 				order = 64,
 				type = "input",
@@ -564,7 +565,19 @@ local GenerateOptions = function()
 	for id = 1,ns.IsRetail and 8 or 5 do
 		options.args["bar"..id] = GenerateIndexedBarOptions("ActionBars", string_format(L["Action Bar %d"], id), id*10)
 	end
+
 	options.args["petbar"] = GenerateBarOptions("PetBar", L["Pet Bar"], 100, NUM_PET_ACTION_SLOTS)
+
+	local stanceBarOptions = GenerateBarOptions("StanceBar", L["Stance Bar"], 110, math_max(GetNumShapeshiftForms(), 10))
+	for i,v in next,stanceBarOptions.args do
+		if (i ~= "enabled") then
+			local ishidden = v.hidden
+			v.hidden = function(info)
+				return (GetNumShapeshiftForms() == 0) or ishidden(info)
+			end
+		end
+	end
+	options.args["stancebar"] = stanceBarOptions
 
 	return options
 end

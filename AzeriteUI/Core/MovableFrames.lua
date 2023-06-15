@@ -928,7 +928,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		name = "", order = 111, type = "description", hidden = isdisabled
 	}
 	options.args.offsetX = {
-		name = L["Offset X"],
+		name = L["X Offset"],
 		desc = L["Sets the horizontal offset from your chosen anchor point. Positive values means right, negative values means left."],
 		order = 120,
 		type = "input",
@@ -938,7 +938,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		get = getter
 	}
 	options.args.offsetY = {
-		name = L["Offset Y"],
+		name = L["Y Offset"],
 		desc = L["Sets the vertical offset from your chosen anchor point. Positive values means up, negative values means down."],
 		order = 130,
 		type = "input",
