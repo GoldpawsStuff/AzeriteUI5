@@ -111,7 +111,10 @@ ButtonBar.UpdateButtonLayout = function(self)
 	local buttons = self.buttons
 	local numbuttons = self.config.numbuttons or #buttons
 
-	if (numbuttons == 0) then return end
+	if (numbuttons == 0) then
+		self:SetSize(self.buttonWidth, self.buttonHeight)
+		return
+	end
 
 	local layout = self.config.layout
 
@@ -137,24 +140,32 @@ ButtonBar.UpdateButtonLayout = function(self)
 
 				if (config.growthHorizontal == "RIGHT") then
 					offsetX = (buttonWidth + config.padding) * (counter - (isZigZag and 1 or 0)) + (isZigZag and (config.offset * buttonWidth) or 0)
-					left = 0
-					right = math_max(right, offsetX + buttonWidth)
+					if (id <= numbuttons) then
+						left = 0
+						right = math_max(right, offsetX + buttonWidth)
+					end
 
 				elseif (config.growthHorizontal == "LEFT") then
 					offsetX = -((buttonWidth + config.padding) * (counter - (isZigZag and 1 or 0)) + (isZigZag and (config.offset * buttonWidth) or 0))
-					left = math_min(left, offsetX - buttonWidth)
-					right = 0
+					if (id <= numbuttons) then
+						left = math_min(left, offsetX - buttonWidth)
+						right = 0
+					end
 				end
 
 				if (config.growthVertical == "UP") then
 					offsetY = isZigZag and (buttonHeight + config.breakpadding) or 0
-					top = math_max(top, offsetY + buttonHeight)
-					bottom = 0
+					if (id <= numbuttons) then
+						top = math_max(top, offsetY + buttonHeight)
+						bottom = 0
+					end
 
 				elseif (config.growthVertical == "DOWN") then
 					offsetY = isZigZag and -(buttonHeight + config.breakpadding) or 0
-					top = 0
-					bottom = math_min(bottom, offsetY - buttonHeight)
+					if (id <= numbuttons) then
+						top = 0
+						bottom = math_min(bottom, offsetY - buttonHeight)
+					end
 				end
 
 
@@ -162,24 +173,32 @@ ButtonBar.UpdateButtonLayout = function(self)
 
 				if (config.growthVertical == "DOWN") then
 					offsetY = -((buttonHeight + config.padding) * counter + (isZigZag and (config.offset * buttonWidth) or 0))
-					top = 0
-					bottom = math_min(bottom, offsetY - buttonHeight)
+					if (id <= numbuttons) then
+						top = 0
+						bottom = math_min(bottom, offsetY - buttonHeight)
+					end
 
 				elseif (config.growthVertical == "UP") then
 					offsetY = (buttonHeight + config.padding) * counter + (isZigZag and (config.offset * buttonWidth) or 0)
-					top = math_max(top, offsetY + buttonHeight)
-					bottom = 0
+					if (id <= numbuttons) then
+						top = math_max(top, offsetY + buttonHeight)
+						bottom = 0
+					end
 				end
 
 				if (config.growthHorizontal == "RIGHT") then
 					offsetX = isZigZag and (buttonWidth + config.padding) or 0
-					left = 0
-					right = math_max(right, offsetX + buttonWidth)
+					if (id <= numbuttons) then
+						left = 0
+						right = math_max(right, offsetX + buttonWidth)
+					end
 
 				elseif (config.growthHorizontal == "LEFT") then
 					offsetX = isZigZag and -(buttonWidth + config.padding) or 0
-					left = math_min(left, offsetX - buttonWidth)
-					right = 0
+					if (id <= numbuttons) then
+						left = math_min(left, offsetX - buttonWidth)
+						right = 0
+					end
 				end
 
 			end
@@ -206,12 +225,22 @@ ButtonBar.UpdateButtonLayout = function(self)
 		local width, height
 
 		if (config.growth == "horizontal") then
-			width = buttonWidth*config.breakpoint + config.padding*(config.breakpoint - 1)
-			height = buttonHeight*totalbreaks + (config.breakpadding or config.padding)*(totalbreaks-1)
+			if (numbuttons < config.breakpoint) then
+				width = buttonWidth*numbuttons + config.padding*(numbuttons - 1)
+				height = buttonHeight
+			else
+				width = buttonWidth*config.breakpoint + config.padding*(config.breakpoint - 1)
+				height = buttonHeight*totalbreaks + (config.breakpadding or config.padding)*(totalbreaks-1)
+			end
 
 		elseif (config.growth == "vertical") then
-			width = buttonWidth*totalbreaks + (config.breakpadding or config.padding)*(totalbreaks-1)
-			height = buttonHeight*config.breakpoint + config.padding*(config.breakpoint - 1)
+			if (numbuttons < config.breakpoint) then
+				width = buttonWidth
+				height = buttonHeight*numbuttons + config.padding*(numbuttons - 1)
+			else
+				width = buttonWidth*totalbreaks + (config.breakpadding or config.padding)*(totalbreaks-1)
+				height = buttonHeight*config.breakpoint + config.padding*(config.breakpoint - 1)
+			end
 		end
 
 		self:SetSize(width, height)
