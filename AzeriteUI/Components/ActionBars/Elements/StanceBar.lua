@@ -61,11 +61,11 @@ local UIHider = ns.Hider
 local noop = ns.Noop
 
 local defaults = { profile = ns:Merge({
-	disabled = true,
+	enabled = false,
 	enableBarFading = false, -- whether to enable non-combat/hover button fading
 	fadeInCombat = false, -- whether to keep fading out even in combat
 	fadeFrom = 1, -- which button to start the button fading from
-	numbuttons = 5, -- total number of buttons on the bar
+	numbuttons = 10, -- total number of buttons on the bar
 	layout = "grid", -- currently applied layout type
 	startAt = 1, -- at which button the zigzag pattern should begin
 	growth = "horizontal", -- which direction the bar goes in
@@ -81,9 +81,9 @@ local defaults = { profile = ns:Merge({
 StanceBarMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),
-		[1] = "BOTTOMRIGHT",
-		[2] = -40 * ns.API.GetEffectiveScale(),
-		[3] = 280 * ns.API.GetEffectiveScale()
+		[1] = "BOTTOM",
+		[2] = 0 * ns.API.GetEffectiveScale(),
+		[3] = 200 * ns.API.GetEffectiveScale()
 	}
 	return defaults
 end
@@ -365,12 +365,14 @@ end
 
 StanceBar.Enable = function(self)
 	ButtonBar.Enable(self)
+	self:Show()
 	self:Update()
 end
 
 StanceBar.Disable = function(self)
 	ButtonBar.Disable(self)
 	self:Update()
+	self:Hide()
 end
 
 StanceBar.Update = function(self)
@@ -378,7 +380,6 @@ StanceBar.Update = function(self)
 
 	self:UpdateButtons()
 	self:UpdateButtonLayout()
-	--self:UpdateVisibilityDriver()
 	self:UpdateBindings()
 	self:UpdateFading()
 
@@ -393,7 +394,6 @@ StanceBar.UpdateButtons = function(self)
 	local numStances = GetNumShapeshiftForms()
 	local numButtons = self.config.numbuttons
 	local numVisible = math_min(numButtons, numStances)
-
 	local updateBindings = (numStances > #self.buttons)
 
 	for id = #self.buttons + 1,numStances do
@@ -416,7 +416,6 @@ StanceBar.UpdateButtons = function(self)
 		StanceBarMod:UpdateBindings()
 	end
 
-	self.disabled = (GetNumShapeshiftForms() == 0) and true or nil
 end
 
 StanceBar.UpdateFading = function(self)
@@ -501,11 +500,6 @@ StanceBarMod.CreateBar = function(self)
 		self:RunAttribute("UpdateVisibility");
 	]])
 
-	-- Handle this on demand.
-	--for id= 1,10 do
-	--	style(bar:CreateButton())
-	--end
-
 	self.bar = bar
 end
 
@@ -522,7 +516,6 @@ StanceBarMod.CreateAnchor = function(self)
 	anchor:SetPoint(config.savedPosition[1], config.savedPosition[2], config.savedPosition[3])
 	anchor:SetScale(config.savedPosition.scale)
 	anchor:SetTitle(L["Stance Bar"])
-
 	anchor:SetDefaultScale(ns.API.GetEffectiveScale())
 
 	anchor.PreUpdate = function()
@@ -534,7 +527,6 @@ StanceBarMod.CreateAnchor = function(self)
 	anchor.Overlay:SetBackdropBorderColor(r, g, b, 1)
 
 	self.anchor = anchor
-
 end
 
 StanceBarMod.GetDefaults = function(self)
@@ -554,13 +546,7 @@ StanceBarMod.UpdateAnchor = function(self)
 
 	local config = self.db.profile.savedPosition
 	if (config) then
-		local numStances = GetNumShapeshiftForms()
-		local numButtons = numStances > 0 and numStances or 5
-		local width, height = numButtons * self.bar.buttonWidth, self.bar.buttonHeight
-
-		local width, height = self.bar:GetSize()
-
-		self.anchor:SetSize(width, height)
+		self.anchor:SetSize(self.bar:GetSize())
 		self.anchor:SetScale(config.scale)
 		self.anchor:ClearAllPoints()
 		self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
@@ -652,14 +638,14 @@ StanceBarMod.OnEvent = function(self, event, ...)
 		end
 
 	elseif (event == "PLAYER_REGEN_ENABLED") then
-		if (self.needstateupdate and not InCombatLockdown()) then
-			self.needstateupdate = nil
+		if (self.needupdate and not InCombatLockdown()) then
+			self.needupdate = nil
 			self.bar:UpdateButtons()
 		end
 
 	else
 		if (InCombatLockdown()) then
-			self.needstateupdate = true
+			self.needupdate = true
 			for id,button in next,self.bar.buttons do
 				button:Update()
 			end
@@ -764,8 +750,8 @@ end
 StanceBarMod.OnInitialize = function(self)
 
 	self.db = ns.db:RegisterNamespace(self:GetName(), self:GetDefaults())
-	self:SetEnabledState(self.db.profile.enabled)
+	--self:SetEnabledState(self.db.profile.enabled)
 
-	if (not self.db.profile.enabled) then return end
+	--if (not self.db.profile.enabled) then return end
 
 end

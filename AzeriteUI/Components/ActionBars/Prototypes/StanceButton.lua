@@ -77,8 +77,6 @@ ns.StanceButton.Create = function(id, name, header, buttonConfig)
 	button.normalTexture = button:GetNormalTexture()
 	button.normalTexture:SetTexture("")
 
-
-
 	ns.StanceButtons[button] = true
 
 	return button
