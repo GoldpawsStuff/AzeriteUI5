@@ -25,6 +25,8 @@
 --]]
 local Addon, ns = ...
 
+local KeyBound = LibStub("LibKeyBound-1.0", true)
+
 -- Lua API
 local next = next
 local select = select
@@ -264,21 +266,6 @@ PetButton.GetBindings = function(self)
 	end
 
 	return keys
-end
-
-PetButton.SetKey = function(self, key)
-	SetBinding(key, string_format("BONUSACTIONBUTTON%d", self.id))
-end
-
-PetButton.ClearBindings = function(self)
-	local binding = string_format("BONUSACTIONBUTTON%d", self:GetID())
-	while GetBindingKey(binding) do
-		SetBinding(GetBindingKey(binding), nil)
-	end
-	binding = "CLICK "..self:GetName()..":LeftButton"
-	while GetBindingKey(binding) do
-		SetBinding(GetBindingKey(binding), nil)
-	end
 end
 
 PetButton.OnEnter = function(self)
