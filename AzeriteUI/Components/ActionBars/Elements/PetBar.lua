@@ -86,7 +86,6 @@ PetBarMod.GenerateDefaults = function(self)
 	return defaults
 end
 
-
 local config = {
 	ButtonSize = { 48, 48 },
 	ButtonHitRects =  { -10, -10, -10, -10 },
@@ -343,7 +342,6 @@ local style = function(button)
 	return button
 end
 
-
 PetBar.CreateButton = function(self, buttonConfig)
 
 	local id = #self.buttons + 1
@@ -469,7 +467,6 @@ PetBar.UpdateVisibilityDriver = function(self)
 	RegisterStateDriver(self, "vis", visdriver or "hide")
 end
 
-
 PetBarMod.CreateBar = function(self)
 	if (self.bar) then return end
 
@@ -503,9 +500,6 @@ PetBarMod.CreateBar = function(self)
 	for id= 1,NUM_PET_ACTION_SLOTS do
 		style(bar:CreateButton())
 	end
-
-	--bar:UpdateButtons()
-	--bar:UpdateVisibilityDriver()
 
 	self.bar = bar
 end
@@ -680,11 +674,8 @@ PetBarMod.OnEvent = function(self, event, arg1)
 		for id,button in next,self.bar.buttons do
 			button:HideGrid()
 		end
-	end
-end
 
-PetBarMod.OnButtonEvent = function(self, event, ...)
-	if (event == "UPDATE_BINDINGS") then
+	elseif (event == "UPDATE_BINDINGS") then
 		self.bar:UpdateBindings()
 	end
 end
@@ -751,21 +742,22 @@ PetBarMod.OnEnable = function(self)
 	self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
 	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
 
-	self:RegisterEvent("PLAYER_CONTROL_LOST", "OnEvent")
-	self:RegisterEvent("PLAYER_CONTROL_GAINED", "OnEvent")
-	self:RegisterEvent("PLAYER_FARSIGHT_FOCUS_CHANGED", "OnEvent")
-	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED", "OnEvent")
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", "OnEvent")
-	self:RegisterEvent("UNIT_PET", "OnEvent")
-	self:RegisterEvent("UNIT_FLAGS", "OnEvent")
-	self:RegisterEvent("UNIT_AURA", "OnEvent")
 	self:RegisterEvent("PET_BAR_UPDATE", "OnEvent")
 	self:RegisterEvent("PET_BAR_UPDATE_COOLDOWN", "OnEvent")
 	self:RegisterEvent("PET_BAR_UPDATE_USABLE", "OnEvent")
 	self:RegisterEvent("PET_BAR_SHOWGRID", "OnEvent")
 	self:RegisterEvent("PET_BAR_HIDEGRID", "OnEvent")
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	self:RegisterEvent("PLAYER_CONTROL_LOST", "OnEvent")
+	self:RegisterEvent("PLAYER_CONTROL_GAINED", "OnEvent")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
+	self:RegisterEvent("PLAYER_FARSIGHT_FOCUS_CHANGED", "OnEvent")
+	self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED", "OnEvent")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	self:RegisterEvent("PLAYER_TARGET_CHANGED", "OnEvent")
+	self:RegisterEvent("UPDATE_BINDINGS", "OnEvent")
+	self:RegisterEvent("UNIT_AURA", "OnEvent")
+	self:RegisterEvent("UNIT_FLAGS", "OnEvent")
+	self:RegisterEvent("UNIT_PET", "OnEvent")
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnAnchorEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnAnchorEvent")
