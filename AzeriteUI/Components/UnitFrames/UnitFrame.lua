@@ -226,7 +226,7 @@ end
 UnitFrameMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace("UnitFrames", defaults)
 
-	self:SetEnabledState(self.db.profile.enabled)
+	--self:SetEnabledState(self.db.profile.enabled)
 end
 
 UnitFrameMod.OnEnable = function(self)

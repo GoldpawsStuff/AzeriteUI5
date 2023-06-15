@@ -775,8 +775,8 @@ end
 PetBarMod.OnInitialize = function(self)
 
 	self.db = ns.db:RegisterNamespace(self:GetName(), self:GetDefaults())
-	self:SetEnabledState(self.db.profile.enabled)
+	--self:SetEnabledState(self.db.profile.enabled)
 
-	if (not self.db.profile.enabled) then return end
+	--if (not self.db.profile.enabled) then return end
 
 end
