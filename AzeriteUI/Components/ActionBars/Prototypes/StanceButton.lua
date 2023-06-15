@@ -24,3 +24,114 @@
 
 --]]
 local Addon, ns = ...
+
+local KeyBound = LibStub("LibKeyBound-1.0", true)
+
+-- GLOBALS: CreateFrame, CooldownFrame_Set, InCombatLockdown
+-- GLOBALS: GetBindingKey, ClearOverrideBindings, SetOverrideBindingClick
+-- GLOBALS: GetNumShapeshiftForms, GetShapeshiftFormInfo, GetShapeshiftFormCooldown
+
+-- Lua API
+local setmetatable = setmetatable
+
+local StanceButton = CreateFrame("CheckButton")
+local StanceButton_MT = { __index = StanceButton }
+
+-- Default button config
+local defaults = {
+	outOfRangeColoring = "button",
+	tooltip = "enabled",
+	showGrid = false,
+	colors = {
+		range = { 1, .15, .15 },
+		mana = { .25, .25, 1 }
+	},
+	hideElements = {
+		macro = true,
+		hotkey = false,
+		equipped = true,
+		border = true,
+		borderIfEmpty = true
+	},
+	keyBoundTarget = false,
+	keyBoundClickButton = "LeftButton",
+	clickOnDown = true,
+	flyoutDirection = "UP"
+}
+
+ns.StanceButtons = {}
+ns.StanceButton = StanceButton
+ns.StanceButton.defaults = defaults
+
+ns.StanceButton.Create = function(id, name, header, buttonConfig)
+
+	local button = setmetatable(CreateFrame("CheckButton", name, header, "StanceButtonTemplate"), StanceButton_MT)
+	button:SetID(id)
+	button.id = id
+	button.parent = header
+	button.showgrid = 0
+
+	button.icon = _G[button:GetName() .. "Icon"]
+	button.cooldown = _G[button:GetName() .. "Cooldown"]
+	button.hotkey = _G[button:GetName() .. "HotKey"]
+	button.normalTexture = button:GetNormalTexture()
+	button.normalTexture:SetTexture("")
+
+
+
+	ns.StanceButtons[button] = true
+
+	return button
+end
+
+StanceButton.UpdateConfig = function(self, buttonConfig)
+	self:Update()
+end
+
+StanceButton.Update = function(self)
+	if (not self:IsShown()) then return end
+
+	local id = self:GetID()
+	local texture, isActive, isCastable, spellID = GetShapeshiftFormInfo(id)
+
+	self.icon:SetTexture(texture)
+
+	if (texture) then
+		self.cooldown:Show()
+	else
+		self.cooldown:Hide()
+	end
+	local start, duration, enable = GetShapeshiftFormCooldown(id)
+	CooldownFrame_Set(self.cooldown, start, duration, enable)
+
+	if (isActive) then
+		self:SetChecked(true)
+	else
+		self:SetChecked(false)
+	end
+
+	if (isCastable) then
+		self.icon:SetVertexColor(1.0, 1.0, 1.0)
+	else
+		self.icon:SetVertexColor(0.4, 0.4, 0.4)
+	end
+
+	self:UpdateHotkeys()
+end
+
+StanceButton.UpdateHotkeys = function(self)
+	local key = self:GetHotkey() or ""
+	local hotkey = self.hotkey
+
+	if (key == "" or self.parent.config.hidehotkey) then
+		hotkey:Hide()
+	else
+		hotkey:SetText(key)
+		hotkey:Show()
+	end
+end
+
+StanceButton.GetHotkey = function(self)
+	local key = GetBindingKey(format("SHAPESHIFTBUTTON%d", self:GetID())) or GetBindingKey("CLICK "..self:GetName()..":LeftButton")
+	return key and KeyBound:ToShortKey(key)
+end
