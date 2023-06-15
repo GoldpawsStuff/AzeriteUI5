@@ -33,6 +33,7 @@ local MFM = ns:GetModule("MovableFramesManager")
 -- Lua API
 local math_floor = math.floor
 local math_max = math.max
+local math_min = math.min
 local string_format = string.format
 local string_match = string.match
 local tonumber = tonumber
@@ -568,7 +569,15 @@ local GenerateOptions = function()
 
 	options.args["petbar"] = GenerateBarOptions("PetBar", L["Pet Bar"], 100, NUM_PET_ACTION_SLOTS)
 
-	local stanceBarOptions = GenerateBarOptions("StanceBar", L["Stance Bar"], 110, math_max(GetNumShapeshiftForms(), 10))
+	local stanceBarOptions = GenerateBarOptions("StanceBar", L["Stance Bar"], 110, GetNumShapeshiftForms())
+
+	for _,opt in next,{ "fadeFrom", "startAt", "numbuttons", "breakpoint" } do
+		local getter = stanceBarOptions.args[opt].get
+		stanceBarOptions.args[opt].get = function(info)
+			return math_min(getter(info), stanceBarOptions.args[opt].max)
+		end
+	end
+
 	for i,v in next,stanceBarOptions.args do
 		if (i ~= "enabled") then
 			local ishidden = v.hidden
@@ -577,6 +586,20 @@ local GenerateOptions = function()
 			end
 		end
 	end
+
+	local updater = CreateFrame("Frame")
+	updater:RegisterEvent("ACTIONBAR_PAGE_CHANGED")
+	updater:RegisterEvent("PLAYER_ENTERING_WORLD")
+	updater:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
+	updater:RegisterEvent("UPDATE_SHAPESHIFT_FORMS")
+	updater:SetScript("OnEvent", function()
+		local numStances = GetNumShapeshiftForms()
+		stanceBarOptions.args.fadeFrom.max = numStances
+		stanceBarOptions.args.startAt.max = numStances
+		stanceBarOptions.args.numbuttons.max = numStances
+		stanceBarOptions.args.breakpoint.max = numStances
+	end)
+
 	options.args["stancebar"] = stanceBarOptions
 
 	return options
