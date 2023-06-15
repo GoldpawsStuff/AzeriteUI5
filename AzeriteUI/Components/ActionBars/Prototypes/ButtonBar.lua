@@ -109,7 +109,7 @@ ButtonBar.UpdateButtonLayout = function(self)
 	if (InCombatLockdown()) then return end
 
 	local buttons = self.buttons
-	local numbuttons = self.config.numbuttons or #buttons
+	local numbuttons = self.numButtons or self.config.numbuttons or #buttons
 
 	if (numbuttons == 0) then
 		self:SetSize(self.buttonWidth, self.buttonHeight)
