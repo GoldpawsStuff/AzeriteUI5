@@ -12,7 +12,7 @@
 ## X-Wago-ID: R4N2PZKL
 ## X-License: Custom
 
-## SavedVariables: AzeriteUI5_DB, AzeriteUI4_DB
+## SavedVariables: AzeriteUI5_DB
 ## OptionalDeps: Ace3, Clique, LibKeyBound-1.0
 
 # TaintLess [23-05-18]
