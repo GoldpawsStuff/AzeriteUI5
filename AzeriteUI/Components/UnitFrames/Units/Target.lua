@@ -316,7 +316,7 @@ local config = {
 		-- Portrait Threat
 		PortraitThreatSize = { 187, 187 },
 		PortraitThreatPosition = { "CENTER", -1, 3 },
-		PortraitThreatTexture = GetMedia("hp_critter_case_glow"),
+		PortraitThreatTexture = GetMedia("portrait_frame_glow"),
 
 	},
 	Hardened = {
@@ -346,7 +346,7 @@ local config = {
 		-- Portrait Threat
 		PortraitThreatSize = { 187, 187 },
 		PortraitThreatPosition = { "CENTER", -1, 3 },
-		PortraitThreatTexture = GetMedia("hp_critter_case_glow"),
+		PortraitThreatTexture = GetMedia("portrait_frame_glow"),
 
 	},
 	Seasoned = {
@@ -376,7 +376,7 @@ local config = {
 		-- Portrait Threat
 		PortraitThreatSize = { 187, 187 },
 		PortraitThreatPosition = { "CENTER", -1, 3 },
-		PortraitThreatTexture = GetMedia("hp_critter_case_glow"),
+		PortraitThreatTexture = GetMedia("portrait_frame_glow"),
 
 	},
 	Boss = {
@@ -407,7 +407,7 @@ local config = {
 		-- Portrait Threat
 		PortraitThreatSize = { 187, 187 },
 		PortraitThreatPosition = { "CENTER", -1, 3 },
-		PortraitThreatTexture = GetMedia("hp_critter_case_glow"),
+		PortraitThreatTexture = GetMedia("portrait_frame_glow"),
 
 	}
 }
@@ -1208,11 +1208,13 @@ local style = function(self, unit, id)
 	local threatIndicator = CreateFrame("Frame", nil, self)
 	threatIndicator:SetFrameLevel(self:GetFrameLevel() - 2)
 	threatIndicator:SetAllPoints()
+	threatIndicator.feedbackUnit = "player"
 
 	threatIndicator.textures = {
 		Health = threatIndicator:CreateTexture(nil, "BACKGROUND", nil, -3),
-		Portrait = portraitFrame:CreateTexture(nil, "BACKGROUND", nil, -1)
+		Portrait = portrait:CreateTexture(nil, "BACKGROUND", nil, -1)
 	}
+	threatIndicator.textures.Health:SetTexCoord(1, 0, 0, 1) -- target is flipped
 	threatIndicator.Show = function(self)
 		self.isShown = true
 		for key,texture in next,self.textures do
