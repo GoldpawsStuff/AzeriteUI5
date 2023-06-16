@@ -82,6 +82,12 @@ VehicleSeat.UpdateAnchor = function(self)
 end
 
 VehicleSeat.OnEnable = function(self)
+
+	if (ns.WoW10) then
+		VehicleSeatIndicator.HighlightSystem = ns.Noop
+		VehicleSeatIndicator.ClearHighlight = ns.Noop
+	end
+
 	self:PrepareFrames()
 	self:CreateAnchor(L["Vehicle Seat"])
 
