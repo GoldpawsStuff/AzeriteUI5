@@ -28,170 +28,53 @@ local Addon, ns = ...
 local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
 
 local Options = ns:GetModule("Options")
-local MFM = ns:GetModule("MovableFramesManager")
 
--- Lua API
-local math_floor = math.floor
-local next = next
-local string_match = string.match
-local table_sort = table.sort
-local table_remove = table.remove
-local tonumber = tonumber
-local tostring = tostring
-
--- GLOBALS: GetSpecialization
-
-local getmodule = function(name)
-	return ns:GetModule(name or "UnitFrames", true)
-end
-
-local setter = function(info,val)
-	getmodule().db.profile[info[#info]] = val
-	getmodule():UpdateSettings()
-end
-
-local getter = function(info)
-	return getmodule().db.profile[info[#info]]
-end
-
-local isdisabled = function(info)
-	return info[#info] ~= "enabled" and not getmodule().db.profile.enabled
-end
-
-local setoption = function(info,option,val)
-	getmodule().db.profile[option] = val
-	getmodule():UpdateSettings()
-end
-
-local getoption = function(info,option)
-	return getmodule().db.profile[option]
-end
-
-local GenerateUnitOptions = function(moduleName)
+local GenerateSubOptions = function(moduleName)
 	local module = ns:GetModule(moduleName, true)
 	if (not module or not module.db.profile.enabled) then return end
 
-	local setter = function(info,val)
+	local setter = function(info,val,noRefresh)
 		module.db.profile[info[#info]] = val
-		module:UpdateSettings()
+		if (not noRefresh) then
+			module:UpdateSettings()
+		end
 	end
-
-	local getter = function(info)
-		return module.db.profile[info[#info]]
-	end
-
-	local isdisabled = function(info)
-		return info[#info] ~= "enabled" and not module.db.profile.enabled
-	end
-
-	local setoption = function(info,option,val)
+	local getter = function(info) return module.db.profile[info[#info]] end
+	local setoption = function(info,option,val,noRefresh)
 		module.db.profile[option] = val
-		module:UpdateSettings()
+		if (not noRefresh) then
+			module:UpdateSettings()
+		end
 	end
-
-	local getoption = function(info,option)
-		return module.db.profile[option]
-	end
+	local getoption = function(info,option) return module.db.profile[option] end
+	local isdisabled = function(info) return info[#info] ~= "enabled" and not module.db.profile.enabled end
 
 	local options = {
 		type = "group",
 		args = {
 			enabled = {
 				name = L["Enable"],
-				desc = L["Toggle whether to enable this unit frame or not."],
+				desc = L["Toggle whether to enable this element or not."],
 				order = 1,
 				type = "toggle", width = "full",
 				set = setter,
 				get = getter
-			}--[[,
-			positionHeader = {
-				name = L["Position"],
-				order = 60,
-				type = "header",
-				hidden = isdisabled
-			},
-			positionDesc = {
-				name = L["Fine-tune the position."],
-				order = 61,
-				type = "description",
-				fontSize = "medium",
-				hidden = isdisabled
-			},
-			point = {
-				name = L["Anchor Point"],
-				desc = L["Sets the anchor point."],
-				order = 62,
-				hidden = isdisabled,
-				type = "select", style = "dropdown",
-				values = {
-					["TOPLEFT"] = L["Top-Left Corner"],
-					["TOP"] = L["Top Center"],
-					["TOPRIGHT"] = L["Top-Right Corner"],
-					["RIGHT"] = L["Middle Right Side"],
-					["BOTTOMRIGHT"] = L["Bottom-Right Corner"],
-					["BOTTOM"] = L["Bottom Center"],
-					["BOTTOMLEFT"] = L["Bottom-Left Corner"],
-					["LEFT"] = L["Middle Left Side"],
-					["CENTER"] = L["Center"]
-				},
-				set = function(info,val) setoption(info,1,val) end,
-				get = function(info) return getoption(info,1) end
-			},
-			pointPostSpace = {
-				name = "", order = 63, type = "description", hidden = isdisabled
-			},
-			offsetX = {
-				name = L["X Offset"],
-				desc = L["Sets the horizontal offset from your chosen anchor point. Positive values means right, negative values means left."],
-				order = 64,
-				type = "input",
-				hidden = isdisabled,
-				validate = function(info,val)
-					local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
-					if (val) then return true end
-					return L["Only numbers are allowed."]
-				end,
-				set = function(info,val)
-					local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
-					if (not val) then return end
-					setoption(info,2,val)
-				end,
-				get = function(info)
-					local val = getoption(info,2)
-					val = math_floor(val * 1000 + .5)/1000
-					return tostring(val)
-				end
-			},
-			offsetY = {
-				name = L["Y Offset"],
-				desc = L["Sets the vertical offset from your chosen anchor point. Positive values means up, negative values means down."],
-				order = 65,
-				type = "input",
-				hidden = isdisabled,
-				validate = function(info,val)
-					local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
-					if (val) then return true end
-					return L["Only numbers are allowed."]
-				end,
-				set = function(info,val)
-					local val = tonumber((string_match(val,"(-*%d+%.?%d*)")))
-					if (not val) then return end
-					setoption(info,3,val)
-				end,
-				get = function(info)
-					local val = getoption(info,3)
-					val = math_floor(val * 1000 + .5)/1000
-					return tostring(val)
-				end
-			}]]
+			}
 		}
 	}
 
-	return options
+	return options, module, setter, getter, setoption, getoption, isdisabled
 end
 
 local GenerateOptions = function()
+	local getmodule = function(name) return ns:GetModule(name or "UnitFrames", true) end
 	if (not getmodule()) then return end
+
+	local setter = function(info,val) getmodule().db.profile[info[#info]] = val; getmodule():UpdateSettings() end
+	local getter = function(info) return getmodule().db.profile[info[#info]] end
+	local setoption = function(info,option,val) getmodule().db.profile[option] = val; getmodule():UpdateSettings() end
+	local getoption = function(info,option) return getmodule().db.profile[option] end
+	local isdisabled = function(info) return info[#info] ~= "enabled" and not getmodule().db.profile.enabled end
 
 	local options = {
 		name = L["UnitFrame Settings"],
@@ -223,30 +106,208 @@ local GenerateOptions = function()
 		}
 	}
 
-	local order = 100
-	for id,data in next,{
-		player = { L["Player"], "PlayerFrame", 0 }, -- Player
-		playerCastBar = { L["Cast Bar"], "PlayerCastBarFrame", 100 }, -- Player Cast Bar
-		playerClassPower = { function(info) -- generates an appropriate display name
-			return ns:GetModule("PlayerClassPowerFrame"):GetLabel()
-		end, "PlayerClassPowerFrame", 110 }, -- Player Class Power
-		pet = { L["Pet"], "PetFrame", 10 }, -- Pet
-		target = { L["Target"], "TargetFrame", 20 }, -- Target
-		tot = { L["Target of Target"], "ToTFrame", 30 }, -- ToT
-		focus = { L["Focus"], "FocusFrame", 40 }, -- Focus
-		party = { L["Party Frames"], "PartyFrames", 50 }, -- Party
-		raid = { L["Raid Frames"], "RaidFrames", 60 }, -- Raid
-		boss = { L["Boss Frames"], "BossFrames", 70 }, -- Boss
-		--arena = { L["Arena Frames"], "ArenaFrames", 80 }, -- Arena
-	} do
-		if (data) then
-			local unitOptions = GenerateUnitOptions(data[2])
-			if (unitOptions) then
-				unitOptions.name = data[1]
-				unitOptions.order = order + data[3]
-				options.args[id] = unitOptions
+	-- Player
+	do
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("PlayerFrame")
+		suboptions.name = L["Player"]
+		suboptions.order = 100
+		suboptions.args.elementHeader = {
+			name = L["Elements"], order = 10, type = "header", hidden = isdisabled
+		}
+		suboptions.args.showAuras = {
+			name = L["Show Auras"],
+			desc = L["Toggle whether to show auras on this unit frame."],
+			order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+		options.args.player = suboptions
+	end
+
+	-- Pet
+	do
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("PetFrame")
+		suboptions.name = L["Pet"]
+		suboptions.order = 110
+		options.args.pet = suboptions
+	end
+
+	-- Target
+	do
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("TargetFrame")
+		suboptions.name = L["Target"]
+		suboptions.order = 120
+		suboptions.args.elementHeader = {
+			name = L["Elements"], order = 10, type = "header", hidden = isdisabled
+		}
+		suboptions.args.showAuras = {
+			name = L["Show Auras"],
+			desc = L["Toggle whether to show auras on this unit frame."],
+			order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+		suboptions.args.showName = {
+			name = L["Show Unit Name"],
+			desc = L["Toggle whether to show the name of the unit."],
+			order = 30, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+		options.args.target = suboptions
+	end
+
+	-- Target of Target
+	do
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("ToTFrame")
+		suboptions.name = L["Target of Target"]
+		suboptions.order = 130
+		suboptions.args.elementHeader = {
+			name = L["Visibility"], order = 10, type = "header", hidden = isdisabled
+		}
+		suboptions.args.hideWhenTargetingPlayer = {
+			name = L["Hide when targeting player."],
+			desc = L["Makes the ToT frame transparent when its target is you."],
+			order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+		suboptions.args.hideWhenTargetingSelf = {
+			name = L["Hide when targeting self."],
+			desc = L["Makes the ToT frame transparent when its target is itself."],
+			order = 30, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+		options.args.tot = suboptions
+	end
+
+	-- Focus Target
+	if (not ns.IsClassic) then
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("FocusFrame")
+		suboptions.name = L["Focus"]
+		suboptions.order = 140
+		options.args.focus = suboptions
+	end
+
+	-- Party Frames
+	do
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("PartyFrames")
+		suboptions.name = L["Party Frames"]
+		suboptions.order = 150
+		suboptions.args.elementHeader = {
+			name = L["Visibility"], order = 10, type = "header", hidden = isdisabled
+		}
+		suboptions.args.showPlayer = {
+			name = L["Show player"],
+			desc = L["Toggle whether to show the player while in a party."],
+			order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+		suboptions.args.showParty = {
+			name = L["Show in parties."],
+			desc = L["Toggle whether to show the party frames while in parties.\n\nIt is not possible to show both the Raid Frames and the Party Frames at the same time. Setting this option will disable the raid frames from being shown in parties."],
+			order = 30, type = "toggle", width = "full", get = getter, hidden = isdisabled,
+			set = function(info,val)
+				setter(info, val, true)
+				local raid = ns:GetModule("RaidFrames", true)
+				if (raid) then
+					raid.db.profile.showParty = false
+					raid.db.profile.useRaidStylePartyFrames = false
+					raid:UpdateSettings()
+				end
+				module:UpdateSettings()
 			end
-		end
+		}
+		suboptions.args.showRaid = {
+			name = L["Show in party sized raid groups (1-5 Players)."],
+			desc = L["Toggle whether to show the party frames while in a raid group.\n\nIt is not possible to show both the Raid Frames and the Party Frames at the same time. Setting this option will disable the raid frames from being shown in party sized raid groups."],
+			order = 40, type = "toggle", width = "full", get = getter, hidden = isdisabled,
+			set = function(info,val)
+				setter(info, val, true)
+				local raid = ns:GetModule("RaidFrames", true)
+				if (raid) then
+					raid.db.profile.showInPartySizedRaidGroups = false
+					raid:UpdateSettings()
+				end
+				module:UpdateSettings()
+			end
+		}
+		options.args.party = suboptions
+	end
+
+	-- Raid Frames
+	do
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("RaidFrames")
+		suboptions.name = L["Raid Frames"]
+		suboptions.order = 160
+		suboptions.args.elementHeader = {
+			name = L["Visibility"], order = 10, type = "header", hidden = isdisabled
+		}
+		suboptions.args.showRaid = {
+			name = L["Show in raids."],
+			desc = L["Toggle whether to show the raid frames while in a raid groups of five members or more."],
+			order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+		suboptions.args.useRaidStylePartyFrames = {
+			name = L["Show in parties."],
+			desc = L["Toggle whether to show the raid frames while in parties.\n\nIt is not possible to show both the Raid Frames and the Party Frames at the same time. Setting this option will disable the party frames when in parties."],
+			order = 30, type = "toggle", width = "full", get = getter, hidden = isdisabled,
+			set = function(info,val)
+				setter(info, val, true)
+				setoption(info, "showParty", val, true)
+				if (val) then
+					local party = ns:GetModule("PartyFrames", true)
+					if (party) then
+						--party.db.profile.showRaid = false
+						party.db.profile.showParty = false
+						party:UpdateSettings()
+					end
+				end
+				module:UpdateSettings()
+			end
+		}
+		suboptions.args.showInPartySizedRaidGroups = {
+			name = L["Show in party sized raid groups (1-5 Players)."],
+			desc = L["Toggle whether to show the raid frames while in party sized raid groups.\n\nIt is not possible to show both the Raid Frames and the Party Frames at the same time. Setting this option will disable the party frames from being shown in party sized raid groups."],
+			order = 40, type = "toggle", width = "full", get = getter, hidden = isdisabled,
+			set = function(info,val)
+				setter(info, val, true)
+				setoption(info, "showParty", val, true)
+				if (val) then
+					local party = ns:GetModule("PartyFrames", true)
+					if (party) then
+						party.db.profile.showRaid = false
+						--party.db.profile.showParty = false
+						party:UpdateSettings()
+					end
+				end
+				module:UpdateSettings()
+			end
+		}
+
+		options.args.raid = suboptions
+	end
+
+	-- Boss Frames
+	do
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("BossFrames")
+		suboptions.name = L["Boss Frames"]
+		suboptions.order = 170
+		options.args.boss = suboptions
+	end
+
+	-- Arena Enemy Frames
+	if (not ns.IsClassic) then
+		--local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("ArenaFrames")
+		--suboptions.name = L["Arena Frames"]
+		--suboptions.order = 180
+		--options.args.arena = suboptions
+	end
+
+	-- Player CastBar
+	do
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("PlayerCastBarFrame")
+		suboptions.name = L["Cast Bar"]
+		suboptions.order = 200
+		options.args.castbar = suboptions
+	end
+
+	-- Player ClassPower
+	do
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("PlayerClassPowerFrame")
+		suboptions.name = function(info) return ns:GetModule("PlayerClassPowerFrame"):GetLabel() end
+		suboptions.order = 210
+		options.args.classpower = suboptions
 	end
 
 	return options
