@@ -889,6 +889,9 @@ ActionBarMod.UpdateSettings = function(self)
 end
 
 ActionBarMod.RefreshConfig = function(self)
+	for i,bar in next,self.bars do
+		bar.config = self.db.profile.bars[i]
+	end
 	self:UpdateSettings()
 end
 

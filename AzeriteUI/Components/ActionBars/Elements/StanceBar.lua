@@ -628,6 +628,7 @@ StanceBarMod.UpdateSettings = function(self)
 end
 
 StanceBarMod.RefreshConfig = function(self)
+	self.bar.config = self.db.profile
 	self:UpdateSettings()
 end
 

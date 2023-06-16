@@ -631,6 +631,7 @@ PetBarMod.UpdateSettings = function(self)
 end
 
 PetBarMod.RefreshConfig = function(self)
+	self.bar.config = self.db.profile
 	self:UpdateSettings()
 end
 
