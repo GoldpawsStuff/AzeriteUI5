@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-06-16
 - This version is backwards incompatible and will force a full reset of its settings.
-- This version is compatible with Wrath 3.4.2 PTR.
+- This version is compatible with Wrath 3.4.2 PTR and Dragonflight 10.1.5 PTR.
 
 ### Added
 - Added an options menu accessible through the command `/az` or `/azerite`.
