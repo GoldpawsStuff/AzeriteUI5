@@ -29,6 +29,7 @@ local Addon, ns = ...
 local mt = getmetatable(CreateFrame("Frame"))
 local clearAllPoints = mt.__index.ClearAllPoints
 local setPoint = mt.__index.SetPoint
+local setScale = mt.__index.SetScale
 
 -- Utility
 local clearSetPoint = function(frame, ...)
@@ -154,8 +155,7 @@ Module.UpdatePositionAndScale = function(self)
 
 	local config = self.db.profile.savedPosition
 	if (config) then
-		self.frame:SetScale(config.scale)
-
+		setScale(self.frame, config.scale)
 		clearSetPoint(self.frame, config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
 	end
 
