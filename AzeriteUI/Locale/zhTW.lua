@@ -145,7 +145,9 @@ L["Toggle whether to add spellIDs and auraIDs in tooltips containing actions, sp
 L["Toggle whether to enable the buttons of this action bar to fade out."] = true
 L["Toggle whether to enable the player aura buttons to fade out when not moused over."] = true
 L["Toggle whether to enable this action bar or not."] = true
-L["Toggle whether to enable this unit frame or not."] = true
+L["Toggle whether to enable this element or not."] = true
+L["Toggle whether to show auras on this unit frame."] = true
+L["Toggle whether to show the name of the unit."] = true
 L["Toggle whether to show the player aura buttons or not."] = true
 L["Tooltip Settings"] = true
 L["Tooltips"] = true
