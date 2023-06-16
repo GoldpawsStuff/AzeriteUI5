@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Updated TaintLess.xml to the most recent version to be compatible with Wrath 3.4.2.
+- Fixed the position and size of the glowing edge on the minimap xp/reputation ring shaped status bars.
 - Fixed an issue with the Retail chatframe scrollbars that would cause bugs and prevent them from updating correctly.
 - Fixed an issue with the actionbar frame fading that would prevent fading from working correctly after a settings change.
 
