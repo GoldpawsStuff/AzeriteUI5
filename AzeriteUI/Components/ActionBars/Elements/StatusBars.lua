@@ -77,9 +77,9 @@ local config = {
 	RingSize = { 208, 208 },
 	RingTexture = GetMedia("minimap-bars-single"),
 	RingSparkOffset = -1/10,
-	RingSparkInset = 22 * 208/256,
+	RingSparkInset = 18 * 208/256,
 	RingSparkFlash = { nil, nil, 1, 1 },
-	RingSparkSize = { 6, 34 * 208/256 },
+	RingSparkSize = { 34 * 208/256, 26 },
 	RingDegreeOffset = 90*3 - 14,
 	RingDegreeSpan = 360 - 14*2,
 
@@ -580,8 +580,9 @@ StatusBars.CreateBars = function(self)
 	ring:SetFrameLevel(frame:GetFrameLevel() + 5)
 	ring:SetPoint(get(config.RingPosition))
 	ring:SetSize(get(config.RingSize))
-	ring:SetSparkOffset(config.RingSparkOffset)
-	ring:SetSparkInset(config.RingSparkInset)
+	ring:SetSparkOffset(config.RingSparkOffset) -- offset from the edge of the bar (in degrees)
+	ring:SetSparkInset(config.RingSparkInset) -- inset from the outer edge of the bar
+	ring:SetSparkSize(unpack(config.RingSparkSize))
 	ring:SetSparkFlash(unpack(config.RingSparkFlash))
 	ring:SetSparkBlendMode("ADD")
 	ring:SetClockwise(true)
@@ -598,6 +599,7 @@ StatusBars.CreateBars = function(self)
 	bonus:SetSize(get(config.RingSize))
 	bonus:SetSparkOffset(config.RingSparkOffset)
 	bonus:SetSparkInset(config.RingSparkInset)
+	bonus:SetSparkSize(unpack(config.RingSparkSize))
 	bonus:SetSparkFlash(unpack(config.RingSparkFlash))
 	bonus:SetSparkBlendMode("ADD")
 	bonus:SetClockwise(true)
