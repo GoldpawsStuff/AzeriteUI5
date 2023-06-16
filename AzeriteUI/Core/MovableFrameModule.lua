@@ -51,7 +51,7 @@ Module.SetDefaults = function(self, defaults)
 	self.db:RegisterDefaults(defaults)
 end
 
-Module.CreateAnchor = function(self, label, watchVariables)
+Module.CreateAnchor = function(self, label, watchVariables, colorGroup)
 	if (self.anchor) then return self.anchor end
 
 	local anchor = ns:GetModule("MovableFramesManager"):RequestAnchor()
@@ -64,6 +64,15 @@ Module.CreateAnchor = function(self, label, watchVariables)
 		anchor:SetScale(defaults.profile.savedPosition.scale)
 		anchor:SetDefaultScale(ns.API.GetEffectiveScale())
 		anchor:SetTitle(label)
+	end
+
+	if (colorGroup) then
+		local color = ns.Colors.anchor[colorGroup]
+		if (color) then
+			local r, g, b = unpack(color)
+			anchor.Overlay:SetBackdropColor(r, g, b, .75)
+			anchor.Overlay:SetBackdropBorderColor(r, g, b, 1)
+		end
 	end
 
 	anchor.PreUpdate = function()

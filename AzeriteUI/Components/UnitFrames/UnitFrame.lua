@@ -162,6 +162,10 @@ ns.UnitFrameModule = ns:Merge({
 
 	Update = function(self)
 		-- Placeholder. Update unitframe settings here.
+	end,
+
+	CreateAnchor = function(self, label, watchVariables, colorGroup)
+		return ns.Module.CreateAnchor(self, label, watchVariables, colorGroup or "unitframes")
 	end
 
 }, ns.Module)
@@ -223,12 +227,10 @@ UnitFrameMod.UpdateSettings = function(self)
 
 end
 
-UnitFrameMod.OnInitialize = function(self)
-	self.db = ns.db:RegisterNamespace("UnitFrames", defaults)
-
-	--self:SetEnabledState(self.db.profile.enabled)
-end
-
 UnitFrameMod.OnEnable = function(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateSettings")
+end
+
+UnitFrameMod.OnInitialize = function(self)
+	self.db = ns.db:RegisterNamespace("UnitFrames", defaults)
 end

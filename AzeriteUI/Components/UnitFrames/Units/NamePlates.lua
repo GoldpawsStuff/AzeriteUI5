@@ -1252,16 +1252,11 @@ NamePlatesMod.OnInitialize = function(self)
 
 	self.db = ns.db:RegisterNamespace("NamePlates", defaults)
 
-	--self:SetEnabledState(self.db.profile.enabled)
-
-	--if (not self.db.profile.enabled) then return end
-
-	oUF:RegisterStyle(ns.Prefix.."NamePlates", style)
-
 	self:HookNamePlates()
 end
 
 NamePlatesMod.OnEnable = function(self)
+	oUF:RegisterStyle(ns.Prefix.."NamePlates", style)
 	oUF:SetActiveStyle(ns.Prefix.."NamePlates")
 	oUF:SpawnNamePlates(ns.Prefix, callback, cvars)
 

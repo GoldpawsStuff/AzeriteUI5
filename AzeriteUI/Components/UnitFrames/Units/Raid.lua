@@ -49,6 +49,9 @@ local defaults = { profile = ns:Merge({
 	showRaid = true,
 	showParty = false,
 
+	useRaidStylePartyFrames = false,
+	showInPartySizedRaidGroups = false,
+
 	point = "LEFT", -- anchor point of unitframe, group members within column grow opposite
 	xOffset = 10, -- horizontal offset within the same column
 	yOffset = 0, -- vertical offset within the same column
@@ -85,7 +88,6 @@ RaidFrameMod.GenerateDefaults = function(self)
 	}
 	return defaults
 end
-
 
 local config = {
 
@@ -837,11 +839,6 @@ RaidFrameMod.OnEvent = function(self, event, ...)
 	end
 end
 
-RaidFrameMod.GetVisibilityDriver = function(self)
-	local db = self.db.profile
-
-end
-
 RaidFrameMod.GetHeaderAttributes = function(self)
 	local db = self.db.profile
 
@@ -873,6 +870,29 @@ RaidFrameMod.GetHeaderAttributes = function(self)
 	"columnSpacing", db.columnSpacing,
 	"columnAnchorPoint", db.columnAnchorPoint
 
+end
+
+RaidFrameMod.GetVisibilityDriver = function(self)
+	local db = self.db.profile
+
+	local driver = "custom "
+
+	if (self.db.profile.useRaidStylePartyFrames) then
+		driver = driver.."[group:party,nogroup:raid]show;"
+	end
+
+	if (self.db.profile.showInPartySizedRaidGroups) then
+		driver = driver.."[group:raid,@raid6,noexists]show;"
+	end
+
+	if (self.db.profile.showRaid) then
+		driver = driver.."[group:raid,@raid6,exists]show;"
+	else
+	end
+
+	driver = driver.."hide"
+
+	return driver
 end
 
 RaidFrameMod.UpdateHeader = function(self)

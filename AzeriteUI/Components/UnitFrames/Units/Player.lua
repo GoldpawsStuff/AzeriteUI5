@@ -50,7 +50,10 @@ local playerXPDisabled = IsXPUserDisabled()
 local SPEC_PALADIN_RETRIBUTION = SPEC_PALADIN_RETRIBUTION or 3
 local playerIsRetribution = playerClass == "PALADIN" and (ns.IsRetail and GetSpecialization() == SPEC_PALADIN_RETRIBUTION)
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({
+	showAuras = true,
+	aurasBelowFrame = false
+}, ns.Module.defaults) }
 
 PlayerFrameMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
@@ -1256,6 +1259,16 @@ PlayerFrameMod.CreateUnitFrames = function(self)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
 	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
+end
+
+PlayerFrameMod.Update = function(self)
+
+	if (self.db.profile.showAuras) then
+		self.frame:EnableElement("Auras")
+		self.frame.Auras:ForceUpdate()
+	else
+		self.frame:DisableElement("Auras")
+	end
 end
 
 PlayerFrameMod.OnEnable = function(self)

@@ -42,7 +42,11 @@ local GetMedia = ns.API.GetMedia
 -- Constants
 local playerLevel = UnitLevel("player")
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({
+	showAuras = true,
+	showName = true,
+	aurasBelowFrame = false
+}, ns.Module.defaults) }
 
 TargetFrameMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
@@ -1262,7 +1266,8 @@ local style = function(self, unit, id)
 	name:SetTextColor(unpack(db.NameColor))
 	name:SetJustifyH(db.NameJustifyH)
 	name:SetJustifyV(db.NameJustifyV)
-	self:Tag(name, prefix("[*:Name(64,true,nil,true)]"))
+	name.tag = prefix("[*:Name(64,true,nil,true)]")
+	self:Tag(name, name.tag)
 
 	self.Name = name
 
@@ -1335,6 +1340,19 @@ TargetFrameMod.CreateUnitFrames = function(self)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
 	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
+end
+
+TargetFrameMod.Update = function(self)
+
+	if (self.db.profile.showAuras) then
+		self.frame:EnableElement("Auras")
+		self.frame.Auras:ForceUpdate()
+	else
+		self.frame:DisableElement("Auras")
+	end
+
+	self.frame.Name:SetShown(self.db.profile.showName)
+
 end
 
 TargetFrameMod.OnEnable = function(self)

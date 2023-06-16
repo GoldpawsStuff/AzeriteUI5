@@ -71,7 +71,6 @@ PartyFrameMod.GenerateDefaults = function(self)
 	return defaults
 end
 
-
 local barSparkMap = {
 	top = {
 		{ keyPercent =   0/128, offset = -16/32 },
@@ -840,11 +839,6 @@ GroupHeader.IsEnabled = function(self)
 	return self.visibility and true or false
 end
 
-PartyFrameMod.GetVisibilityDriver = function(self)
-	local db = self.db.profile
-
-end
-
 PartyFrameMod.GetHeaderAttributes = function(self)
 	local db = self.db.profile
 
@@ -876,6 +870,24 @@ PartyFrameMod.GetHeaderAttributes = function(self)
 	"columnSpacing", db.columnSpacing,
 	"columnAnchorPoint", db.columnAnchorPoint
 
+end
+
+PartyFrameMod.GetVisibilityDriver = function(self)
+	local db = self.db.profile
+
+	local driver = "custom [group:party,nogroup:raid]show;"
+
+	if (self.db.profile.showParty) then
+		driver = driver.."[group:party,nogroup:raid]show;"
+	end
+
+	if (self.db.profile.showRaid) then
+		driver = driver.."[group:raid,@raid6,noexists]show;"
+	end
+
+	driver = driver.."hide"
+
+	return driver
 end
 
 PartyFrameMod.UpdateHeader = function(self)

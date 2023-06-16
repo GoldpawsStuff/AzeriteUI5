@@ -40,7 +40,10 @@ local GetMedia = ns.API.GetMedia
 -- Constants
 local playerClass = ns.PlayerClass
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({
+	hideWhenTargetingPlayer = true,
+	hideWhenTargetingSelf = true
+}, ns.Module.defaults) }
 
 ToTFrameMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
@@ -295,7 +298,10 @@ local Unitframe_PostUpdateAlpha = function(self, event, unit, ...)
 
 	unit = unit or self.unit
 
-	local shouldHide = ((event == "UnitFrame_Target_Updated") and (... == "Critter")) or UnitIsUnit(unit, "player") or UnitIsUnit(unit, unit.."target")
+	local shouldHide = ((event == "UnitFrame_Target_Updated") and (... == "Critter"))
+		or (ToTFrameMod.db.profile.hideWhenTargetingPlayer and UnitIsUnit(unit, "player"))
+		or (ToTFrameMod.db.profile.hideWhenTargetingSelf and UnitIsUnit(unit, unit.."target"))
+
 	if (shouldHide == self.shouldHide) then
 		return
 	end
@@ -483,6 +489,10 @@ ToTFrameMod.CreateUnitFrames = function(self)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
 	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
+end
+
+ToTFrameMod.Update = function(self)
+	Unitframe_PostUpdateAlpha(self.frame, "RefreshConfig", self.frame.unit)
 end
 
 ToTFrameMod.OnEnable = function(self)
