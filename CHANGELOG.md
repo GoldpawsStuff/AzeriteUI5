@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-06-16
+## [5.0.66-Beta] 2023-06-16
 - This version is backwards incompatible and will force a full reset of its settings.
 - This version is compatible with Wrath 3.4.2 PTR and Dragonflight 10.1.5 PTR.
 
