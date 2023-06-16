@@ -28,6 +28,7 @@ local Colors = {}
 
 -- Lua API
 local math_floor = math.floor
+local next = next
 local pairs = pairs
 local select = select
 local string_format = string.format
@@ -210,7 +211,6 @@ Colors.power.RUNIC_POWER = createColor(0/255, 236/255, 255/255) -- Death Knights
 -- Secondary Resource Colors
 Colors.power.ARCANE_CHARGES = createColor(121/255, 152/255, 192/255) -- Arcane Mage
 Colors.power.CHI = createColor(126/255, 255/255, 163/255) -- Monk
---Colors.power.COMBO_POINTS = createColor(255/255, 0/255, 30/255) -- Rogues, Druids
 Colors.power.COMBO_POINTS = createColor(220/255, 68/255,  25/255) -- Rogues, Druids, Vehicles
 Colors.power.HOLY_POWER = createColor(245/255, 254/255, 145/255) -- Retribution Paladins
 Colors.power.RUNES = createColor(100/255, 155/255, 225/255) -- Death Knight
@@ -246,51 +246,39 @@ Colors.runes = {
 
 -- Allow us to use power type index to get the color
 -- FrameXML/UnitFrame.lua
---Colors.power[0] = Colors.power.MANA
---Colors.power[1] = Colors.power.RAGE
---Colors.power[2] = Colors.power.FOCUS
---Colors.power[3] = Colors.power.ENERGY
---Colors.power[4] = Colors.power.CHI
---Colors.power[5] = Colors.power.RUNES
---Colors.power[6] = Colors.power.RUNIC_POWER
---Colors.power[7] = Colors.power.SOUL_SHARDS
---Colors.power[8] = Colors.power.LUNAR_POWER
---Colors.power[9] = Colors.power.HOLY_POWER
---Colors.power[11] = Colors.power.MAELSTROM
---Colors.power[13] = Colors.power.INSANITY
---Colors.power[17] = Colors.power.FURY
---Colors.power[18] = Colors.power.PAIN
---Colors.power[19] = Colors.power.ESSENCE
-
--- A bit more 10.0.2 compatible.
-Colors.power[Enum.PowerType.Mana] = Colors.power.MANA
-Colors.power[Enum.PowerType.Rage] = Colors.power.RAGE
-Colors.power[Enum.PowerType.Focus] = Colors.power.FOCUS
-Colors.power[Enum.PowerType.Energy] = Colors.power.ENERGY
-Colors.power[Enum.PowerType.ComboPoints] = Colors.power.COMBO_POINTS
-Colors.power[Enum.PowerType.Runes] = Colors.power.RUNES
-Colors.power[Enum.PowerType.RunicPower] = Colors.power.RUNIC_POWER
-Colors.power[Enum.PowerType.SoulShards] = Colors.power.SOUL_SHARDS
-Colors.power[Enum.PowerType.LunarPower] = Colors.power.LUNAR_POWER
-Colors.power[Enum.PowerType.HolyPower] = Colors.power.HOLY_POWER
-Colors.power[Enum.PowerType.Alternate] = Colors.power.ALTERNATE
-Colors.power[Enum.PowerType.Maelstrom] = Colors.power.MAELSTROM
-Colors.power[Enum.PowerType.Chi] = Colors.power.CHI
-Colors.power[Enum.PowerType.ArcaneCharges] = Colors.power.ARCANE_CHARGES
-Colors.power[Enum.PowerType.Fury] = Colors.power.FURY
-Colors.power[Enum.PowerType.Pain] = Colors.power.PAIN
-Colors.power[Enum.PowerType.Insanity] = Colors.power.INSANITY
+for id,colorID in next,{
+	["Mana"] = "MANA",
+	["Rage"] = "RAGE",
+	["Focus"] = "FOCUS",
+	["Energy"] = "ENERGY",
+	["ComboPoints"] = "COMBO_POINTS",
+	["Runes"] = "RUNES",
+	["RunicPower"] = "RUNIC_POWER",
+	["SoulShards"] = "SOUL_SHARDS",
+	["LunarPower"] = "LUNAR_POWER",
+	["HolyPower"] = "HOLY_POWER",
+	["Alternate"] = "ALTERNATE",
+	["Maelstrom"] = "MAELSTROM",
+	["Chi"] = "CHI",
+	["ArcaneCharges"] = "ARCANE_CHARGES",
+	["Fury"] = "FURY",
+	["Pain"] = "PAIN",
+	["Insanity"] = "INSANITY",
+	["Essence"] = "ESSENCE"
+} do
+	local enum = Enum.PowerType[id]
+	if (enum) then
+		Colors.power[enum] = Colors.power[colorID]
+	end
+end
 
 -- Reactions
 Colors.reaction = {}
 Colors.reaction[1] = createColor(205/255, 46/255, 36/255) -- hated
 Colors.reaction[2] = createColor(205/255, 46/255, 36/255) -- hostile
 Colors.reaction[3] = createColor(192/255, 68/255, 0/255) -- unfriendly
---Colors.reaction[4] = createColor(249/255, 188/255, 65/255) -- neutral
 Colors.reaction[4] = createColor(249/255, 158/255, 55/255) -- neutral
---Colors.reaction[5] = createColor( 64/255, 131/255, 38/255) -- friendly
 Colors.reaction[5] = createColor( 64/255, 101/255, 38/255) -- friendly
---Colors.reaction[6] = createColor( 64/255, 131/255, 69/255) -- honored
 Colors.reaction[6] = createColor( 64/255, 116/255, 69/255) -- honored
 Colors.reaction[7] = createColor( 64/255, 131/255, 104/255) -- revered
 Colors.reaction[8] = createColor( 64/255, 131/255, 131/255) -- exalted
@@ -355,10 +343,6 @@ Colors.threat[0] = Colors.reaction[4] -- not really on the threat table
 Colors.threat[1] = Colors.reaction[3] -- tanks having lost threat, dps overnuking
 Colors.threat[2] = Colors.reaction[2] -- tanks about to lose threat, dps getting aggro
 Colors.threat[3] = Colors.reaction[1] -- securely tanking, or totally fucked :)
-
---Colors.threat[1] = createColor(249/255, 158/255, 35/255) -- tanks having lost threat, dps overnuking
---Colors.threat[2] = createColor(255/255, 96/255, 12/255) -- tanks about to lose threat, dps getting aggro
---Colors.threat[3] = createColor(255/255, 0/255, 0/255) -- securely tanking, or totally fucked :)
 
 -- zone names
 Colors.zone = {}
