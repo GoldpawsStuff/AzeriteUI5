@@ -60,7 +60,7 @@ local defaults = {
 	},
 	keyBoundTarget = false,
 	keyBoundClickButton = "LeftButton",
-	clickOnDown = true,
+	clickOnDown = false,
 	flyoutDirection = "UP"
 }
 
@@ -82,6 +82,7 @@ ns.PetButton.Create = function(id, name, header, buttonConfig)
 	button.showgrid = 0
 	button.id = id
 	button.parent = header
+	button.config = buttonConfig or ns:Copy(defaults)
 
 	-- Retail has a new mixin that overrides some of our meta methods,
 	-- so we're doing hard embedding now instead.
@@ -117,6 +118,7 @@ ns.PetButton.Create = function(id, name, header, buttonConfig)
 end
 
 PetButton.UpdateConfig = function(self, buttonConfig)
+	self.config = buttonConfig or self.config
 	self:Update()
 end
 

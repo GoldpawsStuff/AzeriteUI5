@@ -25,8 +25,6 @@
 --]]
 local Addon, ns = ...
 
-local MFM = ns:GetModule("MovableFramesManager")
-
 local Bar = ns.Bar.prototype
 
 local ButtonBar = setmetatable({}, { __index = Bar })
@@ -103,6 +101,15 @@ ButtonBar.UpdateButtons = function(self)
 		end
 	end
 
+end
+
+ButtonBar.UpdateButtonConfig = function(self)
+	for id,button in next,self.buttons do
+		button.config.clickOnDown = self.config.clickOnDown
+		if (not ns.IsRetail) then
+			button:RegisterForClicks(self.config.clickOnDown and "AnyDown" or "AnyUp")
+		end
+	end
 end
 
 ButtonBar.UpdateButtonLayout = function(self)

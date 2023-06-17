@@ -55,7 +55,7 @@ local defaults = {
 	},
 	keyBoundTarget = false,
 	keyBoundClickButton = "LeftButton",
-	clickOnDown = true,
+	clickOnDown = false,
 	flyoutDirection = "UP"
 }
 
@@ -70,6 +70,7 @@ ns.StanceButton.Create = function(id, name, header, buttonConfig)
 	button.id = id
 	button.parent = header
 	button.showgrid = 0
+	button.config = buttonConfig or ns:Copy(defaults)
 
 	button.icon = _G[button:GetName() .. "Icon"]
 	button.cooldown = _G[button:GetName() .. "Cooldown"]
@@ -83,6 +84,7 @@ ns.StanceButton.Create = function(id, name, header, buttonConfig)
 end
 
 StanceButton.UpdateConfig = function(self, buttonConfig)
+	self.config = buttonConfig or self.config
 	self:Update()
 end
 

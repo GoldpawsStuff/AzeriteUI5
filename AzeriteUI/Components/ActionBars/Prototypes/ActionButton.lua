@@ -45,7 +45,7 @@ local defaults = {
 	},
 	keyBoundTarget = false,
 	keyBoundClickButton = "LeftButton",
-	clickOnDown = true,
+	clickOnDown = false,
 	flyoutDirection = "UP"
 }
 
@@ -55,7 +55,10 @@ ns.ActionButton.defaults = defaults
 
 ns.ActionButton.Create = function(id, name, header, buttonConfig)
 
-	local button = LAB:CreateButton(id, name, header, buttonConfig)
+	local config = buttonConfig or ns:Copy(defaults)
+	config.clickOnDown = header.config.clickOnDown
+
+	local button = LAB:CreateButton(id, name, header, config)
 	button:SetAttribute("checkselfcast", true)
 	button:SetAttribute("checkfocuscast", true)
 	button:SetAttribute("checkmouseovercast", true)

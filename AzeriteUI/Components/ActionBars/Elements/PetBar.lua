@@ -355,6 +355,7 @@ PetBar.CreateButton = function(self, buttonConfig)
 
 	local buttonConfig = buttonConfig or button.config or {}
 	buttonConfig.keyBoundTarget = keyBoundTarget
+	buttonConfig.clickOnDown = self.config.clickOnDown
 
 	button:UpdateConfig(buttonConfig)
 
@@ -374,6 +375,7 @@ end
 PetBar.Update = function(self)
 	if (InCombatLockdown()) then return end
 
+	self:UpdateButtonConfig()
 	self:UpdateButtons()
 	self:UpdateButtonLayout()
 	self:UpdateVisibilityDriver()
@@ -476,6 +478,10 @@ PetBarMod.CreateBar = function(self)
 	bar.buttonWidth, bar.buttonHeight = unpack(config.ButtonSize)
 	bar.defaults = defaults.profile
 	bar.config = self.db.profile
+
+	if (ns.WoW10) then
+		bar.config.clickOnDown = GetCVarBool("ActionButtonUseKeyDown")
+	end
 
 	bar:SetAttribute("UpdateVisibility", [[
 		local visibility = self:GetAttribute("visibility");
@@ -625,6 +631,11 @@ PetBarMod.UpdateSettings = function(self)
 		self.needupdate = true
 		return
 	end
+
+	local clickOnDown = ns:GetModule("ActionBars").db.profile.clickOnDown
+	self.db.profile.clickOnDown = clickOnDown
+	self.bar.config.clickOnDown = clickOnDown
+
 	self:UpdateEnabled()
 	self:UpdateBar()
 	self:UpdateBindings()
@@ -737,6 +748,9 @@ PetBarMod.OnAnchorEvent = function(self, event, ...)
 end
 
 PetBarMod.OnEnable = function(self)
+
+	self.db.profile.clickOnDown = ns:GetModule("ActionBars").db.profile.clickOnDown
+
 	self:CreateBar()
 	self:CreateAnchor()
 	self:UpdateSettings()

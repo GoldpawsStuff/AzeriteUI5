@@ -357,6 +357,7 @@ StanceBar.CreateButton = function(self, buttonConfig)
 
 	local buttonConfig = buttonConfig or button.config or {}
 	buttonConfig.keyBoundTarget = keyBoundTarget
+	buttonConfig.clickOnDown = self.config.clickOnDown
 
 	button:UpdateConfig(buttonConfig)
 
@@ -378,6 +379,7 @@ end
 StanceBar.Update = function(self)
 	if (InCombatLockdown()) then return end
 
+	self:UpdateButtonConfig()
 	self:UpdateButtons()
 	self:UpdateButtonLayout()
 	self:UpdateBindings()
@@ -479,6 +481,10 @@ StanceBarMod.CreateBar = function(self)
 	bar.buttonWidth, bar.buttonHeight = unpack(config.ButtonSize)
 	bar.defaults = defaults.profile
 	bar.config = self.db.profile
+
+	if (ns.WoW10) then
+		bar.config.clickOnDown = GetCVarBool("ActionButtonUseKeyDown")
+	end
 
 	bar:SetAttribute("UpdateVisibility", [[
 		local visibility = self:GetAttribute("visibility");
@@ -622,6 +628,11 @@ StanceBarMod.UpdateSettings = function(self)
 		self.needupdate = true
 		return
 	end
+
+	local clickOnDown = ns:GetModule("ActionBars").db.profile.clickOnDown
+	self.db.profile.clickOnDown = clickOnDown
+	self.bar.config.clickOnDown = clickOnDown
+
 	self:UpdateEnabled()
 	self:UpdateBar()
 	self:UpdateBindings()
@@ -718,6 +729,9 @@ StanceBarMod.OnAnchorEvent = function(self, event, ...)
 end
 
 StanceBarMod.OnEnable = function(self)
+
+	self.db.profile.clickOnDown = ns:GetModule("ActionBars").db.profile.clickOnDown
+
 	self:CreateBar()
 	self:CreateAnchor()
 	self:UpdateSettings()

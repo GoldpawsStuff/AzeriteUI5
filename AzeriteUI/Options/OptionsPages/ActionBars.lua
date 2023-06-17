@@ -28,12 +28,12 @@ local Addon, ns = ...
 local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
 
 local Options = ns:GetModule("Options")
-local MFM = ns:GetModule("MovableFramesManager")
 
 -- Lua API
 local math_floor = math.floor
 local math_max = math.max
 local math_min = math.min
+local next = next
 local string_format = string.format
 local string_match = string.match
 local tonumber = tonumber
@@ -557,19 +557,83 @@ end
 local GenerateOptions = function()
 	if (not getmodule()) then return end
 
+	local setter = function(info,val)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = getmodule().db.profile
+		db[info[#info]] = val
+		getmodule():UpdateSettings()
+	end
+
+	local getter = function(info)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = getmodule().db.profile
+		return db[info[#info]]
+	end
+
+	local isdisabled = function(info)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = getmodule().db.profile
+		return info[#info] ~= "enabled" and not db.enabled
+	end
+
+	local getsetting = function(info, setting)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = getmodule().db.profile
+		return db[setting]
+	end
+
+	local setoption = function(info,option,val)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = getmodule().db.profile
+		db[option] = val
+		getmodule():UpdateSettings()
+	end
+
+	local getoption = function(info,option)
+		local id = tonumber((string_match(info[#info - 1],"(%d+)")))
+		local db = getmodule().db.profile
+		return db[option]
+	end
+
 	local options = {
 		name = L["Action Bar Settings"],
 		type = "group", childGroups = "tree",
-		args = {}
+		args = {
+			description = {
+				name = L["ActionBars are banks of hotkeys that allow you to quickly access abilities and inventory items. Here you can activate additional ActionBars and control their behaviors."],
+				type = "description",
+				fontSize = "medium",
+				order = 0
+			},
+			clickOnDown = {
+				name = L["Cast action keybinds on key down"],
+				desc = L["Cast action keybinds on key down"],
+				order = 1,
+				type = "toggle", width = "full",
+				set = function(info, val)
+					setter(info,val)
+					local pet = ns:GetModule("PetBar", true)
+					if (pet) then
+						pet:UpdateSettings()
+					end
+					local stance = ns:GetModule("StanceBar", true)
+					if (stance) then
+						pet:UpdateSettings()
+					end
+
+				end,
+				get = getter
+			}
+		}
 	}
 
 	for id = 1,ns.IsRetail and 8 or 5 do
-		options.args["bar"..id] = GenerateIndexedBarOptions("ActionBars", string_format(L["Action Bar %d"], id), id*10)
+		options.args["bar"..id] = GenerateIndexedBarOptions("ActionBars", string_format(L["Action Bar %d"], id), 100 + id*10)
 	end
 
-	options.args["petbar"] = GenerateBarOptions("PetBar", L["Pet Bar"], 100, NUM_PET_ACTION_SLOTS)
+	options.args["petbar"] = GenerateBarOptions("PetBar", L["Pet Bar"], 200, NUM_PET_ACTION_SLOTS)
 
-	local stanceBarOptions = GenerateBarOptions("StanceBar", L["Stance Bar"], 110, GetNumShapeshiftForms())
+	local stanceBarOptions = GenerateBarOptions("StanceBar", L["Stance Bar"], 210, GetNumShapeshiftForms())
 
 	for _,opt in next,{ "fadeFrom", "startAt", "numbuttons", "breakpoint" } do
 		local getter = stanceBarOptions.args[opt].get

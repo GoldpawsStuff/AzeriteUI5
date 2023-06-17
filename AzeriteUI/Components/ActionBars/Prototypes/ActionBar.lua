@@ -161,9 +161,16 @@ ns.ActionBar.Create = function(self, id, config, name)
 		control:ChildUpdate("state", newstate);
 	]])
 
+	--if (ns.WoW10) then
+	--	bar.config.clickOnDown = GetCVarBool("ActionButtonUseKeyDown")
+	--else
+	--	bar.config.clickOnDown =  ns:GetModule("ActionBars").db.profile.clickOnDown
+	--end
+
 	for i = 1,NUM_ACTIONBAR_BUTTONS do
 		bar:CreateButton()
 	end
+
 	bar:UpdateButtons()
 	bar:UpdateVisibilityDriver()
 
@@ -195,6 +202,7 @@ ActionBar.CreateButton = function(self, buttonConfig)
 
 	local buttonConfig = buttonConfig or button.config or {}
 	buttonConfig.keyBoundTarget = keyBoundTarget
+	buttonConfig.clickOnDown = self.config.clickOnDown
 
 	button:UpdateConfig(buttonConfig)
 end
@@ -212,6 +220,7 @@ end
 ActionBar.Update = function(self)
 	if (InCombatLockdown()) then return end
 
+	self:UpdateButtonConfig()
 	self:UpdateButtons()
 	self:UpdateButtonLayout()
 	self:UpdateStateDriver()

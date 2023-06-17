@@ -71,100 +71,98 @@ local ID_TO_BAR = {}
 for i,j in next,BAR_TO_ID do ID_TO_BAR[j] = i end
 
 -- Module defaults.
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({
+	clickOnDown = false
+}, ns.Module.defaults) }
 
 ActionBarMod.GenerateDefaults = function(self)
+	defaults.profile.bars = {
+		[1] = ns:Merge({ --[[ primary action bar ]]
+			enabled = true,
+			enableBarFading = true,
+			fadeFrom = 8,
+			layout = "zigzag",
+			startAt = 9, -- at which button the zigzag pattern should begin
+			growth = "horizontal", -- which direction the bar goes in
+			growthHorizontal = "RIGHT", -- the bar's horizontal growth direction
+			growthVertical = "UP", -- the bar's vertical growth direction
+			visibility = {
+				dragon = true,
+				possess = true,
+				overridebar = true,
+				vehicleui = true
+			},
+			savedPosition = {
+				scale = ns.API.GetEffectiveScale(),
+				[1] = "BOTTOMLEFT",
+				[2] = 60 * ns.API.GetEffectiveScale(),
+				[3] = 42 * ns.API.GetEffectiveScale()
+			}
+		}, ns.ActionBar.defaults),
 
-	defaults = { profile = ns:Merge({
-		enabled = true,
-		bars = {
-			[1] = ns:Merge({ --[[ primary action bar ]]
-				enabled = true,
-				enableBarFading = true,
-				fadeFrom = 8,
-				layout = "zigzag",
-				startAt = 9, -- at which button the zigzag pattern should begin
-				growth = "horizontal", -- which direction the bar goes in
-				growthHorizontal = "RIGHT", -- the bar's horizontal growth direction
-				growthVertical = "UP", -- the bar's vertical growth direction
-				visibility = {
-					dragon = true,
-					possess = true,
-					overridebar = true,
-					vehicleui = true
-				},
-				savedPosition = {
-					scale = ns.API.GetEffectiveScale(),
-					[1] = "BOTTOMLEFT",
-					[2] = 60 * ns.API.GetEffectiveScale(),
-					[3] = 42 * ns.API.GetEffectiveScale()
-				}
-			}, ns.ActionBar.defaults),
+		[2] = ns:Merge({ --[[ bottomleft multibar ]]
+			enabled = false,
+			enableBarFading = true,
+			fadeFrom = 1,
+			layout = "zigzag",
+			startAt = 2, -- at which button the zigzag pattern should begin
+			growth = "horizontal", -- which direction the bar goes in
+			growthHorizontal = "RIGHT", -- the bar's horizontal growth direction
+			growthVertical = "DOWN", -- the bar's vertical growth direction
+			offset = (64 - 44 + 8)/64, -- 28
+			savedPosition = {
+				scale = ns.API.GetEffectiveScale(),
+				[1] = "BOTTOMLEFT",
+				[2] = 752 * ns.API.GetEffectiveScale(),
+				[3] = 42 * ns.API.GetEffectiveScale()
+			}
+		}, ns.ActionBar.defaults),
 
-			[2] = ns:Merge({ --[[ bottomleft multibar ]]
-				enabled = false,
-				enableBarFading = true,
-				fadeFrom = 1,
-				layout = "zigzag",
-				startAt = 2, -- at which button the zigzag pattern should begin
-				growth = "horizontal", -- which direction the bar goes in
-				growthHorizontal = "RIGHT", -- the bar's horizontal growth direction
-				growthVertical = "DOWN", -- the bar's vertical growth direction
-				offset = (64 - 44 + 8)/64, -- 28
-				savedPosition = {
-					scale = ns.API.GetEffectiveScale(),
-					[1] = "BOTTOMLEFT",
-					[2] = 752 * ns.API.GetEffectiveScale(),
-					[3] = 42 * ns.API.GetEffectiveScale()
-				}
-			}, ns.ActionBar.defaults),
+		[3] = ns:Merge({ --[[ bottomright multibar ]]
+			enabled = false,
+			layout = "grid",
+			breakpoint = 6,
+			growth = "vertical",
+			growthHorizontal = "RIGHT",
+			growthVertical = "DOWN",
+			savedPosition = {
+				scale = ns.API.GetEffectiveScale(),
+				[1] = "RIGHT",
+				[2] = -40 * ns.API.GetEffectiveScale(),
+				[3] = 0
+			}
+		}, ns.ActionBar.defaults),
 
-			[3] = ns:Merge({ --[[ bottomright multibar ]]
-				enabled = false,
-				layout = "grid",
-				breakpoint = 6,
-				growth = "vertical",
-				growthHorizontal = "RIGHT",
-				growthVertical = "DOWN",
-				savedPosition = {
-					scale = ns.API.GetEffectiveScale(),
-					[1] = "RIGHT",
-					[2] = -40 * ns.API.GetEffectiveScale(),
-					[3] = 0
-				}
-			}, ns.ActionBar.defaults),
+		[4] = ns:Merge({ --[[ right multibar 1 ]]
+			enabled = false,
+			layout = "grid",
+			breakpoint = 6,
+			growth = "vertical",
+			growthHorizontal = "RIGHT",
+			growthVertical = "DOWN",
+			savedPosition = {
+				scale = ns.API.GetEffectiveScale(),
+				[1] = "RIGHT",
+				[2] = -194 * ns.API.GetEffectiveScale(),
+				[3] = 0
+			}
+		}, ns.ActionBar.defaults),
 
-			[4] = ns:Merge({ --[[ right multibar 1 ]]
-				enabled = false,
-				layout = "grid",
-				breakpoint = 6,
-				growth = "vertical",
-				growthHorizontal = "RIGHT",
-				growthVertical = "DOWN",
-				savedPosition = {
-					scale = ns.API.GetEffectiveScale(),
-					[1] = "RIGHT",
-					[2] = -194 * ns.API.GetEffectiveScale(),
-					[3] = 0
-				}
-			}, ns.ActionBar.defaults),
-
-			[5] = ns:Merge({ --[[ right multibar 2 ]]
-				enabled = false,
-				layout = "grid",
-				breakpoint = 6,
-				growth = "vertical",
-				growthHorizontal = "RIGHT",
-				growthVertical = "DOWN",
-				savedPosition = {
-					scale = ns.API.GetEffectiveScale(),
-					[1] = "RIGHT",
-					[2] = -348 * ns.API.GetEffectiveScale(),
-					[3] = 0
-				}
-			}, ns.ActionBar.defaults)
-		}
-	}, ns.Module.defaults) }
+		[5] = ns:Merge({ --[[ right multibar 2 ]]
+			enabled = false,
+			layout = "grid",
+			breakpoint = 6,
+			growth = "vertical",
+			growthHorizontal = "RIGHT",
+			growthVertical = "DOWN",
+			savedPosition = {
+				scale = ns.API.GetEffectiveScale(),
+				[1] = "RIGHT",
+				[2] = -348 * ns.API.GetEffectiveScale(),
+				[3] = 0
+			}
+		}, ns.ActionBar.defaults)
+	}
 
 	if (ns.IsRetail) then
 		defaults.profile.bars[6] = ns:Merge({ --[[]]
@@ -538,8 +536,8 @@ local style = function(button)
 	hooksecurefunc(cooldown, "SetHideCountdownNumbers", function(c,h) if not h then c:SetHideCountdownNumbers(true) end end)
 	hooksecurefunc(cooldown, "SetCooldown", function(c) c:SetAlpha(.75) end)
 
-	local config = button.config or {}
-	config.text = {
+	local buttonConfig = button.config or {}
+	buttonConfig.text = {
 		hotkey = {
 			font = {
 				font = db.ButtonKeybindFont:GetFont(),
@@ -571,7 +569,7 @@ local style = function(button)
 			justifyH = db.ButtonCountJustifyH,
 		}
 	}
-	button:UpdateConfig(config)
+	button:UpdateConfig(buttonConfig)
 
 	-- Disable masque for our buttons,
 	-- they are not compatible.
@@ -589,6 +587,7 @@ ActionBarMod.CreateBars = function(self)
 	for i = 1,#BAR_TO_ID do
 
 		local config = self.db.profile.bars[i]
+		config.clickOnDown = self.db.profile.clickOnDown
 
 		local bar = ns.ActionBar:Create(BAR_TO_ID[i], config, ns.Prefix.."ActionBar"..i)
 		bar.defaults = defaults.profile.bars[i]
@@ -881,6 +880,12 @@ ActionBarMod.UpdateSettings = function(self)
 		self.needupdate = true
 		return
 	end
+	if (ns.WoW10) then
+		SetCVar("ActionButtonUseKeyDown", self.db.profile.clickOnDown)
+	end
+	for i,bar in next,self.bars do
+		bar.config.clickOnDown = self.db.profile.clickOnDown
+	end
 	self:UpdateEnabled()
 	self:UpdateBars()
 	self:UpdateBindings()
@@ -1082,6 +1087,10 @@ end
 
 ActionBarMod.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace(self:GetName(), self:GetDefaults())
+
+	if (ns.WoW10) then
+		self.db.profile.clickOnDown = GetCVarBool("ActionButtonUseKeyDown")
+	end
 
 	self.bars = {}
 	self.buttons = {}
