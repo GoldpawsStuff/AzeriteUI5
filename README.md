@@ -17,4 +17,3 @@ I recommend downloading the UI from either [CurseForge](https://www.curseforge.c
 - Paypal: [paypal.me/goldpawsstuff](https://www.paypal.me/goldpawsstuff)
 - Discord: [discord.gg/RwcSm8V3Dy](https://discord.gg/RwcSm8V3Dy)
 - Twitter: [@goldpawsstuff](https://twitter.com/goldpawsstuff)
-"files.trimTrailingWhitespace": true
