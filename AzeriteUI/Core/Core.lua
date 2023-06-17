@@ -45,7 +45,8 @@ local unpack = unpack
 
 local defaults = {
 	char = {
-		profile = "Azerite"
+		profile = "Azerite",
+		showStartupMessage = true
 	},
 	global = {
 		version = ns.SETTINGS_VERSION
