@@ -28,7 +28,7 @@ local Addon, ns = ...
 local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
 
 local MovableFramesManager = ns:NewModule("MovableFramesManager", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
---local EMP = ns:GetModule("EditMode", true)
+local EMP = ns:GetModule("EditMode", true)
 
 local AceGUI = LibStub("AceGUI-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
@@ -808,7 +808,6 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 	local options = Options:GenerateProfileMenu()
 
 	-- EditMode integration
-	--[[--
 	if (EMP) then
 		options.args.editmodeHeader = {
 			type = "header",
@@ -858,7 +857,6 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 			end
 		}
 	end
-	--]]--
 
 	local colorize = function(msg)
 		msg = string.gsub(msg, "<", "|cffffd200<")
@@ -1059,28 +1057,26 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 		end
 
 	elseif (event == "PLAYER_LOGIN") then
-		--if (EMP) then
-		--	return EMP:LoadLayouts()
-		--end
+		if (EMP) then
+			return EMP:LoadLayouts()
+		end
 
 	elseif (event == "PLAYER_ENTERING_WORLD") then
-		--local isInitialLogin, isReloadingUi = ...
-		--if (isInitialLogin or isReloadingUi) then
-		--	if (EMP) then
-		--		self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
-		--	end
-		--end
+		local isInitialLogin, isReloadingUi = ...
+		if (isInitialLogin or isReloadingUi) then
+			if (EMP) then
+				self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
+			end
+		end
 		self.incombat = InCombatLockdown()
 
-		--ns:Fire("MFM_LayoutsUpdated")
-
 	elseif (event == "EDIT_MODE_LAYOUTS_UPDATED") then
-		--local layoutInfo, fromServer = ...
-		--if (fromServer) then
-		--	if (EMP) then
-		--		EMP:LoadLayouts()
-		--	end
-		--end
+		local layoutInfo, fromServer = ...
+		if (fromServer) then
+			if (EMP) then
+				EMP:LoadLayouts()
+			end
+		end
 
 	elseif (event == "UI_SCALE_CHANGED") then
 		local scale = UIParent:GetScale()

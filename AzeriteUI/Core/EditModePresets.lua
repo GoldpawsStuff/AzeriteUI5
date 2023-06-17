@@ -24,6 +24,7 @@
 
 --]]
 local Addon, ns = ...
+
 if (not ns.WoW10) then return end
 
 local EditMode = ns:NewModule("EditMode", "LibMoreEvents-1.0", "AceConsole-3.0", "AceTimer-3.0", "AceHook-3.0")
@@ -103,38 +104,18 @@ local azeriteSystems = {
 		}
 	},
 
-	--[Enum.EditModeUnitFrameSystemIndices.Party] = {
-	--	settings = {
-	--		[Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames] = 0, -- this is the important part
-	--		[Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground] = 0,
-	--		[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
-	--		[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
-	--		[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
-	--		[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
-	--		[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
-	--		[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
-	--	},
-	--	anchorInfo = {
-	--		point = "TOPLEFT",
-	--		relativeTo = "CompactRaidFrameManager",
-	--		relativePoint = "TOPRIGHT",
-	--		offsetX = 0,
-	--		offsetY = -7,
-	--	},
-	--},
-
-	--[Enum.EditModeSystem.ObjectiveTracker] = {
-	--	settings = {
-	--		[Enum.EditModeObjectiveTrackerSetting.Height] = 40 -- doesn't stick
-	--	},
-	--	anchorInfo = {
-	--		point = "TOPRIGHT",
-	--		relativeTo = "UIParent",
-	--		relativePoint = "TOPRIGHT",
-	--		offsetX = -60,
-	--		offsetY = -280
-	--	}
-	--},
+	[Enum.EditModeSystem.ObjectiveTracker] = {
+		settings = {
+			[Enum.EditModeObjectiveTrackerSetting.Height] = 40 -- doesn't stick
+		},
+		anchorInfo = {
+			point = "TOPRIGHT",
+			relativeTo = "UIParent",
+			relativePoint = "TOPRIGHT",
+			offsetX = -60,
+			offsetY = -280
+		}
+	},
 
 	[Enum.EditModeSystem.TalkingHeadFrame] = {
 		settings = {
@@ -149,12 +130,10 @@ local azeriteSystems = {
 	}
 }
 
--- Yes, it's only one. My thought was to maybe have more.
 local layouts = {
 	defaultLayout = "Azerite",
 	{
 		layoutName = "Azerite",
-		--layoutType = Enum.EditModeLayoutType.Character,
 		layoutType = Enum.EditModeLayoutType.Account,
 		systems = azeriteSystems
 	}
