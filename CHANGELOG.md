@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-06-17
+### Added
+- Added an option to toggle the cast on down setting for the action bars. In Retail since the 10.0 patch this applies to every clickable button in the game, in the Classics this is limited to our own action buttons only.
+
 ### Changed
 - The action bars, pet bar and stance bar should no longer grab keybinds from blizzard or bartender when disabled.
 
