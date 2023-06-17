@@ -41,7 +41,7 @@
 -- @class file
 -- @name AceDB-3.0.lua
 -- @release $Id: AceDB-3.0.lua 1284 2022-09-25 09:15:30Z nevcairiel $
-local ACEDB_MAJOR, ACEDB_MINOR = "AceDB-3.0-GE", 27
+local ACEDB_MAJOR, ACEDB_MINOR = "AceDB-3.0-GE", 27 --[[ [GE-Fix] Based on AceDB-3.0.27 ]]
 local AceDB = LibStub:NewLibrary(ACEDB_MAJOR, ACEDB_MINOR)
 
 if not AceDB then return end -- No upgrade needed
@@ -276,13 +276,13 @@ local function initdb(sv, defaults, defaultProfile, olddb, parent)
 		if not sv.profileKeys then sv.profileKeys = {} end
 
 		-- Try to get the profile selected from the char db
-		profileKey = sv.profileKeys[charKey] or defaultProfile --or charKey
+		profileKey = sv.profileKeys[charKey] or defaultProfile --[[ [GE-Fix:Remove] or charKey [/GE-Fix] ]]
 
 		-- save the selected profile for later
 		sv.profileKeys[charKey] = profileKey
 	else
 		-- Use the profile of the parents DB
-		profileKey = parent.keys.profile or defaultProfile --or charKey
+		profileKey = parent.keys.profile or defaultProfile --[[ [GE-Fix:Remove] or charKey [/GE-Fix] ]]
 
 		-- clear the profileKeys in the DB, namespaces don't need to store them
 		sv.profileKeys = nil
