@@ -171,3 +171,5 @@ L["When enabled, unitframe auras will be sorted depending on time left and who c
 L["You are now running AzeriteUI for %s!|n|nTo set the game's general interface scale to AzeriteUI defaults and position the chat frames to match, click the '|cffffd200%s|r' button. To hide this window for now, click the '|cffffd200%s|r' button. To cancel this tutorial and handle interface scaling yourself, click the '|cffffd200%s|r' button."] = true
 L["You can now enter a new battleground, right-click the eye icon on the minimap to enter or leave!"] = true
 L["ZigZag Layout"] = true
+L["ActionBars are banks of hotkeys that allow you to quickly access abilities and inventory items. Here you can activate additional ActionBars and control their behaviors."] = "快捷列是一個存放熱鍵的工具列，可讓你更快速地使用技能與物品欄的物品。你可以在這裡啟用額外的快捷列並控制它們的功能。"
+L["Cast action keybinds on key down"] = "於按下按鍵時施放技能"

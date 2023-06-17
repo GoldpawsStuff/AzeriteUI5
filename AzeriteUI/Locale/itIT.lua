@@ -184,3 +184,5 @@ L["Y Offset"] = "Posizione asse Y"
 L["You are now running AzeriteUI for %s!|n|nTo set the game's general interface scale to AzeriteUI defaults and position the chat frames to match, click the '|cffffd200%s|r' button. To hide this window for now, click the '|cffffd200%s|r' button. To cancel this tutorial and handle interface scaling yourself, click the '|cffffd200%s|r' button."] = true
 L["You can now enter a new battleground, right-click the eye icon on the minimap to enter or leave!"] = true
 L["ZigZag Layout"] = true
+L["ActionBars are banks of hotkeys that allow you to quickly access abilities and inventory items. Here you can activate additional ActionBars and control their behaviors."] = "Le barre delle azioni permettono di accedere rapidamente alle abilità e agli oggetti dell'inventario. Qui puoi attivare le barre delle azioni aggiuntive e modificare il loro funzionamento."
+L["Cast action keybinds on key down"] = "Esegui immediatamente l'azione\nquando premi il tasto associato"
