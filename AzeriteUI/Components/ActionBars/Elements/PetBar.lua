@@ -417,6 +417,8 @@ PetBar.UpdateBindings = function(self)
 
 	ClearOverrideBindings(self)
 
+	if (not self:IsEnabled()) then return end
+
 	for id,button in next,self.buttons do
 		local bindingAction = button.keyBoundTarget
 		if (bindingAction) then
@@ -677,7 +679,7 @@ PetBarMod.OnEvent = function(self, event, arg1)
 		end
 
 	elseif (event == "UPDATE_BINDINGS") then
-		self.bar:UpdateBindings()
+		self:UpdateBindings()
 	end
 end
 

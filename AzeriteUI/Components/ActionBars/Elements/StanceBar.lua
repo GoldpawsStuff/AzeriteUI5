@@ -450,6 +450,8 @@ StanceBar.UpdateBindings = function(self)
 
 	ClearOverrideBindings(self)
 
+	if (not self:IsEnabled()) then return end
+
 	for id,button in next,self.buttons do
 		local bindingAction = button.keyBoundTarget
 		if (bindingAction) then
@@ -644,6 +646,9 @@ StanceBarMod.OnEvent = function(self, event, ...)
 			self.bar:UpdateButtons()
 		end
 
+	elseif (event == "UPDATE_BINDINGS") then
+		self:UpdateBindings()
+
 	else
 		if (InCombatLockdown()) then
 			self.needupdate = true
@@ -724,6 +729,7 @@ StanceBarMod.OnEnable = function(self)
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED", "OnEvent")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	self:RegisterEvent("UPDATE_BINDINGS", "OnEvent")
 	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR", "OnEvent")
 	self:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN", "OnEvent")
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM", "OnEvent")

@@ -1028,9 +1028,7 @@ ActionBarMod.OnButtonEvent = function(self, event, ...)
 		end
 
 	elseif (event == "UPDATE_BINDINGS") then
-		for id,bar in next,self.bars do
-			bar:UpdateBindings()
-		end
+		self:UpdateBindings()
 	end
 end
 
