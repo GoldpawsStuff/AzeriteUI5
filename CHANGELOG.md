@@ -4,14 +4,16 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-06-17
+## [5.1.68-Release] 2023-06-17
+- Fixed the incorrect version number.
+
 ### Added
 - Added an option to toggle the cast on down setting for the action bars. In Retail since the 10.0 patch this applies to every clickable button in the game, in the Classics this is limited to our own action buttons only.
 
 ### Changed
 - The action bars, pet bar and stance bar should no longer grab keybinds from blizzard or bartender when disabled.
 
-## [5.0.67-Release] 2023-06-16
+## [5.1.67-Release] 2023-06-16
 - This version is backwards incompatible and will force a full reset of its settings.
 - This version is compatible with Wrath 3.4.2 PTR and Dragonflight 10.1.5 PTR.
 
