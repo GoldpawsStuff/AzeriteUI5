@@ -24,6 +24,9 @@
 
 --]]
 local Addon, ns = ...
+
+local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
+
 local ChatFrames = ns:NewModule("ChatFrames", "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
 
 -- Lua API
@@ -34,6 +37,7 @@ local rawget = rawget
 local rawset = rawset
 local select = select
 local setmetatable = setmetatable
+local string_format = string.format
 
 -- GLOBALS: ChatFrame1, ChatFrame2
 -- GLOBALS: CHAT_FRAMES, CHAT_FONT_HEIGHTS, NUM_CHAT_WINDOWS
@@ -562,6 +566,12 @@ ChatFrames.OnEvent = function(self, event, ...)
 					if (GetTime() > quiettime) then
 						self:Hide()
 						self:SetScript("OnUpdate", nil)
+
+						local version = ns.Version == "Development" and "Git Version" or ns.Version
+						print(string_format("|cff88aaff".."AzeriteUI %s", "|cfff0f0f0"..version.."|r").."|r")
+						print("|cfff0f0f0"..L["|cff44cc88/lock|r to toggle movable frames."].."|r")
+						print("|cfff0f0f0"..L["|cff44cc88/azerite|r to toggle options menu."].."|r")
+
 						return
 					end
 					ChatFrame1:Clear()
