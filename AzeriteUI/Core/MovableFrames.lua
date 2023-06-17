@@ -28,7 +28,7 @@ local Addon, ns = ...
 local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
 
 local MovableFramesManager = ns:NewModule("MovableFramesManager", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
-local EMP = ns:GetModule("EditMode", true)
+local EMP --= ns:GetModule("EditMode", true)
 
 local AceGUI = LibStub("AceGUI-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
