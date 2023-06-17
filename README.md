@@ -8,7 +8,6 @@ AzeriteUI5.1 is a custom World of Warcraft user interface for Dragonflight, Wrat
 
 ## FAQ
 - Yes, I do accept donations and will love you for it. Links above.
-- Yes, I will be making raid frames. *(Included in 5.1)*
 - Yes, I will be making arena frames. *(No current ETA)*
 - To remove abilities from the action bars, hold `Alt`+`Ctrl`+`Shift` and drag.
 
