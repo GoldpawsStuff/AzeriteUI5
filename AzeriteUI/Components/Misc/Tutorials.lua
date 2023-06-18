@@ -26,9 +26,6 @@
 local Addon, ns = ...
 local BlizzTutorials = ns:NewModule("BlizzTutorials", "LibMoreEvents-1.0", "AceTimer-3.0", "AceHook-3.0")
 
--- Addon API
-local IsAddOnEnabled = ns.API.IsAddOnEnabled
-
 BlizzTutorials.DisableHelpTip = function(self)
 	if (not HelpTip) then return end
 	local AcknowledgeTips = function()

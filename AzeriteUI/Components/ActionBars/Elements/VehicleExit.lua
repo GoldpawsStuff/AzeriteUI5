@@ -95,12 +95,19 @@ VehicleExit.UpdateScale = function(self)
 	if (self.Button) then
 		local point, anchor, rpoint, x, y = unpack(config.VehicleExitButtonPosition())
 
-		local scale = Minimap:GetScale()
-		local escale = scale / Minimap:GetEffectiveScale()
+		if (ns.IsRetail) then
+			local scale = Minimap:GetScale()
+			local escale = scale / Minimap:GetEffectiveScale()
 
-		self.Button:SetScale(scale)
-		self.Button:ClearAllPoints()
-		self.Button:SetPoint(point, anchor, rpoint, x / escale, y / escale)
+			self.Button:SetScale(scale)
+			self.Button:ClearAllPoints()
+			self.Button:SetPoint(point, anchor, rpoint, x / escale, y / escale)
+		else
+			self.Button:SetScale(Minimap:GetScale() * 768/1080)
+			self.Button:ClearAllPoints()
+			self.Button:SetPoint(point, anchor, rpoint, x, y)
+		end
+
 	end
 end
 
@@ -122,7 +129,7 @@ VehicleExit.OnEvent = function(self, event, ...)
 	end
 end
 
-VehicleExit.OnInitialize = function(self)
+VehicleExit.OnEnable = function(self)
 
 	local button = CreateFrame("CheckButton", ns.Prefix.."VehicleExitButton", UIParent, "SecureActionButtonTemplate")
 	button:SetFrameStrata("MEDIUM")

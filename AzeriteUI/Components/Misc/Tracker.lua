@@ -34,7 +34,6 @@ local Tracker = ns:NewModule("Tracker", ns.Module, "LibMoreEvents-1.0", "AceHook
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
-local IsAddOnEnabled = ns.API.IsAddOnEnabled
 local UIHider = ns.Hider
 local noop = ns.Noop
 

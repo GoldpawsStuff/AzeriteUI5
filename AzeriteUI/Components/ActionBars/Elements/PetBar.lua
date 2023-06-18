@@ -53,7 +53,6 @@ local unpack = unpack
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
-local IsAddOnEnabled = ns.API.IsAddOnEnabled
 local RegisterCooldown = ns.Widgets.RegisterCooldown
 local UIHider = ns.Hider
 local noop = ns.Noop

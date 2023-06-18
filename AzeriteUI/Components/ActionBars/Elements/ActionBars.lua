@@ -834,8 +834,8 @@ ActionBarMod.UpdateDefaults = function(self)
 	for i,bar in next,self.bars do
 		if (bar.anchor) then
 			local config = defaults.profile.bars[i].savedPosition
-			config.scale = anchor:GetDefaultScale()
-			config[1], config[2], config[3] = anchor:GetDefaultPosition()
+			config.scale = bar.anchor:GetDefaultScale()
+			config[1], config[2], config[3] = bar.anchor:GetDefaultPosition()
 		end
 	end
 	self:SetDefaults(defaults)

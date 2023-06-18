@@ -31,7 +31,7 @@ local Options = ns:GetModule("Options")
 
 local GenerateSubOptions = function(moduleName)
 	local module = ns:GetModule(moduleName, true)
-	if (not module or not module.db.profile.enabled) then return end
+	if (not module) then return end
 
 	local setter = function(info,val,noRefresh)
 		module.db.profile[info[#info]] = val

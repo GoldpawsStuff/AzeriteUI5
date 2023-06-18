@@ -624,6 +624,5 @@ ClassPowerMod.OnEnable = function(self)
 	self:CreateUnitFrames()
 	self:CreateAnchor(self:GetLabel())
 
-
 	ns.Module.OnEnable(self)
 end

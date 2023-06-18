@@ -40,7 +40,6 @@ local unpack = unpack
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
-local IsAddOnEnabled = ns.API.IsAddOnEnabled
 
 local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
 

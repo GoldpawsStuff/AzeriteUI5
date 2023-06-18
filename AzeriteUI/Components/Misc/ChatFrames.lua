@@ -25,6 +25,8 @@
 --]]
 local Addon, ns = ...
 
+if (ns.API.IsAddOnEnabled("Prat-3.0") or ns.API.IsAddOnEnabled("ls_Glass")) then return end
+
 local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
 
 local ChatFrames = ns:NewModule("ChatFrames", "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
@@ -46,7 +48,6 @@ local string_format = string.format
 
 -- Addon API
 local GetFont = ns.API.GetFont
-local IsAddOnEnabled = ns.API.IsAddOnEnabled
 local UIHider = ns.Hider
 
 local defaults = { profile = ns:Merge({
@@ -585,8 +586,6 @@ end
 
 ChatFrames.OnInitialize = function(self)
 	self.db = ns.db:RegisterNamespace(self:GetName(), defaults)
-
-	self:SetEnabledState(not IsAddOnEnabled("Prat-3.0") and not IsAddOnEnabled("ls_Glass") and self.db.profile.enabled)
 
 	-- Add a command to clear all chat frames.
 	-- I mainly use this to remove clutter before taking screenshots.

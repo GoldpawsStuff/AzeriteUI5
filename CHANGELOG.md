@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.1.70-Release] 2023-06-19
+### Fixed
+- Fixed an issue where the actionbars would throw an anchor error upon changing the game's UI scale.
+- Fixed some inconsistencies with the vehicle exit button in Classic and Wrath.
+- Disabled elements in the `/azerite` menus unitframe section will no longer cause the UI to bug out on next `/reload`.
+
 ## [5.1.69-Release] 2023-06-18
 ### Fixed
 - Settings should be properly loaded and saved and stick through sessions in Retail now.
