@@ -13,6 +13,7 @@ body:
     options:
       - Dragonflight
       - Wrath Classic
+      - Classic Era
   validations:
     required: true
 - type: checkboxes
