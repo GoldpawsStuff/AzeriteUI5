@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.1.69-Release] 2023-06-18
+### Fixed
+- Settings should be properly loaded and saved and stick through sessions in Retail now.
+- Raid frames should start without incident now.
+
 ## [5.1.68-Release] 2023-06-17
 - Fixed the incorrect version number.
 
