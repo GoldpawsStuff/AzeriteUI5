@@ -29,10 +29,11 @@
 local Addon, ns = ...
 
 ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "LibMoreEvents-1.0", "AceConsole-3.0")
-ns.L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
 ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false)
 ns.Hider = CreateFrame("Frame"); ns.Hider:Hide()
 ns.Noop = function() end
+
+-- Increasing this number forces a full settings reset.
 ns.SETTINGS_VERSION = 22
 
 _G[Addon] = ns
@@ -49,7 +50,7 @@ local defaults = {
 		showStartupMessage = true
 	},
 	global = {
-		version = ns.SETTINGS_VERSION
+		version = -1
 	},
 	profile = {}
 }
@@ -158,12 +159,15 @@ ns.RefreshConfig = function(self, event, ...)
 	end
 end
 
+ns.OnEnable = function(self)
+	self.db:SetProfile(self.db.char.profile)
+end
+
 ns.OnInitialize = function(self)
 	self.db = LibStub("AceDB-3.0-GE"):New("AzeriteUI5_DB", defaults, self:GetDefaultProfile())
 
-	if (self.db.global.version ~= ns.SETTINGS_VERSION) then
-		self.db:ResetDB(self:GetDefaultProfile())
-		self.db.global.version = ns.SETTINGS_VERSION
+	if (self.db.global.version < ns.SETTINGS_VERSION) then
+		self:ResetSettings(true)
 	end
 
 	self.db.RegisterCallback(self, "OnNewProfile", "RefreshConfig")
@@ -172,8 +176,4 @@ ns.OnInitialize = function(self)
 	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
 
 	self:RegisterChatCommand("resetsettings", function() self:ResetSettings() end)
-end
-
-ns.OnEnable = function(self)
-	self.db:SetProfile(self.db.char.profile)
 end
