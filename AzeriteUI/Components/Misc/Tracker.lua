@@ -26,8 +26,6 @@
 local Addon, ns = ...
 if (not ns.IsRetail) then return end
 
-LoadAddOn("Blizzard_ObjectiveTracker")
-
 local Tracker = ns:NewModule("Tracker", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0")
 
 -- GLOBALS: IsAddOnLoaded, SetOverrideBindingClick
@@ -641,6 +639,8 @@ Tracker.OnEvent = function(self, event, ...)
 end
 
 Tracker.OnEnable = function(self)
+	LoadAddOn("Blizzard_ObjectiveTracker")
+
 	self:PrepareFrames()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("SETTINGS_LOADED", "OnEvent")

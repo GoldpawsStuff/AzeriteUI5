@@ -25,8 +25,6 @@
 --]]
 local Addon, ns = ...
 
-LoadAddOn("Blizzard_TimeManager")
-
 local MinimapMod = ns:NewModule("Minimap", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0", "AceConsole-3.0")
 
 local LibDD = LibStub("LibUIDropDownMenu-4.0")
@@ -1334,6 +1332,7 @@ MinimapMod.OnEvent = function(self, event, ...)
 end
 
 MinimapMod.OnEnable = function(self)
+	LoadAddOn("Blizzard_TimeManager")
 
 	if (ns.WoW10) then
 		MinimapCluster.HighlightSystem = ns.Noop

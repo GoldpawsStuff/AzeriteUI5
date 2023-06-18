@@ -27,8 +27,6 @@ local Addon, ns = ...
 
 if (ns.IsClassic or ns.IsWrath) then return end
 
-LoadAddOn("Blizzard_ArchaeologyUI")
-
 local ArcheologyBar = ns:NewModule("ArcheologyBar", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Lua API
@@ -47,6 +45,7 @@ ArcheologyBar.GenerateDefaults = function(self)
 end
 
 ArcheologyBar.PrepareFrames = function(self)
+	LoadAddOn("Blizzard_ArchaeologyUI")
 
 	self.frame = ArcheologyDigsiteProgressBar
 

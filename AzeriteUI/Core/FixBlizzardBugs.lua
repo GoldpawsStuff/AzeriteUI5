@@ -27,8 +27,14 @@ local Addon, ns = ...
 
 -- GLOBALS: LoadAddOn, ChannelFrame
 
-LoadAddOn("Blizzard_Channels")
+local FixBlizzardBugs = ns:NewModule("FixBlizzardBugs")
 
--- Kill off the non-stop voice chat error 17 on retail.
--- This only occurs in linux, but we can't check for that.
-ChannelFrame:UnregisterEvent("VOICE_CHAT_ERROR")
+FixBlizzardBugs.OnInitialize = function(self)
+
+	LoadAddOn("Blizzard_Channels")
+
+	-- Kill off the non-stop voice chat error 17 on retail.
+	-- This only occurs in linux, but we can't check for that.
+	ChannelFrame:UnregisterEvent("VOICE_CHAT_ERROR")
+
+end

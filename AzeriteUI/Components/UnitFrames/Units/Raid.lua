@@ -26,9 +26,6 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-LoadAddOn("Blizzard_CUFProfiles")
-LoadAddOn("Blizzard_CompactRaidFrames")
-
 local RaidFrameMod = ns:NewModule("RaidFrames", ns.UnitFrameModule, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Lua API
@@ -963,6 +960,8 @@ RaidFrameMod.CreateUnitFrames = function(self)
 end
 
 RaidFrameMod.OnEnable = function(self)
+	LoadAddOn("Blizzard_CUFProfiles")
+	LoadAddOn("Blizzard_CompactRaidFrames")
 
 	-- Leave these enabled for now.
 	self:DisableBlizzard()

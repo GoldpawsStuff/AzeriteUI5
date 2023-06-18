@@ -26,8 +26,6 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-LoadAddOn("Blizzard_NamePlates")
-
 local NamePlatesMod = ns:NewModule("NamePlates", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0")
 
 -- Lua API
@@ -1251,6 +1249,8 @@ NamePlatesMod.OnInitialize = function(self)
 	if (self:CheckForConflicts()) then return self:Disable() end
 
 	self.db = ns.db:RegisterNamespace("NamePlates", defaults)
+
+	LoadAddOn("Blizzard_NamePlates")
 
 	self:HookNamePlates()
 end

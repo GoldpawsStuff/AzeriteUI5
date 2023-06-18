@@ -80,8 +80,6 @@ EditModeManager.OnEvent = function(self, event, ...)
 
 end
 
-LoadAddOn("Blizzard_ObjectiveTracker")
-
 EditModeManager.OnEnable = function(self)
 	--if (not ObjectiveTrackerFrame:IsInDefaultPosition()) then
 	--	ShowUIPanel(EditModeManagerFrame)
@@ -124,6 +122,7 @@ EditModeManager.OnEnable = function(self)
 end
 
 EditModeManager.OnInitialize = function(self)
+	LoadAddOn("Blizzard_ObjectiveTracker")
 
 	--EditModeManagerFrame:UnregisterAllEvents()
 	--EditModeManagerFrame:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED")
