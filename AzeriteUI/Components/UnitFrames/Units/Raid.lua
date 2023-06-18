@@ -629,6 +629,7 @@ local style = function(self, unit)
 
 	-- Dispellable Debuffs
 	--------------------------------------------
+	--[[
 	local dispellable = {}
 	dispellable.disableMouse = true
 
@@ -669,6 +670,7 @@ local style = function(self, unit)
 	dispelIcon.cd = ns.Widgets.RegisterCooldown(dispelIcon.time)
 
 	--self.Dispellable = dispellable
+	--]]
 
 	-- Readycheck
 	--------------------------------------------
