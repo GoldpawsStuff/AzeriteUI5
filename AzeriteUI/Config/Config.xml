@@ -1,0 +1,26 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+	<Script file="Config.lua"/>
+
+	<Script file="Configs\ActionButton.lua"/>
+	<Script file="Configs\AlertFrames.lua"/>
+	<Script file="Configs\BossUnitFrames.lua"/>
+	<Script file="Configs\ExtraActionButton.lua"/>
+	<Script file="Configs\FocusUnitFrame.lua"/>
+	<Script file="Configs\Minimap.lua"/>
+	<Script file="Configs\MirrorTimers.lua"/>
+	<Script file="Configs\NamePlates.lua"/>
+	<Script file="Configs\PartyUnitFrames.lua"/>
+	<Script file="Configs\PetActionButton.lua"/>
+	<Script file="Configs\PetUnitFrame.lua"/>
+	<Script file="Configs\PlayerCastBar.lua"/>
+	<Script file="Configs\PlayerClassPower.lua"/>
+	<Script file="Configs\PlayerUnitFrame.lua"/>
+	<Script file="Configs\RaidUnitFrames.lua"/>
+	<Script file="Configs\StanceButton.lua"/>
+	<Script file="Configs\StatusBars.lua"/>
+	<Script file="Configs\TargetUnitFrame.lua"/>
+	<Script file="Configs\ToTUnitFrame.lua"/>
+	<Script file="Configs\VehicleExitButton.lua"/>
+
+</Ui>

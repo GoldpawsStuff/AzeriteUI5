@@ -33,5 +33,8 @@ Core\Core.xml
 # Options Menu
 Options\Options.xml
 
+# Component Configs
+Config\Config.xml
+
 # Addon components
 Components\Components.xml
