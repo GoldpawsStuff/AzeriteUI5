@@ -168,7 +168,7 @@ EditMode.SetToDefaultLayout = function(self)
 end
 
 -- Reset the currently selected EditMode layout
--- to AzeriteUI defaults for selected frames.
+-- to UI defaults for selected frames.
 EditMode.ApplySystems = function(self, systems)
 	if (InCombatLockdown()) then return end
 	if (not self:CanEditActiveLayout()) then return end
@@ -210,7 +210,7 @@ EditMode.ApplySystems = function(self, systems)
 
 end
 
--- Reset our custom layouts to AzeriteUI defaults.
+-- Reset our custom layouts to UI defaults.
 -- *currently just a single one.
 EditMode.ResetLayouts = function(self)
 	if (InCombatLockdown()) then return end
