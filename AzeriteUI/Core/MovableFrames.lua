@@ -842,7 +842,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 			hidden = function(info)
 				return MovableFramesManager.incombat or not EMP:CanEditActiveLayout()
 			end,
-			name = L["Click the button below to reset the currently selected EditMode preset to positions matching the default AzeriteUI layout."]
+			name = L["Click the button below to reset the currently selected EditMode preset to positions matching the default layout."]
 		}
 		options.args.editmodeResetPreset = {
 			type = "execute",
@@ -947,7 +947,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 	}
 	options.args.scale = {
 		name = L["Scale"],
-		desc = L["Sets the relative scale of this element. Default scale is set to match AzeriteUI ideal size."],
+		desc = L["Sets the relative scale of this element. Default scale is set to match the ideal size."],
 		order = 140,
 		type = "range", width = "full", min = 0.25 * 100, max = 2.5 * 100, step = 0.1, bigStep = 1,
 		hidden = isdisabled,
