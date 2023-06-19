@@ -26,15 +26,13 @@
 local Addon, ns = ...
 local Debugging = ns:NewModule("Debugging", "AceConsole-3.0")
 
+-- GLOBALS: EnableAddOn, GetAddOnInfo
+
 -- Lua API
-local ipairs = ipairs
+local next = next
 local print = print
 local select = select
 local string_format = string.format
-
--- WoW API
-local EnableAddOn = EnableAddOn
-local GetAddOnInfo = GetAddOnInfo
 
 local ADDONS = {
 
