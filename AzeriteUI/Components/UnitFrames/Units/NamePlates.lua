@@ -30,6 +30,7 @@ local NamePlatesMod = ns:NewModule("NamePlates", "LibMoreEvents-1.0", "AceHook-3
 
 -- Lua API
 local math_floor = math.floor
+local next = next
 local select = select
 local string_gsub = string.gsub
 local unpack = unpack
@@ -49,148 +50,6 @@ local defaults = { profile = ns:Merge({
 	enabled = true,
 	scale = 1
 }, ns.Module.defaults) }
-
-local barSparkMap = {
-	top = {
-		{ keyPercent =   0/256, offset = -16/32 },
-		{ keyPercent =   4/256, offset = -16/32 },
-		{ keyPercent =  19/256, offset =   0/32 },
-		{ keyPercent = 236/256, offset =   0/32 },
-		{ keyPercent = 256/256, offset = -16/32 }
-	},
-	bottom = {
-		{ keyPercent =   0/256, offset = -16/32 },
-		{ keyPercent =   4/256, offset = -16/32 },
-		{ keyPercent =  19/256, offset =   0/32 },
-		{ keyPercent = 236/256, offset =   0/32 },
-		{ keyPercent = 256/256, offset = -16/32 }
-	}
-}
-
-local config = {
-
-	Size = { 80, 32 },
-	Orientation = "LEFT",
-	OrientationReversed = "RIGHT",
-
-	-- Health
-	-----------------------------------------
-	HealthBarPosition = { "TOP", 0, -2 },
-	HealthBarSize = { 84, 14 },
-	HealthBarTexCoord = { 14/256, 242/256, 14/64, 50/64 },
-	HealthBarTexture = GetMedia("nameplate_bar"),
-	HealthBarSparkMap = barSparkMap,
-	HealthAbsorbColor = { 1, 1, 1, .35 },
-	HealthCastOverlayColor = { 1, 1, 1, .35 },
-
-	HealthBackdropPosition = { "CENTER", 0, 0 },
-	HealthBackdropSize = { 94.315789474, 24.888888889 },
-	HealthBackdropTexture = GetMedia("nameplate_backdrop"),
-
-	HealthValuePosition = { "TOP", 0, -18 },
-	HealthValueJustifyH = "CENTER",
-	HealthValueJustifyV = "MIDDLE",
-	HealthValueFont = GetFont(12,true),
-	HealthValueColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .5 },
-
-	-- CastBar
-	-----------------------------------------
-	CastBarPosition = { "TOP", 0, -20 },
-	CastBarPositionPlayer = { "TOP", 0, -(2 + 18 + 18) },
-	CastBarSize = { 84, 14 },
-	CastBarProtectedSize = { 84*.25, 14*.25 },
-	CastBarProtectedPosition = { "TOP", 0, -(20 + 14*.25/2) },
-	CastBarSparkMap = barSparkMap,
-	CastBarOrientation = "LEFT",
-	CastBarOrientationPlayer = "RIGHT",
-	CastBarTimeToHoldFailed = .5,
-	CastBarTexture = GetMedia("nameplate_bar"),
-	CastBarTexCoord = { 14/256,(256-14)/256,14/64,(64-14)/64 },
-	CastBarColor = { Colors.normal[1], Colors.normal[2], Colors.normal[3], 1 },
-	--CastBarColor = { Colors.cast[1], Colors.cast[2], Colors.cast[3], 1 },
-
-	CastBarBackdropPosition = { "CENTER", 0, 0 },
-	CastBarBackdropSize = { 84*256/(256-28), 14*64/(64-28) },
-	CastBarBackdropTexture = GetMedia("nameplate_backdrop"),
-
-	CastBarNamePosition = { "TOP", 0, -18 },
-	CastBarNamePositionPlayer = { "TOP", 0, -(18 + 18) },
-	CastBarNameJustifyH = "CENTER",
-	CastBarNameJustifyV = "MIDDLE",
-	CastBarNameFont = GetFont(12, true),
-	CastBarNameColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .5 },
-
-	-- PRD Power Bar
-	-----------------------------------------
-	PowerBarPosition = { "TOP", 0, -20 },
-	PowerBarSize = { 84, 14 },
-	PowerBarTexCoord = { 14/256, 242/256, 14/64, 50/64 },
-	PowerBarTexture = GetMedia("nameplate_bar"),
-	PowerBarSparkMap = barSparkMap,
-	PowerBarBackdropPosition = { "CENTER", 0, 0 },
-	PowerBarBackdropSize = { 94.315789474, 24.888888889 },
-	PowerBarBackdropTexture = GetMedia("nameplate_backdrop"),
-
-	-- Unit Name
-	-----------------------------------------
-	NamePosition = { "TOP", 0, 16 },
-	NameJustifyH = "CENTER",
-	NameJustifyV = "MIDDLE",
-	NameFont = GetFont(12,true),
-	NameColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .5 },
-
-	-- Auras
-	-----------------------------------------
-	AurasPosition = { "BOTTOM", 0, 40 },
-	AurasSize = { 30*3 - 4, 30*2 - 4 },
-	AuraSize = 26,
-	AuraSpacing = 4,
-	AurasNumTotal = 6,
-	AurasNumPerRow = 3,
-	AurasDisableMouse = true,
-	AurasDisableCooldown = false,
-	AurasOnlyShowPlayer = false, -- handle this in the filter instead
-	AurasShowStealableBuffs = false,
-	AurasInitialAnchor = "BOTTOMLEFT",
-	AurasSpacingX = 4,
-	AurasSpacingY = 4,
-	AurasGrowthX = "RIGHT",
-	AurasGrowthY = "UP",
-	AurasTooltipAnchor = "ANCHOR_TOPLEFT",
-	AurasSortMethod = "TIME_REMAINING",
-	AurasSortDirection = "DESCENDING",
-
-	-- NPC Classification
-	-----------------------------------------
-	ClassificationPosition = { "RIGHT", 18 + 2, -1 },
-	ClassificationSize = { 40, 40 },
-	ClassificationIndicatorBossTexture = GetMedia("icon_badges_boss"),
-	ClassificationIndicatorEliteTexture = GetMedia("icon_classification_elite"),
-	ClassificationIndicatorRareTexture = GetMedia("icon_classification_rare"),
-
-	-- Raid Target Indicator
-	-----------------------------------------
-	RaidTargetPosition = { "BOTTOM", 0, 38 },
-	RaidTargetSize = { 64, 64 },
-	RaidTargetTexture = GetMedia("raid_target_icons"),
-
-	-- Target Highlight
-	-----------------------------------------
-	TargetHighlightPosition = { "CENTER", 0, 0 },
-	TargetHighlightSize = { 99.031578947, 29.866666667 },
-	TargetHighlightTexture = GetMedia("nameplate_outline"),
-	TargetHighlightFocusColor = { 144/255, 195/255, 255/255, 1 },
-	TargetHighlightTargetColor = { 255/255, 239/255, 169/255, 1 },
-	TargetHighlightSoftEnemyColor = { 255/255, 250/255, 236/255, 1 }, -- TODO: Check how this color looks.
-	TargetHighlightSoftInteractColor = { 185/255, 255/255, 182/255, 1 }, -- TODO: Check how this color looks.
-
-	-- Threat Glow
-	-----------------------------------------
-	ThreatPosition = { "CENTER", 0, 0 },
-	ThreatSize = { 94.315789474, 24.888888889 },
-	ThreatTexture = GetMedia("nameplate_glow")
-
-}
 
 -- Utility Functions
 --------------------------------------------
@@ -423,7 +282,7 @@ local Power_PostUpdate = function(element, unit, cur, min, max)
 		return
 	end
 
-	local db = config
+	local db = ns.GetConfig("NamePlates")
 	local shouldShow
 
 	if (self.isPRD) then
@@ -509,7 +368,7 @@ end
 -- Messy callback that handles positions
 -- of elements above the health bar.
 local NamePlate_PostUpdatePositions = function(self)
-	local db = config
+	local db = ns.GetConfig("NamePlates")
 
 	local auras = self.Auras
 	local name = self.Name
@@ -591,10 +450,12 @@ local Auras_PostUpdate = function(element, unit)
 end
 
 local Castbar_PostUpdate = function(element, unit)
-	local r, g, b = unpack(element.notInterruptible and Colors.title or config.CastBarNameColor)
+	local db = ns.GetConfig("NamePlates")
+
+	local r, g, b = unpack(element.notInterruptible and Colors.title or db.CastBarNameColor)
 	element.Text:SetTextColor(r, g, b, 1)
 
-	local r, g, b, a = unpack(element.__owner.isPRD and config.HealthCastOverlayColor or element.notInterruptible and Colors.tapped or config.CastBarColor)
+	local r, g, b, a = unpack(element.__owner.isPRD and db.HealthCastOverlayColor or element.notInterruptible and Colors.tapped or db.CastBarColor)
 	element:SetStatusBarColor(r, g, b, a or 1)
 
 	NamePlate_PostUpdateHoverElements(element.__owner)
@@ -605,21 +466,23 @@ end
 local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 	if (unit and unit ~= self.unit) then return end
 
+	local db = ns.GetConfig("NamePlates")
+
 	if (self.isPRD) then
 		self:SetIgnoreParentAlpha(false)
 		if (self:IsElementEnabled("Auras")) then
 			self:DisableElement("Auras")
 		end
 
-		self.Castbar:SetSize(unpack(config.HealthBarSize))
+		self.Castbar:SetSize(unpack(db.HealthBarSize))
 		self.Castbar:ClearAllPoints()
 		self.Castbar:SetAllPoints(self.Health)
-		self.Castbar:SetSparkMap(config.HealthBarSparkMap)
-		self.Castbar:SetStatusBarTexture(config.HealthBarTexture)
-		self.Castbar:SetTexCoord(unpack(config.HealthBarTexCoord))
+		self.Castbar:SetSparkMap(db.HealthBarSparkMap)
+		self.Castbar:SetStatusBarTexture(db.HealthBarTexture)
+		self.Castbar:SetTexCoord(unpack(db.HealthBarTexCoord))
 		self.Castbar.Backdrop:Hide()
 		self.Castbar.Text:ClearAllPoints()
-		self.Castbar.Text:SetPoint(unpack(config.CastBarNamePositionPlayer))
+		self.Castbar.Text:SetPoint(unpack(db.CastBarNamePositionPlayer))
 
 	else
 		if (not self:IsElementEnabled("Auras")) then
@@ -635,15 +498,15 @@ local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 			self:SetIgnoreParentAlpha(false)
 		end
 
-		self.Castbar:SetSize(unpack(config.CastBarSize))
+		self.Castbar:SetSize(unpack(db.CastBarSize))
 		self.Castbar:ClearAllPoints()
-		self.Castbar:SetPoint(unpack(config.CastBarPosition))
-		self.Castbar:SetSparkMap(config.CastBarSparkMap)
-		self.Castbar:SetStatusBarTexture(config.CastBarTexture)
-		self.Castbar:SetTexCoord(unpack(config.CastBarTexCoord))
+		self.Castbar:SetPoint(unpack(db.CastBarPosition))
+		self.Castbar:SetSparkMap(db.CastBarSparkMap)
+		self.Castbar:SetStatusBarTexture(db.CastBarTexture)
+		self.Castbar:SetTexCoord(unpack(db.CastBarTexCoord))
 		self.Castbar.Backdrop:Show()
 		self.Castbar.Text:ClearAllPoints()
-		self.Castbar.Text:SetPoint(unpack(config.CastBarNamePosition))
+		self.Castbar.Text:SetPoint(unpack(db.CastBarNamePosition))
 	end
 
 	Castbar_PostUpdate(self.Castbar)
@@ -663,7 +526,7 @@ local NamePlate_PostUpdate = function(self, event, unit, ...)
 	self.isSoftEnemy = ns.IsRetail and UnitIsUnit(unit, "softenemy")
 	self.isSoftInteract = ns.IsRetail and UnitIsUnit(unit, "softinteract")
 
-	local db = config
+	local db = ns.GetConfig("NamePlates")
 	local main, reverse = db.Orientation, db.OrientationReversed
 
 	if (self.isPRD) then
@@ -779,7 +642,7 @@ end
 
 local style = function(self, unit, id)
 
-	local db = config
+	local db = ns.GetConfig("NamePlates")
 
 	self.colors = ns.Colors
 
@@ -1237,9 +1100,10 @@ NamePlatesMod.HookNamePlates = function(self)
 
 	hooksecurefunc(NamePlateDriverFrame, "UpdateNamePlateOptions", function()
 		if (InCombatLockdown()) then return end
-		C_NamePlate.SetNamePlateFriendlySize(unpack(config.Size))
-		C_NamePlate.SetNamePlateEnemySize(unpack(config.Size))
-		C_NamePlate.SetNamePlateSelfSize(unpack(config.Size))
+		local db = ns.GetConfig("NamePlates")
+		C_NamePlate.SetNamePlateFriendlySize(unpack(db.Size))
+		C_NamePlate.SetNamePlateEnemySize(unpack(db.Size))
+		C_NamePlate.SetNamePlateSelfSize(unpack(db.Size))
 	end)
 
 	clearClutter(NamePlateDriverFrame)

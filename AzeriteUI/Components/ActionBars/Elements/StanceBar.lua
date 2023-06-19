@@ -87,50 +87,6 @@ StanceBarMod.GenerateDefaults = function(self)
 	return defaults
 end
 
-local config = {
-	ButtonSize = { 48, 48 },
-	ButtonHitRects =  { -10, -10, -10, -10 },
-	ButtonMaskTexture = GetMedia("actionbutton-mask-circular"),
-
-	ButtonBackdropPosition = { "CENTER", 0, 0 },
-	ButtonBackdropSize = { 100.721311475, 100.721311475 },
-	ButtonBackdropTexture = GetMedia("actionbutton-backdrop"),
-	ButtonBackdropColor = { .67, .67, .67, 1 },
-
-	ButtonIconPosition = { "CENTER", 0, 0 },
-	ButtonIconSize = { 33, 33 },
-
-	ButtonKeybindPosition = { "TOPLEFT", -5, -5 },
-	ButtonKeybindJustifyH = "CENTER",
-	ButtonKeybindJustifyV = "BOTTOM",
-	ButtonKeybindFont = GetFont(15, true),
-	ButtonKeybindColor = { Colors.quest.gray[1], Colors.quest.gray[2], Colors.quest.gray[3], .75 },
-
-	ButtonCountPosition = { "BOTTOMRIGHT", -3, 3 },
-	ButtonCountJustifyH = "CENTER",
-	ButtonCountJustifyV = "BOTTOM",
-	ButtonCountFont = GetFont(18, true),
-	ButtonCountColor = { Colors.normal[1], Colors.normal[2], Colors.normal[3], .85 },
-
-	ButtonCooldownCountPosition = { "CENTER", 1, 0 },
-	ButtonCooldownCountJustifyH = "CENTER",
-	ButtonCooldownCountJustifyV = "MIDDLE",
-	ButtonCooldownCountFont = GetFont(16, true),
-	ButtonCooldownCountColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .85 },
-
-	ButtonBorderPosition = { "CENTER", 0, 0 },
-	ButtonBorderSize = { 100.721311475, 100.721311475 },
-	ButtonBorderTexture = GetMedia("actionbutton-border"),
-	ButtonBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3], 1 },
-
-	ButtonSpellHighlightPosition = { "CENTER", 0, 0 },
-	ButtonSpellHighlightSize = { 100.721311475, 100.721311475 },
-	ButtonSpellHighlightTexture = GetMedia("actionbutton-spellhighlight"),
-
-	ButtonAutoCastableOffset = 6,
-	ButtonAutoCastShineOffset = -6
-}
-
 local onEnter = function(self)
 	self.icon.darken:SetAlpha(0)
 	if (self.OnEnter) then
@@ -147,19 +103,13 @@ end
 
 local style = function(button)
 
-	local db = config
+	local db = ns.GetConfig("StanceButton")
 
 	-- Clean up the button template
 	for _,i in next,{ --[["AutoCastShine",]] "Border", "Name", "NewActionTexture", "NormalTexture", "SpellHighlightAnim", "SpellHighlightTexture",
 		--[[ WoW10 ]] "CheckedTexture", "HighlightTexture", "BottomDivider", "RightDivider", "SlotArt", "SlotBackground" } do
 		if (button[i] and button[i].Stop) then button[i]:Stop() elseif button[i] then button[i]:SetParent(UIHider) end
 	end
-
-	-- Wrath overwrites the default texture
-	--if (ns.IsWrath) then
-	--	button.AutoCastable = _G[button:GetName().."AutoCastable"]
-	--	button.AutoCastShine = _G[button:GetName().."Shine"]
-	--end
 
 	local m = db.ButtonMaskTexture
 	local b = GetMedia("blank")
@@ -364,21 +314,18 @@ StanceBar.CreateButton = function(self, buttonConfig)
 end
 
 StanceBar.Enable = function(self)
-	if (self:IsEnabled()) then return end
 	ButtonBar.Enable(self)
 	self:Show()
 	self:Update()
 end
 
 StanceBar.Disable = function(self)
-	if (not self:IsEnabled()) then return end
 	ButtonBar.Disable(self)
 	self:Update()
 	self:Hide()
 end
 
 StanceBar.Update = function(self)
-	if (not self:IsEnabled()) then return end
 	if (InCombatLockdown()) then return end
 
 	self:UpdateButtonConfig()
@@ -479,6 +426,8 @@ end
 StanceBarMod.CreateBar = function(self)
 	if (self.bar) then return end
 
+	local config = ns.GetConfig("StanceButton")
+
 	local bar = setmetatable(ns.ButtonBar:Create("StanceBar", self.db.profile, ns.Prefix.."StanceBar"), StanceBar_MT)
 	bar.buttonWidth, bar.buttonHeight = unpack(config.ButtonSize)
 	bar.defaults = defaults.profile
@@ -509,9 +458,6 @@ StanceBarMod.CreateBar = function(self)
 		self:SetAttribute("visibility", newstate);
 		self:RunAttribute("UpdateVisibility");
 	]])
-
-	bar:UpdateButtons()
-	bar:UpdateVisibilityDriver()
 
 	self.bar = bar
 end

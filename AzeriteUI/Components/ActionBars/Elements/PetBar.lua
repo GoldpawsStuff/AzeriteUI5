@@ -38,7 +38,7 @@ local ButtonBar = ns.ButtonBar.prototype
 local PetBar = setmetatable({}, { __index = ButtonBar })
 local PetBar_MT = { __index = PetBar }
 
--- GLOBALS: InCombatLockdown
+-- GLOBALS: InCombatLockdown, hooksecurefunc
 -- GLOBALS: GetBindingKey, ClearOverrideBindings, SetOverrideBindingClick
 -- GLOBALS: RegisterStateDriver, UnregisterStateDriver
 -- GLOBALS: NUM_PET_ACTION_SLOTS
@@ -85,50 +85,6 @@ PetBarMod.GenerateDefaults = function(self)
 	return defaults
 end
 
-local config = {
-	ButtonSize = { 48, 48 },
-	ButtonHitRects =  { -10, -10, -10, -10 },
-	ButtonMaskTexture = GetMedia("actionbutton-mask-circular"),
-
-	ButtonBackdropPosition = { "CENTER", 0, 0 },
-	ButtonBackdropSize = { 100.721311475, 100.721311475 },
-	ButtonBackdropTexture = GetMedia("actionbutton-backdrop"),
-	ButtonBackdropColor = { .67, .67, .67, 1 },
-
-	ButtonIconPosition = { "CENTER", 0, 0 },
-	ButtonIconSize = { 33, 33 },
-
-	ButtonKeybindPosition = { "TOPLEFT", -5, -5 },
-	ButtonKeybindJustifyH = "CENTER",
-	ButtonKeybindJustifyV = "BOTTOM",
-	ButtonKeybindFont = GetFont(15, true),
-	ButtonKeybindColor = { Colors.quest.gray[1], Colors.quest.gray[2], Colors.quest.gray[3], .75 },
-
-	ButtonCountPosition = { "BOTTOMRIGHT", -3, 3 },
-	ButtonCountJustifyH = "CENTER",
-	ButtonCountJustifyV = "BOTTOM",
-	ButtonCountFont = GetFont(18, true),
-	ButtonCountColor = { Colors.normal[1], Colors.normal[2], Colors.normal[3], .85 },
-
-	ButtonCooldownCountPosition = { "CENTER", 1, 0 },
-	ButtonCooldownCountJustifyH = "CENTER",
-	ButtonCooldownCountJustifyV = "MIDDLE",
-	ButtonCooldownCountFont = GetFont(16, true),
-	ButtonCooldownCountColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .85 },
-
-	ButtonBorderPosition = { "CENTER", 0, 0 },
-	ButtonBorderSize = { 100.721311475, 100.721311475 },
-	ButtonBorderTexture = GetMedia("actionbutton-border"),
-	ButtonBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3], 1 },
-
-	ButtonSpellHighlightPosition = { "CENTER", 0, 0 },
-	ButtonSpellHighlightSize = { 100.721311475, 100.721311475 },
-	ButtonSpellHighlightTexture = GetMedia("actionbutton-spellhighlight"),
-
-	ButtonAutoCastableOffset = 6,
-	ButtonAutoCastShineOffset = -6
-}
-
 local onEnter = function(self)
 	self.icon.darken:SetAlpha(0)
 	if (self.OnEnter) then
@@ -145,7 +101,7 @@ end
 
 local style = function(button)
 
-	local db = config
+	local db = ns.GetConfig("PetActionButton")
 
 	-- Clean up the button template
 	for _,i in next,{ --[["AutoCastShine",]] "Border", "Name", "NewActionTexture", "NormalTexture", "SpellHighlightAnim", "SpellHighlightTexture",
@@ -362,19 +318,16 @@ PetBar.CreateButton = function(self, buttonConfig)
 end
 
 PetBar.Enable = function(self)
-	if (self:IsEnabled()) then return end
 	ButtonBar.Enable(self)
 	self:Update()
 end
 
 PetBar.Disable = function(self)
-	if (not self:IsEnabled()) then return end
 	ButtonBar.Disable(self)
 	self:Update()
 end
 
 PetBar.Update = function(self)
-	if (not self:IsEnabled()) then return end
 	if (InCombatLockdown()) then return end
 
 	self:UpdateButtonConfig()
@@ -476,6 +429,8 @@ end
 PetBarMod.CreateBar = function(self)
 	if (self.bar) then return end
 
+	local config = ns.GetConfig("PetActionButton")
+
 	local bar = setmetatable(ns.ButtonBar:Create("PetBar", self.db.profile, ns.Prefix.."PetBar"), PetBar_MT)
 	bar.buttonWidth, bar.buttonHeight = unpack(config.ButtonSize)
 	bar.defaults = defaults.profile
@@ -510,9 +465,6 @@ PetBarMod.CreateBar = function(self)
 	for id= 1,NUM_PET_ACTION_SLOTS do
 		style(bar:CreateButton())
 	end
-
-	bar:UpdateButtons()
-	bar:UpdateVisibilityDriver()
 
 	self.bar = bar
 end

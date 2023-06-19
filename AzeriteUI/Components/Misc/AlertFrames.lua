@@ -34,16 +34,9 @@ local ipairs = ipairs
 local table_remove = table.remove
 local unpack = unpack
 
-local config = {
-	AlertFramesPosition = { "TOP", UIParent, "TOP", 0, -40 },
-	AlertFramesSize = { 180, 20 },
-
-	AlertFramesPoint = "TOP",
-	AlertFramesRelativePoint = "BOTTOM",
-	AlertFramesOffsetY = -10
-}
-
 local GroupLootContainer_PostUpdate = function(self)
+	local config = ns.GetConfig("AlertFrames")
+
 	local lastIdx = nil
 	for i = 1, self.maxIndex do
 		local frame = self.rollFrames[i]
@@ -67,6 +60,8 @@ local GroupLootContainer_PostUpdate = function(self)
 end
 
 local AlertSubSystem_AdjustAnchors = function(self, relativeAlert)
+	local config = ns.GetConfig("AlertFrames")
+
 	local alertFrame = self.alertFrame
 	if (alertFrame and alertFrame:IsShown()) then
 		alertFrame:ClearAllPoints()
@@ -77,6 +72,8 @@ local AlertSubSystem_AdjustAnchors = function(self, relativeAlert)
 end
 
 local AlertSubSystem_AdjustAnchorsNonAlert = function(self, relativeAlert)
+	local config = ns.GetConfig("AlertFrames")
+
 	local anchorFrame = self.anchorFrame
 	if (anchorFrame and anchorFrame:IsShown()) then
 		anchorFrame:ClearAllPoints()
@@ -87,6 +84,8 @@ local AlertSubSystem_AdjustAnchorsNonAlert = function(self, relativeAlert)
 end
 
 local AlertSubSystem_AdjustQueuedAnchors = function(self, relativeAlert)
+	local config = ns.GetConfig("AlertFrames")
+
 	for alertFrame in self.alertFramePool:EnumerateActive() do
 		alertFrame:ClearAllPoints()
 		alertFrame:SetPoint(config.AlertFramesPoint, relativeAlert, config.AlertFramesRelativePoint, 0, config.AlertFramesOffsetY)
@@ -106,6 +105,8 @@ local AlertSubSystem_AdjustPosition = function(alertFrame, subSystem)
 end
 
 local AlertFrame_PostUpdateAnchors = function()
+	local config = ns.GetConfig("AlertFrames")
+
 	local AlertFrameHolder = _G[ns.Prefix.."AlertFrameHolder"]
 
 	AlertFrameHolder:ClearAllPoints()
@@ -123,6 +124,7 @@ local AlertFrame_PostUpdateAnchors = function()
 end
 
 AlertFrames.OnInitialize = function(self)
+	local config = ns.GetConfig("AlertFrames")
 
 	local AlertFrameHolder = CreateFrame("Frame", ns.Prefix.."AlertFrameHolder", UIParent)
 	AlertFrameHolder:SetPoint(unpack(config.AlertFramesPosition))

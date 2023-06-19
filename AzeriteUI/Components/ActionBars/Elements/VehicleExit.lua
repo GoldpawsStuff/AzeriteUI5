@@ -27,31 +27,20 @@ local Addon, ns = ...
 
 local VehicleExit = ns:NewModule("VehicleExit", "LibMoreEvents-1.0", "AceHook-3.0")
 
+-- GLOBALS: GameTooltip, GameTooltip_SetDefaultAnchor, Minimap
+-- GLOBALS: CreateFrame, InCombatLockdown, RegisterStateDriver
+-- GLOBALS: UnitOnTaxi, IsMounted, IsPossessBarVisible, PetCanBeDismissed, PetDismiss, TaxiRequestEarlyLanding
+-- GLOBALS: TAXI_CANCEL, TAXI_CANCEL_DESCRIPTION
+-- GLOBALS: PET_DISMISS, NEWBIE_TOOLTIP_UNIT_PET_DISMISS
+-- GLOBALS: BINDING_NAME_VEHICLEEXIT
+
 -- Lua API
-local math_cos = math.cos
-local math_floor = math.floor
-local math_sin = math.sin
 local unpack = unpack
 
 -- Addon API
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
-
-local deg2rad = math.pi / 180
-
-local config = {
-	VehicleExitButtonPosition = function()
-		-- Trickery to work around the fact this cannot be parented to the Minimap,
-		-- as that would cause the Minimap to be become restricted from its secure children.
-		local m,w,h = ns.IsRetail and .66 or .79, ns.IsRetail and 198 or 140, ns.IsRetail and 198 or 140
-		return { "CENTER", Minimap, "CENTER", -math_floor(math_cos(45*deg2rad) * w * m), math_floor(math_sin(45*deg2rad) * h * m) }
-	end,
-	VehicleExitButtonSize = { 32, 32 },
-	VehicleExitButtonTexturePosition = { "CENTER", 0, 0 },
-	VehicleExitButtonTextureSize = { 80, 80 },
-	VehicleExitButtonTexture = GetMedia("icon_exit_flight")
-}
 
 local ExitButton_OnEnter = function(self)
 	if (GameTooltip:IsForbidden()) then return end
@@ -93,7 +82,8 @@ VehicleExit.UpdateScale = function(self)
 		return
 	end
 	if (self.Button) then
-		local point, anchor, rpoint, x, y = unpack(config.VehicleExitButtonPosition())
+		local config = ns.GetConfig("VehicleExitButton")
+		local point, anchor, rpoint, x, y = unpack(config.VehicleExitButtonPosition)
 
 		if (ns.IsRetail) then
 			local scale = Minimap:GetScale()
@@ -131,10 +121,12 @@ end
 
 VehicleExit.OnEnable = function(self)
 
+	local config = ns.GetConfig("VehicleExitButton")
+
 	local button = CreateFrame("CheckButton", ns.Prefix.."VehicleExitButton", UIParent, "SecureActionButtonTemplate")
 	button:SetFrameStrata("MEDIUM")
 	button:SetFrameLevel(100)
-	button:SetPoint(unpack(config.VehicleExitButtonPosition()))
+	button:SetPoint(unpack(config.VehicleExitButtonPosition))
 	button:SetSize(unpack(config.VehicleExitButtonSize))
 	button:SetScript("OnEnter", ExitButton_OnEnter)
 	button:SetScript("OnLeave", ExitButton_OnLeave)

@@ -214,49 +214,6 @@ ActionBarMod.GenerateDefaults = function(self)
 	return defaults
 end
 
-local config = {
-
-	ButtonSize = { 64, 64 },
-	ButtonHitRects =  { -10, -10, -10, -10 },
-	ButtonMaskTexture = GetMedia("actionbutton-mask-circular"),
-
-	ButtonBackdropPosition = { "CENTER", 0, 0 },
-	ButtonBackdropSize = { 134.295081967, 134.295081967 },
-	ButtonBackdropTexture = GetMedia("actionbutton-backdrop"),
-	ButtonBackdropColor = { .67, .67, .67, 1 },
-
-	ButtonIconPosition = { "CENTER", 0, 0 },
-	ButtonIconSize = { 44, 44 },
-
-	ButtonKeybindPosition = { "TOPLEFT", -5, -5 },
-	ButtonKeybindJustifyH = "CENTER",
-	ButtonKeybindJustifyV = "BOTTOM",
-	ButtonKeybindFont = GetFont(15, true),
-	ButtonKeybindColor = { Colors.quest.gray[1], Colors.quest.gray[2], Colors.quest.gray[3], .75 },
-
-	ButtonCountPosition = { "BOTTOMRIGHT", -3, 3 },
-	ButtonCountJustifyH = "CENTER",
-	ButtonCountJustifyV = "BOTTOM",
-	ButtonCountFont = GetFont(18, true),
-	ButtonCountColor = { Colors.normal[1], Colors.normal[2], Colors.normal[3], .85 },
-
-	ButtonCooldownCountPosition = { "CENTER", 1, 0 },
-	ButtonCooldownCountJustifyH = "CENTER",
-	ButtonCooldownCountJustifyV = "MIDDLE",
-	ButtonCooldownCountFont = GetFont(16, true),
-	ButtonCooldownCountColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .85 },
-
-	ButtonBorderPosition = { "CENTER", 0, 0 },
-	ButtonBorderSize = { 134.295081967, 134.295081967 },
-	ButtonBorderTexture = GetMedia("actionbutton-border"),
-	ButtonBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3], 1 },
-
-	ButtonSpellHighlightPosition = { "CENTER", 0, 0 },
-	ButtonSpellHighlightSize = { 134.295081967, 134.295081967 },
-	ButtonSpellHighlightTexture = GetMedia("actionbutton-spellhighlight"),
-
-}
-
 ---------------------------------------------
 -- LAB Overrides & MaxDps Integration
 ---------------------------------------------
@@ -349,7 +306,7 @@ end
 
 local style = function(button)
 
-	local db = config
+	local db = ns.GetConfig("ActionButton")
 	local usingMaxDps = IsAddOnEnabled("MaxDps")
 
 	-- Clean up the button template
@@ -448,7 +405,7 @@ local style = function(button)
 	cooldown:SetHideCountdownNumbers(true)
 
 	button.UpdateCharge = function(self)
-		local m = config.ButtonMaskTexture
+		local m = db.ButtonMaskTexture
 		local b = GetMedia("blank")
 		local cooldown = self.chargeCooldown
 		if (not cooldown) then return end
@@ -752,7 +709,7 @@ ActionBarMod.UpdateChargeCooldowns = function(self)
 		self.chargeCooldowns = {}
 	end
 
-	local m = config.ButtonMaskTexture
+	local m = ns.GetConfig("ActionButton").ButtonMaskTexture
 	local b = GetMedia("blank")
 
 	local i = 1
@@ -978,7 +935,7 @@ ActionBarMod.OnButtonEvent = function(self, event, ...)
 				button.icon:RemoveMaskTexture(button.icon:GetMaskTexture(i))
 				i = i + 1
 			end
-			button.icon:SetMask(config.ButtonMaskTexture)
+			button.icon:SetMask(ns.GetConfig("ActionButton").ButtonMaskTexture)
 
 			local spellID = button:GetSpellId()
 			if (spellID and IsSpellOverlayed(spellID)) then

@@ -328,57 +328,6 @@ local Skins = {
 	}
 }
 
--- Just a temporary measure,
--- will eventually move all into the skins.
-local Unskinned = {
-
-	CompassInset = 14,
-	CompassFont = GetFont(16,true),
-	CompassColor = { Colors.normal[1], Colors.normal[2], Colors.normal[3], .75 },
-	CompassNorthTag = "N",
-
-	CoordinateColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .75 },
-	CoordinateFont = GetFont(12, true),
-	CoordinatePlace = { "BOTTOM", 3, 23 },
-
-	ClockPosition = { "BOTTOMRIGHT", -226, -8 },
-	ClockFont = GetFont(15,true),
-	ClockColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3] },
-
-	-- About 8px to the left of the clock.
-	ZoneTextPosition = { "BOTTOMRIGHT", -(226 + 60), -8 }, -- adjust this
-	ZoneTextPositionHalfClock = { "BOTTOMRIGHT", -(226 + 60 + 20), -8 }, -- adjust this
-	ZoneTextFont = GetFont(15,true),
-	ZoneTextAlpha = .85,
-
-	-- About 6px Above the clock, slightly indented towards the left.
-	FrameRatePosition = { "BOTTOMRIGHT", -(226 + 6), -8 + 15 + 6 },
-	FrameRateFont = GetFont(12,true),
-	FrameRateColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .5 },
-
-	-- To the left of the framerate, right above the zone text.
-	LatencyPosition = { "BOTTOMRIGHT", -(226 + 60), -8 + 15 + 6 }, -- adjust this
-	LatencyPositionHalfClock = { "BOTTOMRIGHT", -(226 + 60 + 20), -8 + 15 + 6 }, -- adjust this
-	LatencyFont = GetFont(12,true),
-	LatencyColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .5 },
-
-	MailPosition = { "BOTTOM", 0, 30 },
-	MailJustifyH = "CENTER",
-	MailJustifyV = "BOTTOM",
-	MailFont = GetFont(15, true),
-	MailColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .85 },
-
-	-- Dungeon Eye
-	EyePosition = { "CENTER", math.cos((225 / mapScale)*(math.pi/180)) * ((280 / mapScale)/2 + 10), math.sin((225 / mapScale)*(math.pi/180)) * ((280 / mapScale)/2 + 10) },
-	EyeSize = { 64, 64 },
-	EyeTexture = GetMedia("group-finder-eye-green"),
-	EyeTextureColor = { .90, .95, 1 },
-	EyeTextureSize = { 64, 64 },
-	EyeGroupSizePosition = { "BOTTOMRIGHT", 0, 0 },
-	EyeGroupSizeFont = GetFont(15,true),
-	EyeGroupStatusFramePosition = { "TOPRIGHT", QueueStatusMinimapButton, "BOTTOMLEFT", 0, 0 },
-}
-
 -- Element Callbacks
 --------------------------------------------
 local getTimeStrings = function(h, m, suffix, useHalfClock, abbreviateSuffix)
@@ -555,7 +504,9 @@ end
 MinimapMod.UpdateClock = function(self)
 	local time = self.time
 	if (not time) then return end
-	local db = Unskinned
+
+	local db = ns.GetConfig("Minimap")
+
 	if (self.db.profile.useServerTime) then
 		if (self.db.profile.useHalfClock) then
 			time:SetFormattedText("%.0f:%02.0f |cff888888%s|r", GetServerTime(true))
@@ -961,7 +912,7 @@ end
 --  including the position based visibility.
 MinimapMod.CreateCustomElements = function(self)
 
-	local db = Unskinned
+	local db = ns.GetConfig("Minimap")
 
 	local frame = CreateFrame("Frame", nil, Minimap)
 	frame:SetFrameLevel(Minimap:GetFrameLevel())

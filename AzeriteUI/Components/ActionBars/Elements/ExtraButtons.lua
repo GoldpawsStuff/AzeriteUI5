@@ -39,43 +39,6 @@ local GetMedia = ns.API.GetMedia
 local RegisterCooldown = ns.Widgets.RegisterCooldown
 local noop = ns.Noop
 
-local config = {
-
-	ExtraButtonSize = { 64, 64 },
-	ExtraButtonMask = GetMedia("actionbutton-mask-circular"),
-
-	ExtraButtonIconPosition = { "CENTER", 0, 0 },
-	ExtraButtonIconSize = { 44, 44 },
-
-	ExtraButtonCooldownPosition = { "CENTER", 0, 0 },
-	ExtraButtonCooldownSize = { 44, 44 },
-	ExtraButtonCooldownColor = { 0, 0, 0, .75 },
-
-	ExtraButtonCooldownCountPosition = { "CENTER", 0, 0 },
-	ExtraButtonCooldownCountJustifyH = "CENTER",
-	ExtraButtonCooldownCountJustifyV = "MIDDLE",
-	ExtraButtonCooldownCountFont = GetFont(22, true),
-	ExtraButtonCooldownCountColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .85 },
-
-	ExtraButtonBorderPosition = { "CENTER", 0, 0 },
-	ExtraButtonBorderSize = { 134.295081967, 134.295081967 },
-	ExtraButtonBorderTexture = GetMedia("actionbutton-border"),
-	ExtraButtonBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3], 1 },
-
-	ExtraButtonBindPosition = { "TOPLEFT", -10, -5 },
-	ExtraButtonBindJustifyH = "CENTER",
-	ExtraButtonBindJustifyV = "BOTTOM",
-	ExtraButtonBindFont = GetFont(15, true),
-	ExtraButtonBindColor = { Colors.quest.gray[1], Colors.quest.gray[2], Colors.quest.gray[3], .75 },
-
-	ExtraButtonCountPosition = { "BOTTOMRIGHT", -3, 3 },
-	ExtraButtonCountJustifyH = "CENTER",
-	ExtraButtonCountJustifyV = "BOTTOM",
-	ExtraButtonCountFont = GetFont(18, true),
-	ExtraButtonCountColor = { Colors.normal[1], Colors.normal[2], Colors.normal[3], .85 }
-
-}
-
 ExtraButtons.UpdateButton = function(self, button)
 
 	if (button.styled) then return end
@@ -92,7 +55,7 @@ ExtraButtons.UpdateButton = function(self, button)
 		end
 	end
 
-	local db = config
+	local db = ns.GetConfig("ExtraActionButton")
 
 	local m = db.ExtraButtonMask
 	local b = GetMedia("blank")

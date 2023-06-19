@@ -613,6 +613,8 @@ Auras.UpdateSettings = function(self)
 
 	self.frame:SetSize(config.wrapAfter * 36 + (config.wrapAfter - 1) * config.paddingX, (36 + config.paddingY) * math_ceil(BUFF_MAX_DISPLAY / config.wrapAfter))
 
+	self.buffs:ClearAllPoints()
+	self.buffs:SetPoint(config.anchorPoint)
 	self.buffs:SetAttribute("point", config.anchorPoint)
 	self.buffs:SetAttribute("xOffset", (36 + config.paddingX) * (config.growthX == "LEFT" and -1 or 1))
 	self.buffs:SetAttribute("wrapAfter", config.wrapAfter)

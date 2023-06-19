@@ -33,33 +33,11 @@ local Timers = ns:NewModule("Timers", "LibMoreEvents-1.0", "AceTimer-3.0", "AceH
 local _G = _G
 local unpack = unpack
 
--- Addon API
-local Colors = ns.Colors
-local GetFont = ns.API.GetFont
-local GetMedia = ns.API.GetMedia
-
 -- Cache of handled elements
 local Handled = {}
 
-local config = {
-	MirrorTimerPosition = { "TOP", UIParent, "TOP", 0, -370 },
-
-	MirrorTimerBarPosition = { "CENTER", 0, 0 },
-	MirrorTimerBarSize = { 111, 12 },
-	MirrorTimerBarTexture = GetMedia("cast_bar"),
-	MirrorTimerBarColor = { Colors.quest.red[1], Colors.quest.red[2], Colors.quest.red[3] },
-
-	MirrorTimerLabelPosition = { "CENTER", 0, 0 },
-	MirrorTimerLabelFont = GetFont(14, true),
-	MirrorTimerLabelColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .7 },
-
-	MirrorTimerBackdropPosition = { "CENTER", 1, -2 },
-	MirrorTimerBackdropSize = { 193,93 },
-	MirrorTimerBackdropTexture = GetMedia("cast_back"),
-	MirrorTimerBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] }
-}
-
 Timers.UpdateMirrorTimers = function(self)
+	local config = ns.GetConfig("MirrorTimers")
 
 	for i = 1, MIRRORTIMER_NUMTIMERS do
 		local timer  = _G["MirrorTimer"..i]

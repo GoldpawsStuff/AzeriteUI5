@@ -54,64 +54,6 @@ FocusFrameMod.GenerateDefaults = function(self)
 	return defaults
 end
 
-local barSparkMap = {
-	top = {
-		{ keyPercent =   0/128, offset = -16/32 },
-		{ keyPercent =   4/128, offset = -16/32 },
-		{ keyPercent =  10/128, offset =   0/32 },
-		{ keyPercent = 119/128, offset =   0/32 },
-		{ keyPercent = 126/128, offset = -16/32 },
-		{ keyPercent = 128/128, offset = -16/32 }
-	},
-	bottom = {
-		{ keyPercent =   0/128, offset = -16/32 },
-		{ keyPercent =   4/128, offset = -16/32 },
-		{ keyPercent =  10/128, offset =   0/32 },
-		{ keyPercent = 119/128, offset =   0/32 },
-		{ keyPercent = 126/128, offset = -16/32 },
-		{ keyPercent = 128/128, offset = -16/32 }
-	}
-}
-
-local config = {
-
-	Size = { 136, 47 },
-	Position = { "RIGHT", UIParent, "BOTTOMLEFT", 332-136, 270-23 },
-	HitRectInsets = { 0, 0, 0, 0 },
-
-	HealthBarPosition = { "CENTER", 0, 0 },
-	HealthBarSize = { 112, 11 },
-	HealthBarTexture = GetMedia("cast_bar"),
-	HealthBarOrientation = "RIGHT",
-	HealthBarSparkMap = barSparkMap,
-	HealthAbsorbColor = { 1, 1, 1, .5 },
-	HealthCastOverlayColor = { 1, 1, 1, .5 },
-
-	HealthBackdropPosition = { "CENTER", 1, -2 },
-	HealthBackdropSize = { 193,93 },
-	HealthBackdropTexture = GetMedia("cast_back"),
-	HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
-
-	HealthValuePosition = { "CENTER", 0, 0 },
-	HealthValueJustifyH = "CENTER",
-	HealthValueJustifyV = "MIDDLE",
-	HealthValueFont = GetFont(14, true),
-	HealthValueColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .75 },
-
-	NamePosition = { "BOTTOMLEFT", 12, 46 },
-	NameJustifyH = "LEFT",
-	NameJustifyV = "TOP",
-	NameFont = GetFont(14, true),
-	NameColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75 },
-
-	TargetHighlightPosition = { "CENTER", 1, -2 },
-	TargetHighlightSize = { 193,93 },
-	TargetHighlightTexture = GetMedia("cast_back_outline"),
-	TargetHighlightTargetColor = { 255/255, 239/255, 169/255, 1 },
-	TargetHighlightFocusColor = { 144/255, 195/255, 255/255, 1 },
-
-}
-
 -- Utility Functions
 --------------------------------------------
 -- Simplify the tagging process a little.
@@ -303,7 +245,7 @@ end
 
 local style = function(self, unit)
 
-	local db = config
+	local db = ns.GetConfig("FocusFrame")
 
 	self:SetSize(unpack(db.Size))
 	self:SetHitRectInsets(unpack(db.HitRectInsets))
