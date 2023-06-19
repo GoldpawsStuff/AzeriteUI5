@@ -26,36 +26,42 @@
 local Addon, ns = ...
 local Experimental = ns:NewModule("Experimental", "LibMoreEvents-1.0", "AceConsole-3.0")
 
---Experimental.SwitchUI = function(self, input)
---	if (not self.IsDevelopment) then return end
---	if (not self._ui_list) then
---		-- Create a list of currently installed UIs.
---		self._ui_list = {}
---		for ui,cmds in next,{
---			["AzeriteUI"] = { "azerite", "azui" },
---			["DiabolicUI"] = { "diabolic", "diablo", "dui" }
---		} do
---			-- Only include existing UIs that can be switched to.
---			if (ui ~= Addon) and (ns.API.IsAddOnAvailable(ui)) then
---				for _,cmd in next,cmds do
---					self._ui_list[cmd] = ui
---				end
---			end
---		end
---	end
---	local arg = self:GetArgs(string_lower(input))
---	local target = arg and self._ui_list[arg]
---	if (target) then
---		EnableAddOn(target) -- Enable the desired UI
---		for cmd,ui in next,self._ui_list do
---			if (ui and ui ~= target) then -- Don't disable target UI
---				DisableAddOn(ui) -- Disable all other UIs
---			end
---		end
---		DisableAddOn(Addon) -- Disable the current UI
---		ReloadUI() -- Reload interface to the selected UI
---	end
---end
+-- GLOBALS: EnableAddOn, DisableAddOn, ReloadUI, UIParent
+
+-- Lua API
+local next = next
+local string_lower = string.lower
+
+Experimental.SwitchUI = function(self, input)
+	if (not self.IsDevelopment) then return end
+	if (not self._ui_list) then
+		-- Create a list of currently installed UIs.
+		self._ui_list = {}
+		for ui,cmds in next,{
+			["AzeriteUI"] = { "azerite", "az" },
+			["DiabolicUI"] = { "diabolic", "diablo" }
+		} do
+			-- Only include existing UIs that can be switched to.
+			if (ui ~= Addon) and (ns.API.IsAddOnAvailable(ui)) then
+				for _,cmd in next,cmds do
+					self._ui_list[cmd] = ui
+				end
+			end
+		end
+	end
+	local arg = self:GetArgs(string_lower(input))
+	local target = arg and self._ui_list[arg]
+	if (target) then
+		EnableAddOn(target) -- Enable the desired UI
+		for cmd,ui in next,self._ui_list do
+			if (ui and ui ~= target) then -- Don't disable target UI
+				DisableAddOn(ui) -- Disable all other UIs
+			end
+		end
+		DisableAddOn(Addon) -- Disable the current UI
+		ReloadUI() -- Reload interface to the selected UI
+	end
+end
 
 Experimental.ToggleBlips = function(self)
 	local show = not self.Blips:IsShown()
@@ -88,10 +94,10 @@ Experimental.SpawnBlips = function(self)
 
 	self.Blips = f
 	self.BlibsBackdrop = g
-
-	self:RegisterChatCommand("toggleblips", "ToggleBlips")
 end
 
 Experimental.OnInitialize = function(self)
 	self:SpawnBlips()
+	self:RegisterChatCommand("toggleblips", "ToggleBlips")
+	self:RegisterChatCommand("go", "SwitchUI")
 end
