@@ -208,16 +208,19 @@ ActionBar.CreateButton = function(self, buttonConfig)
 end
 
 ActionBar.Enable = function(self)
+	if (self:IsEnabled()) then return end
 	ButtonBar.Enable(self)
 	self:Update()
 end
 
 ActionBar.Disable = function(self)
+	if (not self:IsEnabled()) then return end
 	ButtonBar.Disable(self)
 	self:Update()
 end
 
 ActionBar.Update = function(self)
+	if (not self:IsEnabled()) then return end
 	if (InCombatLockdown()) then return end
 
 	self:UpdateButtonConfig()
@@ -230,6 +233,7 @@ ActionBar.Update = function(self)
 end
 
 ActionBar.UpdateFading = function(self)
+	if (not self:IsEnabled()) then return end
 
 	local config, buttons = self.config, self.buttons
 
@@ -298,6 +302,8 @@ ActionBar.UpdateBindings = function(self)
 	if (not next(self.buttons)) then return end
 
 	ClearOverrideBindings(self)
+
+	if (not self:IsEnabled()) then return end
 
 	for id,button in pairs(self.buttons) do
 		local bindingAction = button.keyBoundTarget

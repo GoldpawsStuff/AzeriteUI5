@@ -364,18 +364,21 @@ StanceBar.CreateButton = function(self, buttonConfig)
 end
 
 StanceBar.Enable = function(self)
+	if (self:IsEnabled()) then return end
 	ButtonBar.Enable(self)
 	self:Show()
 	self:Update()
 end
 
 StanceBar.Disable = function(self)
+	if (not self:IsEnabled()) then return end
 	ButtonBar.Disable(self)
 	self:Update()
 	self:Hide()
 end
 
 StanceBar.Update = function(self)
+	if (not self:IsEnabled()) then return end
 	if (InCombatLockdown()) then return end
 
 	self:UpdateButtonConfig()
@@ -506,6 +509,9 @@ StanceBarMod.CreateBar = function(self)
 		self:SetAttribute("visibility", newstate);
 		self:RunAttribute("UpdateVisibility");
 	]])
+
+	bar:UpdateButtons()
+	bar:UpdateVisibilityDriver()
 
 	self.bar = bar
 end

@@ -362,16 +362,19 @@ PetBar.CreateButton = function(self, buttonConfig)
 end
 
 PetBar.Enable = function(self)
+	if (self:IsEnabled()) then return end
 	ButtonBar.Enable(self)
 	self:Update()
 end
 
 PetBar.Disable = function(self)
+	if (not self:IsEnabled()) then return end
 	ButtonBar.Disable(self)
 	self:Update()
 end
 
 PetBar.Update = function(self)
+	if (not self:IsEnabled()) then return end
 	if (InCombatLockdown()) then return end
 
 	self:UpdateButtonConfig()
@@ -507,6 +510,9 @@ PetBarMod.CreateBar = function(self)
 	for id= 1,NUM_PET_ACTION_SLOTS do
 		style(bar:CreateButton())
 	end
+
+	bar:UpdateButtons()
+	bar:UpdateVisibilityDriver()
 
 	self.bar = bar
 end
