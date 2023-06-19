@@ -35,20 +35,12 @@ local unpack = unpack
 local Colors = ns.Colors
 local GetMedia = ns.API.GetMedia
 
-if (ns.IsRetail) then
-	ns.RegisterConfig("VehicleExitButton", {
-		VehicleExitButtonPosition = {  "CENTER", Minimap, "CENTER", -((45/180 * math_pi) * 130.68), ((45/180 * math_pi) * 130.68) },
-		VehicleExitButtonSize = { 32, 32 },
-		VehicleExitButtonTexturePosition = { "CENTER", 0, 0 },
-		VehicleExitButtonTextureSize = { 80, 80 },
-		VehicleExitButtonTexture = GetMedia("icon_exit_flight")
-	})
-else
-	ns.RegisterConfig("VehicleExitButton", {
-		VehicleExitButtonPosition = {  "CENTER", Minimap, "CENTER", -((45/180 * math_pi) * 110.6), ((45/180 * math_pi) * 110.6) },
-		VehicleExitButtonSize = { 32, 32 },
-		VehicleExitButtonTexturePosition = { "CENTER", 0, 0 },
-		VehicleExitButtonTextureSize = { 80, 80 },
-		VehicleExitButtonTexture = GetMedia("icon_exit_flight")
-	})
-end
+local r = ns.IsClassic and 110 or ns.IsWrath and 100 or 130
+
+ns.RegisterConfig("VehicleExitButton", {
+	VehicleExitButtonPosition = {  "CENTER", Minimap, "CENTER", -((45/180 * math_pi) * r), ((45/180 * math_pi) * r) },
+	VehicleExitButtonSize = { 32, 32 },
+	VehicleExitButtonTexturePosition = { "CENTER", 0, 0 },
+	VehicleExitButtonTextureSize = { 80, 80 },
+	VehicleExitButtonTexture = GetMedia("icon_exit_flight")
+})
