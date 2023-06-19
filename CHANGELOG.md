@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-06-19
+## [5.1.71-Release] 2023-06-19
 ### Fixed
 - Fixed an issues where buffs in the floating full buff display always would be glued to the top right corner of our container frame, regardless of anchor point chosen.
 - Fixed the position of the vehicle exit button in Wrath.
