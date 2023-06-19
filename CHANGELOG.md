@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.1.70-Release] 2023-06-19
+## [Unreleased] 2023-06-19
+### Fixed
+- Fixed an issues where buffs in the floating full buff display always would be glued to the top right corner of our container frame, regardless of anchor point chosen.
+
+## [5.1.70-Release] 2023-06-18
 ### Fixed
 - Fixed an issue where the actionbars would throw an anchor error upon changing the game's UI scale.
 - Fixed some inconsistencies with the vehicle exit button in Classic and Wrath.
