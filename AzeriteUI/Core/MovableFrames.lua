@@ -145,15 +145,15 @@ local getPosition = function(frame)
 	--[[
 	                  1/3             2/3
 	        _______________________________________ uiWidth, uiHeight
-	        |          |               |          |
+	        | TOPLEFT  |     TOP       | TOPRIGHT |
 	        |__________|_______________|__________| 3/4
-	        |       |                     |       |
-	        |       |                     |       |
+	        |      1/4      CENTER       3/4      |
+	        | LEFT  |                     | RIGHT |
 	        |       |_________1/3_________|       |
-	        |_______|                     |_______| 1/4
-	        |       |                     |       |
-	        |_______|_____________________|_______|
-		0,0        1/4                   3/4
+	        |_______|__                 __|_______| 1/4
+	        | BOTTOM   |    BOTTOM     |   BOTTOM |
+	        |_LEFT_____|_______________|____RIGHT_|
+		0,0
 
 	--]]
 
@@ -207,12 +207,27 @@ local getPosition = function(frame)
 			if (y > uiHeight * 1/3) then
 				return "CENTER", (x - uiWidth/2) / frameScale, (y - uiHeight/2) / frameScale
 
-			-- Bottom Center
+			-- Bottom Center Segment
 			else
-				return "BOTTOM", (x - uiWidth/2) / frameScale, bottom / frameScale
+
+				-- Bottom Left
+				if (x < uiWidth * 1/3) then
+					return "BOTTOMLEFT", left / frameScale, bottom / frameScale
+
+				-- Bottom Right
+				elseif (x > uiWidth * 2/3) then
+					return "BOTTOMRIGHT", right / frameScale, bottom / frameScale
+
+				-- Bottom Center
+				else
+					return "BOTTOM", (x - uiWidth/2) / frameScale, bottom / frameScale
+				end
 			end
+
 		end
+
 	end
+
 end
 
 -- Create frame backdrop
