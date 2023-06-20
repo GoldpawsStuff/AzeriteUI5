@@ -27,7 +27,6 @@ local Addon, ns = ...
 
 -- Lua API
 local string_find = string.find
-local string_gsub = string.gsub
 local string_match = string.match
 local string_split = string.split
 local tonumber = tonumber
@@ -69,9 +68,6 @@ ns.Private.IsClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
 ns.Private.IsTBC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 ns.Private.IsWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
 ns.Private.WoW10 = version >= 100000
-
--- They're adding stuff from the 10.x client into Wrath 3.4.2
-ns.Private.IsWrathModern = (ns.IsWrath and ((ns.ClientMinor > 4) or (ns.ClientMinor == 4 and ns.ClientMicro >= 2)))
 
 -- Prefix for frame names
 ------------------------------------------------------
