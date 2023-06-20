@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased] 2023-06-20
 ### Changed
 - Adjusted the screen segments used by our movable frames to feel more logical.
+- The user interface will no longer load when another directly conflicting user interface is discovered.
 
 ## [5.1.71-Release] 2023-06-19
 ### Fixed
