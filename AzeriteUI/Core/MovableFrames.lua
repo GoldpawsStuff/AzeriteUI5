@@ -821,7 +821,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 			hidden = function(info)
 				return MovableFramesManager.incombat or EMP:DoesDefaultLayoutExist()
 			end,
-			name = L["Click the button below to create an EditMode preset named 'Azerite'."]
+			name = string_format(L["Click the button below to create an EditMode preset named '%s'."], ns.Prefix)
 		}
 		options.args.editmodeCreateButton = {
 			type = "execute",

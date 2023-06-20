@@ -28,6 +28,7 @@ local Addon, ns = ...
 -- Lua API
 local string_find = string.find
 local string_gsub = string.gsub
+local string_match = string.match
 local string_split = string.split
 local tonumber = tonumber
 
@@ -74,7 +75,7 @@ ns.Private.IsWrathModern = (ns.IsWrath and ((ns.ClientMinor > 4) or (ns.ClientMi
 
 -- Prefix for frame names
 ------------------------------------------------------
-ns.Private.Prefix = string_gsub(Addon, "UI(%d*)", "")
+ns.Private.Prefix = string_match(Addon, "^(.*)UI") or Addon
 
 -- Player constants
 ------------------------------------------------------

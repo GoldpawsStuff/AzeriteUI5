@@ -131,9 +131,9 @@ local azeriteSystems = {
 }
 
 local layouts = {
-	defaultLayout = "Azerite",
+	defaultLayout = ns.Prefix,
 	{
-		layoutName = "Azerite",
+		layoutName = ns.Prefix,
 		layoutType = Enum.EditModeLayoutType.Account,
 		systems = azeriteSystems
 	}

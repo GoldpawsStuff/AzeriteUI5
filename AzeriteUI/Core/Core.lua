@@ -46,7 +46,7 @@ local unpack = unpack
 
 local defaults = {
 	char = {
-		profile = "Azerite",
+		profile = ns.Prefix,
 		showStartupMessage = true
 	},
 	global = {
@@ -138,7 +138,7 @@ ns.GetProfiles = function(self)
 end
 
 ns.GetDefaultProfile = function(self)
-	return "Azerite"
+	return ns.Prefix
 end
 
 ns.RefreshConfig = function(self, event, ...)

@@ -67,7 +67,7 @@ for _,fontType in next,{ "Normal", "Chat", "Number" } do
 		for fontSize = 1,34 do
 			local namedType = fontType == "Normal" and "" or fontType
 			local namedStyle = fontStyle == "None" and "" or fontStyle
-			local fontObject = _G["AzeriteFont"..namedType..fontSize..namedStyle]
+			local fontObject = _G[ns.Prefix.."Font"..namedType..fontSize..namedStyle]
 			if (fontObject) then
 				Fonts[fontType][fontStyle][fontSize] = fontObject
 				AllFonts[fontObject] = true
