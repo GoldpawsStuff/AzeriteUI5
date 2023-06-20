@@ -140,35 +140,77 @@ local getPosition = function(frame)
 	right = right - uiRight
 	top = top - uiTop
 
-	-- How many sections to divide the screen into.
-	local vertical = 1/3
-	local horizontal = 1/4
-
 	-- Figure out the point within the given coordinate space,
 	-- return values converted to the frame's own scale.
-	if (y < uiHeight * vertical) then
-		if (x < uiWidth * horizontal) then
-			return "BOTTOMLEFT", left / frameScale, bottom / frameScale
-		elseif (x > uiWidth * (1 - horizontal)) then
-			return "BOTTOMRIGHT", right / frameScale, bottom / frameScale
-		else
-			return "BOTTOM", (x - uiWidth/2) / frameScale, bottom / frameScale
-		end
-	elseif (y > uiHeight * (1 - vertical)) then
-		if (x < uiWidth * horizontal) then
+	--[[
+	                  1/3             2/3
+	        _______________________________________ uiWidth, uiHeight
+	        |          |               |          |
+	        |__________|_______________|__________| 3/4
+	        |       |                     |       |
+	        |       |                     |       |
+	        |       |_________1/3_________|       |
+	        |_______|                     |_______| 1/4
+	        |       |                     |       |
+	        |_______|_____________________|_______|
+		0,0        1/4                   3/4
+
+	--]]
+
+	-- Top Row
+	if (y > uiHeight * 3/4) then
+
+		-- Top Left
+		if (x < uiWidth * 1/3) then
 			return "TOPLEFT", left / frameScale, top / frameScale
-		elseif x > uiWidth * (1 - horizontal) then
+
+		-- Top Right
+		elseif (x > uiWidth * 2/3) then
 			return "TOPRIGHT", right / frameScale, top / frameScale
+
+		-- Top Center
 		else
 			return "TOP", (x - uiWidth/2) / frameScale, top / frameScale
 		end
+
+	-- Mid & Bottom Segments
 	else
-		if (x < uiWidth * horizontal) then
-			return "LEFT", left / frameScale, (y - uiHeight/2) / frameScale
-		elseif (x > uiWidth * (1 - horizontal)) then
-			return "RIGHT", right / frameScale, (y - uiHeight/2) / frameScale
+
+		-- Mid to Bottom Left Columns
+		if (x < uiWidth * 1/4) then
+
+			-- Mid Left
+			if (y > uiHeight * 1/4) then
+				return "LEFT", left / frameScale, (y - uiHeight/2) / frameScale
+
+			-- Bottom Left
+			else
+				return "BOTTOMLEFT", left / frameScale, bottom / frameScale
+			end
+
+		-- Mid to Bottom Right Columns
+		elseif (x > uiWidth * 3/4) then
+
+			-- Mid Right
+			if (y > uiHeight * 1/4) then
+				return "RIGHT", right / frameScale, (y - uiHeight/2) / frameScale
+
+			-- Bottom Right
+			else
+				return "BOTTOMRIGHT", right / frameScale, bottom / frameScale
+			end
+
+		-- Mid and Bottom Center Columns
 		else
-			return "CENTER", (x - uiWidth/2) / frameScale, (y - uiHeight/2) / frameScale
+
+			-- Center
+			if (y > uiHeight * 1/3) then
+				return "CENTER", (x - uiWidth/2) / frameScale, (y - uiHeight/2) / frameScale
+
+			-- Bottom Center
+			else
+				return "BOTTOM", (x - uiWidth/2) / frameScale, bottom / frameScale
+			end
 		end
 	end
 end
