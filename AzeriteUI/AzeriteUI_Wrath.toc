@@ -38,3 +38,6 @@ Config\Config.xml
 
 # Addon components
 Components\Components.xml
+
+# Resolve Conflicts
+Core\Conflicts.lua
