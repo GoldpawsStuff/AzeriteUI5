@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-06-21
+## [5.1.72-Release] 2023-06-21
+- Bumped the Wrath interface version to WoW Client Patch 3.4.2.
+
 ### Changed
 - Adjusted the screen segments used by our movable frames to feel more logical.
 - The user interface will no longer load when another directly conflicting user interface is discovered.
