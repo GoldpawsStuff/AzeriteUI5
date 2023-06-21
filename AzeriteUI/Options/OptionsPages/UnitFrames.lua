@@ -148,6 +148,23 @@ local GenerateOptions = function()
 			desc = L["Toggle whether to show the name of the unit."],
 			order = 30, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
+		suboptions.args.textureHeader = {
+			name = L["Texture Variations"], order = 40, type = "header", hidden = isdisabled
+		}
+		suboptions.args.useStandardBossTexture = {
+			name = L["Use Large Boss Texture"],
+			desc = L["Toggle whether to show a larger texture for bosses."],
+			order = 50, type = "toggle", width = "full", hidden = isdisabled,
+			set = function(info,val) setter(info, not val) end,
+			get = function(info) return not getter(info) end
+		}
+		suboptions.args.useStandardCritterTexture = {
+			name = L["Use Small Critter Texture"],
+			desc = L["Toggle whether to show a smaller texture for critters."],
+			order = 60, type = "toggle", width = "full", hidden = isdisabled,
+			set = function(info,val) setter(info, not val) end,
+			get = function(info) return not getter(info) end
+		}
 		options.args.target = suboptions
 	end
 

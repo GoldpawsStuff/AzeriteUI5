@@ -43,7 +43,9 @@ local playerLevel = UnitLevel("player")
 local defaults = { profile = ns:Merge({
 	showAuras = true,
 	showName = true,
-	aurasBelowFrame = false
+	aurasBelowFrame = false,
+	useStandardBossTexture = false,
+	useStandardCritterTexture = false
 }, ns.Module.defaults) }
 
 TargetFrameMod.GenerateDefaults = function(self)
@@ -447,9 +449,9 @@ local UnitFrame_UpdateTextures = function(self)
 	if (UnitIsPlayer(unit)) then
 		key = IsLevelAtEffectiveMaxLevel(level) and "Seasoned" or level < 10 and "Novice" or "Hardened"
 	else
-		if (UnitClassification(unit) == "worldboss") or (level < 1 and IsLevelAtEffectiveMaxLevel(playerLevel)) then
+		if (not TargetFrameMod.db.profile.useStandardBossTexture) and ((UnitClassification(unit) == "worldboss") or (level < 1 and IsLevelAtEffectiveMaxLevel(playerLevel))) then
 			key = "Boss"
-		elseif (UnitCreatureType("target") == "Critter") or (level == 1 and UnitHealthMax(unit) < 30) then
+		elseif (not TargetFrameMod.db.profile.useStandardCritterTexture) and ((UnitCreatureType("target") == "Critter") or (level == 1 and UnitHealthMax(unit) < 30)) then
 			key = "Critter"
 		else
 			key = (level < 1 or IsLevelAtEffectiveMaxLevel(level)) and "Seasoned" or level < 10 and "Novice" or "Hardened"
@@ -988,16 +990,14 @@ TargetFrameMod.CreateUnitFrames = function(self)
 end
 
 TargetFrameMod.Update = function(self)
-
 	if (self.db.profile.showAuras) then
 		self.frame:EnableElement("Auras")
 		self.frame.Auras:ForceUpdate()
 	else
 		self.frame:DisableElement("Auras")
 	end
-
 	self.frame.Name:SetShown(self.db.profile.showName)
-
+	self.frame:PostUpdate()
 end
 
 TargetFrameMod.OnEnable = function(self)
