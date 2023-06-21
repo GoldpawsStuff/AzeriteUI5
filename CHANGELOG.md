@@ -4,10 +4,14 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-06-20
+## [Unreleased] 2023-06-21
 ### Changed
 - Adjusted the screen segments used by our movable frames to feel more logical.
 - The user interface will no longer load when another directly conflicting user interface is discovered.
+- Removed the combat feedback text from raid frames, as this was just too visually spammy and resource intensive.
+
+### Fixed
+- Fixed the object type of Leader- and Master Looter indicators in the Raid Frames, which both had been registered wrongly as fontstrings instead of textures.
 
 ## [5.1.71-Release] 2023-06-19
 ### Fixed
