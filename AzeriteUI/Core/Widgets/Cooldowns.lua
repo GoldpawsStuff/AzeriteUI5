@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 local Widgets = ns.Private.Widgets or {}
 ns.Private.Widgets = Widgets
 

@@ -25,7 +25,7 @@
 --]]
 local Addon, ns = ...
 
-local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
+local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 

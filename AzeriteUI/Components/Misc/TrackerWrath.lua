@@ -23,16 +23,14 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 if (not ns.IsWrath) then return end
 
 local Tracker = ns:NewModule("Tracker", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Addon API
-local Colors = ns.Colors
 local GetFont = ns.API.GetFont
-local GetMedia = ns.API.GetMedia
 local UIHider = ns.Hider
 
 local defaults = { profile = ns:Merge({}, ns.Module.defaults) }

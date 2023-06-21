@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 local API = ns.API or {}
 ns.API = API
 

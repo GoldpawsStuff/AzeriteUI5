@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 local MinimapMod = ns:NewModule("Minimap", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0", "AceConsole-3.0")
 
@@ -55,9 +55,7 @@ local unpack = unpack
 
 -- Addon API
 local Colors = ns.Colors
-local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
-local GetTime = ns.API.GetTime
 local GetLocalTime = ns.API.GetLocalTime
 local GetServerTime = ns.API.GetServerTime
 local IsAddOnEnabled = ns.API.IsAddOnEnabled
@@ -479,7 +477,6 @@ end
 
 MinimapMod.UpdatePerformance = function(self)
 
-	local now = GetTime()
 	local fps = GetFramerate()
 	local _, _, home, world = GetNetStats()
 
@@ -629,7 +626,7 @@ MinimapMod.UpdateZone = function(self)
 	end
 	local a = zoneName:GetAlpha() -- needed to preserve alpha after text color changes
 	local minimapZoneName = GetMinimapZoneText()
-	local pvpType, isSubZonePvP, factionName = GetZonePVPInfo()
+	local pvpType = GetZonePVPInfo()
 	if (pvpType) then
 		local color = Colors.zone[pvpType]
 		if (color) then
@@ -734,7 +731,7 @@ MinimapMod.InitializeNarcissus = function(self)
 	Narci_MinimapButton.Background:SetSize(46, 46)
 	Narci_MinimapButton.Background:SetVertexColor(.75, .75, .75, 1)
 	Narci_MinimapButton.InitPosition = function(self)
-		local p, a, rp, x, y = self:GetPoint()
+		local _, _, rp = self:GetPoint()
 		if (rp ~= "TOP") then
 			Narci_MinimapButton:ClearAllPoints()
 			Narci_MinimapButton:SetPoint("CENTER", Minimap, "TOP", 0, 8)

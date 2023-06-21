@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 local KeyBound = LibStub("LibKeyBound-1.0", true)
 
@@ -92,7 +92,7 @@ StanceButton.Update = function(self)
 	if (not self:IsShown()) then return end
 
 	local id = self:GetID()
-	local texture, isActive, isCastable, spellID = GetShapeshiftFormInfo(id)
+	local texture, isActive, isCastable = GetShapeshiftFormInfo(id)
 
 	self.icon:SetTexture(texture)
 

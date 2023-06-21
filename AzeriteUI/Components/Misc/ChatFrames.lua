@@ -23,11 +23,9 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 if (ns.API.IsAddOnEnabled("Prat-3.0") or ns.API.IsAddOnEnabled("ls_Glass")) then return end
-
-local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
 
 local ChatFrames = ns:NewModule("ChatFrames", "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
 
@@ -300,8 +298,6 @@ ChatFrames.StyleFrame = function(self, frame)
 		tex:SetAlpha(0)
 	end
 
-	local buttonFrame = ChatFrame.GetButtonFrame(frame)
-
 	for tex in ChatFrame.GetButtonFrameTextures(frame) do
 		tex:SetTexture(nil)
 		tex:SetAlpha(0)
@@ -380,7 +376,7 @@ ChatFrames.UpdateDockedChatTabs = function(self)
 		for _,frameName in pairs(_G.CHAT_FRAMES) do
 			local frame = _G[frameName]
 			if (frame) then
-				local name, fontSize, r, g, b, a, shown, locked, docked, uninteractable = FCF_GetChatWindowInfo(frame:GetID())
+				local _, _, _, _, _, _, shown, _, docked = FCF_GetChatWindowInfo(frame:GetID())
 				if (docked and not frame.minimized) then
 					local tabText = ChatFrame.GetTabText(frame)
 					if (tabText) then
@@ -399,7 +395,7 @@ ChatFrames.UpdateDockedChatTabs = function(self)
 		for _,frameName in pairs(_G.CHAT_FRAMES) do
 			local frame = _G[frameName]
 			if (frame) then
-				local name, fontSize, r, g, b, a, shown, locked, docked, uninteractable = FCF_GetChatWindowInfo(frame:GetID())
+				local _, _, _, _, _, _, _, _, docked = FCF_GetChatWindowInfo(frame:GetID())
 				if (docked and not frame.minimized) then
 					local tabText = ChatFrame.GetTabText(frame)
 					if (tabText) then tabText:Hide() end
@@ -416,7 +412,7 @@ ChatFrames.UpdateButtons = function(self, event, ...)
 	for _,frameName in pairs(_G.CHAT_FRAMES) do
 		local frame = _G[frameName]
 		if (frame) then
-			local name, fontSize, r, g, b, a, shown, locked, docked, uninteractable = FCF_GetChatWindowInfo(frame:GetID())
+			local _, _, _, _, _, _, shown, _, docked = FCF_GetChatWindowInfo(frame:GetID())
 			local isMouseOver
 
 			if (frame == ChatFrame2) then

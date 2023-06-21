@@ -23,20 +23,15 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 local ErrorsFrame = ns:NewModule("ErrorsFrame", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
-
--- Lua API
-local pairs, unpack = pairs, unpack
 
 -- GLOBALS: UIErrorsFrame, UIParent
 -- GLOBALS: GetCVarBool, GetGameMessageInfo, PlaySound, PlayVocalErrorSoundID
 
 -- Addon API
-local Colors = ns.Colors
 local GetFont = ns.API.GetFont
-local GetMedia = ns.API.GetMedia
 
 local blackList = {
 	msgTypes = {
@@ -164,7 +159,7 @@ ErrorsFrame.OnEvent = function(self, event, ...)
 		-- Blizzard plays these sound too, but they don't slave it to the error speech setting. We do.
 		if (GetCVarBool("Sound_EnableDialog") and GetCVarBool("Sound_EnableErrorSpeech")) then
 
-			local errorStringId, soundKitID, voiceID = GetGameMessageInfo(messageType)
+			local _, soundKitID, voiceID = GetGameMessageInfo(messageType)
 			if (voiceID) then
 				-- No idea what channel this ends up in.
 				-- *Edit: Seems to be Dialog by default for this one.

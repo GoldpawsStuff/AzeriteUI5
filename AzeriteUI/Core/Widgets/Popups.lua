@@ -66,7 +66,7 @@ end
 Widgets.ShowPopup = function(popupID)
 	if (not popups[popupID]) then return end
 	local popupFrame = pull()
-
+	popupFrame:Show()
 end
 
 Widgets.HidePopup = function(popupID)

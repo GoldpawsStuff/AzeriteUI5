@@ -23,14 +23,11 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 if (ns.IsClassic or ns.IsWrath) then return end
 
 local ArcheologyBar = ns:NewModule("ArcheologyBar", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
-
--- Lua API
-local pairs, unpack = pairs, unpack
 
 local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
 

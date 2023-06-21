@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 local KeyBound = LibStub("LibKeyBound-1.0", true)
 
@@ -40,7 +40,6 @@ local string_format = string.format
 -- GLOBALS: GameTooltip, GameTooltip_SetDefaultAnchor
 
 local PetButton = {}
-local PetButton_MT = { __index = PetButton }
 
 -- Default button config
 local defaults = {

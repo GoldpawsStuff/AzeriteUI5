@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 -- GLOBALS: getmetatable, setmetatable, rawset, error, tostring, type
 

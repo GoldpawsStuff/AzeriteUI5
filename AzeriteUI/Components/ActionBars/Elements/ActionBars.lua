@@ -23,13 +23,12 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return end
 
-local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
 local LAB_Name = "LibActionButton-1.0-GE"
-local LAB, LAB_Version = LibStub(LAB_Name)
+local LAB = LibStub(LAB_Name)
 
 local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "LibFadingFrames-1.0", "AceConsole-3.0", "AceTimer-3.0")
 
@@ -43,7 +42,6 @@ local unpack = unpack
 
 -- Addon API
 local Colors = ns.Colors
-local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 local IsAddOnEnabled = ns.API.IsAddOnEnabled
 local RegisterCooldown = ns.Widgets.RegisterCooldown
@@ -307,7 +305,6 @@ end
 local style = function(button)
 
 	local db = ns.GetConfig("ActionButton")
-	local usingMaxDps = IsAddOnEnabled("MaxDps")
 
 	-- Clean up the button template
 	for _,i in next,{ "AutoCastShine", "Border", "Name", "NewActionTexture", "NormalTexture", "SpellHighlightAnim", "SpellHighlightTexture",

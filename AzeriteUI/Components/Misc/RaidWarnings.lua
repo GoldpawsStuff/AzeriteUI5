@@ -23,17 +23,12 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 local RaidWarnings = ns:NewModule("RaidWarnings", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
 
--- Lua API
-local pairs, unpack = pairs, unpack
-
 -- Addon API
-local Colors = ns.Colors
 local GetFont = ns.API.GetFont
-local GetMedia = ns.API.GetMedia
 
 local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
 

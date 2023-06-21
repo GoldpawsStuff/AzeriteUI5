@@ -25,7 +25,7 @@
 --]]
 local Addon, ns = ...
 
-local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
+local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
 
 local Options = ns:GetModule("Options")
 local MFM = ns:GetModule("MovableFramesManager")

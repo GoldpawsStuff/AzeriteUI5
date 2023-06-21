@@ -40,9 +40,6 @@ _G[Addon] = ns
 
 -- Lua API
 local next = next
-local string_lower = string.lower
-local type = type
-local unpack = unpack
 
 local defaults = {
 	char = {
@@ -133,7 +130,7 @@ ns.GetProfile = function(self)
 end
 
 ns.GetProfiles = function(self)
-	local profiles, count = self.db:GetProfiles()
+	local profiles = self.db:GetProfiles()
 	return profiles
 end
 
@@ -143,7 +140,7 @@ end
 
 ns.RefreshConfig = function(self, event, ...)
 	if (event == "OnNewProfile") then
-		local db, profileKey = ...
+		--local db, profileKey = ...
 
 	elseif (event == "OnProfileChanged") then
 		local db, newProfileKey = ...
@@ -151,10 +148,10 @@ ns.RefreshConfig = function(self, event, ...)
 		db.char.profile = newProfileKey
 
 	elseif (event == "OnProfileCopied") then
-		local db, sourceProfileKey = ...
+		--local db, sourceProfileKey = ...
 
 	elseif (event == "OnProfileReset") then
-		local db = ...
+		--local db = ...
 
 	end
 end

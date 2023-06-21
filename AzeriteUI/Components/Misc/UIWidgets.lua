@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 if (ns.IsRetail) then return end
 
 local UIWidgets = ns:NewModule("UIWidgets", ns.Module, "LibMoreEvents-1.0")

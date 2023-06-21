@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 -- GLOBALS: LoadAddOn, ChannelFrame
 

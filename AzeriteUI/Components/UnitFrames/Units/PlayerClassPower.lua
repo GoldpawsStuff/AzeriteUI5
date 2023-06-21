@@ -26,7 +26,7 @@
 local Addon, ns = ...
 local oUF = ns.oUF
 
-local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
+local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
 
 local ClassPowerMod = ns:NewModule("PlayerClassPowerFrame", ns.Module, "LibMoreEvents-1.0")
 
@@ -41,8 +41,6 @@ local noop = ns.Noop
 
 -- Constants
 local playerClass = ns.PlayerClass
-local playerLevel = UnitLevel("player")
-local playerXPDisabled = IsXPUserDisabled()
 
 local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
 
@@ -121,7 +119,7 @@ local ClassPower_PostUpdate = function(element, cur, max)
 		local point = element[i]
 		if (point:IsShown()) then
 			local value = point:GetValue()
-			local pmin, pmax = point:GetMinMaxValues()
+			local _, pmax = point:GetMinMaxValues()
 			if (element.inCombat) then
 				point:SetAlpha((cur == max) and 1 or (value < pmax) and .5 or 1)
 			else
@@ -175,7 +173,7 @@ local Runes_PostUpdate = function(element, runemap, hasVehicle, allReady)
 		local rune = element[i]
 		if (rune:IsShown()) then
 			local value = rune:GetValue()
-			local min, max = rune:GetMinMaxValues()
+			local _, max = rune:GetMinMaxValues()
 			if (element.inCombat) then
 				rune:SetAlpha(allReady and 1 or (value < max) and .5 or 1)
 			else

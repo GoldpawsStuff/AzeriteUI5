@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 if (not ns.IsRetail) then return end
 
 local ExtraButtons = ns:NewModule("ExtraActionButtons", "LibMoreEvents-1.0", "AceHook-3.0")
@@ -33,11 +33,8 @@ local pairs = pairs
 local string_find = string.find
 
 -- Addon API
-local Colors = ns.Colors
-local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 local RegisterCooldown = ns.Widgets.RegisterCooldown
-local noop = ns.Noop
 
 ExtraButtons.UpdateButton = function(self, button)
 

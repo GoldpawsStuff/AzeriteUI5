@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 if (not DurabilityFrame) then return end
 
@@ -35,9 +35,6 @@ local pairs, unpack = pairs, unpack
 -- GLOBALS: C_PaperDollInfo, DurabilityFrame, GetInventoryAlertStatus, UIParent
 
 -- Addon API
-local Colors = ns.Colors
-local GetFont = ns.API.GetFont
-local GetMedia = ns.API.GetMedia
 local UIHider = ns.Hider
 
 -- Sourced from INVENTORY_ALERT_STATUS_SLOTS in FrameXML/DurabilityFrame.lua
@@ -211,7 +208,7 @@ Durability.UpdateWidget = function(self, forced)
 	local frame = self.frame
 
 	local numAlerts = 0
-	local texture, showDurability, anyItemBroken
+	local texture, showDurability
 	local hasLeft, hasRight
 
 	for index,value in pairs(inventorySlots) do

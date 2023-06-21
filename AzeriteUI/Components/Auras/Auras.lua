@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 local Auras = ns:NewModule("Auras", ns.Module, "LibMoreEvents-1.0", "AceTimer-3.0", "AceHook-3.0", "AceConsole-3.0", "LibSmoothBar-1.0")
 local LFF = LibStub("LibFadingFrames-1.0")
@@ -143,7 +143,7 @@ end
 
 Aura.Update = function(self, index)
 
-	local name, icon, count, dispelType, duration, expirationTime, source, isStealable, nameplateShowPersonal, spellId, canApplyAura, isBossDebuff, castByPlayer, nameplateShowAll, timeMod = UnitAura(self:GetParent():GetAttribute("unit"), index, self.filter)
+	local name, icon, count, _, duration, expirationTime = UnitAura(self:GetParent():GetAttribute("unit"), index, self.filter)
 
 	if (name) then
 		self:SetAlpha(1)
@@ -565,11 +565,11 @@ Auras.UpdateAuraButtonAlpha = function(self)
 	local consolidateFraction = tonumber(buffs:GetAttribute("consolidateFraction")) or 0.1
 	local unit, filter = buffs:GetAttribute("unit"), buffs:GetAttribute("filter")
 	local slot, consolidated, time = 1, 0, GetTime()
-	local name, duration, expires, caster, shouldConsolidate, _
+	local name, duration, expires, shouldConsolidate, _
 
 	repeat
 		-- Sourced from FrameXML\SecureGroupHeaders.lua
-		name, _, _, _, duration, expires, caster, _, _, _, _, _, _, _, _, shouldConsolidate = UnitAura(unit, slot, filter)
+		name, _, _, _, duration, expires, _, _, _, _, _, _, _, _, _, shouldConsolidate = UnitAura(unit, slot, filter)
 		if (name and shouldConsolidate) then
 			if (not expires or duration > consolidateDuration or (expires - time >= math_max(consolidateThreshold, duration * consolidateFraction)) ) then
 				consolidated = consolidated + 1

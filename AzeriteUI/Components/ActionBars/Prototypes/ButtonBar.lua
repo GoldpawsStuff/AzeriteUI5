@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 local Bar = ns.Bar.prototype
 
@@ -133,7 +133,6 @@ ButtonBar.UpdateButtonLayout = function(self)
 		local buttonWidth = self.buttonWidth
 		local buttonHeight = self.buttonHeight
 
-		local fullZag = config.startAt == 1
 		local counter = 0
 		local left, right, top, bottom = 0, 0, 0, 0
 		local point = (config.growthVertical == "UP" and "BOTTOM" or "TOP")..(config.growthHorizontal == "RIGHT" and "LEFT" or "RIGHT")

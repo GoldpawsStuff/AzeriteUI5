@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 local VehicleExit = ns:NewModule("VehicleExit", "LibMoreEvents-1.0", "AceHook-3.0")
 
@@ -39,8 +39,6 @@ local unpack = unpack
 
 -- Addon API
 local Colors = ns.Colors
-local GetFont = ns.API.GetFont
-local GetMedia = ns.API.GetMedia
 
 local ExitButton_OnEnter = function(self)
 	if (GameTooltip:IsForbidden()) then return end

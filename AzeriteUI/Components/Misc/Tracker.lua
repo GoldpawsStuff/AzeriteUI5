@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 if (not ns.IsRetail) then return end
 
 local Tracker = ns:NewModule("Tracker", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0")
@@ -31,11 +31,9 @@ local Tracker = ns:NewModule("Tracker", ns.Module, "LibMoreEvents-1.0", "AceHook
 -- GLOBALS: IsAddOnLoaded, SetOverrideBindingClick
 
 -- Addon API
-local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 local UIHider = ns.Hider
-local noop = ns.Noop
 
 local DEFAULT_THEME = "Blizzard"
 local CURRENT_THEME = DEFAULT_THEME

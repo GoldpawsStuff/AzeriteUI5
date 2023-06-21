@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 local API = ns.API or {}
 ns.API = API
 
@@ -36,7 +36,7 @@ local PLAYER_NAME = UnitName("player")
 
 -- Proxy for the Blizzard method, which also includes the 'enabled' flag.
 local GetAddOnInfo = function(index)
-	local name, title, notes, loadable, reason, security, newVersion = _G.GetAddOnInfo(index)
+	local name, title, notes, loadable, reason, security = _G.GetAddOnInfo(index)
 	local enabled = not(_G.GetAddOnEnableState(PLAYER_NAME, index) == 0)
 	return name, title, notes, enabled, loadable, reason, security
 end
@@ -45,7 +45,7 @@ end
 local IsAddOnAvailable = function(target)
 	local target = string_lower(target)
 	for i = 1,_G.GetNumAddOns() do
-		local name, title, notes, enabled, loadable, reason, security = GetAddOnInfo(i)
+		local name = GetAddOnInfo(i)
 		if (string_lower(name) == target) then
 			return true
 		end
@@ -57,7 +57,7 @@ end
 local IsAddOnEnabled = function(target)
 	local target = string_lower(target)
 	for i = 1,_G.GetNumAddOns() do
-		local name, title, notes, enabled, loadable, reason, security = GetAddOnInfo(i)
+		local name, _, _, enabled, loadable = GetAddOnInfo(i)
 		if (string_lower(name) == target) then
 			if (enabled and loadable) then
 				return true
@@ -70,7 +70,7 @@ end
 local IsAddOnLoadable = function(target, ignoreLoD)
 	local target = string_lower(target)
 	for i = 1,_G.GetNumAddOns() do
-		local name, title, notes, enabled, loadable, reason, security = GetAddOnInfo(i)
+		local name, _, _, _, loadable = GetAddOnInfo(i)
 		if (string_lower(name) == target) then
 			if (loadable or ignoreLoD) then
 				return true

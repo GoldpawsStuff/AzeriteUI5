@@ -52,15 +52,10 @@ local unpack = unpack
 local Colors = ns.Colors
 local AbbreviateNumber = ns.API.AbbreviateNumber
 local AbbreviateNumberBalanced = ns.API.AbbreviateNumberBalanced
-local GetDifficultyColorByLevel = ns.API.GetDifficultyColorByLevel
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 local GetUnitColor = ns.API.GetUnitColor
-
 local UIHider = ns.Hider
-local noop = ns.Noop
-
-local BOSS_TEXTURE = [[|TInterface\TargetingFrame\UI-TargetingFrame-Skull:14:14:-2:1|t]]
 
 local Backdrops = setmetatable({}, { __index = function(t,k)
 	local bg = CreateFrame("Frame", nil, k, ns.BackdropTemplate)
@@ -140,7 +135,7 @@ Tooltips.SetBackdropStyle = function(self, tooltip)
 		local region = self[texName]
 		if (region) then
 			region:SetTexture(nil)
-			local drawLayer, subLevel = region:GetDrawLayer()
+			local drawLayer = region:GetDrawLayer()
 			if (drawLayer) then
 				tooltip:DisableDrawLayer(drawLayer)
 			end
@@ -163,7 +158,7 @@ Tooltips.SetBackdropStyle = function(self, tooltip)
 		local region = tooltip[pieceName]
 		if (region) then
 			region:SetTexture(nil)
-			local drawLayer, subLevel = region:GetDrawLayer()
+			local drawLayer = region:GetDrawLayer()
 			if (drawLayer) then
 				tooltip:DisableDrawLayer(drawLayer)
 			end
@@ -342,7 +337,7 @@ Tooltips.OnTooltipSetItem = function(self, tooltip, data)
 	local itemID
 
 	if (tooltip.GetItem) then -- Some tooltips don't have this func. Example - compare tooltip
-		local name, link = tooltip:GetItem()
+		local _, link = tooltip:GetItem()
 		if (link) then
 			itemID = string_format("|cFFCA3C3C%s|r %s", ID, (data and data.id) or string_match(link, ":(%w+)"))
 		end
@@ -379,19 +374,9 @@ Tooltips.OnTooltipSetUnit = function(self, tooltip, data)
 		if (color) then
 
 			local unitName, unitRealm = UnitName(unit)
-			local unitEffectiveLevel = UnitEffectiveLevel(unit)
 			local displayName = color.colorCode..unitName.."|r"
 			local gray = Colors.quest.gray.colorCode
 			local levelText
-
-			--if (unitEffectiveLevel and unitEffectiveLevel > 0) then
-			--	local r, g, b, colorCode = GetDifficultyColorByLevel(unitEffectiveLevel)
-			--	levelText = colorCode .. unitEffectiveLevel .. "|r"
-			--end
-			--if (not levelText) then
-			--	displayName = BOSS_TEXTURE .. " " .. displayName
-			--end
-
 
 			if (unitRealm and unitRealm ~= "") then
 				local relationship = UnitRealmRelationship(unit)

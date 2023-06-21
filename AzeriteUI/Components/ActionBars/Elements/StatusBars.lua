@@ -25,7 +25,7 @@
 --]]
 local Addon, ns = ...
 
-local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
+local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
 
 local StatusBars = ns:NewModule("PlayerStatusBars", "LibMoreEvents-1.0")
 
@@ -48,8 +48,6 @@ local unpack = unpack
 
 -- Addon API
 local Colors = ns.Colors
-local GetFont = ns.API.GetFont
-local GetMedia = ns.API.GetMedia
 local AbbreviateNumber = ns.API.AbbreviateNumber
 
 local playerLevel = UnitLevel("player")
@@ -349,17 +347,16 @@ StatusBars.UpdateBars = function(self, event, ...)
 	local bonusShown = bonus:IsShown()
 	local showButton
 
-	local name, reaction, min, max, current, factionID = GetWatchedFactionInfo()
+	local name, _, min, max, current = GetWatchedFactionInfo()
 	if (name) then
 		local forced = bar.currentType ~= "reputation"
 		local gender = UnitSex("player")
 
 		-- Figure out the standingID of the watched faction
-		local standingID, standingLabel, standingDescription, isFriend, friendText
+		local standingID, standingLabel, isFriend
 		for i = 1, GetNumFactions() do
-			local factionName, description, standingId, barMin, barMax, barValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild, factionID, hasBonusRepGain, canBeLFGBonus = GetFactionInfo(i)
+			local factionName, _, standingId = GetFactionInfo(i)
 			if (factionName == name) then
-				standingDescription = description
 				standingID = standingId
 				break
 			end
@@ -434,9 +431,7 @@ StatusBars.UpdateBars = function(self, event, ...)
 			end
 
 			local forced = bar.currentType ~= "xp"
-			local resting = IsResting()
-			local restState, restedName, mult = GetRestState()
-			local restedLeft, restedTimeLeft = GetXPExhaustion(), GetTimeToWellRested()
+			local restedLeft = GetXPExhaustion()
 			local min = UnitXP("player") or 0
 			local max = UnitXPMax("player") or 0
 			local r, g, b = unpack(Colors[restedLeft and "rested" or "xp"])

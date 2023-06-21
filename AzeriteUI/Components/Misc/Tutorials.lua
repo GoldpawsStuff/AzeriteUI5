@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 local BlizzTutorials = ns:NewModule("BlizzTutorials", "LibMoreEvents-1.0", "AceTimer-3.0", "AceHook-3.0")
 
 BlizzTutorials.DisableHelpTip = function(self)

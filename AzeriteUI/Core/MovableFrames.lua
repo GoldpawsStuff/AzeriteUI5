@@ -59,7 +59,6 @@ local unpack = unpack
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
-local UIHider = ns.Hider
 
 -- Constants & Flags
 local SCALE = UIParent:GetScale() -- current blizzard scale
@@ -1128,7 +1127,7 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 		self.incombat = InCombatLockdown()
 
 	elseif (event == "EDIT_MODE_LAYOUTS_UPDATED") then
-		local layoutInfo, fromServer = ...
+		local _, fromServer = ...
 		if (fromServer) then
 			if (EMP) then
 				EMP:LoadLayouts()

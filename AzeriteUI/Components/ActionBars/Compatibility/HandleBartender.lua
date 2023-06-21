@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 if (not ns.API.IsAddOnEnabled("Bartender4")) then return end
 
 local Bartender = ns:NewModule("Bartender", "LibMoreEvents-1.0")

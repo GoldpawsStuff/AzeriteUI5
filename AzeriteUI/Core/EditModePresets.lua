@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 if (not ns.WoW10) then return end
 
@@ -258,7 +258,7 @@ EditMode.OnEvent = function(self, event, ...)
 			self.timer = self:ScheduleTimer("ConsiderLayoutsLoaded", 5)
 		end
 	elseif (event == "EDIT_MODE_LAYOUTS_UPDATED") then
-		local layoutInfo, fromServer = ...
+		local _, fromServer = ...
 		if (fromServer) then
 			self.loaded = true
 		end

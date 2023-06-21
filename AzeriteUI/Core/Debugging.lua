@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 local Debugging = ns:NewModule("Debugging", "AceConsole-3.0")
 
 -- GLOBALS: EnableAddOn, GetAddOnInfo

@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 local Development = ns:NewModule("Development", "AceConsole-3.0", "LibMoreEvents-1.0")
 
 Development.OnInitialize = function(self)

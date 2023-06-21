@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 local oUF = ns.oUF
 local API = ns.API
 
@@ -41,7 +41,6 @@ API.UpdateHealth = function(self, event, unit)
 		element:PreUpdate(unit)
 	end
 
-	local absorb
 	local cur, max = UnitHealth(unit), UnitHealthMax(unit)
 	local connected = UnitIsConnected(unit)
 

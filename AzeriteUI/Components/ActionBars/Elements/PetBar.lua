@@ -27,7 +27,7 @@ local Addon, ns = ...
 
 if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return end
 
-local L = LibStub("AceLocale-3.0"):GetLocale(Addon, true)
+local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
 
 local PetBarMod = ns:NewModule("PetBar", "LibMoreEvents-1.0", "LibFadingFrames-1.0", "AceConsole-3.0", "AceTimer-3.0")
 
@@ -51,7 +51,6 @@ local unpack = unpack
 
 -- Addon API
 local Colors = ns.Colors
-local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 local RegisterCooldown = ns.Widgets.RegisterCooldown
 local UIHider = ns.Hider

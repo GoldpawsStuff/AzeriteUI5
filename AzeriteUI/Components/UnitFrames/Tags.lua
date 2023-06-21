@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 local oUF = ns.oUF
 local Events = oUF.Tags.Events
 local Methods = oUF.Tags.Methods
@@ -42,13 +42,11 @@ local unpack = unpack
 local Colors = ns.Colors
 local AbbreviateName = ns.API.AbbreviateName
 local AbbreviateNumber = ns.API.AbbreviateNumber
-local AbbreviateNumberBalanced = ns.API.AbbreviateNumberBalanced
 local GetDifficultyColorByLevel = ns.API.GetDifficultyColorByLevel
 
 -- Colors
 local c_gray = Colors.gray.colorCode
 local c_normal = Colors.normal.colorCode
-local c_highlight = Colors.highlight.colorCode
 local c_rare = Colors.quality.Rare.colorCode
 local c_red = Colors.red.colorCode
 local r = "|r"

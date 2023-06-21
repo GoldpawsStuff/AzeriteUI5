@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 local oUF = ns.oUF
 
 local NamePlatesMod = ns:NewModule("NamePlates", "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0")
@@ -37,11 +37,6 @@ local unpack = unpack
 
 -- Addon API
 local Colors = ns.Colors
-local GetFont = ns.API.GetFont
-local GetMedia = ns.API.GetMedia
-
--- Constants
-local playerClass = ns.PlayerClass
 
 ns.ActiveNamePlates = {}
 ns.NamePlates = {}
@@ -174,7 +169,7 @@ local HealPredict_PostUpdate = function(element, unit, myIncomingHeal, otherInco
 
 		local preview = element.preview
 		local growth = preview:GetGrowth()
-		local min,max = preview:GetMinMaxValues()
+		local _,max = preview:GetMinMaxValues()
 		local value = preview:GetValue() / max
 		local previewTexture = preview:GetStatusBarTexture()
 		local previewWidth, previewHeight = preview:GetSize()
@@ -184,10 +179,9 @@ local HealPredict_PostUpdate = function(element, unit, myIncomingHeal, otherInco
 		if (growth == "RIGHT") then
 
 			local texValue, texChange = value, change
-			local rangeH, rangeV
+			local rangeH
 
 			rangeH = right - left
-			rangeV = bottom - top
 			texChange = change*value
 			texValue = left + value*rangeH
 
@@ -221,9 +215,9 @@ local HealPredict_PostUpdate = function(element, unit, myIncomingHeal, otherInco
 
 		elseif (growth == "LEFT") then
 			local texValue, texChange = value, change
-			local rangeH, rangeV
+			local rangeH
+
 			rangeH = right - left
-			rangeV = bottom - top
 			texChange = change*value
 			texValue = left + value*rangeH
 

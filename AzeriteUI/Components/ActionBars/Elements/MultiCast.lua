@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 -- This poorly coded blizz bar taints like no tomorrow,
 -- so we'll just leave it fully to blizz for now.
@@ -40,11 +40,6 @@ local unpack = unpack
 
 -- GLOBALS: CreateFrame, MultiCastActionBarFrame
 
--- Addon API
-local Colors = ns.Colors
-local GetFont = ns.API.GetFont
-local GetMedia = ns.API.GetMedia
-
 local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
 
 MultiCast.GenerateDefaults = function(self)
@@ -58,8 +53,6 @@ MultiCast.GenerateDefaults = function(self)
 end
 
 MultiCast.PrepareFrames = function(self)
-
-	local config = self.db.profile.savedPosition
 
 	local frame = CreateFrame("Frame", ns.Prefix.."MultiCastFrame", UIParent)
 	frame:SetSize(230, 38)

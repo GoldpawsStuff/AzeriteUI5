@@ -23,13 +23,10 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 local oUF = ns.oUF
 
 local UnitFrameMod = ns:NewModule("UnitFrames", "LibMoreEvents-1.0")
-
-local MFM = ns:GetModule("MovableFramesManager")
-local GUI = ns:GetModule("Options")
 
 local LibSmoothBar = LibStub("LibSmoothBar-1.0")
 local LibSpinBar = LibStub("LibSpinBar-1.0")
@@ -37,14 +34,10 @@ local LibOrb = LibStub("LibOrb-1.0")
 
 -- Lua API
 local next = next
-local pairs = pairs
-local unpack = unpack
+
 
 -- GLOBALS: UIParent
 -- GLOBALS: InCombatLockdown, UnitFrame_OnEnter, UnitFrame_OnLeave
-
--- Private API
-local Colors = ns.Colors
 
 local defaults = { profile = ns:Merge({
 	enabled = true,

@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 if (not ns.IsClassic) then return end
 
@@ -39,7 +39,6 @@ local unpack = unpack
 -- Addon API
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
-local GetMedia = ns.API.GetMedia
 
 local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
 
@@ -104,7 +103,7 @@ Tracker.PrepareFrames = function(self)
 		local watchText
 		local watchTextIndex = 1
 		local objectivesCompleted
-		local text, type, finished
+		local text, finished
 
 		for i = 1, GetNumQuestWatches() do
 			questIndex = GetQuestIndexForWatch(i)

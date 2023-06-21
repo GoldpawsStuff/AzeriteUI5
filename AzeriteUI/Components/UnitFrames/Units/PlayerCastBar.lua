@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 local oUF = ns.oUF
 
 local CastBarMod = ns:NewModule("PlayerCastBarFrame", ns.Module, "LibMoreEvents-1.0")
@@ -37,14 +37,8 @@ local unpack = unpack
 -- Addon API
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
-local GetMedia = ns.API.GetMedia
 local IsAddOnEnabled = ns.API.IsAddOnEnabled
 local UIHider = ns.Hider
-
--- Constants
-local playerClass = ns.PlayerClass
-local playerLevel = UnitLevel("player")
-local playerXPDisabled = IsXPUserDisabled()
 
 local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
 

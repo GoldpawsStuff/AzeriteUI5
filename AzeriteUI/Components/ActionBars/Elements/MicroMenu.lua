@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 local MicroMenu = ns:NewModule("MicroMenu", "LibMoreEvents-1.0", "AceHook-3.0")
 

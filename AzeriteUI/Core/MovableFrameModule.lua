@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 -- Frame Metamethods
 local mt = getmetatable(CreateFrame("Frame"))

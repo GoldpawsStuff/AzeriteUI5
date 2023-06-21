@@ -39,7 +39,6 @@ local tonumber = tonumber
 -- GLOBALS: StopwatchFrame, Stopwatch_Play, Stopwatch_Pause, Stopwatch_Clear, Stopwatch_StartCountdown, Stopwatch_Toggle
 
 -- Addon API
-local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 
 FlavorDifferences.OnInitialize = function(self)
@@ -155,7 +154,7 @@ FlavorDifferences.OnInitialize = function(self)
 
 		self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS", function()
 			for i = 1, MAX_BATTLEFIELD_QUEUES do
-				local status, map, instanceID = GetBattlefieldStatus(i)
+				local status = GetBattlefieldStatus(i)
 
 				if (status == "confirm") then
 					StaticPopup_Hide("CONFIRM_BATTLEFIELD_ENTRY")

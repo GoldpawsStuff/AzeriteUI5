@@ -23,24 +23,15 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 local API = ns.API or {}
 ns.API = API
 
 -- Lua API
 local _G = _G
-local assert = assert
 local date = date
-local debugstack = debugstack
-local error = error
-local pairs = pairs
-local select = select
-local string_format = string.format
-local string_join = string.join
-local string_match = string.match
 local time = time
 local tonumber = tonumber
-local type = type
 
 -- GLOBALS: TIMEMANAGER_AM, TIMEMANAGER_PM
 
