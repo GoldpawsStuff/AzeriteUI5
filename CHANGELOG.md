@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-06-21
+### Added
+- Added the option to show a regular sized target frame for critters and bosses.
+
 ### Fixed
 - The area you can mouse over while still being able to click the player- and target unit frames should now be less enormous.
 
