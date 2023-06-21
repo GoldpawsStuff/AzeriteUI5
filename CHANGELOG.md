@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Bumped the Wrath interface version to WoW Client Patch 3.4.2.
 
 ### Changed
+- The raid frames will now also as default appear in raids with less than five people. This is a setting you can change from the `/azerite` options menu under the unitframes submenu in the raid- and party sections.
 - Adjusted the screen segments used by our movable frames to feel more logical.
 - The user interface will no longer load when another directly conflicting user interface is discovered.
 - Removed the combat feedback text from raid frames, as this was just too visually spammy and resource intensive.
