@@ -77,7 +77,7 @@ ns.RegisterConfig("TargetFrame", {
 	-- General Settings
 	-----------------------------------------
 	Size = { 550, 210 },
-	HitRectInsets = { 0, 0, -40, -26 },
+	HitRectInsets = { 0, 0, 0, 60 },
 	IsFlippedHorizontally = true,
 
 	-- Health Value Text

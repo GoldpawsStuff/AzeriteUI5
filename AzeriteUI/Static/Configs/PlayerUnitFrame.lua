@@ -62,7 +62,7 @@ ns.RegisterConfig("PlayerFrame", {
 	-- General Settings
 	-----------------------------------------
 	Size = { 560, 180 },
-	HitRectInsets = { 0, 0, -60, 6 },
+	HitRectInsets = { 0, 0, 30, -2 },
 
 	-- Health Value Text
 	HealthValuePosition = { "LEFT", 27, 4 },
