@@ -71,6 +71,9 @@ Options.GenerateProfileMenu = function(self)
 				name = L["Reset"],
 				type = "execute",
 				order = 11,
+				confirm = function(info)
+					return _G.CONFIRM_RESET_SETTINGS
+				end,
 				func = function(info)
 					ns:ResetProfile(ns:GetProfile())
 				end
