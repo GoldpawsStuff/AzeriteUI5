@@ -606,14 +606,14 @@ local style = function(self, unit)
 
 	-- CombatFeedback Text
 	--------------------------------------------
-	local feedbackText = overlay:CreateFontString(nil, "OVERLAY")
-	feedbackText:SetPoint(db.CombatFeedbackPosition[1], self[db.CombatFeedbackAnchorElement], unpack(db.CombatFeedbackPosition))
-	feedbackText:SetFontObject(db.CombatFeedbackFont)
-	feedbackText.feedbackFont = db.CombatFeedbackFont
-	feedbackText.feedbackFontLarge = db.CombatFeedbackFontLarge
-	feedbackText.feedbackFontSmall = db.CombatFeedbackFontSmall
+	--local feedbackText = overlay:CreateFontString(nil, "OVERLAY")
+	--feedbackText:SetPoint(db.CombatFeedbackPosition[1], self[db.CombatFeedbackAnchorElement], unpack(db.CombatFeedbackPosition))
+	--feedbackText:SetFontObject(db.CombatFeedbackFont)
+	--feedbackText.feedbackFont = db.CombatFeedbackFont
+	--feedbackText.feedbackFontLarge = db.CombatFeedbackFontLarge
+	--feedbackText.feedbackFontSmall = db.CombatFeedbackFontSmall
 
-	self.CombatFeedback = feedbackText
+	--self.CombatFeedback = feedbackText
 
 	-- Target Highlight
 	--------------------------------------------
@@ -640,7 +640,7 @@ local style = function(self, unit)
 
 	-- Leader Indicator
 	--------------------------------------------
-	local leaderIndicator = overlay:CreateFontString(nil, "OVERLAY", nil, 2)
+	local leaderIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 2)
 	leaderIndicator:SetSize(16, 16)
 	leaderIndicator:SetPoint("RIGHT", self.Name, "LEFT")
 
@@ -648,17 +648,12 @@ local style = function(self, unit)
 
 	-- MasterLooter Indicator
 	--------------------------------------------
-	local masterLooterIndicator = overlay:CreateFontString(nil, "OVERLAY", nil, 2)
+	local masterLooterIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 2)
 	masterLooterIndicator:SetSize(16, 16)
 	masterLooterIndicator:SetPoint("RIGHT", self.Name, "LEFT")
 
 	self.MasterLooterIndicator = masterLooterIndicator
 	self.MasterLooterIndicator.PostUpdate = MasterLooterIndicator_PostUpdate
-
-	--local threatIndicator = health:CreateTexture(nil, "BACKGROUND", nil, -2)
-	--threatIndicator:SetPoint(unpack(db.HealthBackdropPosition))
-	--threatIndicator:SetSize(unpack(db.HealthBackdropSize))
-	--threatIndicator:SetTexture(db.HealthBackdropTexture)
 
 	-- Textures need an update when frame is displayed.
 	self.PostUpdate = UnitFrame_PostUpdate
