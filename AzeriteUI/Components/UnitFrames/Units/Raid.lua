@@ -47,7 +47,7 @@ local defaults = { profile = ns:Merge({
 	showParty = false,
 
 	useRaidStylePartyFrames = false,
-	showInPartySizedRaidGroups = false,
+	showInPartySizedRaidGroups = true,
 
 	point = "LEFT", -- anchor point of unitframe, group members within column grow opposite
 	xOffset = 10, -- horizontal offset within the same column
