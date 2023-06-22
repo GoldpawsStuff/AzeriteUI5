@@ -32,16 +32,14 @@ local Experimental = ns:NewModule("Experimental", "LibMoreEvents-1.0", "AceConso
 local next = next
 local string_lower = string.lower
 
-Experimental.SwitchUI = function(self, input)
-	if (not self.IsDevelopment) then return end
+Experimental.ToggleUI = function(self, input)
+	if (not ns.IsDevelopment) then return end
 	if (not self._ui_list) then
-		-- Create a list of currently installed UIs.
 		self._ui_list = {}
 		for ui,cmds in next,{
 			["AzeriteUI"] = { "azerite", "az" },
-			["DiabolicUI"] = { "diabolic", "diablo" }
+			["DiabolicUI"] = { "diabolic", "diablo", "dio" }
 		} do
-			-- Only include existing UIs that can be switched to.
 			if (ui ~= Addon) and (ns.API.IsAddOnAvailable(ui)) then
 				for _,cmd in next,cmds do
 					self._ui_list[cmd] = ui
@@ -99,5 +97,5 @@ end
 Experimental.OnInitialize = function(self)
 	self:SpawnBlips()
 	self:RegisterChatCommand("toggleblips", "ToggleBlips")
-	self:RegisterChatCommand("go", "SwitchUI")
+	self:RegisterChatCommand("go", "ToggleUI")
 end
