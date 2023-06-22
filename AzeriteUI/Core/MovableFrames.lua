@@ -1134,7 +1134,7 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 			end
 		end
 
-	elseif (event == "UI_SCALE_CHANGED") then
+	elseif (event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED") then
 		local scale = UIParent:GetScale()
 
 		for anchor,anchorData in next,AnchorData do
@@ -1190,9 +1190,11 @@ MovableFramesManager.OnInitialize = function(self)
 	self.appName = L["Movable Frames Manager"]
 
 	self:RegisterChatCommand("lock", "ToggleMFMFrame")
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED", "OnEvent")
 	self:RegisterEvent("PLAYER_LOGIN", "OnEvent")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterEvent("UI_SCALE_CHANGED", "OnEvent")
+
 end

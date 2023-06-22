@@ -112,7 +112,7 @@ VehicleExit.OnEvent = function(self, event, ...)
 			self:UpdateScale()
 		end
 		self.incombat = nil
-	elseif (event == "UI_SCALE_CHANGED") then
+	elseif (event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED") then
 		self:UpdateScale()
 	end
 end
@@ -152,6 +152,7 @@ VehicleExit.OnEnable = function(self)
 
 	button.Texture = texture
 
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED", "OnEvent")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
