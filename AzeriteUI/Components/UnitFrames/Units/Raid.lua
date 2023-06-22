@@ -647,6 +647,10 @@ local style = function(self, unit)
 	self.MasterLooterIndicator = masterLooterIndicator
 	self.MasterLooterIndicator.PostUpdate = MasterLooterIndicator_PostUpdate
 
+	-- Range Opacity
+	-----------------------------------------------------------
+	self.Range = { outsideAlpha = .6 }
+
 	-- Textures need an update when frame is displayed.
 	self.PostUpdate = UnitFrame_PostUpdate
 
