@@ -255,12 +255,7 @@ local Anchor = {}
 Anchor.Create = function(self)
 
 	local anchor = CreateFrame("Button", nil, UIParent)
-	for method,func in next,Anchor do
-		anchor[method] = func
-	end
-
 	anchor:Hide()
-	anchor:Enable()
 	anchor:SetFrameStrata("HIGH")
 	anchor:SetFrameLevel(1000)
 	anchor:SetMovable(true)
@@ -274,6 +269,10 @@ Anchor.Create = function(self)
 	anchor:SetScript("OnHide", Anchor.OnHide)
 	anchor:SetScript("OnEnter", Anchor.OnEnter)
 	anchor:SetScript("OnLeave", Anchor.OnLeave)
+
+	for method,func in next,Anchor do
+		anchor[method] = func
+	end
 
 	local overlay = CreateFrame("Frame", nil, anchor, ns.BackdropTemplate)
 	overlay:SetAllPoints()
@@ -313,6 +312,7 @@ Anchor.Create = function(self)
 	anchor.Title = title
 
 	AnchorData[anchor] = {
+		isMovable = true,
 		isScalable = true,
 		scale = ns.API.GetEffectiveScale(),
 		defaultScale = ns.API.GetEffectiveScale(),
@@ -321,15 +321,21 @@ Anchor.Create = function(self)
 		scaleStep = .1
 	}
 
+	anchor:Enable()
+
 	return anchor
 end
 
 Anchor.Enable = function(self)
 	self.enabled = true
+	if (MovableFramesManager:IsMFMFrameOpen()) then
+		MovableFramesManager:UpdateMovableFrameAnchors()
+	end
 end
 
 Anchor.Disable = function(self)
 	self.enabled = false
+	self:Hide()
 end
 
 Anchor.IsEnabled = function(self)
@@ -352,6 +358,12 @@ end
 -- 'true' if the frame can be scaled.
 Anchor.IsScalable = function(self)
 	return AnchorData[self].isScalable
+end
+
+-- 'true' if the frame can be moved.
+Anchor.IsMovableBase = mt.IsMovable
+Anchor.IsMovable = function(self)
+	return AnchorData[self].isMovable
 end
 
 -- 'true' if the frame has moved since last showing the anchor.
@@ -406,7 +418,6 @@ Anchor.UpdateText = function(self)
 		msg = string_format(Colors.highlight.colorCode.."%s, %.0f, %.0f|r", unpack(anchorData.currentPosition))
 	end
 
-	-- No texture rotation in Classic or TBC
 	if (ns.IsWrath or ns.IsRetail) then
 		local width,height = self:GetSize()
 		if (width/height < .8) and (width > 100) then
@@ -418,10 +429,12 @@ Anchor.UpdateText = function(self)
 		end
 	end
 
-	if (self.isSelected) then -- self:IsMouseOver(20,-20,-20,20)
+	if (self.isSelected) then
 		if (self:IsInDefaultPosition()) then
-			msg = msg .. Colors.green.colorCode.."\n"..L["<Left-Click and drag to move>"].."|r"
-			if (self:IsScalable()--[[ and compare(anchorData.scale, anchorData.defaultScale)]]) then
+			if (self:IsMovable()) then
+				msg = msg .. Colors.green.colorCode.."\n"..L["<Left-Click and drag to move>"].."|r"
+			end
+			if (self:IsScalable()) then
 				msg = msg .. Colors.green.colorCode.."\n"..L["<MouseWheel to change scale>"].."|r"
 			end
 		else
@@ -520,6 +533,15 @@ Anchor.SetScalable = function(self, scalable)
 	else
 		AnchorData[self].isScalable = nil
 		self:EnableMouseWheel(false)
+	end
+end
+
+Anchor.SetMovableBase = mt.SetMovable
+Anchor.SetMovable = function(self, movable)
+	if (movable) then
+		AnchorData[self].isMovable = true
+	else
+		AnchorData[self].isMovable = nil
 	end
 end
 
@@ -678,6 +700,9 @@ Anchor.OnMouseWheel = function(self, delta)
 end
 
 Anchor.OnDragStart = function(self, button)
+	local anchorData = AnchorData[self]
+	if (not anchorData.isMovable) then return end
+
 	-- Treat the dragged frame as clicked.
 	CURRENT = self
 
@@ -691,7 +716,7 @@ Anchor.OnDragStart = function(self, button)
 	self.elapsed = 0
 	self:SetScript("OnUpdate", self.OnUpdate)
 
-	AnchorData[self].hasMoved = true
+	anchorData.hasMoved = true
 
 	MovableFramesManager:RefreshMFMFrame()
 end
@@ -1196,5 +1221,4 @@ MovableFramesManager.OnInitialize = function(self)
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterEvent("UI_SCALE_CHANGED", "OnEvent")
-
 end
