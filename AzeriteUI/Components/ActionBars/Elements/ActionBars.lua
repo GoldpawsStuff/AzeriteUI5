@@ -544,14 +544,13 @@ ActionBarMod.CreateBars = function(self)
 		config.clickOnDown = self.db.profile.clickOnDown
 
 		local bar = ns.ActionBar:Create(BAR_TO_ID[i], config, ns.Prefix.."ActionBar"..i)
+		bar.buttonWidth, bar.buttonHeight = unpack(ns.GetConfig("ActionButton").ButtonSize)
 		bar.defaults = defaults.profile.bars[i]
 
 		for id,button in next,bar.buttons do
 			style(button)
 			self.buttons[button] = true
 		end
-
-		--bar:Update()
 
 		self.bars[i] = bar
 	end
