@@ -888,6 +888,13 @@ PlayerFrameMod.CreateUnitFrames = function(self)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
 	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
+
+	-- Vehicle switching is currently broken in Wrath.
+	if (ns.IsWrath) then
+		self.frame:SetAttribute("toggleForVehicle", false)
+		RegisterAttributeDriver(frame, "unit", "[vehicleui] vehicle; player")
+	end
+
 end
 
 PlayerFrameMod.Update = function(self)
