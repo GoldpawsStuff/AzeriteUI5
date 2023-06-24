@@ -92,8 +92,10 @@ MinimapMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = mapScale * ns.API.GetEffectiveScale(),
 		[1] = "BOTTOMRIGHT",
-		[2] = -(ns.IsRetail and 14 or 40) / (mapScale * ns.API.GetEffectiveScale()),
-		[3] = (ns.IsRetail and 14 or 40) / (mapScale * ns.API.GetEffectiveScale())
+		[2] = -40 * (mapScale * ns.API.GetEffectiveScale()),
+		[3] = 40 * (mapScale * ns.API.GetEffectiveScale())
+		--[2] = -(ns.IsRetail and 14 or 40) / (mapScale * ns.API.GetEffectiveScale()),
+		--[3] = (ns.IsRetail and 14 or 40) / (mapScale * ns.API.GetEffectiveScale())
 	}
 	return defaults
 end
