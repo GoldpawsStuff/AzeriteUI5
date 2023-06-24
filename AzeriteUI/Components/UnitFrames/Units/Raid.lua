@@ -442,7 +442,7 @@ local style = function(self, unit)
 	--healthValue:SetTextColor(unpack(db.HealthValueColor))
 	--healthValue:SetJustifyH(db.HealthValueJustifyH)
 	--healthValue:SetJustifyV(db.HealthValueJustifyV)
-	--self:Tag(healthValue, prefix("[*:Health(true, nil, nil, true)]"))
+	--self:Tag(healthValue, prefix("[*:Health(true,false,false,true)]"))
 
 	--self.Health.Value = healthValue
 

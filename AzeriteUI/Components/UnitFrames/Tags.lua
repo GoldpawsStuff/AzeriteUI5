@@ -68,10 +68,19 @@ local prefix = function(msg)
 end
 
 local getargs = function(...)
-	local args = { ... }
-	for i,arg in ipairs(args) do
+	local args = {}
+	for i = 1, select("#", ...) do
+		local arg = select(i, ...)
 		local num = tonumber(arg)
-		args[i] = num or (arg == "true" or arg == true) and true or false
+		if (num) then
+			args[i] = num
+		elseif (arg == "true" or arg == true) then
+			args[i] = true
+		elseif (arg == "nil" or arg == "false" or not arg) then
+			args[i] = false
+		else
+			args[i] = arg
+		end
 	end
 	return unpack(args)
 end
