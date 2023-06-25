@@ -36,6 +36,8 @@ local unpack = unpack
 
 local defaults = { profile = ns:Merge({
 
+	showAuras = true,
+
 	showRaid = false,
 	showParty = true,
 	showPlayer = false,
