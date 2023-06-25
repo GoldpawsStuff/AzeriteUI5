@@ -106,7 +106,7 @@ local GenerateIndexedBarOptions = function(moduleName, displayName, order)
 				hidden = isdisabled
 			},
 			visibilityDesc = {
-				name = L["Choose when your auras will be visible."],
+				name = L["Choose when your bars will be visible."],
 				order = 3,
 				type = "description",
 				fontSize = "medium",
@@ -121,10 +121,19 @@ local GenerateIndexedBarOptions = function(moduleName, displayName, order)
 				set = setter,
 				get = getter
 			},
+			fadeAlone = {
+				name = L["Don't fade in other bars"],
+				desc = L["Only show buttons from this specific bar when hovering it."],
+				order = 10,
+				type = "toggle", width = "full",
+				hidden = isdisabled,
+				set = setter,
+				get = getter
+			},
 			fadeInCombat = {
 				name = L["Only show on mouseover"],
 				desc = L["Enable this to only show faded bars on mouseover, and not force them visible in combat."],
-				order = 10,
+				order = 11,
 				type = "toggle", width = "full",
 				hidden = function(info) return isdisabled(info) or not getsetting(info, "enableBarFading") end,
 				set = setter,
@@ -133,7 +142,7 @@ local GenerateIndexedBarOptions = function(moduleName, displayName, order)
 			fadeFrom = {
 				name = L["Start Fading from"],
 				desc = L["Choose which button to start the fading from."],
-				order = 11,
+				order = 12,
 				type = "range", width = "full", min = 1, max = 12, step = 1,
 				hidden = function(info) return isdisabled(info) or not getsetting(info, "enableBarFading") end,
 				set = setter,
@@ -402,7 +411,7 @@ local GenerateBarOptions = function(moduleName, displayName, order, maxButtons)
 				hidden = isdisabled
 			},
 			visibilityDesc = {
-				name = L["Choose when your auras will be visible."],
+				name = L["Choose when your bars will be visible."],
 				order = 3,
 				type = "description",
 				fontSize = "medium",
@@ -412,6 +421,15 @@ local GenerateBarOptions = function(moduleName, displayName, order, maxButtons)
 				name = L["Enable Bar Fading"],
 				desc = L["Toggle whether to enable the buttons of this action bar to fade out."],
 				order = 9,
+				type = "toggle", width = "full",
+				hidden = isdisabled,
+				set = setter,
+				get = getter
+			},
+			fadeAlone = {
+				name = L["Don't fade in other bars"],
+				desc = L["Only show buttons from this specific bar when hovering it."],
+				order = 10,
 				type = "toggle", width = "full",
 				hidden = isdisabled,
 				set = setter,

@@ -118,6 +118,7 @@ ActionBarMod.GenerateDefaults = function(self)
 
 		[3] = ns:Merge({ --[[ bottomright multibar ]]
 			enabled = false,
+			fadeAlone = true,
 			layout = "grid",
 			breakpoint = 6,
 			growth = "vertical",
@@ -133,6 +134,7 @@ ActionBarMod.GenerateDefaults = function(self)
 
 		[4] = ns:Merge({ --[[ right multibar 1 ]]
 			enabled = false,
+			fadeAlone = true,
 			layout = "grid",
 			breakpoint = 6,
 			growth = "vertical",
@@ -148,6 +150,7 @@ ActionBarMod.GenerateDefaults = function(self)
 
 		[5] = ns:Merge({ --[[ right multibar 2 ]]
 			enabled = false,
+			fadeAlone = true,
 			layout = "grid",
 			breakpoint = 6,
 			growth = "vertical",
@@ -165,6 +168,7 @@ ActionBarMod.GenerateDefaults = function(self)
 	if (ns.IsRetail) then
 		defaults.profile.bars[6] = ns:Merge({ --[[]]
 			enabled = false,
+			fadeAlone = true,
 			layout = "grid",
 			breakpoint = NUM_ACTIONBAR_BUTTONS,
 			growth = "horizontal",
@@ -180,6 +184,7 @@ ActionBarMod.GenerateDefaults = function(self)
 
 		defaults.profile.bars[7] = ns:Merge({ --[[]]
 			enabled = false,
+			fadeAlone = true,
 			layout = "grid",
 			breakpoint = NUM_ACTIONBAR_BUTTONS,
 			growth = "horizontal",
@@ -195,6 +200,7 @@ ActionBarMod.GenerateDefaults = function(self)
 
 		defaults.profile.bars[8] = ns:Merge({ --[[]]
 			enabled = false,
+			fadeAlone = true,
 			layout = "grid",
 			breakpoint = NUM_ACTIONBAR_BUTTONS,
 			growth = "horizontal",
