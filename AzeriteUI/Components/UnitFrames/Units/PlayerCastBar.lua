@@ -28,8 +28,11 @@ local oUF = ns.oUF
 
 local CastBarMod = ns:NewModule("PlayerCastBarFrame", ns.Module, "LibMoreEvents-1.0")
 
+-- GLOBALS: GetNetStats, PlayerCastingBarFrame, PetCastingBarFrame
+
 -- Lua API
 local next = next
+local select = select
 local string_gsub = string.gsub
 local type = type
 local unpack = unpack

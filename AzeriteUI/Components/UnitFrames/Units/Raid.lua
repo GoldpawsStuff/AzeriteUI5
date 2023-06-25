@@ -28,8 +28,14 @@ local oUF = ns.oUF
 
 local RaidFrameMod = ns:NewModule("RaidFrames", ns.UnitFrameModule, "LibMoreEvents-1.0", "AceHook-3.0")
 
+-- GLOBALS: UIParent, Enum
+-- GLOBALS: LoadAddOn, InCombatLockdown, RegisterAttributeDriver, UnregisterAttributeDriver
+-- GLOBALS: UnitGroupRolesAssigned, UnitHasVehicleUI, UnitIsUnit, UnitPowerType
+-- GLOBALS: CompactRaidFrameContainer, CompactRaidFrameManager, CompactRaidFrameManager_SetSetting
+
 -- Lua API
 local next = next
+local select = select
 local string_gsub = string.gsub
 local type = type
 local unpack = unpack
@@ -567,7 +573,7 @@ local style = function(self, unit)
 	local resurrectIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 6)
 	resurrectIndicator:SetSize(unpack(db.ResurrectIndicatorSize))
 	resurrectIndicator:SetPoint(unpack(db.ResurrectIndicatorPosition))
-	resurrectIndicator:SetTexture(ResurrectIndicatorTexture)
+	resurrectIndicator:SetTexture(db.ResurrectIndicatorTexture)
 
 	self.ResurrectIndicator = resurrectIndicator
 
