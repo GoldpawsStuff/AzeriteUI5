@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased] 2023-06-25
 ### Changed
 - When you mouse over faded actionbars, all faded bars fade in at once. Now you can make bars only fade in their own buttons and not every single faded button in the user interface at once.
+- Party auras should be a bit more restrictive now and hide self-cast buffs by the party members.
 
 ## [5.1.74-Release] 2023-06-24
 ### Added
