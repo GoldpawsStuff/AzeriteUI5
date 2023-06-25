@@ -77,7 +77,10 @@ ns.AuraFilters.PartyAuraFilter = function(button, unit, data)
 	button.noDuration = not data.duration or data.duration == 0
 	button.isPlayer = data.isPlayerAura
 
-	-- Adding this for now
+	if (data.sourceUnit == unit) then
+		return
+	end
+
 	if (data.isBossDebuff) then
 		return true
 	end
@@ -170,6 +173,10 @@ ns.AuraFilters.PartyAuraFilter = function(element, unit, button, name, texture,
 	button.duration = duration
 	button.noDuration = (not duration or duration == 0)
 	button.isPlayer = caster == "player" or caster == "vehicle"
+
+	if (caster == unit) then
+		return
+	end
 
 	if (isBossDebuff) then
 		return true
