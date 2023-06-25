@@ -28,8 +28,13 @@ local oUF = ns.oUF
 
 local PartyFrameMod = ns:NewModule("PartyFrames", ns.UnitFrameModule, "LibMoreEvents-1.0", "AceHook-3.0")
 
+-- GLOBALS: InCombatLockdown, RegisterAttributeDriver, UnregisterAttributeDriver
+-- GLOBALS: UnitGroupRolesAssigned, UnitGUID, UnitIsUnit, SetPortraitTexture
+
 -- Lua API
+local math_pi = math_pi
 local next = next
+local select = select
 local string_gsub = string.gsub
 local type = type
 local unpack = unpack
@@ -312,10 +317,10 @@ local Portrait_PostUpdate = function(element, unit, hasStateChanged)
 		element:SetCamDistanceScale(element.distanceScale or 1)
 		element:SetPortraitZoom(1)
 		element:SetPosition(element.positionX or 0, element.positionY or 0, element.positionZ or 0)
-		element:SetRotation(element.rotation and element.rotation*degToRad or 0)
+		element:SetRotation(element.rotation and element.rotation*(2*math_pi)/180 or 0)
 		element:ClearModel()
 		element:SetUnit(unit)
-		element.guid = guid
+		element.guid = UnitGUID(unit)
 	end
 end
 
@@ -779,6 +784,16 @@ end
 PartyFrameMod.Update = function(self)
 	self:UpdateHeader()
 	self:UpdateUnits()
+
+	for i = 1, self.frame:GetNumChildren() do
+		local frame = select(i, self.frame:GetChildren())
+		if (self.db.profile.showAuras) then
+			frame:EnableElement("Auras")
+			frame.Auras:ForceUpdate()
+		else
+			frame:DisableElement("Auras")
+		end
+	end
 end
 
 PartyFrameMod.CreateUnitFrames = function(self)

@@ -203,7 +203,15 @@ local GenerateOptions = function()
 		suboptions.name = L["Party Frames"]
 		suboptions.order = 150
 		suboptions.args.elementHeader = {
-			name = L["Visibility"], order = 10, type = "header", hidden = isdisabled
+			name = L["Elements"], order = 10, type = "header", hidden = isdisabled
+		}
+		suboptions.args.showAuras = {
+			name = L["Show Auras"],
+			desc = L["Toggle whether to show auras on this unit frame."],
+			order = 11, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+		suboptions.args.elementHeader = {
+			name = L["Visibility"], order = 19, type = "header", hidden = isdisabled
 		}
 		suboptions.args.showPlayer = {
 			name = L["Show player"],
