@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-06-25
+## [Unreleased] 2023-06-26
+### Added
+- Added separate raid frames for raids of up to 5 players. If these are disabled, party frames with portraits will be shown in raids of up to 5 players.
+- Added separate raid frames for raids of up to 25 players. If the above are disabled, these raid frames will also be shown in raids of up to 5 players.
+- Added separate raid frames for large raids of up to 40 players. If the 25 player raid frames are disabled, these frames will also be shown in raid of up to 25 players. If the 5 player raid frames also are disabled in addition to this, these frames will also be shown in raids of up to 5 players. You still following?
+
 ### Changed
 - When you mouse over faded actionbars, all faded bars fade in at once. Now you can make bars only fade in their own buttons and not every single faded button in the user interface at once.
 - Party auras should be a bit more restrictive now and hide self-cast buffs by the party members.
