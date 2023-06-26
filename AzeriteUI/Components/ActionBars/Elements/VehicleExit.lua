@@ -84,12 +84,9 @@ VehicleExit.UpdateScale = function(self)
 		local point, anchor, rpoint, x, y = unpack(config.VehicleExitButtonPosition)
 
 		if (ns.IsRetail) then
-			local scale = Minimap:GetScale()
-			local escale = scale / Minimap:GetEffectiveScale()
-
-			self.Button:SetScale(scale)
+			self.Button:SetScale(Minimap:GetScale())
 			self.Button:ClearAllPoints()
-			self.Button:SetPoint(point, anchor, rpoint, x / escale, y / escale)
+			self.Button:SetPoint(point, anchor, rpoint, x, y)
 		else
 			self.Button:SetScale(Minimap:GetScale() * 768/1080)
 			self.Button:ClearAllPoints()
