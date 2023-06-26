@@ -11,8 +11,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added separate raid frames for large raids of up to 40 players. If the 25 player raid frames are disabled, these frames will also be shown in raid of up to 25 players. If the 5 player raid frames also are disabled in addition to this, these frames will also be shown in raids of up to 5 players. You still following?
 
 ### Changed
-- When you mouse over faded actionbars, all faded bars fade in at once. Now you can make bars only fade in their own buttons and not every single faded button in the user interface at once.
+- Previously when mousing over a faded actionbar, all faded bars would fade in at once. Now you can make bars only fade in their own buttons and not every single faded button in the user interface at once.
 - Party auras should be a bit more restrictive now and hide self-cast buffs by the party members.
+- Party frames will now by default appear for raids of up to 5 players when none of the available sized frames are enabled.
 
 ## [5.1.74-Release] 2023-06-24
 ### Added
