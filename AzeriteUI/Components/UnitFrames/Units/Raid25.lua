@@ -26,7 +26,7 @@
 local _, ns = ...
 local oUF = ns.oUF
 
-local RaidFrameMod = ns:NewModule("RaidFrames", ns.UnitFrameModule, "LibMoreEvents-1.0", "AceHook-3.0")
+local RaidFrame25Mod = ns:NewModule("RaidFrame25", ns.UnitFrameModule, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- GLOBALS: UIParent, Enum
 -- GLOBALS: LoadAddOn, InCombatLockdown, RegisterAttributeDriver, UnregisterAttributeDriver
@@ -34,6 +34,7 @@ local RaidFrameMod = ns:NewModule("RaidFrames", ns.UnitFrameModule, "LibMoreEven
 -- GLOBALS: CompactRaidFrameContainer, CompactRaidFrameManager, CompactRaidFrameManager_SetSetting
 
 -- Lua API
+local math_abs = math.abs
 local next = next
 local select = select
 local string_gsub = string.gsub
@@ -42,40 +43,23 @@ local unpack = unpack
 
 local defaults = { profile = ns:Merge({
 
-	showRaid = true,
-	showParty = false,
+	enabled = true,
 
-	useRaidStylePartyFrames = false,
-	showInPartySizedRaidGroups = true,
-
-	point = "LEFT", -- anchor point of unitframe, group members within column grow opposite
-	xOffset = 10, -- horizontal offset within the same column
-	yOffset = 0, -- vertical offset within the same column
+	point = "TOP", -- anchor point of unitframe, group members within column grow opposite
+	xOffset = 0, -- horizontal offset within the same column
+	yOffset = -12, -- vertical offset within the same column
 
 	groupBy = "ROLE", -- GROUP, CLASS, ROLE
 	groupingOrder = "TANK,HEALER,DAMAGER", -- must match choice in groupBy
 
 	unitsPerColumn = 5, -- maximum units per column
-	maxColumns = 8, -- should be 40/unitsPerColumn
-	columnSpacing = -12, -- spacing between columns
-	columnAnchorPoint = "TOP" -- anchor point of column, columns grow opposite
-
-	--[[
-	point = "TOP", -- anchor point of unitframe, group members within column grow opposite
-	xOffset = 0, -- horizontal offset within the same column
-	yOffset = 16, -- vertical offset within the same column
-
-	groupBy = "ROLE", -- GROUP, CLASS, ROLE
-	groupingOrder = "TANK,HEALER,DAMAGER,NONE", -- must match choice in groupBy
-
-	unitsPerColumn = 5, -- maximum units per column
-	maxColumns = 8, -- should be 40/unitsPerColumn
-	columnSpacing = 0, -- spacing between columns
+	maxColumns = 5, -- should be 25/unitsPerColumn
+	columnSpacing = 10, -- spacing between columns
 	columnAnchorPoint = "LEFT" -- anchor point of column, columns grow opposite
-	]]
+
 }, ns.Module.defaults) }
 
-RaidFrameMod.GenerateDefaults = function(self)
+RaidFrame25Mod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),
 		[1] = "TOPLEFT",
@@ -684,7 +668,7 @@ end
 GroupHeader.Enable = function(self)
 	if (InCombatLockdown()) then return end
 
-	local visibility = RaidFrameMod:GetVisibilityDriver()
+	local visibility = RaidFrame25Mod:GetVisibilityDriver()
 
 	UnregisterAttributeDriver(self, "state-visibility")
 	RegisterAttributeDriver(self, "state-visibility", visibility)
@@ -705,7 +689,7 @@ GroupHeader.IsEnabled = function(self)
 	return self.visibility and true or false
 end
 
-RaidFrameMod.DisableBlizzard = function(self)
+RaidFrame25Mod.DisableBlizzard = function(self)
 	UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
 
 	CompactRaidFrameManager_SetSetting("IsShown", "0")
@@ -715,7 +699,7 @@ RaidFrameMod.DisableBlizzard = function(self)
 	CompactRaidFrameManager:SetParent(ns.Hider)
 end
 
-RaidFrameMod.OnEvent = function(self, event, ...)
+RaidFrame25Mod.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_REGEN_ENABLED") then
 		if (InCombatLockdown()) then return end
 		if (self.needHeaderUpdate) then
@@ -725,7 +709,7 @@ RaidFrameMod.OnEvent = function(self, event, ...)
 	end
 end
 
-RaidFrameMod.GetHeaderAttributes = function(self)
+RaidFrame25Mod.GetHeaderAttributes = function(self)
 	local db = self.db.profile
 
 	return ns.Prefix.."Raid", nil, nil,
@@ -744,8 +728,8 @@ RaidFrameMod.GetHeaderAttributes = function(self)
 	"groupFilter", "1,2,3,4,5,6,7,8", -- Group filter
 	"showSolo", false, -- show while non-grouped
 	"showPlayer", true, -- show the player while in a party
-	"showRaid", db.showRaid, -- show while in a raid group
-	"showParty", db.showParty, -- show while in a party
+	"showRaid", true, -- show while in a raid group
+	"showParty", true, -- show while in a party
 	"point", db.point, -- Unit anchoring within each column
 	"xOffset", db.xOffset,
 	"yOffset", db.yOffset,
@@ -758,20 +742,20 @@ RaidFrameMod.GetHeaderAttributes = function(self)
 
 end
 
-RaidFrameMod.GetVisibilityDriver = function(self)
-	local driver = "custom "
+RaidFrame25Mod.GetVisibilityDriver = function(self)
+	local party = ns:GetModule("PartyFrames").db.profile.enabled
+	local raid5 = ns:GetModule("RaidFrame5").db.profile.enabled
+	local raid25 = ns:GetModule("RaidFrame25").db.profile.enabled
+	local raid40 = ns:GetModule("RaidFrame40").db.profile.enabled
 
-	if (self.db.profile.useRaidStylePartyFrames) then
-		driver = driver.."[group:party,nogroup:raid]show;"
-	end
+	-- Hide in groups of 26 or more.
+	local driver = "custom [@raid26,exists]hide;"
 
-	if (self.db.profile.showInPartySizedRaidGroups) then
-		driver = driver.."[group:raid,@raid6,noexists]show;"
-	end
-
-	if (self.db.profile.showRaid) then
-		driver = driver.."[group:raid,@raid6,exists]show;"
+	-- Show in groups of 6 or more, and in all groups if party and raid5 are disabled.
+	if (party or raid5) then
+		driver = driver .. "[@raid6,exists]show;"
 	else
+		driver = driver .. "[group]show;"
 	end
 
 	driver = driver.."hide"
@@ -779,7 +763,7 @@ RaidFrameMod.GetVisibilityDriver = function(self)
 	return driver
 end
 
-RaidFrameMod.UpdateHeader = function(self)
+RaidFrame25Mod.UpdateHeader = function(self)
 	if (not self.frame) then return end
 	if (InCombatLockdown()) then
 		self.needHeaderUpdate = true
@@ -787,8 +771,6 @@ RaidFrameMod.UpdateHeader = function(self)
 		return
 	end
 	for _,attrib in next,{
-		"showRaid",
-		"showParty",
 		"point",
 		"xOffset",
 		"yOffset",
@@ -801,9 +783,19 @@ RaidFrameMod.UpdateHeader = function(self)
 	} do
 		self.frame:SetAttribute(attrib, self.db.profile[attrib])
 	end
+
+	self.frame:SetSize(self:GetHeaderSize())
+	self:UpdateAnchor()
 end
 
-RaidFrameMod.UpdateUnits = function(self)
+RaidFrame25Mod.GetHeaderSize = function(self)
+	local config = ns.GetConfig("RaidFrames")
+	return
+		config.UnitSize[1]*5 + math_abs(self.db.profile.columnSpacing * 4),
+		config.UnitSize[2]*5 + math_abs(self.db.profile.yOffset * 4)
+end
+
+RaidFrame25Mod.UpdateUnits = function(self)
 	if (not self.frame) then return end
 	for i = 1, self.frame:GetNumChildren() do
 		local frame = select(i, self.frame:GetChildren())
@@ -811,20 +803,20 @@ RaidFrameMod.UpdateUnits = function(self)
 	end
 end
 
-RaidFrameMod.Update = function(self)
+RaidFrame25Mod.Update = function(self)
 	self:UpdateHeader()
 	self:UpdateUnits()
 end
 
-RaidFrameMod.CreateUnitFrames = function(self)
+RaidFrame25Mod.CreateUnitFrames = function(self)
 
-	local name = "Raid"
+	local name = "Raid25"
 
 	oUF:RegisterStyle(ns.Prefix..name, style)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
 	self.frame = oUF:SpawnHeader(self:GetHeaderAttributes())
-	self.frame:SetSize(unpack(ns.GetConfig("RaidFrames").Size))
+	self.frame:SetSize(self:GetHeaderSize())
 
 	-- Embed our custom methods
 	for method,func in next,GroupHeader do
@@ -844,14 +836,14 @@ RaidFrameMod.CreateUnitFrames = function(self)
 
 end
 
-RaidFrameMod.OnEnable = function(self)
+RaidFrame25Mod.OnEnable = function(self)
 	LoadAddOn("Blizzard_CUFProfiles")
 	LoadAddOn("Blizzard_CompactRaidFrames")
 
 	-- Leave these enabled for now.
 	self:DisableBlizzard()
 	self:CreateUnitFrames()
-	self:CreateAnchor(RAID) --[[PARTYRAID_LABEL RAID_AND_PARTY]]
+	self:CreateAnchor(RAID .. " (25)") --[[PARTYRAID_LABEL RAID_AND_PARTY]]
 
 	ns.Module.OnEnable(self)
 end

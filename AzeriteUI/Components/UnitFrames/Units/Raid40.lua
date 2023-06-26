@@ -26,14 +26,15 @@
 local _, ns = ...
 local oUF = ns.oUF
 
-local PartyFrameMod = ns:NewModule("PartyFrames", ns.UnitFrameModule, "LibMoreEvents-1.0", "AceHook-3.0")
+local RaidFrame40Mod = ns:NewModule("RaidFrame40", ns.UnitFrameModule, "LibMoreEvents-1.0", "AceHook-3.0")
 
--- GLOBALS: InCombatLockdown, RegisterAttributeDriver, UnregisterAttributeDriver
--- GLOBALS: UnitGroupRolesAssigned, UnitGUID, UnitIsUnit, SetPortraitTexture
+-- GLOBALS: UIParent, Enum
+-- GLOBALS: LoadAddOn, InCombatLockdown, RegisterAttributeDriver, UnregisterAttributeDriver
+-- GLOBALS: UnitGroupRolesAssigned, UnitHasVehicleUI, UnitIsUnit, UnitPowerType
+-- GLOBALS: CompactRaidFrameContainer, CompactRaidFrameManager, CompactRaidFrameManager_SetSetting
 
 -- Lua API
 local math_abs = math.abs
-local math_pi = math_pi
 local next = next
 local select = select
 local string_gsub = string.gsub
@@ -42,24 +43,23 @@ local unpack = unpack
 
 local defaults = { profile = ns:Merge({
 
-	showAuras = true,
-	showPlayer = false,
+	enabled = true,
 
 	point = "LEFT", -- anchor point of unitframe, group members within column grow opposite
-	xOffset = 0, -- horizontal offset within the same column
+	xOffset = 10, -- horizontal offset within the same column
 	yOffset = 0, -- vertical offset within the same column
 
 	groupBy = "ROLE", -- GROUP, CLASS, ROLE
 	groupingOrder = "TANK,HEALER,DAMAGER", -- must match choice in groupBy
 
 	unitsPerColumn = 5, -- maximum units per column
-	maxColumns = 1, -- should be 5/unitsPerColumn
-	columnSpacing = 0, -- spacing between columns
+	maxColumns = 8, -- should be 40/unitsPerColumn
+	columnSpacing = -12, -- spacing between columns
 	columnAnchorPoint = "TOP" -- anchor point of column, columns grow opposite
 
 }, ns.Module.defaults) }
 
-PartyFrameMod.GenerateDefaults = function(self)
+RaidFrame40Mod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),
 		[1] = "TOPLEFT",
@@ -296,29 +296,17 @@ local GroupRoleIndicator_Override = function(self, event)
 	end
 end
 
--- Make the portrait look better for offline or invisible units.
-local Portrait_PostUpdate = function(element, unit, hasStateChanged)
-	if (not element.state) then
-		element:ClearModel()
-		if (not element.fallback2DTexture) then
-			element.fallback2DTexture = element:CreateTexture()
-			element.fallback2DTexture:SetDrawLayer("ARTWORK")
-			element.fallback2DTexture:SetAllPoints()
-			element.fallback2DTexture:SetTexCoord(.1, .9, .1, .9)
+local MasterLooterIndicator_PostUpdate = function(self, isShown)
+	local leaderIndicator = self.__owner.LeaderIndicator
+	leaderIndicator:ClearAllPoints()
+
+	if (isShown) then
+		if (not leaderIndicator.points) then
+			leaderIndicator.points = { leaderIndicator:GetPoint() }
 		end
-		SetPortraitTexture(element.fallback2DTexture, unit)
-		element.fallback2DTexture:Show()
-	else
-		if (element.fallback2DTexture) then
-			element.fallback2DTexture:Hide()
-		end
-		element:SetCamDistanceScale(element.distanceScale or 1)
-		element:SetPortraitZoom(1)
-		element:SetPosition(element.positionX or 0, element.positionY or 0, element.positionZ or 0)
-		element:SetRotation(element.rotation and element.rotation*(2*math_pi)/180 or 0)
-		element:ClearModel()
-		element:SetUnit(unit)
-		element.guid = UnitGUID(unit)
+		leaderIndicator:SetPoint("RIGHT", self, "LEFT")
+	elseif (leaderIndicator.points) then
+		leaderIndicator:SetPoint(unpack(leaderIndicator.points))
 	end
 end
 
@@ -350,7 +338,7 @@ end
 
 local style = function(self, unit)
 
-	local db = ns.GetConfig("PartyFrames")
+	local db = ns.GetConfig("RaidFrames")
 
 	-- Apply common scripts and member values.
 	ns.UnitFrame.InitializeUnitFrame(self)
@@ -386,7 +374,7 @@ local style = function(self, unit)
 	self.Health.PostUpdateColor = Health_PostUpdateColor
 
 	local healthOverlay = CreateFrame("Frame", nil, health)
-	healthOverlay:SetFrameLevel(overlay:GetFrameLevel())
+	healthOverlay:SetFrameLevel(overlay:GetFrameLevel() - 1)
 	healthOverlay:SetAllPoints()
 
 	self.Health.Overlay = healthOverlay
@@ -438,15 +426,27 @@ local style = function(self, unit)
 
 	-- Health Value
 	--------------------------------------------
-	local healthValue = healthOverlay:CreateFontString(nil, "OVERLAY", nil, 1)
-	healthValue:SetPoint(unpack(db.HealthValuePosition))
-	healthValue:SetFontObject(db.HealthValueFont)
-	healthValue:SetTextColor(unpack(db.HealthValueColor))
-	healthValue:SetJustifyH(db.HealthValueJustifyH)
-	healthValue:SetJustifyV(db.HealthValueJustifyV)
-	self:Tag(healthValue, prefix("[*:Health(true,false,false,true)]"))
+	--local healthValue = healthOverlay:CreateFontString(nil, "OVERLAY", nil, 1)
+	--healthValue:SetPoint(unpack(db.HealthValuePosition))
+	--healthValue:SetFontObject(db.HealthValueFont)
+	--healthValue:SetTextColor(unpack(db.HealthValueColor))
+	--healthValue:SetJustifyH(db.HealthValueJustifyH)
+	--healthValue:SetJustifyV(db.HealthValueJustifyV)
+	--self:Tag(healthValue, prefix("[*:Health(true,false,false,true)]"))
 
-	self.Health.Value = healthValue
+	--self.Health.Value = healthValue
+
+	-- Player Status
+	--------------------------------------------
+	local status = healthOverlay:CreateFontString(nil, "OVERLAY", nil, 1)
+	status:SetPoint(unpack(db.StatusPosition))
+	status:SetFontObject(db.StatusFont)
+	status:SetTextColor(unpack(db.StatusColor))
+	status:SetJustifyH(db.StatusJustifyH)
+	status:SetJustifyV(db.StatusJustifyV)
+	self:Tag(status, prefix("[*:DeadOrOffline]"))
+
+	self.Health.Status = status
 
 	-- Power
 	--------------------------------------------
@@ -470,54 +470,6 @@ local style = function(self, unit)
 	powerBackdrop:SetVertexColor(unpack(db.PowerBackdropColor))
 
 	self.Power.Backdrop = powerBackdrop
-
-	-- Portrait
-	--------------------------------------------
-	local portraitFrame = CreateFrame("Frame", nil, self)
-	portraitFrame:SetFrameLevel(self:GetFrameLevel() - 2)
-	portraitFrame:SetAllPoints()
-
-	local portrait = CreateFrame("PlayerModel", nil, portraitFrame)
-	portrait:SetFrameLevel(portraitFrame:GetFrameLevel())
-	portrait:SetPoint(unpack(db.PortraitPosition))
-	portrait:SetSize(unpack(db.PortraitSize))
-	portrait:SetAlpha(db.PortraitAlpha)
-	portrait.distanceScale = db.PortraitDistanceScale
-	portrait.positionX = db.PortraitPositionX
-	portrait.positionY = db.PortraitPositionY
-	portrait.positionZ = db.PortraitPositionZ
-	portrait.rotation = db.PortraitRotation
-	portrait.showFallback2D = db.PortraitShowFallback2D
-
-	self.Portrait = portrait
-	self.Portrait.PostUpdate = Portrait_PostUpdate
-
-	local portraitBg = portraitFrame:CreateTexture(nil, "BACKGROUND", nil, 0)
-	portraitBg:SetPoint(unpack(db.PortraitBackgroundPosition))
-	portraitBg:SetSize(unpack(db.PortraitBackgroundSize))
-	portraitBg:SetTexture(db.PortraitBackgroundTexture)
-	portraitBg:SetVertexColor(unpack(db.PortraitBackgroundColor))
-
-	self.Portrait.Bg = portraitBg
-
-	local portraitOverlayFrame = CreateFrame("Frame", nil, self)
-	portraitOverlayFrame:SetFrameLevel(self:GetFrameLevel() - 1)
-	portraitOverlayFrame:SetAllPoints()
-
-	local portraitShade = portraitOverlayFrame:CreateTexture(nil, "BACKGROUND", nil, -1)
-	portraitShade:SetPoint(unpack(db.PortraitShadePosition))
-	portraitShade:SetSize(unpack(db.PortraitShadeSize))
-	portraitShade:SetTexture(db.PortraitShadeTexture)
-
-	self.Portrait.Shade = portraitShade
-
-	local portraitBorder = portraitOverlayFrame:CreateTexture(nil, "BACKGROUND", nil, 0)
-	portraitBorder:SetPoint(unpack(db.PortraitBorderPosition))
-	portraitBorder:SetSize(unpack(db.PortraitBorderSize))
-	portraitBorder:SetTexture(db.PortraitBorderTexture)
-	portraitBorder:SetVertexColor(unpack(db.PortraitBorderColor))
-
-	self.Portrait.Border = portraitBorder
 
 	-- Absorb Bar (Retail)
 	--------------------------------------------
@@ -544,6 +496,51 @@ local style = function(self, unit)
 		self.Health.Absorb = absorb
 	end
 
+	-- Dispellable Debuffs
+	--------------------------------------------
+	--[[
+	local dispellable = {}
+	dispellable.disableMouse = true
+
+	local dispelIcon = CreateFrame("Button", dispellable:GetDebugName() .. "Button", healthOverlay)
+	--dispelIcon:Hide()
+	dispelIcon:SetFrameLevel(overlay:GetFrameLevel() + 2)
+	dispelIcon:SetSize(24,24)
+	dispelIcon:SetPoint("CENTER")
+	dispellable.dispellIcon = dispelIcon
+
+	local dispelIconTexture = dispelIcon:CreateTexture(nil, "BACKGROUND", nil, 1)
+	dispelIconTexture:SetAllPoints()
+	dispelIconTexture:SetMask(GetMedia("actionbutton-mask-square"))
+	dispelIcon.icon = dispelIconTexture
+
+	local dispelIconCount = dispelIcon.Border:CreateFontString(nil, "OVERLAY")
+	dispelIconCount:SetFontObject(GetFont(12,true))
+	dispelIconCount:SetTextColor(Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3])
+	dispelIconCount:SetPoint("BOTTOMRIGHT", dispelIcon, "BOTTOMRIGHT", -2, 3)
+	dispelIcon.count = dispelIconCount
+
+	local dispelIconBorder = CreateFrame("Frame", nil, dispelIcon, ns.BackdropTemplate)
+	dispelIconBorder:SetBackdrop({ edgeFile = GetMedia("border-aura"), edgeSize = 12 })
+	dispelIconBorder:SetBackdropBorderColor(Colors.aura[1], Colors.aura[2], Colors.aura[3])
+	dispelIconBorder:SetPoint("TOPLEFT", -6, 6)
+	dispelIconBorder:SetPoint("BOTTOMRIGHT", 6, -6)
+	dispelIconBorder:SetFrameLevel(dispelIcon:GetFrameLevel() + 2)
+	dispelIcon.overlay = dispelIconBorder
+
+	local dispelIconTime = dispelIcon.overlay:CreateFontString(nil, "OVERLAY")
+	dispelIconTime:SetFontObject(GetFont(14,true))
+	dispelIconTime:SetTextColor(Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3])
+	dispelIconTime:SetPoint("TOPLEFT", dispelIcon, "TOPLEFT", -4, 4)
+	dispelIcon.time = dispelIconTime
+
+	-- Using a virtual cooldown element with the timer attached,
+	-- allowing them to piggyback on the back-end's cooldown updates.
+	dispelIcon.cd = ns.Widgets.RegisterCooldown(dispelIcon.time)
+
+	--self.Dispellable = dispellable
+	--]]
+
 	-- Readycheck
 	--------------------------------------------
 	local readyCheckIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 7)
@@ -557,22 +554,20 @@ local style = function(self, unit)
 
 	-- Ressurection Indicator
 	--------------------------------------------
-	local resurrectIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 1)
+	local resurrectIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 6)
 	resurrectIndicator:SetSize(unpack(db.ResurrectIndicatorSize))
 	resurrectIndicator:SetPoint(unpack(db.ResurrectIndicatorPosition))
-	resurrectIndicator:SetTexture(ResurrectIndicatorTexture)
+	resurrectIndicator:SetTexture(db.ResurrectIndicatorTexture)
 
 	self.ResurrectIndicator = resurrectIndicator
 
 	-- Group Role
 	-----------------------------------------
-    local groupRoleIndicator = CreateFrame("Frame", nil, overlay)
+    local groupRoleIndicator = CreateFrame("Frame", nil, healthOverlay)
 	groupRoleIndicator:SetSize(unpack(db.GroupRoleSize))
 	groupRoleIndicator:SetPoint(unpack(db.GroupRolePosition))
-	groupRoleIndicator.DAMAGER = db.GroupRoleDPSTexture
 	groupRoleIndicator.HEALER = db.GroupRoleHealerTexture
 	groupRoleIndicator.TANK = db.GroupRoleTankTexture
-	--groupRoleIndicator.NONE = groupRoleIndicator.DAMAGER -- fallback
 
 	local groupRoleBackdrop = groupRoleIndicator:CreateTexture(nil, "BACKGROUND", nil, 1)
 	groupRoleBackdrop:SetSize(unpack(db.GroupRoleBackdropSize))
@@ -593,14 +588,14 @@ local style = function(self, unit)
 
 	-- CombatFeedback Text
 	--------------------------------------------
-	local feedbackText = overlay:CreateFontString(nil, "OVERLAY")
-	feedbackText:SetPoint(db.CombatFeedbackPosition[1], self[db.CombatFeedbackAnchorElement], unpack(db.CombatFeedbackPosition))
-	feedbackText:SetFontObject(db.CombatFeedbackFont)
-	feedbackText.feedbackFont = db.CombatFeedbackFont
-	feedbackText.feedbackFontLarge = db.CombatFeedbackFontLarge
-	feedbackText.feedbackFontSmall = db.CombatFeedbackFontSmall
+	--local feedbackText = overlay:CreateFontString(nil, "OVERLAY")
+	--feedbackText:SetPoint(db.CombatFeedbackPosition[1], self[db.CombatFeedbackAnchorElement], unpack(db.CombatFeedbackPosition))
+	--feedbackText:SetFontObject(db.CombatFeedbackFont)
+	--feedbackText.feedbackFont = db.CombatFeedbackFont
+	--feedbackText.feedbackFontLarge = db.CombatFeedbackFontLarge
+	--feedbackText.feedbackFontSmall = db.CombatFeedbackFontSmall
 
-	self.CombatFeedback = feedbackText
+	--self.CombatFeedback = feedbackText
 
 	-- Target Highlight
 	--------------------------------------------
@@ -613,41 +608,38 @@ local style = function(self, unit)
 
 	self.TargetHighlight = targetHighlight
 
-	-- Auras
+	-- Unit Name
 	--------------------------------------------
-	local auras = CreateFrame("Frame", nil, self)
-	auras:SetSize(unpack(db.AurasSize))
-	auras:SetPoint(unpack(db.AurasPosition))
-	auras.size = db.AuraSize
-	auras.spacing = db.AuraSpacing
-	auras.numTotal = db.AurasNumTotal
-	auras.disableMouse = db.AurasDisableMouse
-	auras.disableCooldown = db.AurasDisableCooldown
-	auras.onlyShowPlayer = db.AurasOnlyShowPlayer
-	auras.showStealableBuffs = db.AurasShowStealableBuffs
-	auras.initialAnchor = db.AurasInitialAnchor
-	auras["spacing-x"] = db.AurasSpacingX
-	auras["spacing-y"] = db.AurasSpacingY
-	auras["growth-x"] = db.AurasGrowthX
-	auras["growth-y"] = db.AurasGrowthY
-	auras.tooltipAnchor = db.AurasTooltipAnchor
-	auras.sortMethod = db.AurasSortMethod
-	auras.sortDirection = db.AurasSortDirection
-	auras.reanchorIfVisibleChanged = true
-	auras.CreateButton = ns.AuraStyles.CreateButton
-	auras.PostUpdateButton = ns.AuraStyles.TargetPostUpdateButton
-	auras.CustomFilter = ns.AuraFilters.PartyAuraFilter -- classic
-	auras.FilterAura = ns.AuraFilters.PartyAuraFilter -- retail
+	local name = overlay:CreateFontString(nil, "OVERLAY", nil, 1)
+	name:SetPoint(unpack(db.NamePosition))
+	name:SetFontObject(db.NameFont)
+	name:SetTextColor(unpack(db.NameColor))
+	name:SetJustifyH(db.NameJustifyH)
+	name:SetJustifyV(db.NameJustifyV)
+	self:Tag(name, prefix("[*:Name(12,nil,nil,true)]"))
 
-	if (ns:GetModule("UnitFrames").db.global.disableAuraSorting) then
-		auras.PreSetPosition = ns.AuraSorts.Alternate -- only in classic
-		auras.SortAuras = ns.AuraSorts.AlternateFuncton -- only in retail
-	else
-		auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
-		auras.SortAuras = ns.AuraSorts.DefaultFunction -- only in retail
-	end
+	self.Name = name
 
-	self.Auras = auras
+	-- Leader Indicator
+	--------------------------------------------
+	local leaderIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 2)
+	leaderIndicator:SetSize(16, 16)
+	leaderIndicator:SetPoint("RIGHT", self.Name, "LEFT")
+
+	self.LeaderIndicator = leaderIndicator
+
+	-- MasterLooter Indicator
+	--------------------------------------------
+	local masterLooterIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 2)
+	masterLooterIndicator:SetSize(16, 16)
+	masterLooterIndicator:SetPoint("RIGHT", self.Name, "LEFT")
+
+	self.MasterLooterIndicator = masterLooterIndicator
+	self.MasterLooterIndicator.PostUpdate = MasterLooterIndicator_PostUpdate
+
+	-- Range Opacity
+	-----------------------------------------------------------
+	self.Range = { outsideAlpha = .6 }
 
 	-- Textures need an update when frame is displayed.
 	self.PostUpdate = UnitFrame_PostUpdate
@@ -676,7 +668,7 @@ end
 GroupHeader.Enable = function(self)
 	if (InCombatLockdown()) then return end
 
-	local visibility = PartyFrameMod:GetVisibilityDriver()
+	local visibility = RaidFrame40Mod:GetVisibilityDriver()
 
 	UnregisterAttributeDriver(self, "state-visibility")
 	RegisterAttributeDriver(self, "state-visibility", visibility)
@@ -697,12 +689,32 @@ GroupHeader.IsEnabled = function(self)
 	return self.visibility and true or false
 end
 
-PartyFrameMod.GetHeaderAttributes = function(self)
+RaidFrame40Mod.DisableBlizzard = function(self)
+	UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
+
+	CompactRaidFrameManager_SetSetting("IsShown", "0")
+
+	CompactRaidFrameContainer:UnregisterAllEvents()
+	CompactRaidFrameManager:UnregisterAllEvents()
+	CompactRaidFrameManager:SetParent(ns.Hider)
+end
+
+RaidFrame40Mod.OnEvent = function(self, event, ...)
+	if (event == "PLAYER_REGEN_ENABLED") then
+		if (InCombatLockdown()) then return end
+		if (self.needHeaderUpdate) then
+			self.needHeaderUpdate = nil
+			self:UpdateHeader()
+		end
+	end
+end
+
+RaidFrame40Mod.GetHeaderAttributes = function(self)
 	local db = self.db.profile
 
-	return ns.Prefix.."Party", nil, nil,
-	"initial-width", ns.GetConfig("PartyFrames").UnitSize[1],
-	"initial-height", ns.GetConfig("PartyFrames").UnitSize[2],
+	return ns.Prefix.."Raid", nil, nil,
+	"initial-width", ns.GetConfig("RaidFrames").UnitSize[1],
+	"initial-height", ns.GetConfig("RaidFrames").UnitSize[2],
 	"oUF-initialConfigFunction", [[
 		local header = self:GetParent();
 		self:SetWidth(header:GetAttribute("initial-width"));
@@ -715,7 +727,7 @@ PartyFrameMod.GetHeaderAttributes = function(self)
 	"sortDir", "ASC", -- ASC, DESC
 	"groupFilter", "1,2,3,4,5,6,7,8", -- Group filter
 	"showSolo", false, -- show while non-grouped
-	"showPlayer", db.showPlayer, -- show the player in the party
+	"showPlayer", true, -- show the player while in a party
 	"showRaid", true, -- show while in a raid group
 	"showParty", true, -- show while in a party
 	"point", db.point, -- Unit anchoring within each column
@@ -730,18 +742,23 @@ PartyFrameMod.GetHeaderAttributes = function(self)
 
 end
 
-PartyFrameMod.GetVisibilityDriver = function(self)
+RaidFrame40Mod.GetVisibilityDriver = function(self)
 	local party = ns:GetModule("PartyFrames").db.profile.enabled
 	local raid5 = ns:GetModule("RaidFrame5").db.profile.enabled
 	local raid25 = ns:GetModule("RaidFrame25").db.profile.enabled
 	local raid40 = ns:GetModule("RaidFrame40").db.profile.enabled
 
-	-- Hide in groups of 6 or more, show in parties.
-	local driver = "custom [@raid6,exists]hide;[@party1,exists]show;"
+	-- Show in groups of 26 or more.
+	local driver = "custom [@raid26,exists]show;"
 
-	-- Show in raid groups of 1-5 if no raid frames are enabled.
-	if (not raid5 and not raid25 and not raid40) then
-		driver = driver .. "[group:raid]show;"
+	-- Show in groups of 6 or more if raid25 is disabled.
+	if (not raid25) then
+		driver = driver .. "[@raid6,exists]show;"
+	end
+
+	-- Show in all groups if all smaller groups frames are disabled.
+	if (not raid5 and not party) then
+		driver = driver .. "[group]show;"
 	end
 
 	driver = driver.."hide"
@@ -749,7 +766,7 @@ PartyFrameMod.GetVisibilityDriver = function(self)
 	return driver
 end
 
-PartyFrameMod.UpdateHeader = function(self)
+RaidFrame40Mod.UpdateHeader = function(self)
 	if (not self.frame) then return end
 	if (InCombatLockdown()) then
 		self.needHeaderUpdate = true
@@ -757,7 +774,6 @@ PartyFrameMod.UpdateHeader = function(self)
 		return
 	end
 	for _,attrib in next,{
-		"showPlayer",
 		"point",
 		"xOffset",
 		"yOffset",
@@ -770,19 +786,18 @@ PartyFrameMod.UpdateHeader = function(self)
 	} do
 		self.frame:SetAttribute(attrib, self.db.profile[attrib])
 	end
-
 	self.frame:SetSize(self:GetHeaderSize())
 	self:UpdateAnchor()
 end
 
-PartyFrameMod.GetHeaderSize = function(self)
+RaidFrame40Mod.GetHeaderSize = function(self)
 	local config = ns.GetConfig("RaidFrames")
 	return
 		config.UnitSize[1]*5 + math_abs(self.db.profile.xOffset * 4),
-		config.UnitSize[2]*1 + math_abs(self.db.profile.columnSpacing * 0)
+		config.UnitSize[2]*8 + math_abs(self.db.profile.columnSpacing * 7)
 end
 
-PartyFrameMod.UpdateUnits = function(self)
+RaidFrame40Mod.UpdateUnits = function(self)
 	if (not self.frame) then return end
 	for i = 1, self.frame:GetNumChildren() do
 		local frame = select(i, self.frame:GetChildren())
@@ -790,24 +805,14 @@ PartyFrameMod.UpdateUnits = function(self)
 	end
 end
 
-PartyFrameMod.Update = function(self)
+RaidFrame40Mod.Update = function(self)
 	self:UpdateHeader()
 	self:UpdateUnits()
-
-	for i = 1, self.frame:GetNumChildren() do
-		local frame = select(i, self.frame:GetChildren())
-		if (self.db.profile.showAuras) then
-			frame:EnableElement("Auras")
-			frame.Auras:ForceUpdate()
-		else
-			frame:DisableElement("Auras")
-		end
-	end
 end
 
-PartyFrameMod.CreateUnitFrames = function(self)
+RaidFrame40Mod.CreateUnitFrames = function(self)
 
-	local name = "Party"
+	local name = "Raid40"
 
 	oUF:RegisterStyle(ns.Prefix..name, style)
 	oUF:SetActiveStyle(ns.Prefix..name)
@@ -831,20 +836,16 @@ PartyFrameMod.CreateUnitFrames = function(self)
 	-- *Only experienced this is Wrath.But adding it as a general update anyway.
 	self:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateUnits")
 
-	-- Sometimes offline coloring remains when a member comes back online. Why?
-	-- Not sure if this is something we should force update as the health element
-	-- is already registered for this event. Leaving this comment here while I decide.
 end
 
-PartyFrameMod.OnEnable = function(self)
+RaidFrame40Mod.OnEnable = function(self)
+	LoadAddOn("Blizzard_CUFProfiles")
+	LoadAddOn("Blizzard_CompactRaidFrames")
 
-	-- Disable Blizzard party frames
-	for i = 1, MEMBERS_PER_RAID_GROUP do -- wrong constant
-		oUF:DisableBlizzard("party"..i)
-	end
-
+	-- Leave these enabled for now.
+	self:DisableBlizzard()
 	self:CreateUnitFrames()
-	self:CreateAnchor(PARTY)
+	self:CreateAnchor(RAID .. " (40)") --[[PARTYRAID_LABEL RAID_AND_PARTY]]
 
 	ns.Module.OnEnable(self)
 end

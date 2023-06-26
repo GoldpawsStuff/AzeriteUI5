@@ -218,89 +218,32 @@ local GenerateOptions = function()
 			desc = L["Toggle whether to show the player while in a party."],
 			order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
-		suboptions.args.showParty = {
-			name = L["Show in parties."],
-			desc = L["Toggle whether to show the party frames while in parties.\n\nIt is not possible to show both the Raid Frames and the Party Frames at the same time. Setting this option will disable the raid frames from being shown in parties."],
-			order = 30, type = "toggle", width = "full", get = getter, hidden = isdisabled,
-			set = function(info,val)
-				setter(info, val, true)
-				local raid = ns:GetModule("RaidFrames", true)
-				if (raid) then
-					raid.db.profile.showParty = false
-					raid.db.profile.useRaidStylePartyFrames = false
-					raid:UpdateSettings()
-				end
-				module:UpdateSettings()
-			end
-		}
-		suboptions.args.showRaid = {
-			name = L["Show in party sized raid groups (1-5 Players)."],
-			desc = L["Toggle whether to show the party frames while in a raid group.\n\nIt is not possible to show both the Raid Frames and the Party Frames at the same time. Setting this option will disable the raid frames from being shown in party sized raid groups."],
-			order = 40, type = "toggle", width = "full", get = getter, hidden = isdisabled,
-			set = function(info,val)
-				setter(info, val, true)
-				local raid = ns:GetModule("RaidFrames", true)
-				if (raid) then
-					raid.db.profile.showInPartySizedRaidGroups = false
-					raid:UpdateSettings()
-				end
-				module:UpdateSettings()
-			end
-		}
 		options.args.party = suboptions
 	end
 
-	-- Raid Frames
-	do
-		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("RaidFrames")
-		suboptions.name = L["Raid Frames"]
-		suboptions.order = 160
-		suboptions.args.elementHeader = {
-			name = L["Visibility"], order = 10, type = "header", hidden = isdisabled
-		}
-		suboptions.args.showRaid = {
-			name = L["Show in raids."],
-			desc = L["Toggle whether to show the raid frames while in a raid groups of five members or more."],
-			order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
-		}
-		suboptions.args.useRaidStylePartyFrames = {
-			name = L["Show in parties."],
-			desc = L["Toggle whether to show the raid frames while in parties.\n\nIt is not possible to show both the Raid Frames and the Party Frames at the same time. Setting this option will disable the party frames when in parties."],
-			order = 30, type = "toggle", width = "full", get = getter, hidden = isdisabled,
-			set = function(info,val)
-				setter(info, val, true)
-				setoption(info, "showParty", val, true)
-				if (val) then
-					local party = ns:GetModule("PartyFrames", true)
-					if (party) then
-						--party.db.profile.showRaid = false
-						party.db.profile.showParty = false
-						party:UpdateSettings()
-					end
-				end
-				module:UpdateSettings()
-			end
-		}
-		suboptions.args.showInPartySizedRaidGroups = {
-			name = L["Show in party sized raid groups (1-5 Players)."],
-			desc = L["Toggle whether to show the raid frames while in party sized raid groups.\n\nIt is not possible to show both the Raid Frames and the Party Frames at the same time. Setting this option will disable the party frames from being shown in party sized raid groups."],
-			order = 40, type = "toggle", width = "full", get = getter, hidden = isdisabled,
-			set = function(info,val)
-				setter(info, val, true)
-				setoption(info, "showParty", val, true)
-				if (val) then
-					local party = ns:GetModule("PartyFrames", true)
-					if (party) then
-						party.db.profile.showRaid = false
-						--party.db.profile.showParty = false
-						party:UpdateSettings()
-					end
-				end
-				module:UpdateSettings()
-			end
-		}
 
-		options.args.raid = suboptions
+	-- Raid Frames (5)
+	do
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("RaidFrame5")
+		suboptions.name = L["Raid Frames"] .. " (5)"
+		suboptions.order = 160
+		options.args.raid5 = suboptions
+	end
+
+	-- Raid Frames (25)
+	do
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("RaidFrame25")
+		suboptions.name = L["Raid Frames"] .. " (25)"
+		suboptions.order = 161
+		options.args.raid25 = suboptions
+	end
+
+	-- Raid Frames (40)
+	do
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("RaidFrame40")
+		suboptions.name = L["Raid Frames"] .. " (40)"
+		suboptions.order = 162
+		options.args.raid40 = suboptions
 	end
 
 	-- Boss Frames
@@ -314,7 +257,7 @@ local GenerateOptions = function()
 	-- Arena Enemy Frames
 	if (not ns.IsClassic) then
 		--local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("ArenaFrames")
-		--suboptions.name = L["Arena Frames"]
+		--suboptions.name = L["Arena Enemy Frames"]
 		--suboptions.order = 180
 		--options.args.arena = suboptions
 	end
