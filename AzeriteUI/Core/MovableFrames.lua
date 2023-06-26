@@ -77,35 +77,14 @@ local AnchorData = {}
 
 -- Utility
 --------------------------------------
--- Parse any number of arguments for functions,
--- return the function result as the value,
--- or just the pass the value otherwise.
-local get = function(...)
-	do
-		return ...
-	end
-	local numArgs = select("#", ...)
-	if (numArgs == "1") then
-		return type(...) == "function" and (...)() or ...
-	end
-	local args = { ... }
-	for i,val in ipairs(args) do
-		local arg = select(i, ...)
-		if (type(arg) == "function") then
-			args[i] = arg()
-		end
-	end
-	return unpack(args)
-end
-
 -- Compare two scales or two positions.
 local compare = function(...)
 	local numArgs = select("#", ...)
 	if (numArgs == 2) then
-		local s, s2 = get(...)
+		local s, s2 = ...
 		return (math_abs(s - s2) < (diff or 0.01))
 	else
-		local point, x, y, point2, x2, y2, diff = get(...)
+		local point, x, y, point2, x2, y2, diff = ...
 		return (point == point2) and (math_abs(x - x2) < (diff or 0.01)) and (math_abs(y - y2) < (diff or 0.01))
 	end
 end
@@ -259,6 +238,7 @@ Anchor.Create = function(self)
 	anchor:SetFrameStrata("HIGH")
 	anchor:SetFrameLevel(1000)
 	anchor:SetMovable(true)
+	anchor:SetClampedToScreen(false)
 	anchor:RegisterForDrag("LeftButton")
 	anchor:RegisterForClicks("AnyUp")
 	anchor:SetScript("OnDragStart", Anchor.OnDragStart)
@@ -309,6 +289,7 @@ Anchor.Create = function(self)
 	title:SetJustifyV("MIDDLE")
 	title:SetJustifyH("CENTER")
 	title:SetPoint("CENTER")
+	title:SetAlpha(.5)
 	anchor.Title = title
 
 	AnchorData[anchor] = {
@@ -384,11 +365,11 @@ Anchor.ResetLastChange = function(self)
 
 	anchorData.currentPosition = { point, x, y }
 
-	self:UpdateScale(get(anchorData.lastScale or anchorData.scale or anchorData.defaultScale))
+	self:UpdateScale(anchorData.lastScale or anchorData.scale or anchorData.defaultScale)
 	self:UpdatePosition(point, x, y)
 	self:UpdateText()
 
-	ns:Fire("MFM_PositionUpdated", self, point, x, y, get(anchorData.scale))
+	ns:Fire("MFM_PositionUpdated", self, point, x, y, anchorData.scale)
 end
 
 -- Reset to default position.
@@ -401,18 +382,18 @@ Anchor.ResetToDefault = function(self)
 	anchorData.currentPosition = { point, x, y }
 	anchorData.lastPosition = { point, x, y }
 
-	self:UpdateScale(get(anchorData.defaultScale))
+	self:UpdateScale(anchorData.defaultScale)
 	self:UpdatePosition(point, x, y)
 	self:UpdateText()
 
-	ns:Fire("MFM_PositionUpdated", self, point, x, y, get(anchorData.scale))
+	ns:Fire("MFM_PositionUpdated", self, point, x, y, anchorData.scale)
 end
 
 Anchor.UpdateText = function(self)
 	local anchorData = AnchorData[self]
 
 	local msg
-	if (self:IsScalable() and not compare(anchorData.scale, anchorData.defaultScale)) then
+	if (self:IsScalable()) then
 		msg = string_format(Colors.highlight.colorCode.."%s, %.0f, %.0f ( %.2f )|r", anchorData.currentPosition[1], anchorData.currentPosition[2], anchorData.currentPosition[3], anchorData.scale)
 	else
 		msg = string_format(Colors.highlight.colorCode.."%s, %.0f, %.0f|r", unpack(anchorData.currentPosition))
@@ -468,7 +449,11 @@ Anchor.UpdatePosition = function(self, point, x, y)
 	self:SetPointBase(point, UIParent, point, x, y)
 	self:UpdateText()
 
-	ns:Fire("MFM_PositionUpdated", self, point, x, y, get(anchorData.scale))
+	self.Overlay:SetSize(self:GetSize())
+	self.Overlay:ClearAllPoints()
+	self.Overlay:SetPoint(point, UIParent, point, x, y)
+
+	ns:Fire("MFM_PositionUpdated", self, point, x, y, anchorData.scale)
 end
 
 Anchor.UpdateScale = function(self, scale)
@@ -478,11 +463,15 @@ Anchor.UpdateScale = function(self, scale)
 	anchorData.scale = scale
 
 	if (anchorData.width and anchorData.height) then
-		self:SetSizeBase(anchorData.width * get(anchorData.scale), anchorData.height * get(anchorData.scale))
+		self:SetSizeBase(anchorData.width * anchorData.scale, anchorData.height * anchorData.scale)
 		self:UpdateText()
+
+		self.Overlay:SetSize(self:GetSize())
+		self.Overlay:ClearAllPoints()
+		self.Overlay:SetPoint(self:GetPoint())
 	end
 
-	ns:Fire("MFM_ScaleUpdated", self, get(anchorData.scale))
+	ns:Fire("MFM_ScaleUpdated", self, anchorData.scale)
 end
 
 -- Anchor Getters
@@ -503,26 +492,22 @@ Anchor.GetDefaultPosition = function(self, point, x, y)
 	return AnchorData[self].defaultPosition[1], AnchorData[self].defaultPosition[2], AnchorData[self].defaultPosition[3]
 end
 
-Anchor.GetPositionScaled = function(self)
-	local point, x, y = unpack(AnchorData[self].currentPosition)
-	local scale = AnchorData[self].scale
-	return point, x/scale, y/scale
-end
-
-Anchor.GetDefaultPositionScaled = function(self)
-	local point, x, y = unpack(AnchorData[self].defaultPosition)
-	local scale = AnchorData[self].defaultScale
-	return point, x/scale, y/scale
-end
-
 -- Anchor Setters
 --------------------------------------
--- Link the visibility of the anchor to an editmode account setting.
--- *The intention is to make anchors visible when the frame
--- we have replaced is selected in the editmode.
---Anchor.SetEditModeAccountSetting = function(self, setting)
---	self.editModeAccountSetting = setting
---end
+Anchor.RestrictToHorizontal = function(self)
+	AnchorData[self].restrictToHorizontal = true
+	AnchorData[self].restrictToVertical = nil
+end
+
+Anchor.RestrictToVertical = function(self)
+	AnchorData[self].restrictToHorizontal = nil
+	AnchorData[self].restrictToVertical = true
+end
+
+Anchor.Unrestrict = function(self)
+	AnchorData[self].restrictToHorizontal = nil
+	AnchorData[self].restrictToVertical = nil
+end
 
 -- Scale can still be set and changed,
 -- this setting only toggles mousewheel input.
@@ -703,6 +688,16 @@ Anchor.OnDragStart = function(self, button)
 	local anchorData = AnchorData[self]
 	if (not anchorData.isMovable) then return end
 
+	local w, h = self:GetSize()
+	local fx, fy = self:GetCenter()
+	local frameScale = self:GetEffectiveScale()
+
+	--fx = fx * frameScale
+	--fy = fy * frameScale
+
+	anchorData.dragStartPosition = { fx - (w/2), fy - (h/2) }
+	--anchorData.dragStartPosition = { fx - (w/2)*frameScale, fy - (h/2)*frameScale }
+
 	-- Treat the dragged frame as clicked.
 	CURRENT = self
 
@@ -721,13 +716,32 @@ Anchor.OnDragStart = function(self, button)
 	MovableFramesManager:RefreshMFMFrame()
 end
 
+Anchor.UpdateOverlay = function(self)
+	local anchorData = AnchorData[self]
+
+	local w, h = self:GetSize()
+	local frameScale = self:GetEffectiveScale()
+	local fx, fy = GetCursorPosition()
+	fx = fx / frameScale
+	fy = fy / frameScale
+
+	fx = anchorData.restrictToVertical and anchorData.dragStartPosition[1] or (fx - (w/2))
+	fy = anchorData.restrictToHorizontal and anchorData.dragStartPosition[2] or (fy - (h/2))
+
+	self.Overlay:SetSize(w,h)
+	self.Overlay:ClearAllPoints()
+	self.Overlay:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", fx, fy)
+
+end
+
 Anchor.OnDragStop = function(self)
 	local anchorData = AnchorData[self]
 
 	self:StopMovingOrSizing()
 	self:SetScript("OnUpdate", nil)
+	--self:UpdateOverlay()
 
-	local point, x, y = getPosition(self)
+	local point, x, y = getPosition(self.Overlay)
 
 	anchorData.currentPosition = { point, x, y }
 
@@ -740,10 +754,12 @@ Anchor.OnEnter = function(self)
 	if (HOVERED ~= self) then
 		HOVERED = self
 		OUTLINE:ClearAllPoints()
-		OUTLINE:SetAllPoints(self)
+		OUTLINE:SetAllPoints(self.Overlay)
 		OUTLINE:Show()
 	end
 	self:SetAlpha(.75)
+	self.Title:SetTextColor(unpack(Colors.normal))
+	self.Title:SetAlpha(1)
 	self:UpdateText()
 end
 
@@ -753,6 +769,8 @@ Anchor.OnLeave = function(self)
 		OUTLINE:ClearAllPoints()
 		OUTLINE:Hide()
 	end
+	self.Title:SetTextColor(unpack(Colors.highlight))
+	self.Title:SetAlpha(.5)
 	self:SetAlpha(.25)
 	self:UpdateText()
 end
@@ -776,6 +794,10 @@ Anchor.OnShow = function(self)
 	self:SetPointBase(point, UIParent, point, x, y)
 	self:UpdateText()
 
+	self.Overlay:SetSize(self:GetSize())
+	self.Overlay:ClearAllPoints()
+	self.Overlay:SetPoint(point, UIParent, point, x, y)
+
 	ns:Fire("MFM_AnchorShown", self, point, x, y)
 end
 
@@ -790,12 +812,13 @@ Anchor.OnUpdate = function(self, elapsed)
 		return
 	end
 	self.elapsed = 0
+	self:UpdateOverlay()
 
-	local anchorData = AnchorData[self]
-	local point, x, y = getPosition(self)
+	local point, x, y = getPosition(self.Overlay)
 
 	-- Reuse old table here,
 	-- or we'll spam the garbage handler.
+	local anchorData = AnchorData[self]
 	anchorData.currentPosition[1] = point
 	anchorData.currentPosition[2] = x
 	anchorData.currentPosition[3] = y
