@@ -776,7 +776,7 @@ PartyFrameMod.UpdateHeader = function(self)
 end
 
 PartyFrameMod.GetHeaderSize = function(self)
-	local config = ns.GetConfig("RaidFrames")
+	local config = ns.GetConfig("PartyFrames")
 	return
 		config.UnitSize[1]*5 + math_abs(self.db.profile.xOffset * 4),
 		config.UnitSize[2]*1 + math_abs(self.db.profile.columnSpacing * 0)
