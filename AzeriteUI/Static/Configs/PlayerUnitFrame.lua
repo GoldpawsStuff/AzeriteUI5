@@ -59,6 +59,7 @@ local crystalSparkMap = {
 }
 
 ns.RegisterConfig("PlayerFrame", {
+
 	-- General Settings
 	-----------------------------------------
 	Size = { 560, 180 },
