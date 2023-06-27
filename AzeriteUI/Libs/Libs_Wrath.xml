@@ -16,6 +16,7 @@
 	<Include file="AceGUI-3.0\AceGUI-3.0.xml"/>
 	<Include file="AceConfig-3.0\AceConfig-3.0.xml"/>
 	<Include file="UTF8\utf8.xml"/>
+	<Include file="LibSharedMedia-3.0\lib.xml"/>
 
 	<!-- ActionButton Libraries -->
 	<Include file="LibKeyBound-1.0\lib.xml"/>
