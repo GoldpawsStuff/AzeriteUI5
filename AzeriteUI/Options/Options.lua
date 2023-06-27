@@ -30,8 +30,11 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 
 local Options = ns:NewModule("Options", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
+local LEMO = LibStub("LibEditModeOverride-1.0", true)
 
 -- Lua API
+local math_max = math.max
+local next = next
 local ipairs = ipairs
 local pairs = pairs
 local string_format = string.format
@@ -65,12 +68,12 @@ Options.GenerateProfileMenu = function(self)
 				end
 			},
 			space1 = {
-				name = "", order = 10, type = "description"
+				name = "", order = 1, type = "description"
 			},
 			reset = {
 				name = L["Reset"],
 				type = "execute",
-				order = 11,
+				order = 2,
 				confirm = function(info)
 					return _G.CONFIRM_RESET_SETTINGS
 				end,
@@ -81,7 +84,7 @@ Options.GenerateProfileMenu = function(self)
 			delete = {
 				name = L["Delete"],
 				type = "execute",
-				order = 12,
+				order = 3,
 				confirm = function(info)
 					return string_format(L["Are you sure you want to delete the preset '%s'? This cannot be undone."], ns:GetProfile())
 				end,
@@ -99,12 +102,12 @@ Options.GenerateProfileMenu = function(self)
 				name = L["Create New Profile"],
 				desc = L["Create a new settings profile."],
 				type = "header",
-				order = 20
+				order = 4
 			},
 			newprofileName = {
 				name = L["Name of new profile:"],
 				type = "input",
-				order = 21,
+				order = 5,
 				arg = "", -- store the name here
 				validate = function(info,val)
 					if (not val or val == "") then
@@ -129,7 +132,7 @@ Options.GenerateProfileMenu = function(self)
 				name = L["Create"],
 				desc = L["Create a new profile with the chosen name."],
 				type = "execute",
-				order = 23,
+				order = 6,
 				disabled = function(info)
 					local val = info.options.args.newprofileName.arg
 					return (not val or val == "" or ns:ProfileExists(val))
@@ -146,7 +149,7 @@ Options.GenerateProfileMenu = function(self)
 				name = L["Duplicate"],
 				desc = L["Create a new profile with the chosen name and copy the settings from the currently active one."],
 				type = "execute",
-				order = 24,
+				order = 7,
 				disabled = function(info)
 					local val = info.options.args.newprofileName.arg
 					return (not val or val == "" or ns:ProfileExists(val))
@@ -160,11 +163,16 @@ Options.GenerateProfileMenu = function(self)
 				end
 			},
 			space4 = {
-				name = "", order = 25, type = "description"
+				name = "", order = 8, type = "description"
 			}
 		}
 	}
-	return options
+	local order = 0
+	for i,arg in next,options.args do
+		order = math_max(order, arg.order or 0)
+	end
+	order = order + 10
+	return options, order
 end
 
 Options.Refresh = function(self)
@@ -175,6 +183,7 @@ end
 
 Options.OpenOptionsMenu = function(self)
 	if (AceConfigRegistry:GetOptionsTable(Addon)) then
+		AceConfigDialog:SetDefaultSize(Addon, 960, 720)
 		AceConfigDialog:Open(Addon)
 	end
 end
@@ -206,8 +215,67 @@ Options.GenerateOptionsMenu = function(self)
 	table_sort(self.objects, function(a,b) return a.group.name < b.group.name end)
 
 	-- Generate the options table.
-	local options = self:GenerateProfileMenu()
-	local order = 0
+	local options, orderoffset = self:GenerateProfileMenu()
+
+	-- Add option to auto-load an EditMode layout.
+	if (ns.IsRetail) then
+		options.args.editmodeheader = {
+			name = L["Edit Mode"],
+			desc = "",
+			type = "header",
+			order = orderoffset + 1
+		}
+		--options.args.editmodedesc = {
+		--	name = L[""],
+		--	type = "description",
+		-- fontSize = "medium",
+		--	order = orderoffset + 2
+		--}
+		options.args.autoLoadEditModeLayout = {
+			name = L["Automatically load an Edit Mode layout."],
+			type = "toggle", width = "full",
+			set = function(info, val)
+				ns.db.profile[info[#info]] = val
+			end,
+			get = function(info)
+				return ns.db.profile[info[#info]]
+			end,
+			order = orderoffset + 3
+		}
+		options.args.editModeLayout = {
+			name = L["Edit Mode Layout"],
+			desc = L["Choose an Edit Mode layout to automaically load when enabling this profile."],
+			type = "select",
+			style = "dropdown",
+			values = function(info)
+				if (not LEMO:IsReady()) then return true end
+				LEMO:LoadLayouts()
+				local values = {}
+				for i,layoutName in ipairs(LEMO:GetPresetLayoutNames()) do
+					values[layoutName] = layoutName
+				end
+				for i,layoutName in ipairs(LEMO:GetEditableLayoutNames()) do
+					values[layoutName] = layoutName
+				end
+				return values
+			end,
+			disabled = function(info)
+				if (not ns.db.profile.autoLoadEditModeLayout) then return true end
+				if (not LEMO:IsReady()) then return true end
+			end,
+			set = function(info, val)
+				ns.db.profile.editModeLayout = val
+				ns:ApplyEditModeLayout()
+			end,
+			get = function(info)
+				return ns.db.profile[info[#info]]
+			end,
+			order = orderoffset + 4
+		}
+		orderoffset = orderoffset + 10
+	end
+
+	local order = orderoffset
 	for i,data in ipairs(self.objects) do
 		if (data.group) then
 			order = order + 10
@@ -233,6 +301,17 @@ Options.OnEvent = function(self, event, ...)
 			self:GenerateOptionsMenu()
 			self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 		end
+		if (LEMO and LEMO:IsReady()) then
+			LEMO:LoadLayouts()
+			self:Refresh()
+		end
+
+	elseif (event == "EDIT_MODE_LAYOUTS_UPDATED") then
+		if (LEMO and LEMO:IsReady()) then
+			LEMO:LoadLayouts()
+				self:Refresh()
+		end
+
 	elseif (event == "PLAYER_TALENT_UPDATE") then
 		self:Refresh()
 	end
@@ -246,6 +325,9 @@ Options.OnEnable = function(self)
 	self:RegisterChatCommand("azerite", "OpenOptionsMenu")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_TALENT_UPDATE", "OnEvent")
+	if (ns.IsRetail) then
+		self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
+	end
 end
 
 Options.OnDisable = function(self)
@@ -253,4 +335,7 @@ Options.OnDisable = function(self)
 	self:UnregisterChatCommand("azerite")
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:UnregisterEvent("PLAYER_TALENT_UPDATE", "OnEvent")
+	if (ns.IsRetail) then
+		self:UnregisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
+	end
 end

@@ -28,6 +28,8 @@
 
 local Addon, ns = ...
 
+local LEMO = LibStub("LibEditModeOverride-1.0", true)
+
 ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "LibMoreEvents-1.0", "AceConsole-3.0")
 ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false)
 ns.Hider = CreateFrame("Frame"); ns.Hider:Hide()
@@ -49,7 +51,10 @@ local defaults = {
 	global = {
 		version = -1
 	},
-	profile = {}
+	profile = {
+		autoLoadEditModeLayout = true,
+		editModeLayout = ns.Prefix
+	}
 }
 
 -- Proxy method to avoid modules using the callback object directly
@@ -156,8 +161,42 @@ ns.RefreshConfig = function(self, event, ...)
 	end
 end
 
+ns.ApplyEditModeLayout = function(self)
+	if (not LEMO:IsReady()) then
+		return self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
+	end
+	if (InCombatLockdown()) then
+		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	end
+
+	LEMO:LoadLayouts()
+
+	if (LEMO:DoesLayoutExist(self.db.profile.editModeLayout)) then
+		if (LEMO:GetActiveLayout() ~= self.db.profile.editModeLayout) then
+			LEMO:SetActiveLayout(self.db.profile.editModeLayout)
+			LEMO:ApplyChanges()
+		end
+	end
+end
+
+ns.OnEvent = function(self, event, ...)
+	if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
+		self:UnregisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
+		self:ApplyEditModeLayout()
+
+	elseif (event == "PLAYER_REGEN_ENABLED") then
+		if (InCombatLockdown()) then return end
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+		self:ApplyEditModeLayout()
+	end
+end
+
 ns.OnEnable = function(self)
 	self.db:SetProfile(self.db.char.profile)
+
+	if (ns.WoW10) then
+		self:ApplyEditModeLayout()
+	end
 end
 
 ns.OnInitialize = function(self)
