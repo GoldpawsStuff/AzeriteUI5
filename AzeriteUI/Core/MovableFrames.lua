@@ -909,18 +909,18 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		return L["Only numbers are allowed."]
 	end
 
-	local options = Options:GenerateProfileMenu()
+	local options, orderoffset = Options:GenerateProfileMenu()
 
 	-- EditMode integration
 	if (EMP) then
 		options.args.editmodeHeader = {
 			type = "header",
-			order = 30,
+			order = orderoffset + 30,
 			name = L["HUD Edit Mode"]
 		}
 		options.args.editmodeCreateDescription = {
 			type = "description",
-			order = 31,
+			order = orderoffset + 31,
 			fontSize = "medium",
 			hidden = function(info)
 				return MovableFramesManager.incombat or EMP:DoesDefaultLayoutExist()
@@ -929,7 +929,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		}
 		options.args.editmodeCreateButton = {
 			type = "execute",
-			order = 32,
+			order = orderoffset + 32,
 			width = "full",
 			name = L["Create EditMode Layout"],
 			hidden = function(info)
@@ -941,7 +941,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		}
 		options.args.editmodeResetDescription = {
 			type = "description",
-			order = 33,
+			order = orderoffset + 33,
 			fontSize = "medium",
 			hidden = function(info)
 				return MovableFramesManager.incombat or not EMP:CanEditActiveLayout()
@@ -950,7 +950,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		}
 		options.args.editmodeResetPreset = {
 			type = "execute",
-			order = 34,
+			order = orderoffset + 34,
 			width = "full",
 			name = L["Reset EditMode Layout"],
 			hidden = function(info)
@@ -971,20 +971,20 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 	-- Guide text when nothing is selected.
 	options.args.guideHeader = {
 		name = L["Help"],
-		order = 89,
+		order = orderoffset + 89,
 		type = "header",
 		hidden = function(info) return not isdisabled(info) end
 	}
 	options.args.guideText1 = {
 		name = colorize(L["<Left-Click> an anchor to select it and raise it."]),
-		order = 90,
+		order = orderoffset + 90,
 		type = "description",
 		fontSize = "medium",
 		hidden = function(info) return not isdisabled(info) end
 	}
 	options.args.guideText2 = {
 		name = colorize(L["<Right-Click> an anchor to deselect it and/or lower it."]),
-		order = 91,
+		order = orderoffset + 91,
 		type = "description",
 		fontSize = "medium",
 		hidden = function(info) return not isdisabled(info) end
@@ -995,13 +995,13 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		name = function(info)
 			return CURRENT and CURRENT.Title:GetText() or L["Position"]
 		end,
-		order = 100,
+		order = orderoffset + 100,
 		type = "header",
 		hidden = isdisabled
 	}
 	options.args.positionDesc = {
 		name = L["Fine-tune the position."],
-		order = 101,
+		order = orderoffset + 101,
 		type = "description",
 		fontSize = "medium",
 		hidden = isdisabled
@@ -1009,7 +1009,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 	options.args.point = {
 		name = L["Anchor Point"],
 		desc = L["Sets the anchor point."],
-		order = 110,
+		order = orderoffset + 110,
 		hidden = isdisabled,
 		type = "select", style = "dropdown",
 		values = {
@@ -1027,12 +1027,12 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		get = getter
 	}
 	options.args.pointSpace = {
-		name = "", order = 111, type = "description", hidden = isdisabled
+		name = "", order = orderoffset + 111, type = "description", hidden = isdisabled
 	}
 	options.args.offsetX = {
 		name = L["X Offset"],
 		desc = L["Sets the horizontal offset from your chosen anchor point. Positive values means right, negative values means left."],
-		order = 120,
+		order = orderoffset + 120,
 		type = "input",
 		hidden = isdisabled,
 		validate = validate,
@@ -1042,7 +1042,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 	options.args.offsetY = {
 		name = L["Y Offset"],
 		desc = L["Sets the vertical offset from your chosen anchor point. Positive values means up, negative values means down."],
-		order = 130,
+		order = orderoffset + 130,
 		type = "input",
 		hidden = isdisabled,
 		validate = validate,
@@ -1052,7 +1052,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 	options.args.scale = {
 		name = L["Scale"],
 		desc = L["Sets the relative scale of this element. Default scale is set to match the ideal size."],
-		order = 140,
+		order = orderoffset + 140,
 		type = "range", width = "full", min = 0.25 * 100, max = 2.5 * 100, step = 0.1, bigStep = 1,
 		hidden = isdisabled,
 		validate = validate,
