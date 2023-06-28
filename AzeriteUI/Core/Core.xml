@@ -31,6 +31,9 @@
 	<Script file="Widgets\Cooldowns.lua"/>
 	<Script file="Widgets\Popups.lua"/>
 
+	<!-- SharedMedia -->
+	<Script file="SharedMedia.lua"/>
+
 	<!-- Core -->
 	<Script file="Core.lua"/>
 	<Script file="EditMode.lua"/>
