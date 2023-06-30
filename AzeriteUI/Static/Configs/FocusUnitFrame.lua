@@ -54,6 +54,8 @@ ns.RegisterConfig("FocusFrame", {
 	Position = { "RIGHT", UIParent, "BOTTOMLEFT", 332-136, 270-23 },
 	HitRectInsets = { 0, 0, 0, 0 },
 
+	-- Health
+	-----------------------------------------
 	HealthBarPosition = { "CENTER", 0, 0 },
 	HealthBarSize = { 112, 11 },
 	HealthBarTexture = GetMedia("cast_bar"),
@@ -73,12 +75,16 @@ ns.RegisterConfig("FocusFrame", {
 	HealthValueFont = GetFont(14, true),
 	HealthValueColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .75 },
 
+	-- Unit Name
+	-----------------------------------------
 	NamePosition = { "BOTTOMLEFT", 12, 46 },
 	NameJustifyH = "LEFT",
 	NameJustifyV = "TOP",
 	NameFont = GetFont(14, true),
 	NameColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75 },
 
+	-- Target Highlighting
+	-----------------------------------------
 	TargetHighlightPosition = { "CENTER", 1, -2 },
 	TargetHighlightSize = { 193,93 },
 	TargetHighlightTexture = GetMedia("cast_back_outline"),

@@ -50,9 +50,12 @@ local barSparkMap = {
 }
 
 ns.RegisterConfig("ToTFrame", {
+
 	Size = { 136, 47 },
 	HitRectInsets = { 0, 0, 0, 0 },
 
+	-- Health
+	-----------------------------------------
 	HealthBarPosition = { "CENTER", 0, 0 },
 	HealthBarSize = { 112, 11 },
 	HealthBarTexture = GetMedia("cast_bar"),
@@ -72,12 +75,16 @@ ns.RegisterConfig("ToTFrame", {
 	HealthBackdropTexture = GetMedia("cast_back"),
 	HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 
-	NamePosition = { "BOTTOM", 0, 46 }, -- "BOTTOMRIGHT", -12, 48
+	-- Unit Name
+	-----------------------------------------
+	NamePosition = { "BOTTOM", 0, 46 },
 	NameJustifyH = "RIGHT",
 	NameJustifyV = "TOP",
 	NameFont = GetFont(14, true),
 	NameColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75 },
 
+	-- Target Highlighting
+	-----------------------------------------
 	TargetHighlightPosition = { "CENTER", 1, -2 },
 	TargetHighlightSize = { 193,93 },
 	TargetHighlightTexture = GetMedia("cast_back_outline"),

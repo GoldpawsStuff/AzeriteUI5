@@ -4,6 +4,7 @@
 
 	<Script file="Configs\ActionButton.lua"/>
 	<Script file="Configs\AlertFrames.lua"/>
+	<Script file="Configs\ArenaEnemyUnitFrames.lua"/>
 	<Script file="Configs\BossUnitFrames.lua"/>
 	<Script file="Configs\ExtraActionButton.lua"/>
 	<Script file="Configs\FocusUnitFrame.lua"/>

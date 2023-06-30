@@ -46,6 +46,7 @@ local castBarSparkMap = {
 }
 
 ns.RegisterConfig("PlayerCastBar", {
+
 	CastBarSize = { 112, 11 },
 	CastBarTexture = GetMedia("cast_bar"),
 	CastBarColor = { Colors.cast[1], Colors.cast[2], Colors.cast[3], .69 },

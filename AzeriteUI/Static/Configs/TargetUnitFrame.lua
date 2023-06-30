@@ -74,6 +74,7 @@ local tinyBarSparkMap = {
 }
 
 ns.RegisterConfig("TargetFrame", {
+
 	-- General Settings
 	-----------------------------------------
 	Size = { 550, 210 },
@@ -143,6 +144,7 @@ ns.RegisterConfig("TargetFrame", {
 	NameColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75 },
 
 	-- Portrait
+	-----------------------------------------
 	PortraitPosition = { "TOPRIGHT", -40, -31 },
 	PortraitSize = { 85, 85 },
 	PortraitAlpha = .85,
@@ -157,12 +159,14 @@ ns.RegisterConfig("TargetFrame", {
 	PortraitBorderSize = { 187, 187 },
 
 	-- PvP Indicator
+	-----------------------------------------
 	PvPIndicatorPosition = { "TOPRIGHT", -41, -91 },
 	PvPIndicatorSize = { 84, 84 },
 	PvPIndicatorAllianceTexture = GetMedia("icon_badges_alliance"),
 	PvPIndicatorHordeTexture = GetMedia("icon_badges_horde"),
 
 	-- Classification
+	-----------------------------------------
 	ClassificationPosition = { "TOPRIGHT", -41, -91 },
 	ClassificationSize = { 84, 84 },
 	ClassificationAllianceTexture = GetMedia("icon_badges_alliance"),
@@ -172,6 +176,7 @@ ns.RegisterConfig("TargetFrame", {
 	ClassificationRareTexture = GetMedia("icon_classification_rare"),
 
 	-- Target Indicator
+	-----------------------------------------
 	TargetIndicatorPosition = { "TOPRIGHT", -75, -3 },
 	TargetIndicatorSize = { 96, 48 },
 	TargetIndicatorColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
@@ -233,6 +238,7 @@ ns.RegisterConfig("TargetFrame", {
 	Critter = {
 
 		-- Health Bar
+		-----------------------------------------
 		HealthBarSize = { 40, 36 },
 		HealthBarPosition = { "TOPRIGHT", -137, -66 },
 		HealthBarTexture = GetMedia("hp_critter_bar"),
@@ -251,6 +257,8 @@ ns.RegisterConfig("TargetFrame", {
 		HealthThreatPosition = { "TOPRIGHT", -104, -28.5 },
 		HealthThreatTexture = GetMedia("hp_critter_case_glow"),
 
+		-- Portrait
+		-----------------------------------------
 		PortraitBorderTexture = GetMedia("portrait_frame_lo"),
 		PortraitBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 
@@ -263,6 +271,7 @@ ns.RegisterConfig("TargetFrame", {
 	Novice = {
 
 		-- Health Bar
+		-----------------------------------------
 		HealthBarSize = { 385, 37 },
 		HealthBarPosition = { "TOPRIGHT", -140, -66 },
 		HealthBarTexture = GetMedia("hp_lowmid_bar"),
@@ -281,6 +290,7 @@ ns.RegisterConfig("TargetFrame", {
 		HealthThreatTexture = GetMedia("hp_low_case_glow"),
 
 		-- Portrait
+		-----------------------------------------
 		PortraitBorderTexture = GetMedia("portrait_frame_lo"),
 		PortraitBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 
@@ -293,6 +303,7 @@ ns.RegisterConfig("TargetFrame", {
 	Hardened = {
 
 		-- Health Bar
+		-----------------------------------------
 		HealthBarSize = { 385, 37 },
 		HealthBarPosition = { "TOPRIGHT", -140, -66 },
 		HealthBarTexture = GetMedia("hp_lowmid_bar"),
@@ -311,6 +322,7 @@ ns.RegisterConfig("TargetFrame", {
 		HealthThreatTexture = GetMedia("hp_mid_case_glow"),
 
 		-- Portrait
+		-----------------------------------------
 		PortraitBorderTexture = GetMedia("portrait_frame_hi"),
 		PortraitBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 
@@ -323,6 +335,7 @@ ns.RegisterConfig("TargetFrame", {
 	Seasoned = {
 
 		-- Health Bar
+		-----------------------------------------
 		HealthBarSize = { 385, 37 },
 		HealthBarPosition = { "TOPRIGHT", -140, -66 },
 		HealthBarTexture = GetMedia("hp_cap_bar"),
@@ -341,6 +354,7 @@ ns.RegisterConfig("TargetFrame", {
 		HealthThreatTexture = GetMedia("hp_cap_case_glow"),
 
 		-- Portrait
+		-----------------------------------------
 		PortraitBorderTexture = GetMedia("portrait_frame_hi"),
 		PortraitBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 
@@ -353,6 +367,7 @@ ns.RegisterConfig("TargetFrame", {
 	Boss = {
 
 		-- Health Bar
+		-----------------------------------------
 		HealthBarSize = { 533, 40 },
 		HealthBarPosition = { "TOPRIGHT", -140, -66 },
 		HealthBarTexture = GetMedia("hp_boss_bar"),
@@ -372,6 +387,7 @@ ns.RegisterConfig("TargetFrame", {
 		HealthThreatTexture = GetMedia("hp_boss_case_glow"),
 
 		-- Portrait
+		-----------------------------------------
 		PortraitBorderTexture = GetMedia("portrait_frame_hi"),
 		PortraitBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 

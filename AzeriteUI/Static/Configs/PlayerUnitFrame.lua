@@ -184,6 +184,7 @@ ns.RegisterConfig("PlayerFrame", {
 	Novice = {
 
 		-- Health Bar
+		-----------------------------------------
 		HealthBarSize = { 385, 37 },
 		HealthBarPosition = { "BOTTOMLEFT", 148, 27 },
 		HealthBarTexture = GetMedia("hp_lowmid_bar"),
@@ -203,6 +204,7 @@ ns.RegisterConfig("PlayerFrame", {
 		HealthThreatTexture = GetMedia("hp_low_case_glow"),
 
 		-- Power Crystal
+		-----------------------------------------
 		PowerBarSize = { 120, 140 },
 		PowerBarPosition = { "BOTTOMLEFT", 20, 38 },
 		PowerBarTexture = ns.IsWrath and GetMedia("power-crystal-ice-front") or GetMedia("power_crystal_front"),
@@ -229,6 +231,7 @@ ns.RegisterConfig("PlayerFrame", {
 		PowerBackdropThreatTexture = GetMedia("pw_crystal_case_glow"),
 
 		-- Mana Orb
+		-----------------------------------------
 		ManaOrbSize = { 103, 103 },
 		ManaOrbPosition = { "BOTTOMLEFT", 29, 27 },
 		ManaOrbTexture = { GetMedia("orb2"), GetMedia("orb2") },
@@ -257,6 +260,7 @@ ns.RegisterConfig("PlayerFrame", {
 	Hardened = {
 
 		-- Health Bar
+		-----------------------------------------
 		HealthBarSize = { 385, 37 },
 		HealthBarPosition = { "BOTTOMLEFT", 148, 27 },
 		HealthBarTexture = GetMedia("hp_lowmid_bar"),
@@ -276,6 +280,7 @@ ns.RegisterConfig("PlayerFrame", {
 		HealthThreatTexture = GetMedia("hp_low_case_glow"),
 
 		-- Power Crystal
+		-----------------------------------------
 		PowerBarSize = { 120, 140 },
 		PowerBarPosition = { "BOTTOMLEFT", 20, 38 },
 		PowerBarTexture = ns.IsWrath and GetMedia("power-crystal-ice-front") or GetMedia("power_crystal_front"),
@@ -302,6 +307,7 @@ ns.RegisterConfig("PlayerFrame", {
 		PowerBackdropThreatTexture = GetMedia("pw_crystal_case_glow"),
 
 		-- Mana Orb
+		-----------------------------------------
 		ManaOrbSize = { 103, 103 },
 		ManaOrbPosition = { "BOTTOMLEFT", 29, 27 },
 		ManaOrbTexture = { GetMedia("orb2"), GetMedia("orb2") },
@@ -330,6 +336,7 @@ ns.RegisterConfig("PlayerFrame", {
 	Seasoned = {
 
 		-- Health Bar
+		-----------------------------------------
 		HealthBarSize = { 385, 40 },
 		HealthBarPosition = { "BOTTOMLEFT", 148, 27 },
 		HealthBarTexture = GetMedia("hp_cap_bar"),
@@ -349,6 +356,7 @@ ns.RegisterConfig("PlayerFrame", {
 		HealthThreatTexture = GetMedia("hp_low_case_glow"),
 
 		-- Power Crystal
+		-----------------------------------------
 		PowerBarSize = { 120, 140 },
 		PowerBarPosition = { "BOTTOMLEFT", 20, 38 },
 		PowerBarTexture = ns.IsWrath and GetMedia("power-crystal-ice-front") or GetMedia("power_crystal_front"),
@@ -373,20 +381,8 @@ ns.RegisterConfig("PlayerFrame", {
 		PowerBackdropThreatSize = { 198,98 },
 		PowerBackdropThreatPosition = { "BOTTOM", 7, -51 },
 		PowerBackdropThreatTexture = GetMedia("pw_crystal_case_glow"),
+		-----------------------------------------
 
-		-- Mana Orb
-		ManaOrbSize = { 103, 103 },
-		ManaOrbPosition = { "BOTTOMLEFT", 29, 27 },
-		ManaOrbTexture = { GetMedia("orb2"), GetMedia("orb2") },
-
-		ManaOrbBackdropSize = { 180, 180 },
-		ManaOrbBackdropPosition = { "CENTER", 0, 0 },
-		ManaOrbBackdropTexture = GetMedia("orb-backdrop2"),
-		ManaOrbBackdropColor = { 1, 1, 1, 1 },
-
-		ManaOrbShadeSize = { 127, 127 },
-		ManaOrbShadePosition = { "CENTER", 0, 0 },
-		ManaOrbShadeTexture = GetMedia("shade-circle"),
 		ManaOrbShadeColor = { 0, 0, 0, 1 },
 
 		ManaOrbForegroundSize = { 188, 188 },

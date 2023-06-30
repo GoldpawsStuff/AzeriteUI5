@@ -50,9 +50,12 @@ local barSparkMap = {
 }
 
 ns.RegisterConfig("PetFrame", {
+
 	Size = { 136, 47 },
 	HitRectInsets = { 0, 0, 0, 0 },
 
+	-- Health
+	-----------------------------------------
 	HealthBarPosition = { "CENTER", 0, 0 },
 	HealthBarSize = { 112, 11 },
 	HealthBarTexture = GetMedia("cast_bar"),
@@ -72,6 +75,8 @@ ns.RegisterConfig("PetFrame", {
 	HealthValueFont = GetFont(14, true),
 	HealthValueColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .75 },
 
+	-- Target Highlighting
+	-----------------------------------------
 	TargetHighlightPosition = { "CENTER", 1, -2 },
 	TargetHighlightSize = { 193,93 },
 	TargetHighlightTexture = GetMedia("cast_back_outline"),

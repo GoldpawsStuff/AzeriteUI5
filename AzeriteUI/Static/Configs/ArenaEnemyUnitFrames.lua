@@ -33,54 +33,53 @@ local GetMedia = ns.API.GetMedia
 local barSparkMap = {
 	top = {
 		{ keyPercent =   0/128, offset = -16/32 },
+		{ keyPercent =   4/128, offset = -16/32 },
 		{ keyPercent =  10/128, offset =   0/32 },
 		{ keyPercent = 119/128, offset =   0/32 },
+		{ keyPercent = 126/128, offset = -16/32 },
 		{ keyPercent = 128/128, offset = -16/32 }
 	},
 	bottom = {
 		{ keyPercent =   0/128, offset = -16/32 },
+		{ keyPercent =   4/128, offset = -16/32 },
 		{ keyPercent =  10/128, offset =   0/32 },
 		{ keyPercent = 119/128, offset =   0/32 },
+		{ keyPercent = 126/128, offset = -16/32 },
 		{ keyPercent = 128/128, offset = -16/32 }
 	}
 }
 
-ns.RegisterConfig("PartyFrames", {
-
-	-- Header Position & Layut
-	-----------------------------------------
-	Position = { "TOPLEFT", UIParent, "TOPLEFT", 50, -42 }, -- party header position
-	Size = { 130*4, 130 }, -- size of the entire header frame area
-	UnitSize = { 130, 140 }, -- party member size
-	OutOfRangeAlpha = .6, -- Alpha of out of range party members
+ns.RegisterConfig("ArenaFrames", {
+	Size = { 136, 47 },
+	HitRectInsets = { -20, -20, -20, -10 },
 
 	-- Health
 	-----------------------------------------
-	HealthBarPosition = { "BOTTOM", 0, 10 },
-	HealthBarSize = { 80, 14 },
+	HealthBarPosition = { "CENTER", 0, 0 },
+	HealthBarSize = { 112, 11 },
 	HealthBarTexture = GetMedia("cast_bar"),
-	HealthBarOrientation = "RIGHT",
+	HealthBarOrientation = "LEFT",
 	HealthBarSparkMap = barSparkMap,
 	HealthAbsorbColor = { 1, 1, 1, .5 },
 	HealthCastOverlayColor = { 1, 1, 1, .5 },
 
 	HealthBackdropPosition = { "CENTER", 1, -2 },
-	HealthBackdropSize = { 140,90 },
+	HealthBackdropSize = { 193,93 },
 	HealthBackdropTexture = GetMedia("cast_back"),
 	HealthBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 
 	HealthValuePosition = { "CENTER", 0, 0 },
 	HealthValueJustifyH = "CENTER",
 	HealthValueJustifyV = "MIDDLE",
-	HealthValueFont = GetFont(13, true),
+	HealthValueFont = GetFont(14, true),
 	HealthValueColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .75 },
 
 	-- Power
 	-----------------------------------------
-	PowerBarSize = { 72, 1 },
-	PowerBarPosition = { "BOTTOM", 0, -1.5 + 10 },
+	PowerBarPosition = { "CENTER", 0, -1.5 },
+	PowerBarSize = { 104, 1 },
 	PowerBarTexture = [[Interface\ChatFrame\ChatFrameBackground]],
-	PowerBarOrientation = "RIGHT",
+	PowerBarOrientation = "LEFT",
 	PowerBackdropSize = { 74, 3 },
 	PowerBackdropPosition = { "CENTER", 0, 0 },
 	PowerBackdropTexture = [[Interface\ChatFrame\ChatFrameBackground]],
@@ -88,69 +87,47 @@ ns.RegisterConfig("PartyFrames", {
 
 	-- Portrait
 	-----------------------------------------
-	PortraitPosition = { "BOTTOM", 0, 22 + 10 },
-	PortraitSize = { 70, 73 },
+	PortraitPosition = { "TOPRIGHT", -40, -31 },
+	PortraitSize = { 85, 85 },
 	PortraitAlpha = .85,
-	PortraitBackgroundPosition = { "BOTTOM", 0, -6 },
-	PortraitBackgroundSize = { 130, 130 },
+	PortraitBackgroundPosition = { "TOPRIGHT", 3, 16 },
+	PortraitBackgroundSize = { 173, 173 },
 	PortraitBackgroundTexture = GetMedia("party_portrait_back"),
 	PortraitBackgroundColor = { .5, .5, .5 },
-	PortraitShadePosition = { "BOTTOM", 0, 16 },
-	PortraitShadeSize = { 86, 86 },
+	PortraitShadePosition = { "TOPRIGHT", -30, -18 },
+	PortraitShadeSize = { 107, 107 },
 	PortraitShadeTexture = GetMedia("shade-circle"),
-	PortraitBorderPosition = { "BOTTOM", 0, -38 },
-	PortraitBorderSize = { 194, 194 },
-	PortraitBorderTexture = GetMedia("party_portrait_border"),
-	PortraitBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
+	PortraitBorderPosition = { "TOPRIGHT", 10, 22 },
+	PortraitBorderSize = { 187, 187 },
 
-	-- Target Highlight Outline
+	-- Unit Name
+	-----------------------------------------
+	NamePosition = { "BOTTOMRIGHT", -12, 52 },
+	NameJustifyH = "CENTER",
+	NameJustifyV = "TOP",
+	NameFont = GetFont(14, true),
+	NameColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75 },
+
+	-- Target Highlighting
 	-----------------------------------------
 	TargetHighlightPosition = { "CENTER", 1, -2 },
-	TargetHighlightSize = { 140, 90 },
+	TargetHighlightSize = { 193,93 },
 	TargetHighlightTexture = GetMedia("cast_back_outline"),
 	TargetHighlightTargetColor = { 255/255, 239/255, 169/255, 1 },
 	TargetHighlightFocusColor = { 144/255, 195/255, 255/255, 1 },
 
-	-- Ready Check
-	-----------------------------------------
-	ReadyCheckPosition = { "CENTER", 0, -7 + 10 },
-	ReadyCheckSize = { 32, 32 },
-	ReadyCheckReadyTexture = [[Interface/RAIDFRAME/ReadyCheck-Ready]],
-	ReadyCheckNotReadyTexture = [[Interface/RAIDFRAME/ReadyCheck-NotReady]],
-	ReadyCheckWaitingTexture = [[Interface/RAIDFRAME/ReadyCheck-Waiting]],
-
-	-- Resurrection Indicator
-	-----------------------------------------
-	ResurrectIndicatorPosition = { "CENTER", 0, -7 + 10 },
-	ResurrectIndicatorSize = { 32, 32 },
-	ResurrectIndicatorTexture = [[Interface\RaidFrame\Raid-Icon-Rez]],
-
-	-- Group Role
-	-----------------------------------------
-	GroupRolePosition = { "TOP", 0, 0 },
-	GroupRoleSize = { 40, 40 },
-	GroupRoleBackdropPosition = { "CENTER", 0, 0 },
-	GroupRoleBackdropSize = { 77, 77 },
-	GroupRoleBackdropTexture = GetMedia("point_plate"),
-	GroupRoleBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
-	GroupRoleIconPositon = { "CENTER", 0, 0 },
-	GroupRoleIconSize = { 34, 34 },
-	GroupRoleDPSTexture = GetMedia("grouprole-icons-dps"),
-	GroupRoleHealerTexture = GetMedia("grouprole-icons-heal"),
-	GroupRoleTankTexture = GetMedia("grouprole-icons-tank"),
-
 	-- Combat Feedback Text
 	-----------------------------------------
-	CombatFeedbackAnchorElement = "Portrait",
-	CombatFeedbackPosition = { "CENTER", 0, 0 },
+	CombatFeedbackAnchorElement = "Health",
+	CombatFeedbackPosition = { "BOTTOM", 0, -20 }, -- must adjust this
 	CombatFeedbackFont = GetFont(20, true), -- standard font
 	CombatFeedbackFontLarge = GetFont(24, true), -- crit/drushing font
 	CombatFeedbackFontSmall = GetFont(18, true), -- glancing blow font
 
 	-- Auras
 	-----------------------------------------
-	AurasPosition = { "BOTTOM", 0, -(34*2 + 22) + 10 },
-	AurasSize = { 34*3 - 4, 34*2 - 4 },
+	AurasPosition = { "RIGHT", -149, -1 },
+	AurasSize = { 30*3 + 2*5, 30*2 + 5  },
 	AuraSize = 30,
 	AuraSpacing = 4,
 	AurasNumTotal = 6,
@@ -158,10 +135,10 @@ ns.RegisterConfig("PartyFrames", {
 	AurasDisableCooldown = false,
 	AurasOnlyShowPlayer = false,
 	AurasShowStealableBuffs = false,
-	AurasInitialAnchor = "TOPLEFT",
+	AurasInitialAnchor = "TOPRIGHT",
 	AurasSpacingX = 4,
 	AurasSpacingY = 4,
-	AurasGrowthX = "RIGHT",
+	AurasGrowthX = "LEFT",
 	AurasGrowthY = "DOWN",
 	AurasTooltipAnchor = "ANCHOR_TOPLEFT",
 	AurasSortMethod = "TIME_REMAINING",

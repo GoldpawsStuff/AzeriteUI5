@@ -33,6 +33,7 @@ local GetMedia = ns.API.GetMedia
 local toRadians = function(d) return d*(math.pi/180) end
 
 ns.RegisterConfig("PlayerClassPower", {
+
 	ClassPowerFrameSize = { 124, 168 },
 
 	-- Class Power
