@@ -50,6 +50,7 @@ local barSparkMap = {
 }
 
 ns.RegisterConfig("BossFrames", {
+
 	Size = { 136, 47 },
 	HitRectInsets = { -20, -20, -20, -10 },
 
@@ -128,4 +129,5 @@ ns.RegisterConfig("BossFrames", {
 	AurasTooltipAnchor = "ANCHOR_TOPLEFT",
 	AurasSortMethod = "TIME_REMAINING",
 	AurasSortDirection = "DESCENDING"
+
 })
