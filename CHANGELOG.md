@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-06-28
+## [Unreleased] 2023-06-30
 ### Added
 - Added separate raid frames for raids of up to 5 players. If these are disabled, party frames with portraits will be shown in raids of up to 5 players.
 - Added separate raid frames for raids of up to 25 players. If the above are disabled, these raid frames will also be shown in raids of up to 5 players.
