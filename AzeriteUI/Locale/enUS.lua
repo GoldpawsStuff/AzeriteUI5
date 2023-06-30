@@ -16,6 +16,7 @@ L["Anchor Point"] = true
 L["Apply"] = true
 L["Arcane Charges"] = true
 L["Are you sure you want to delete the preset '%s'? This cannot be undone."] = true
+L["Arena Enemy Frames"] = true
 L["Arena Frames"] = true
 L["Aura Settings"] = true
 L["Automatically load an Edit Mode layout."] = true

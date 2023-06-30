@@ -17,6 +17,7 @@ L["Anchor Point"] = "기준 위치"
 L["Apply"] = "적용"
 L["Arcane Charges"] = "비전 충전물"
 L["Are you sure you want to delete the preset '%s'? This cannot be undone."] = true
+L["Arena Enemy Frames"] = "투기장 상대 플레이어창"
 L["Arena Frames"] = "투기장 개체창"
 L["Aura Settings"] = true
 L["Automatically load an Edit Mode layout."] = true

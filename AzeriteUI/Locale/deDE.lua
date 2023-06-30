@@ -17,6 +17,7 @@ L["Anchor Point"] = "Ankerpunkt"
 L["Apply"] = "Übernehmen"
 L["Arcane Charges"] = "Arkane Aufladungen"
 L["Are you sure you want to delete the preset '%s'? This cannot be undone."] = true
+L["Arena Enemy Frames"] = "Gegneranzeige in Arena"
 L["Arena Frames"] = "Arenafenster"
 L["Aura Settings"] = true
 L["Automatically load an Edit Mode layout."] = true
