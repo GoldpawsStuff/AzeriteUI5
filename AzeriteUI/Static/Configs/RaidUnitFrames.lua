@@ -35,11 +35,6 @@ ns.RegisterConfig("RaidFrames", {
 	-----------------------------------------
 	Position = { "TOPLEFT", UIParent, "TOPLEFT", 50, -42 }, -- raid header position
 	Size = { 103*5, 56*8 }, -- size of the entire header frame area (must adjust to raid size?)
-	--Anchor = "LEFT", -- raid member frame anchor
-	--GrowthX = 0, -- raid member horizontal offset
-	--GrowthY = 0, -- raid member vertical offset
-	--Sorting = "INDEX", -- sort method
-	--SortDirection = "ASC", -- sort direction
 
 	UnitSize = { 103, 30 + 16 + 10 }, -- raid member size
 	PartyHitRectInsets = { 0, 0, 0, -10 }, -- raid member mouseover hit box
@@ -136,4 +131,5 @@ ns.RegisterConfig("RaidFrames", {
 	CombatFeedbackFont = GetFont(20, true), -- standard font
 	CombatFeedbackFontLarge = GetFont(24, true), -- crit/drushing font
 	CombatFeedbackFontSmall = GetFont(18, true) -- glancing blow font
+
 })
