@@ -50,6 +50,7 @@ local barSparkMap = {
 }
 
 ns.RegisterConfig("ArenaFrames", {
+
 	Size = { 136, 47 },
 	HitRectInsets = { -20, -20, -20, -10 },
 
