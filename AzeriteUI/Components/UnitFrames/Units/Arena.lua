@@ -38,9 +38,9 @@ local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
 ArenaFrameMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),
-		[1] = "TOPRIGHT",
-		[2] = -64 * ns.API.GetEffectiveScale(),
-		[3] = -279 * ns.API.GetEffectiveScale()
+		[1] = "CENTER",
+		[2] = 300 * ns.API.GetEffectiveScale(),
+		[3] = 80 * ns.API.GetEffectiveScale()
 	}
 	return defaults
 end
