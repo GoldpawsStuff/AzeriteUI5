@@ -28,7 +28,12 @@ local oUF = ns.oUF
 
 local BossFrameMod = ns:NewModule("BossFrames", ns.UnitFrameModule, "LibMoreEvents-1.0")
 
+-- GLOBALS: CreateFrame, InCombatLockdown, Enum
+-- GLOBALS: UnitIsUnit, UnitHasVehicleUI, UnitPowerType
+
 -- Lua API
+local next = next
+local setmetatable = setmetatable
 local string_gsub = string.gsub
 local unpack = unpack
 
