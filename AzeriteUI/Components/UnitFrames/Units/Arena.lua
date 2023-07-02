@@ -23,7 +23,7 @@
 	SOFTWARE.
 
 --]]
-local _, ns = ...
+local Addon, ns = ...
 
 if (ns.IsClassic) then return end
 
