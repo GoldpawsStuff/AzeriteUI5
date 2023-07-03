@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added separate raid frames for large raids of up to 40 players. If the 25 player raid frames are disabled, these frames will also be shown in raid of up to 25 players. If the 5 player raid frames also are disabled in addition to this, these frames will also be shown in raids of up to 5 players. You still following?
 - Added anchors to move and scale the Blizzard UI widgets found at the top center of the screen and below the minimap.
 - Added an option to automatically load an EditMode layout when enabling a settings profile.
+- Added support for Classic Hardcore PTR.
 
 ### Changed
 - Previously when mousing over a faded actionbar, all faded bars would fade in at once. Now you can make bars only fade in their own buttons and not every single faded button in the user interface at once.
