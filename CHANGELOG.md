@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-07-03
+- Note that several features are currently under development and most uploaded builds are development builds. I strongly recommend against installing anything from GitHub at this point. Use the official tagged builds from CurseForge and Wago.
+
 ### Added
 - Added separate raid frames for raids of up to 5 players. If these are disabled, party frames with portraits will be shown in raids of up to 5 players.
 - Added separate raid frames for raids of up to 25 players. If the above are disabled, these raid frames will also be shown in raids of up to 5 players.
