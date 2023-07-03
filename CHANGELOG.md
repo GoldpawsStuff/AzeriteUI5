@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-06-30
+## [Unreleased] 2023-07-03
 ### Added
 - Added separate raid frames for raids of up to 5 players. If these are disabled, party frames with portraits will be shown in raids of up to 5 players.
 - Added separate raid frames for raids of up to 25 players. If the above are disabled, these raid frames will also be shown in raids of up to 5 players.
@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Previously when mousing over a faded actionbar, all faded bars would fade in at once. Now you can make bars only fade in their own buttons and not every single faded button in the user interface at once.
 - Party auras should be a bit more restrictive now and hide self-cast buffs by the party members.
 - Party frames will now by default appear for raids of up to 5 players when none of the available sized frames are enabled.
+- Our nameplate module will now disable itself when the addon namePlateM+ is enabled.
 
 ## [5.1.74-Release] 2023-06-24
 ### Added
