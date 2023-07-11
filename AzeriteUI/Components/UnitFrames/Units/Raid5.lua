@@ -64,7 +64,7 @@ RaidFrame5Mod.GenerateDefaults = function(self)
 		scale = ns.API.GetEffectiveScale(),
 		[1] = "CENTER",
 		[2] = -300 * ns.API.GetEffectiveScale(),
-		[3] = 80 * ns.API.GetEffectiveScale()
+		[3] = 0 * ns.API.GetEffectiveScale()
 	}
 	return defaults
 end
@@ -603,6 +603,42 @@ local style = function(self, unit)
 
 	self.Name = name
 
+	-- Auras
+	--------------------------------------------
+	local auras = CreateFrame("Frame", nil, self)
+	auras:SetSize(unpack(db.AurasSize))
+	auras:SetPoint(unpack(db.AurasPosition))
+	auras.size = db.AuraSize
+	auras.spacing = db.AuraSpacing
+	auras.numTotal = db.AurasNumTotal
+	auras.disableMouse = db.AurasDisableMouse
+	auras.disableCooldown = db.AurasDisableCooldown
+	auras.onlyShowPlayer = db.AurasOnlyShowPlayer
+	auras.showStealableBuffs = db.AurasShowStealableBuffs
+	auras.initialAnchor = db.AurasInitialAnchor
+	auras["spacing-x"] = db.AurasSpacingX
+	auras["spacing-y"] = db.AurasSpacingY
+	auras["growth-x"] = db.AurasGrowthX
+	auras["growth-y"] = db.AurasGrowthY
+	auras.tooltipAnchor = db.AurasTooltipAnchor
+	auras.sortMethod = db.AurasSortMethod
+	auras.sortDirection = db.AurasSortDirection
+	auras.reanchorIfVisibleChanged = true
+	auras.CreateButton = ns.AuraStyles.CreateButton
+	auras.PostUpdateButton = ns.AuraStyles.ArenaPostUpdateButton
+	auras.CustomFilter = ns.AuraFilters.ArenaAuraFilter -- classic
+	auras.FilterAura = ns.AuraFilters.ArenaAuraFilter -- retail
+
+	if (ns:GetModule("UnitFrames").db.global.disableAuraSorting) then
+		auras.PreSetPosition = ns.AuraSorts.Alternate -- only in classic
+		auras.SortAuras = ns.AuraSorts.AlternateFuncton -- only in retail
+	else
+		auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
+		auras.SortAuras = ns.AuraSorts.DefaultFunction -- only in retail
+	end
+
+	self.Auras = auras
+
 	-- Range Opacity
 	-----------------------------------------------------------
 	self.Range = { outsideAlpha = .6 }
@@ -692,7 +728,7 @@ RaidFrame5Mod.GetHeaderAttributes = function(self)
 	"sortMethod", "INDEX", -- INDEX, NAME -- Member sorting within each group
 	"sortDir", "ASC", -- ASC, DESC
 	"groupFilter", "1,2,3,4,5,6,7,8", -- Group filter
-	"showSolo", true, -- show while non-grouped
+	"showSolo", false, -- show while non-grouped
 	"showPlayer", true, -- show the player while in a party
 	"showRaid", true, -- show while in a raid group
 	"showParty", true, -- show while in a party
