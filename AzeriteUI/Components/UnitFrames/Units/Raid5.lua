@@ -30,7 +30,7 @@ local RaidFrame5Mod = ns:NewModule("RaidFrame5", ns.UnitFrameModule, "LibMoreEve
 
 -- GLOBALS: UIParent, Enum
 -- GLOBALS: LoadAddOn, InCombatLockdown, RegisterAttributeDriver, UnregisterAttributeDriver
--- GLOBALS: UnitGroupRolesAssigned, UnitHasVehicleUI, UnitIsUnit, UnitPowerType
+-- GLOBALS: UnitHasVehicleUI, UnitIsUnit, UnitPowerType
 -- GLOBALS: CompactRaidFrameContainer, CompactRaidFrameManager, CompactRaidFrameManager_SetSetting
 
 -- Lua API
@@ -264,52 +264,6 @@ local Power_PostUpdate = function(element, unit, cur, min, max)
 	end
 end
 
--- Custom Group Role updater
-local GroupRoleIndicator_Override = function(self, event)
-	local element = self.GroupRoleIndicator
-
-	--[[ Callback: GroupRoleIndicator:PreUpdate()
-	Called before the element has been updated.
-
-	* self - the GroupRoleIndicator element
-	--]]
-	if (element.PreUpdate) then
-		element:PreUpdate()
-	end
-
-	local role = UnitGroupRolesAssigned(self.unit)
-	if (role and element[role]) then
-		element.Icon:SetTexture(element[role])
-		element:Show()
-	else
-		element:Hide()
-	end
-
-	--[[ Callback: GroupRoleIndicator:PostUpdate(role)
-	Called after the element has been updated.
-
-	* self - the GroupRoleIndicator element
-	* role - the role as returned by [UnitGroupRolesAssigned](http://wowprogramming.com/docs/api/UnitGroupRolesAssigned.html)
-	--]]
-	if (element.PostUpdate) then
-		return element:PostUpdate(role)
-	end
-end
-
-local MasterLooterIndicator_PostUpdate = function(self, isShown)
-	local leaderIndicator = self.__owner.LeaderIndicator
-	leaderIndicator:ClearAllPoints()
-
-	if (isShown) then
-		if (not leaderIndicator.points) then
-			leaderIndicator.points = { leaderIndicator:GetPoint() }
-		end
-		leaderIndicator:SetPoint("RIGHT", self, "LEFT")
-	elseif (leaderIndicator.points) then
-		leaderIndicator:SetPoint(unpack(leaderIndicator.points))
-	end
-end
-
 -- Make the portrait look better for offline or invisible units.
 local Portrait_PostUpdate = function(element, unit, hasStateChanged)
 	if (not element.state) then
@@ -355,7 +309,7 @@ local TargetHighlight_Update = function(self, event, unit, ...)
 end
 
 local UnitFrame_PostUpdate = function(self)
-	TargetHighlight_Update(self)
+	--TargetHighlight_Update(self)
 end
 
 local UnitFrame_OnEvent = function(self, event, unit, ...)
@@ -458,21 +412,9 @@ local style = function(self, unit)
 	healthValue:SetTextColor(unpack(db.HealthValueColor))
 	healthValue:SetJustifyH(db.HealthValueJustifyH)
 	healthValue:SetJustifyV(db.HealthValueJustifyV)
-	self:Tag(healthValue, prefix("[*:Health(true)]"))
+	self:Tag(healthValue, prefix("[*:Health(true,false,false,true)]"))
 
 	self.Health.Value = healthValue
-
-	-- Player Status
-	--------------------------------------------
-	local status = healthOverlay:CreateFontString(nil, "OVERLAY", nil, 1)
-	status:SetPoint(unpack(db.StatusPosition))
-	status:SetFontObject(db.StatusFont)
-	status:SetTextColor(unpack(db.StatusColor))
-	status:SetJustifyH(db.StatusJustifyH)
-	status:SetJustifyV(db.StatusJustifyV)
-	self:Tag(status, prefix("[*:DeadOrOffline]"))
-
-	self.Health.Status = status
 
 	-- Power
 	--------------------------------------------
@@ -625,41 +567,7 @@ local style = function(self, unit)
 	readyCheckIndicator.notReadyTexture = db.ReadyCheckNotReadyTexture
 	readyCheckIndicator.waitingTexture = db.ReadyCheckWaitingTexture
 
-	self.ReadyCheckIndicator = ReadyCheckIndicator
-
-	-- Ressurection Indicator
-	--------------------------------------------
-	local resurrectIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 6)
-	resurrectIndicator:SetSize(unpack(db.ResurrectIndicatorSize))
-	resurrectIndicator:SetPoint(unpack(db.ResurrectIndicatorPosition))
-	resurrectIndicator:SetTexture(db.ResurrectIndicatorTexture)
-
-	self.ResurrectIndicator = resurrectIndicator
-
-	-- Group Role
-	-----------------------------------------
-    local groupRoleIndicator = CreateFrame("Frame", nil, healthOverlay)
-	groupRoleIndicator:SetSize(unpack(db.GroupRoleSize))
-	groupRoleIndicator:SetPoint(unpack(db.GroupRolePosition))
-	groupRoleIndicator.HEALER = db.GroupRoleHealerTexture
-	groupRoleIndicator.TANK = db.GroupRoleTankTexture
-
-	local groupRoleBackdrop = groupRoleIndicator:CreateTexture(nil, "BACKGROUND", nil, 1)
-	groupRoleBackdrop:SetSize(unpack(db.GroupRoleBackdropSize))
-	groupRoleBackdrop:SetPoint(unpack(db.GroupRoleBackdropPosition))
-	groupRoleBackdrop:SetTexture(db.GroupRoleBackdropTexture)
-	groupRoleBackdrop:SetVertexColor(unpack(db.GroupRoleBackdropColor))
-
-	groupRoleIndicator.Backdrop = groupRoleBackdrop
-
-	local groupRoleIcon = groupRoleIndicator:CreateTexture(nil, "ARTWORK", nil, 1)
-	groupRoleIcon:SetSize(unpack(db.GroupRoleIconSize))
-	groupRoleIcon:SetPoint(unpack(db.GroupRoleIconPositon))
-
-	groupRoleIndicator.Icon = groupRoleIcon
-
-    self.GroupRoleIndicator = groupRoleIndicator
-	self.GroupRoleIndicator.Override = GroupRoleIndicator_Override
+	self.ReadyCheckIndicator = readyCheckIndicator
 
 	-- CombatFeedback Text
 	--------------------------------------------
@@ -674,14 +582,14 @@ local style = function(self, unit)
 
 	-- Target Highlight
 	--------------------------------------------
-	local targetHighlight = healthOverlay:CreateTexture(nil, "BACKGROUND", nil, -2)
-	targetHighlight:SetPoint(unpack(db.TargetHighlightPosition))
-	targetHighlight:SetSize(unpack(db.TargetHighlightSize))
-	targetHighlight:SetTexture(db.TargetHighlightTexture)
-	targetHighlight.colorTarget = db.TargetHighlightTargetColor
-	targetHighlight.colorFocus = db.TargetHighlightFocusColor
+	--local targetHighlight = healthOverlay:CreateTexture(nil, "BACKGROUND", nil, -2)
+	--targetHighlight:SetPoint(unpack(db.TargetHighlightPosition))
+	--targetHighlight:SetSize(unpack(db.TargetHighlightSize))
+	--targetHighlight:SetTexture(db.TargetHighlightTexture)
+	--targetHighlight.colorTarget = db.TargetHighlightTargetColor
+	--targetHighlight.colorFocus = db.TargetHighlightFocusColor
 
-	self.TargetHighlight = targetHighlight
+	--self.TargetHighlight = targetHighlight
 
 	-- Unit Name
 	--------------------------------------------
@@ -694,23 +602,6 @@ local style = function(self, unit)
 	self:Tag(name, prefix("[*:Name(12,nil,nil,true)]"))
 
 	self.Name = name
-
-	-- Leader Indicator
-	--------------------------------------------
-	local leaderIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 2)
-	leaderIndicator:SetSize(16, 16)
-	leaderIndicator:SetPoint("RIGHT", self.Name, "LEFT")
-
-	self.LeaderIndicator = leaderIndicator
-
-	-- MasterLooter Indicator
-	--------------------------------------------
-	local masterLooterIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 2)
-	masterLooterIndicator:SetSize(16, 16)
-	masterLooterIndicator:SetPoint("RIGHT", self.Name, "LEFT")
-
-	self.MasterLooterIndicator = masterLooterIndicator
-	self.MasterLooterIndicator.PostUpdate = MasterLooterIndicator_PostUpdate
 
 	-- Range Opacity
 	-----------------------------------------------------------

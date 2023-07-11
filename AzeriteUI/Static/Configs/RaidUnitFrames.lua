@@ -164,14 +164,6 @@ ns.RegisterConfig("Raid5Frames", {
 	HealthValueFont = GetFont(12, true),
 	HealthValueColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .75 },
 
-	-- Player Status
-	-----------------------------------------
-	StatusPosition = { "CENTER", 0, 0 },
-	StatusJustifyH = "CENTER",
-	StatusJustifyV = "MIDDLE",
-	StatusFont = GetFont(13, true),
-	StatusColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .75 },
-
 	-- Power
 	-----------------------------------------
 	PowerBarSize = { 92, 1.1 },
@@ -224,26 +216,6 @@ ns.RegisterConfig("Raid5Frames", {
 	ReadyCheckReadyTexture = [[Interface/RAIDFRAME/ReadyCheck-Ready]],
 	ReadyCheckNotReadyTexture = [[Interface/RAIDFRAME/ReadyCheck-NotReady]],
 	ReadyCheckWaitingTexture = [[Interface/RAIDFRAME/ReadyCheck-Waiting]],
-
-	-- Resurrection Indicator
-	-----------------------------------------
-	ResurrectIndicatorPosition = { "CENTER", 0, 0 },
-	ResurrectIndicatorSize = { 32, 32 },
-	ResurrectIndicatorTexture = [[Interface\RaidFrame\Raid-Icon-Rez]],
-
-	-- Group Role
-	-----------------------------------------
-	GroupRolePosition = { "RIGHT", 25, 0 },
-	GroupRoleSize = { 28, 28 },
-	GroupRoleBackdropPosition = { "CENTER", 0, 0 },
-	GroupRoleBackdropSize = { 54, 54 },
-	GroupRoleBackdropTexture = GetMedia("point_plate"),
-	GroupRoleBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
-	GroupRoleIconPositon = { "CENTER", 0, 0 },
-	GroupRoleIconSize = { 24, 24 },
-	GroupRoleDPSTexture = GetMedia("grouprole-icons-dps"),
-	GroupRoleHealerTexture = GetMedia("grouprole-icons-heal"),
-	GroupRoleTankTexture = GetMedia("grouprole-icons-tank"),
 
 	-- Combat Feedback Text
 	-----------------------------------------
