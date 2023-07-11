@@ -43,7 +43,10 @@ local setmetatable = setmetatable
 local string_gsub = string.gsub
 local unpack = unpack
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({
+	enabled = true,
+	yOffset = -12
+}, ns.Module.defaults) }
 
 ArenaFrameMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
@@ -675,8 +678,7 @@ end
 ArenaFrameMod.GetHeaderSize = function(self)
 	local config = ns.GetConfig("ArenaFrames")
 	return
-		config.UnitSize[1]*1 + math_abs(self.db.profile.columnSpacing * 0),
-		config.UnitSize[2]*5 + math_abs(self.db.profile.yOffset * 4)
+		config.UnitSize[1], config.UnitSize[2]*5 + math_abs(self.db.profile.yOffset * 4)
 end
 
 ArenaFrameMod.CreateUnitFrames = function(self)
@@ -704,6 +706,8 @@ ArenaFrameMod.CreateUnitFrames = function(self)
 		layoutManager:SetAllPoints(frame)
 		layoutManager:SetAttribute("unitWidth", config.UnitSize[1])
 		layoutManager:SetAttribute("unitHeight", config.UnitSize[2])
+		layoutManager:SetAttribute("yOffset", self.db.profile.yOffset)
+
 		layoutManager:SetAttribute("UpdateLayout", [[
 
 			-- count visible units
