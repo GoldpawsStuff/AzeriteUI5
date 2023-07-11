@@ -256,10 +256,10 @@ local GenerateOptions = function()
 
 	-- Arena Enemy Frames
 	if (not ns.IsClassic) then
-		--local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("ArenaFrames")
-		--suboptions.name = L["Arena Enemy Frames"]
-		--suboptions.order = 180
-		--options.args.arena = suboptions
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("ArenaFrames")
+		suboptions.name = L["Arena Enemy Frames"]
+		suboptions.order = 180
+		options.args.arena = suboptions
 	end
 
 	-- Player CastBar

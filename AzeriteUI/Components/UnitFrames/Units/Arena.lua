@@ -37,6 +37,7 @@ local ArenaFrameMod = ns:NewModule("ArenaFrames", ns.UnitFrameModule, "LibMoreEv
 -- GLOBALS: UnitIsUnit, UnitHasVehicleUI, UnitPowerType
 
 -- Lua API
+local math_abs = math.abs
 local next = next
 local setmetatable = setmetatable
 local string_gsub = string.gsub
@@ -49,7 +50,7 @@ ArenaFrameMod.GenerateDefaults = function(self)
 		scale = ns.API.GetEffectiveScale(),
 		[1] = "CENTER",
 		[2] = 300 * ns.API.GetEffectiveScale(),
-		[3] = 80 * ns.API.GetEffectiveScale()
+		[3] = 0 * ns.API.GetEffectiveScale()
 	}
 	return defaults
 end
@@ -250,6 +251,32 @@ local Power_PostUpdate = function(element, unit, cur, min, max)
 	end
 end
 
+-- Make the portrait look better for offline or invisible units.
+local Portrait_PostUpdate = function(element, unit, hasStateChanged)
+	if (not element.state) then
+		element:ClearModel()
+		if (not element.fallback2DTexture) then
+			element.fallback2DTexture = element:CreateTexture()
+			element.fallback2DTexture:SetDrawLayer("ARTWORK")
+			element.fallback2DTexture:SetAllPoints()
+			element.fallback2DTexture:SetTexCoord(.1, .9, .1, .9)
+		end
+		SetPortraitTexture(element.fallback2DTexture, unit)
+		element.fallback2DTexture:Show()
+	else
+		if (element.fallback2DTexture) then
+			element.fallback2DTexture:Hide()
+		end
+		element:SetCamDistanceScale(element.distanceScale or 1)
+		element:SetPortraitZoom(1)
+		element:SetPosition(element.positionX or 0, element.positionY or 0, element.positionZ or 0)
+		element:SetRotation(element.rotation and element.rotation*(2*math_pi)/180 or 0)
+		element:ClearModel()
+		element:SetUnit(unit)
+		element.guid = UnitGUID(unit)
+	end
+end
+
 -- Update targeting highlight outline
 local TargetHighlight_Update = function(self, event, unit, ...)
 	if (unit and unit ~= self.unit) then return end
@@ -269,7 +296,7 @@ local TargetHighlight_Update = function(self, event, unit, ...)
 end
 
 local UnitFrame_PostUpdate = function(self)
-	TargetHighlight_Update(self)
+	--TargetHighlight_Update(self)
 end
 
 local UnitFrame_OnEvent = function(self, event, unit, ...)
@@ -278,11 +305,13 @@ end
 
 local style = function(self, unit)
 
-	local db = ns.GetConfig("BossFrames")
+	local db = ns.GetConfig("ArenaFrames")
 
-	self:SetSize(unpack(db.Size))
-	self:SetHitRectInsets(unpack(db.HitRectInsets))
-	self:SetFrameLevel(self:GetFrameLevel() + 10)
+	self:SetSize(unpack(db.UnitSize))
+
+	-- Apply common scripts and member values.
+	ns.UnitFrame.InitializeUnitFrame(self)
+	ns.UnitFrames[self] = true -- add to our registry
 
 	-- Overlay for icons and text
 	--------------------------------------------
@@ -302,9 +331,11 @@ local style = function(self, unit)
 	health:SetOrientation(db.HealthBarOrientation)
 	health:SetSparkMap(db.HealthBarSparkMap)
 	health.predictThreshold = .01
-	health.colorTapping = true
-	health.colorThreat = true
+	health.colorDisconnected = true
+	health.colorClass = true
+	health.colorClassPet = true
 	health.colorReaction = true
+	health.colorHealth = true
 
 	self.Health = health
 	self.Health.Override = ns.API.UpdateHealth
@@ -312,7 +343,7 @@ local style = function(self, unit)
 	self.Health.PostUpdateColor = Health_PostUpdateColor
 
 	local healthOverlay = CreateFrame("Frame", nil, health)
-	healthOverlay:SetFrameLevel(overlay:GetFrameLevel())
+	healthOverlay:SetFrameLevel(overlay:GetFrameLevel() - 1)
 	healthOverlay:SetAllPoints()
 
 	self.Health.Overlay = healthOverlay
@@ -370,7 +401,7 @@ local style = function(self, unit)
 	healthValue:SetTextColor(unpack(db.HealthValueColor))
 	healthValue:SetJustifyH(db.HealthValueJustifyH)
 	healthValue:SetJustifyV(db.HealthValueJustifyV)
-	self:Tag(healthValue, prefix("[*:Health(true)]"))
+	self:Tag(healthValue, prefix("[*:Health(true,false,false,true)]"))
 
 	self.Health.Value = healthValue
 
@@ -382,15 +413,15 @@ local style = function(self, unit)
 	power:SetSize(unpack(db.PowerBarSize))
 	power:SetStatusBarTexture(db.PowerBarTexture)
 	power:SetOrientation(db.PowerBarOrientation)
+	power:SetAlpha(db.PowerBarAlpha)
 	power.frequentUpdates = true
-	power.displayAltPower = true
 	power.colorPower = true
 
 	self.Power = power
 	self.Power.Override = ns.API.UpdatePower
-	self.Power.PostUpdate = Power_PostUpdate
+	--self.Power.PostUpdate = Power_PostUpdate
 
-	local powerBackdrop = power:CreateTexture(nil, "BACKGROUND", nil, -2)
+	local powerBackdrop = power:CreateTexture(nil, "BACKGROUND", nil, -5)
 	powerBackdrop:SetPoint(unpack(db.PowerBackdropPosition))
 	powerBackdrop:SetSize(unpack(db.PowerBackdropSize))
 	powerBackdrop:SetTexture(db.PowerBackdropTexture)
@@ -400,24 +431,51 @@ local style = function(self, unit)
 
 	-- Portrait
 	--------------------------------------------
+	local portraitFrame = CreateFrame("Frame", nil, self)
+	portraitFrame:SetFrameLevel(self:GetFrameLevel() - 2)
+	portraitFrame:SetAllPoints()
 
-	-- PvP Spec Icon
-	--------------------------------------------
+	local portrait = CreateFrame("PlayerModel", nil, portraitFrame)
+	portrait:SetFrameLevel(portraitFrame:GetFrameLevel())
+	portrait:SetPoint(unpack(db.PortraitPosition))
+	portrait:SetSize(unpack(db.PortraitSize))
+	portrait:SetAlpha(db.PortraitAlpha)
+	portrait.distanceScale = db.PortraitDistanceScale
+	portrait.positionX = db.PortraitPositionX
+	portrait.positionY = db.PortraitPositionY
+	portrait.positionZ = db.PortraitPositionZ
+	portrait.rotation = db.PortraitRotation
+	portrait.showFallback2D = db.PortraitShowFallback2D
 
-	-- Trinket
-	--------------------------------------------
+	self.Portrait = portrait
+	self.Portrait.PostUpdate = Portrait_PostUpdate
 
-	-- Unit Name
-	--------------------------------------------
-	local name = self:CreateFontString(nil, "OVERLAY", nil, 1)
-	name:SetPoint(unpack(db.NamePosition))
-	name:SetFontObject(db.NameFont)
-	name:SetTextColor(unpack(db.NameColor))
-	name:SetJustifyH(db.NameJustifyH)
-	name:SetJustifyV(db.NameJustifyV)
-	self:Tag(name, prefix("[*:Name(16,nil,nil,true)]"))
+	local portraitBg = portraitFrame:CreateTexture(nil, "BACKGROUND", nil, 0)
+	portraitBg:SetPoint(unpack(db.PortraitBackgroundPosition))
+	portraitBg:SetSize(unpack(db.PortraitBackgroundSize))
+	portraitBg:SetTexture(db.PortraitBackgroundTexture)
+	portraitBg:SetVertexColor(unpack(db.PortraitBackgroundColor))
 
-	self.Name = name
+	self.Portrait.Bg = portraitBg
+
+	local portraitOverlayFrame = CreateFrame("Frame", nil, self)
+	portraitOverlayFrame:SetFrameLevel(portraitFrame:GetFrameLevel() + 1)
+	portraitOverlayFrame:SetAllPoints()
+
+	local portraitShade = portraitOverlayFrame:CreateTexture(nil, "BACKGROUND", nil, -1)
+	portraitShade:SetPoint(unpack(db.PortraitShadePosition))
+	portraitShade:SetSize(unpack(db.PortraitShadeSize))
+	portraitShade:SetTexture(db.PortraitShadeTexture)
+
+	self.Portrait.Shade = portraitShade
+
+	local portraitBorder = portraitOverlayFrame:CreateTexture(nil, "BACKGROUND", nil, 0)
+	portraitBorder:SetPoint(unpack(db.PortraitBorderPosition))
+	portraitBorder:SetSize(unpack(db.PortraitBorderSize))
+	portraitBorder:SetTexture(db.PortraitBorderTexture)
+	portraitBorder:SetVertexColor(unpack(db.PortraitBorderColor))
+
+	self.Portrait.Border = portraitBorder
 
 	-- Absorb Bar (Retail)
 	--------------------------------------------
@@ -444,6 +502,62 @@ local style = function(self, unit)
 		self.Health.Absorb = absorb
 	end
 
+	-- Dispellable Debuffs
+	--------------------------------------------
+	--[[
+	local dispellable = {}
+	dispellable.disableMouse = true
+
+	local dispelIcon = CreateFrame("Button", dispellable:GetDebugName() .. "Button", healthOverlay)
+	--dispelIcon:Hide()
+	dispelIcon:SetFrameLevel(overlay:GetFrameLevel() + 2)
+	dispelIcon:SetSize(24,24)
+	dispelIcon:SetPoint("CENTER")
+	dispellable.dispellIcon = dispelIcon
+
+	local dispelIconTexture = dispelIcon:CreateTexture(nil, "BACKGROUND", nil, 1)
+	dispelIconTexture:SetAllPoints()
+	dispelIconTexture:SetMask(GetMedia("actionbutton-mask-square"))
+	dispelIcon.icon = dispelIconTexture
+
+	local dispelIconCount = dispelIcon.Border:CreateFontString(nil, "OVERLAY")
+	dispelIconCount:SetFontObject(GetFont(12,true))
+	dispelIconCount:SetTextColor(Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3])
+	dispelIconCount:SetPoint("BOTTOMRIGHT", dispelIcon, "BOTTOMRIGHT", -2, 3)
+	dispelIcon.count = dispelIconCount
+
+	local dispelIconBorder = CreateFrame("Frame", nil, dispelIcon, ns.BackdropTemplate)
+	dispelIconBorder:SetBackdrop({ edgeFile = GetMedia("border-aura"), edgeSize = 12 })
+	dispelIconBorder:SetBackdropBorderColor(Colors.aura[1], Colors.aura[2], Colors.aura[3])
+	dispelIconBorder:SetPoint("TOPLEFT", -6, 6)
+	dispelIconBorder:SetPoint("BOTTOMRIGHT", 6, -6)
+	dispelIconBorder:SetFrameLevel(dispelIcon:GetFrameLevel() + 2)
+	dispelIcon.overlay = dispelIconBorder
+
+	local dispelIconTime = dispelIcon.overlay:CreateFontString(nil, "OVERLAY")
+	dispelIconTime:SetFontObject(GetFont(14,true))
+	dispelIconTime:SetTextColor(Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3])
+	dispelIconTime:SetPoint("TOPLEFT", dispelIcon, "TOPLEFT", -4, 4)
+	dispelIcon.time = dispelIconTime
+
+	-- Using a virtual cooldown element with the timer attached,
+	-- allowing them to piggyback on the back-end's cooldown updates.
+	dispelIcon.cd = ns.Widgets.RegisterCooldown(dispelIcon.time)
+
+	--self.Dispellable = dispellable
+	--]]
+
+	-- Readycheck
+	--------------------------------------------
+	local readyCheckIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 7)
+	readyCheckIndicator:SetSize(unpack(db.ReadyCheckSize))
+	readyCheckIndicator:SetPoint(unpack(db.ReadyCheckPosition))
+	readyCheckIndicator.readyTexture = db.ReadyCheckReadyTexture
+	readyCheckIndicator.notReadyTexture = db.ReadyCheckNotReadyTexture
+	readyCheckIndicator.waitingTexture = db.ReadyCheckWaitingTexture
+
+	self.ReadyCheckIndicator = readyCheckIndicator
+
 	-- CombatFeedback Text
 	--------------------------------------------
 	local feedbackText = overlay:CreateFontString(nil, "OVERLAY")
@@ -457,17 +571,73 @@ local style = function(self, unit)
 
 	-- Target Highlight
 	--------------------------------------------
-	local targetHighlight = overlay:CreateTexture(nil, "BACKGROUND", nil, -2)
-	targetHighlight:SetPoint(unpack(db.TargetHighlightPosition))
-	targetHighlight:SetSize(unpack(db.TargetHighlightSize))
-	targetHighlight:SetTexture(db.TargetHighlightTexture)
-	targetHighlight.colorTarget = db.TargetHighlightTargetColor
-	targetHighlight.colorFocus = db.TargetHighlightFocusColor
+	--local targetHighlight = healthOverlay:CreateTexture(nil, "BACKGROUND", nil, -2)
+	--targetHighlight:SetPoint(unpack(db.TargetHighlightPosition))
+	--targetHighlight:SetSize(unpack(db.TargetHighlightSize))
+	--targetHighlight:SetTexture(db.TargetHighlightTexture)
+	--targetHighlight.colorTarget = db.TargetHighlightTargetColor
+	--targetHighlight.colorFocus = db.TargetHighlightFocusColor
 
-	self.TargetHighlight = targetHighlight
+	--self.TargetHighlight = targetHighlight
+
+	-- Unit Name
+	--------------------------------------------
+	local name = overlay:CreateFontString(nil, "OVERLAY", nil, 1)
+	name:SetPoint(unpack(db.NamePosition))
+	name:SetFontObject(db.NameFont)
+	name:SetTextColor(unpack(db.NameColor))
+	name:SetJustifyH(db.NameJustifyH)
+	name:SetJustifyV(db.NameJustifyV)
+	self:Tag(name, prefix("[*:Name(12,nil,nil,true)]"))
+
+	self.Name = name
+
+
+	-- PvP Spec Icon
+	--------------------------------------------
+
+	-- Trinket
+	--------------------------------------------
 
 	-- Auras
 	--------------------------------------------
+	local auras = CreateFrame("Frame", nil, self)
+	auras:SetSize(unpack(db.AurasSize))
+	auras:SetPoint(unpack(db.AurasPosition))
+	auras.size = db.AuraSize
+	auras.spacing = db.AuraSpacing
+	auras.numTotal = db.AurasNumTotal
+	auras.disableMouse = db.AurasDisableMouse
+	auras.disableCooldown = db.AurasDisableCooldown
+	auras.onlyShowPlayer = db.AurasOnlyShowPlayer
+	auras.showStealableBuffs = db.AurasShowStealableBuffs
+	auras.initialAnchor = db.AurasInitialAnchor
+	auras["spacing-x"] = db.AurasSpacingX
+	auras["spacing-y"] = db.AurasSpacingY
+	auras["growth-x"] = db.AurasGrowthX
+	auras["growth-y"] = db.AurasGrowthY
+	auras.tooltipAnchor = db.AurasTooltipAnchor
+	auras.sortMethod = db.AurasSortMethod
+	auras.sortDirection = db.AurasSortDirection
+	auras.reanchorIfVisibleChanged = true
+	auras.CreateButton = ns.AuraStyles.CreateButton
+	auras.PostUpdateButton = ns.AuraStyles.ArenaPostUpdateButton
+	auras.CustomFilter = ns.AuraFilters.ArenaAuraFilter -- classic
+	auras.FilterAura = ns.AuraFilters.ArenaAuraFilter -- retail
+
+	if (ns:GetModule("UnitFrames").db.global.disableAuraSorting) then
+		auras.PreSetPosition = ns.AuraSorts.Alternate -- only in classic
+		auras.SortAuras = ns.AuraSorts.AlternateFuncton -- only in retail
+	else
+		auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
+		auras.SortAuras = ns.AuraSorts.DefaultFunction -- only in retail
+	end
+
+	self.Auras = auras
+
+	-- Range Opacity
+	-----------------------------------------------------------
+	self.Range = { outsideAlpha = .6 }
 
 	-- Textures need an update when frame is displayed.
 	self.PostUpdate = UnitFrame_PostUpdate
@@ -475,7 +645,7 @@ local style = function(self, unit)
 	-- Register events to handle additional texture updates.
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", UnitFrame_OnEvent, true)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", UnitFrame_OnEvent, true)
-	self:RegisterEvent("PLAYER_FOCUS_CHANGED", UnitFrame_OnEvent, true)
+
 
 end
 
@@ -502,6 +672,13 @@ GroupHeader.IsEnabled = function(self)
 	return self.units[1]:IsEnabled()
 end
 
+ArenaFrameMod.GetHeaderSize = function(self)
+	local config = ns.GetConfig("ArenaFrames")
+	return
+		config.UnitSize[1]*1 + math_abs(self.db.profile.columnSpacing * 0),
+		config.UnitSize[2]*5 + math_abs(self.db.profile.yOffset * 4)
+end
+
 ArenaFrameMod.CreateUnitFrames = function(self)
 
 	local unit, name = "arena", "Arena"
@@ -510,14 +687,82 @@ ArenaFrameMod.CreateUnitFrames = function(self)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
 	local frame = setmetatable(CreateFrame("Frame", nil, UIParent), GroupHeader_MT)
-	frame:SetSize(250, 97 * 5)
+	frame:SetSize(self:GetHeaderSize())
 	frame.units = {}
 
 	for i = 1,5 do
 		local unitFrame = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)
-		unitFrame:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, -(i-1)*97)
-
+		--local unitFrame = ns.UnitFrame.Spawn(i == 1 and "targettarget" or i == 3 and "player" or i == 4 and "target" or unit..i, ns.Prefix.."UnitFrame"..name..i)
 		frame.units[i] = unitFrame
+	end
+
+	if true then
+
+		local config = ns.GetConfig("ArenaFrames")
+
+		local layoutManager = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+		layoutManager:SetAllPoints(frame)
+		layoutManager:SetAttribute("unitWidth", config.UnitSize[1])
+		layoutManager:SetAttribute("unitHeight", config.UnitSize[2])
+		layoutManager:SetAttribute("UpdateLayout", [[
+
+			-- count visible units
+			local visible = 0;
+			for i = 1,5 do
+				local unit = self:GetFrameRef("Frame"..i):GetAttribute("unit");
+				if (unit and UnitExists(unit)) then
+					visible = visible + 1;
+				end
+			end
+
+			-- do the calculations
+			local unitHeight = self:GetAttribute("unitHeight");
+			local unitSpacing = abs(self:GetAttribute("yOffset"));
+			local fullHeight = unitHeight*5 + unitSpacing*4;
+			local groupHeight = (visible > 1) and (visible*unitHeight + (visible-1)*unitSpacing) or unitHeight;
+			local offsetY = -(fullHeight - groupHeight)/2;
+
+			-- do the layout
+			local count = 0;
+			for i = 1,5 do
+				local unit = self:GetFrameRef("Frame"..i):GetAttribute("unit");
+				if (unit and UnitExists(unit)) then
+					local unitFrame = self:GetFrameRef("Frame"..i);
+					unitFrame:ClearAllPoints();
+					unitFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, offsetY - (count * (unitHeight + unitSpacing)));
+					count = count + 1;
+				end
+			end
+		]])
+
+		for i = 1,5 do
+			layoutManager:SetFrameRef("Frame"..i, frame.units[i])
+		end
+
+		local onLayoutChange = [[
+			self:GetFrameRef("Updater"):RunAttribute("UpdateLayout");
+		]]
+
+		for i = 1,5 do
+			local listener = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+			listener:SetFrameRef("Updater", layoutManager)
+			listener:SetAttribute("_onstate-layout", onLayoutChange)
+			RegisterStateDriver(listener, "layout", "[@arena"..i..",exists]arena"..i.."on;arena"..i.."off")
+		end
+
+		-- Debugging
+		if (false) then
+			local listener = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+			listener:SetFrameRef("Updater", layoutManager)
+			listener:SetAttribute("_onstate-layout", onLayoutChange)
+			RegisterStateDriver(listener, "layout", "[@target,exists]targeton;targetoff")
+
+			local listener = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+			listener:SetFrameRef("Updater", layoutManager)
+			listener:SetAttribute("_onstate-layout", onLayoutChange)
+			RegisterStateDriver(listener, "layout", "[@targettarget,exists]toton;totoff")
+		end
+
 	end
 
 	self.frame = frame
