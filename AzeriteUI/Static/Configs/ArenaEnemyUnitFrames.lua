@@ -51,12 +51,14 @@ local barSparkMap = {
 
 ns.RegisterConfig("ArenaFrames", {
 
-	Size = { 136, 47 },
-	HitRectInsets = { -20, -20, -20, -10 },
+	-- General
+	-----------------------------------------
+	UnitSize = { 210, 86 }, -- raid member size
+	OutOfRangeAlpha = .6, -- Alpha of out of range raid members
 
 	-- Health
 	-----------------------------------------
-	HealthBarPosition = { "CENTER", 0, 0 },
+	HealthBarPosition = { "LEFT", 26, -13 },
 	HealthBarSize = { 112, 11 },
 	HealthBarTexture = GetMedia("cast_bar"),
 	HealthBarOrientation = "LEFT",
@@ -72,42 +74,37 @@ ns.RegisterConfig("ArenaFrames", {
 	HealthValuePosition = { "CENTER", 0, 0 },
 	HealthValueJustifyH = "CENTER",
 	HealthValueJustifyV = "MIDDLE",
-	HealthValueFont = GetFont(14, true),
+	HealthValueFont = GetFont(12, true),
 	HealthValueColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .75 },
 
 	-- Power
 	-----------------------------------------
-	PowerBarPosition = { "CENTER", 0, -1.5 },
-	PowerBarSize = { 104, 1 },
+	PowerBarSize = { 92, 1.1 },
+	PowerBarPosition = { "LEFT", 36, -21 },
 	PowerBarTexture = [[Interface\ChatFrame\ChatFrameBackground]],
 	PowerBarOrientation = "LEFT",
-	PowerBackdropSize = { 74, 3 },
+	PowerBarAlpha = .65,
+	PowerBackdropSize = { 96.4, 3.3 },
 	PowerBackdropPosition = { "CENTER", 0, 0 },
 	PowerBackdropTexture = [[Interface\ChatFrame\ChatFrameBackground]],
-	PowerBackdropColor = { 0, 0, 0, .75 },
+	PowerBackdropColor = { 0, 0, 0, 1 },
 
 	-- Portrait
 	-----------------------------------------
-	PortraitPosition = { "TOPRIGHT", -40, -31 },
-	PortraitSize = { 85, 85 },
+	PortraitPosition = { "LEFT", 146, 0 },
+	PortraitSize = { 46, 47 },
 	PortraitAlpha = .85,
-	PortraitBackgroundPosition = { "TOPRIGHT", 3, 16 },
-	PortraitBackgroundSize = { 173, 173 },
+	PortraitBackgroundPosition = { "LEFT", 128, 0 },
+	PortraitBackgroundSize = { 87, 87 },
 	PortraitBackgroundTexture = GetMedia("party_portrait_back"),
-	PortraitBackgroundColor = { .5, .5, .5 },
-	PortraitShadePosition = { "TOPRIGHT", -30, -18 },
-	PortraitShadeSize = { 107, 107 },
+	PortraitBackgroundColor = { .5, .5, .5, .75 },
+	PortraitShadePosition = { "LEFT", 142, 0 },
+	PortraitShadeSize = { 58, 58 },
 	PortraitShadeTexture = GetMedia("shade-circle"),
-	PortraitBorderPosition = { "TOPRIGHT", 10, 22 },
-	PortraitBorderSize = { 187, 187 },
-
-	-- Unit Name
-	-----------------------------------------
-	NamePosition = { "BOTTOMRIGHT", -12, 52 },
-	NameJustifyH = "CENTER",
-	NameJustifyV = "TOP",
-	NameFont = GetFont(14, true),
-	NameColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75 },
+	PortraitBorderPosition = { "LEFT", 106, 0 },
+	PortraitBorderSize = { 130, 130	 },
+	PortraitBorderTexture = GetMedia("party_portrait_border"),
+	PortraitBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3], 1 },
 
 	-- Target Highlighting
 	-----------------------------------------
@@ -117,17 +114,25 @@ ns.RegisterConfig("ArenaFrames", {
 	TargetHighlightTargetColor = { 255/255, 239/255, 169/255, 1 },
 	TargetHighlightFocusColor = { 144/255, 195/255, 255/255, 1 },
 
-	-- Combat Feedback Text
+	-- Unit Name
 	-----------------------------------------
-	CombatFeedbackAnchorElement = "Health",
-	CombatFeedbackPosition = { "BOTTOM", 0, -20 }, -- must adjust this
-	CombatFeedbackFont = GetFont(20, true), -- standard font
-	CombatFeedbackFontLarge = GetFont(24, true), -- crit/drushing font
-	CombatFeedbackFontSmall = GetFont(18, true), -- glancing blow font
+	NamePosition = { "RIGHT", -82, 13 },
+	NameJustifyH = "RIGHT",
+	NameJustifyV = "BOTTOM",
+	NameFont = GetFont(11, true),
+	NameColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75 },
+
+	-- Ready Check
+	-----------------------------------------
+	ReadyCheckPosition = { "CENTER", 64, 0 },
+	ReadyCheckSize = { 32, 32 },
+	ReadyCheckReadyTexture = [[Interface/RAIDFRAME/ReadyCheck-Ready]],
+	ReadyCheckNotReadyTexture = [[Interface/RAIDFRAME/ReadyCheck-NotReady]],
+	ReadyCheckWaitingTexture = [[Interface/RAIDFRAME/ReadyCheck-Waiting]],
 
 	-- Auras
 	-----------------------------------------
-	AurasPosition = { "RIGHT", -149, -1 },
+	AurasPosition = { "LEFT", 216, 2 },
 	AurasSize = { 30*3 + 2*5, 30*2 + 5  },
 	AuraSize = 30,
 	AuraSpacing = 4,
@@ -135,13 +140,22 @@ ns.RegisterConfig("ArenaFrames", {
 	AurasDisableMouse = false,
 	AurasDisableCooldown = false,
 	AurasOnlyShowPlayer = false,
-	AurasShowStealableBuffs = false,
-	AurasInitialAnchor = "TOPRIGHT",
+	AurasShowStealableBuffs = true,
+	AurasInitialAnchor = "BOTTOMLEFT",
 	AurasSpacingX = 4,
 	AurasSpacingY = 4,
-	AurasGrowthX = "LEFT",
-	AurasGrowthY = "DOWN",
-	AurasTooltipAnchor = "ANCHOR_TOPLEFT",
+	AurasGrowthX = "RIGHT",
+	AurasGrowthY = "UP",
+	AurasTooltipAnchor = "ANCHOR_BOTTOMRIGHT",
 	AurasSortMethod = "TIME_REMAINING",
-	AurasSortDirection = "DESCENDING"
+	AurasSortDirection = "DESCENDING",
+
+	-- Combat Feedback Text
+	-----------------------------------------
+	CombatFeedbackAnchorElement = "Portrait",
+	CombatFeedbackPosition = { "CENTER", 0, 0 },
+	CombatFeedbackFont = GetFont(20, true), -- standard font
+	CombatFeedbackFontLarge = GetFont(24, true), -- crit/drushing font
+	CombatFeedbackFontSmall = GetFont(18, true) -- glancing blow font
+
 })
