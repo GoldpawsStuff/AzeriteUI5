@@ -167,7 +167,7 @@ ns.RegisterConfig("Raid5Frames", {
 	-- Power
 	-----------------------------------------
 	PowerBarSize = { 92, 1.1 },
-	PowerBarPosition = { "RIGHT", -36, -19 },
+	PowerBarPosition = { "RIGHT", -36, -21 },
 	PowerBarTexture = [[Interface\ChatFrame\ChatFrameBackground]],
 	PowerBarOrientation = "RIGHT",
 	PowerBarAlpha = .65,
@@ -219,8 +219,8 @@ ns.RegisterConfig("Raid5Frames", {
 
 	-- Combat Feedback Text
 	-----------------------------------------
-	CombatFeedbackAnchorElement = "Health",
-	CombatFeedbackPosition = { "RIGHT", -169, 0 },
+	CombatFeedbackAnchorElement = "Portrait",
+	CombatFeedbackPosition = { "CENTER", 0, 0 },
 	CombatFeedbackFont = GetFont(20, true), -- standard font
 	CombatFeedbackFontLarge = GetFont(24, true), -- crit/drushing font
 	CombatFeedbackFontSmall = GetFont(18, true) -- glancing blow font
