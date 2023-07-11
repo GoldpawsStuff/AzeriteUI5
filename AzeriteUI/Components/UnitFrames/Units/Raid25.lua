@@ -785,6 +785,9 @@ RaidFrame25Mod.UpdateHeader = function(self)
 	end
 
 	self.frame:SetSize(self:GetHeaderSize())
+	self.frame.content:ClearAllPoints()
+	self.frame.content:SetPoint(self.db.profile.columnAnchorPoint, self.frame, self.db.profile.columnAnchorPoint)
+
 	self:UpdateAnchor()
 end
 
@@ -815,12 +818,17 @@ RaidFrame25Mod.CreateUnitFrames = function(self)
 	oUF:RegisterStyle(ns.Prefix..name, style)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
-	self.frame = oUF:SpawnHeader(self:GetHeaderAttributes())
+	self.frame = CreateFrame("Frame", nil, UIParent)
 	self.frame:SetSize(self:GetHeaderSize())
+
+	self.frame.content = oUF:SpawnHeader(self:GetHeaderAttributes())
+	self.frame.content:SetPoint(self.db.profile.columnAnchorPoint, self.frame, self.db.profile.columnAnchorPoint)
 
 	-- Embed our custom methods
 	for method,func in next,GroupHeader do
-		self.frame[method] = func
+		self.frame[method] = function(self, ...)
+			func(self.content, ...)
+		end
 	end
 
 	-- Sometimes some elements are wrong or "get stuck" upon exiting the editmode.

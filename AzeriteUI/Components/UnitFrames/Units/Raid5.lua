@@ -310,6 +310,32 @@ local MasterLooterIndicator_PostUpdate = function(self, isShown)
 	end
 end
 
+-- Make the portrait look better for offline or invisible units.
+local Portrait_PostUpdate = function(element, unit, hasStateChanged)
+	if (not element.state) then
+		element:ClearModel()
+		if (not element.fallback2DTexture) then
+			element.fallback2DTexture = element:CreateTexture()
+			element.fallback2DTexture:SetDrawLayer("ARTWORK")
+			element.fallback2DTexture:SetAllPoints()
+			element.fallback2DTexture:SetTexCoord(.1, .9, .1, .9)
+		end
+		SetPortraitTexture(element.fallback2DTexture, unit)
+		element.fallback2DTexture:Show()
+	else
+		if (element.fallback2DTexture) then
+			element.fallback2DTexture:Hide()
+		end
+		element:SetCamDistanceScale(element.distanceScale or 1)
+		element:SetPortraitZoom(1)
+		element:SetPosition(element.positionX or 0, element.positionY or 0, element.positionZ or 0)
+		element:SetRotation(element.rotation and element.rotation*(2*math_pi)/180 or 0)
+		element:ClearModel()
+		element:SetUnit(unit)
+		element.guid = UnitGUID(unit)
+	end
+end
+
 -- Update targeting highlight outline
 local TargetHighlight_Update = function(self, event, unit, ...)
 	if (unit and unit ~= self.unit) then return end
@@ -338,7 +364,7 @@ end
 
 local style = function(self, unit)
 
-	local db = ns.GetConfig("RaidFrames")
+	local db = ns.GetConfig("Raid5Frames")
 
 	-- Apply common scripts and member values.
 	ns.UnitFrame.InitializeUnitFrame(self)
@@ -426,15 +452,15 @@ local style = function(self, unit)
 
 	-- Health Value
 	--------------------------------------------
-	--local healthValue = healthOverlay:CreateFontString(nil, "OVERLAY", nil, 1)
-	--healthValue:SetPoint(unpack(db.HealthValuePosition))
-	--healthValue:SetFontObject(db.HealthValueFont)
-	--healthValue:SetTextColor(unpack(db.HealthValueColor))
-	--healthValue:SetJustifyH(db.HealthValueJustifyH)
-	--healthValue:SetJustifyV(db.HealthValueJustifyV)
-	--self:Tag(healthValue, prefix("[*:Health(true,false,false,true)]"))
+	local healthValue = healthOverlay:CreateFontString(nil, "OVERLAY", nil, 1)
+	healthValue:SetPoint(unpack(db.HealthValuePosition))
+	healthValue:SetFontObject(db.HealthValueFont)
+	healthValue:SetTextColor(unpack(db.HealthValueColor))
+	healthValue:SetJustifyH(db.HealthValueJustifyH)
+	healthValue:SetJustifyV(db.HealthValueJustifyV)
+	self:Tag(healthValue, prefix("[*:Health(true)]"))
 
-	--self.Health.Value = healthValue
+	self.Health.Value = healthValue
 
 	-- Player Status
 	--------------------------------------------
@@ -456,20 +482,69 @@ local style = function(self, unit)
 	power:SetSize(unpack(db.PowerBarSize))
 	power:SetStatusBarTexture(db.PowerBarTexture)
 	power:SetOrientation(db.PowerBarOrientation)
+	power:SetAlpha(db.PowerBarAlpha)
 	power.frequentUpdates = true
 	power.colorPower = true
 
 	self.Power = power
 	self.Power.Override = ns.API.UpdatePower
-	self.Power.PostUpdate = Power_PostUpdate
+	--self.Power.PostUpdate = Power_PostUpdate
 
-	local powerBackdrop = power:CreateTexture(nil, "BACKGROUND", nil, -2)
+	local powerBackdrop = power:CreateTexture(nil, "BACKGROUND", nil, -5)
 	powerBackdrop:SetPoint(unpack(db.PowerBackdropPosition))
 	powerBackdrop:SetSize(unpack(db.PowerBackdropSize))
 	powerBackdrop:SetTexture(db.PowerBackdropTexture)
 	powerBackdrop:SetVertexColor(unpack(db.PowerBackdropColor))
 
 	self.Power.Backdrop = powerBackdrop
+
+	-- Portrait
+	--------------------------------------------
+	local portraitFrame = CreateFrame("Frame", nil, self)
+	portraitFrame:SetFrameLevel(self:GetFrameLevel() - 2)
+	portraitFrame:SetAllPoints()
+
+	local portrait = CreateFrame("PlayerModel", nil, portraitFrame)
+	portrait:SetFrameLevel(portraitFrame:GetFrameLevel())
+	portrait:SetPoint(unpack(db.PortraitPosition))
+	portrait:SetSize(unpack(db.PortraitSize))
+	portrait:SetAlpha(db.PortraitAlpha)
+	portrait.distanceScale = db.PortraitDistanceScale
+	portrait.positionX = db.PortraitPositionX
+	portrait.positionY = db.PortraitPositionY
+	portrait.positionZ = db.PortraitPositionZ
+	portrait.rotation = db.PortraitRotation
+	portrait.showFallback2D = db.PortraitShowFallback2D
+
+	self.Portrait = portrait
+	self.Portrait.PostUpdate = Portrait_PostUpdate
+
+	local portraitBg = portraitFrame:CreateTexture(nil, "BACKGROUND", nil, 0)
+	portraitBg:SetPoint(unpack(db.PortraitBackgroundPosition))
+	portraitBg:SetSize(unpack(db.PortraitBackgroundSize))
+	portraitBg:SetTexture(db.PortraitBackgroundTexture)
+	portraitBg:SetVertexColor(unpack(db.PortraitBackgroundColor))
+
+	self.Portrait.Bg = portraitBg
+
+	local portraitOverlayFrame = CreateFrame("Frame", nil, self)
+	portraitOverlayFrame:SetFrameLevel(portraitFrame:GetFrameLevel() + 1)
+	portraitOverlayFrame:SetAllPoints()
+
+	local portraitShade = portraitOverlayFrame:CreateTexture(nil, "BACKGROUND", nil, -1)
+	portraitShade:SetPoint(unpack(db.PortraitShadePosition))
+	portraitShade:SetSize(unpack(db.PortraitShadeSize))
+	portraitShade:SetTexture(db.PortraitShadeTexture)
+
+	self.Portrait.Shade = portraitShade
+
+	local portraitBorder = portraitOverlayFrame:CreateTexture(nil, "BACKGROUND", nil, 0)
+	portraitBorder:SetPoint(unpack(db.PortraitBorderPosition))
+	portraitBorder:SetSize(unpack(db.PortraitBorderSize))
+	portraitBorder:SetTexture(db.PortraitBorderTexture)
+	portraitBorder:SetVertexColor(unpack(db.PortraitBorderColor))
+
+	self.Portrait.Border = portraitBorder
 
 	-- Absorb Bar (Retail)
 	--------------------------------------------
@@ -588,14 +663,14 @@ local style = function(self, unit)
 
 	-- CombatFeedback Text
 	--------------------------------------------
-	--local feedbackText = overlay:CreateFontString(nil, "OVERLAY")
-	--feedbackText:SetPoint(db.CombatFeedbackPosition[1], self[db.CombatFeedbackAnchorElement], unpack(db.CombatFeedbackPosition))
-	--feedbackText:SetFontObject(db.CombatFeedbackFont)
-	--feedbackText.feedbackFont = db.CombatFeedbackFont
-	--feedbackText.feedbackFontLarge = db.CombatFeedbackFontLarge
-	--feedbackText.feedbackFontSmall = db.CombatFeedbackFontSmall
+	local feedbackText = overlay:CreateFontString(nil, "OVERLAY")
+	feedbackText:SetPoint(db.CombatFeedbackPosition[1], self[db.CombatFeedbackAnchorElement], unpack(db.CombatFeedbackPosition))
+	feedbackText:SetFontObject(db.CombatFeedbackFont)
+	feedbackText.feedbackFont = db.CombatFeedbackFont
+	feedbackText.feedbackFontLarge = db.CombatFeedbackFontLarge
+	feedbackText.feedbackFontSmall = db.CombatFeedbackFontSmall
 
-	--self.CombatFeedback = feedbackText
+	self.CombatFeedback = feedbackText
 
 	-- Target Highlight
 	--------------------------------------------
@@ -668,7 +743,7 @@ end
 GroupHeader.Enable = function(self)
 	if (InCombatLockdown()) then return end
 
-	local visibility = RaidFrame5Mod:GetVisibilityDriver()
+	local visibility = "show" -- RaidFrame5Mod:GetVisibilityDriver()
 
 	UnregisterAttributeDriver(self, "state-visibility")
 	RegisterAttributeDriver(self, "state-visibility", visibility)
@@ -713,8 +788,8 @@ RaidFrame5Mod.GetHeaderAttributes = function(self)
 	local db = self.db.profile
 
 	return ns.Prefix.."Raid", nil, nil,
-	"initial-width", ns.GetConfig("RaidFrames").UnitSize[1],
-	"initial-height", ns.GetConfig("RaidFrames").UnitSize[2],
+	"initial-width", ns.GetConfig("Raid5Frames").UnitSize[1],
+	"initial-height", ns.GetConfig("Raid5Frames").UnitSize[2],
 	"oUF-initialConfigFunction", [[
 		local header = self:GetParent();
 		self:SetWidth(header:GetAttribute("initial-width"));
@@ -726,7 +801,7 @@ RaidFrame5Mod.GetHeaderAttributes = function(self)
 	"sortMethod", "INDEX", -- INDEX, NAME -- Member sorting within each group
 	"sortDir", "ASC", -- ASC, DESC
 	"groupFilter", "1,2,3,4,5,6,7,8", -- Group filter
-	"showSolo", false, -- show while non-grouped
+	"showSolo", true, -- show while non-grouped
 	"showPlayer", true, -- show the player while in a party
 	"showRaid", true, -- show while in a raid group
 	"showParty", true, -- show while in a party
@@ -785,11 +860,14 @@ RaidFrame5Mod.UpdateHeader = function(self)
 	end
 
 	self.frame:SetSize(self:GetHeaderSize())
+	self.frame.content:ClearAllPoints()
+	self.frame.content:SetPoint(self.db.profile.columnAnchorPoint, self.frame, self.db.profile.columnAnchorPoint)
+
 	self:UpdateAnchor()
 end
 
 RaidFrame5Mod.GetHeaderSize = function(self)
-	local config = ns.GetConfig("RaidFrames")
+	local config = ns.GetConfig("Raid5Frames")
 	return
 		config.UnitSize[1]*1 + math_abs(self.db.profile.columnSpacing * 0),
 		config.UnitSize[2]*5 + math_abs(self.db.profile.yOffset * 4)
@@ -815,12 +893,17 @@ RaidFrame5Mod.CreateUnitFrames = function(self)
 	oUF:RegisterStyle(ns.Prefix..name, style)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
-	self.frame = oUF:SpawnHeader(self:GetHeaderAttributes())
+	self.frame = CreateFrame("Frame", nil, UIParent)
 	self.frame:SetSize(self:GetHeaderSize())
+
+	self.frame.content = oUF:SpawnHeader(self:GetHeaderAttributes())
+	self.frame.content:SetPoint(self.db.profile.columnAnchorPoint, self.frame, self.db.profile.columnAnchorPoint)
 
 	-- Embed our custom methods
 	for method,func in next,GroupHeader do
-		self.frame[method] = func
+		self.frame[method] = function(self, ...)
+			func(self.content, ...)
+		end
 	end
 
 	-- Sometimes some elements are wrong or "get stuck" upon exiting the editmode.
