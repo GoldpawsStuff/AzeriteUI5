@@ -550,7 +550,7 @@ local style = function(self, unit)
 	readyCheckIndicator.notReadyTexture = db.ReadyCheckNotReadyTexture
 	readyCheckIndicator.waitingTexture = db.ReadyCheckWaitingTexture
 
-	self.ReadyCheckIndicator = ReadyCheckIndicator
+	self.ReadyCheckIndicator = readyCheckIndicator
 
 	-- Ressurection Indicator
 	--------------------------------------------

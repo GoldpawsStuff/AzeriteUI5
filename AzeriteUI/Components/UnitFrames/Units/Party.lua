@@ -553,14 +553,14 @@ local style = function(self, unit)
 	readyCheckIndicator.notReadyTexture = db.ReadyCheckNotReadyTexture
 	readyCheckIndicator.waitingTexture = db.ReadyCheckWaitingTexture
 
-	self.ReadyCheckIndicator = ReadyCheckIndicator
+	self.ReadyCheckIndicator = readyCheckIndicator
 
 	-- Ressurection Indicator
 	--------------------------------------------
 	local resurrectIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 1)
 	resurrectIndicator:SetSize(unpack(db.ResurrectIndicatorSize))
 	resurrectIndicator:SetPoint(unpack(db.ResurrectIndicatorPosition))
-	resurrectIndicator:SetTexture(ResurrectIndicatorTexture)
+	resurrectIndicator:SetTexture(db.ResurrectIndicatorTexture)
 
 	self.ResurrectIndicator = resurrectIndicator
 
