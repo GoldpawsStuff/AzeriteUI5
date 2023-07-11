@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-07-03
+## [Unreleased] 2023-07-11
 - Note that several features are currently under development and most uploaded builds are development builds. I strongly recommend against installing anything from GitHub at this point. Use the official tagged builds from CurseForge and Wago.
 
 ### Added
@@ -13,13 +13,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added separate raid frames for large raids of up to 40 players. If the 25 player raid frames are disabled, these frames will also be shown in raid of up to 25 players. If the 5 player raid frames also are disabled in addition to this, these frames will also be shown in raids of up to 5 players. You still following?
 - Added anchors to move and scale the Blizzard UI widgets found at the top center of the screen and below the minimap.
 - Added an option to automatically load an EditMode layout when enabling a settings profile.
-- Added support for Classic Hardcore PTR.
+- Added support for Classic Hardcore PTR (WoW 1.14.4).
 
 ### Changed
 - Previously when mousing over a faded actionbar, all faded bars would fade in at once. Now you can make bars only fade in their own buttons and not every single faded button in the user interface at once.
 - Party auras should be a bit more restrictive now and hide self-cast buffs by the party members.
 - Party frames will now by default appear for raids of up to 5 players when none of the available sized frames are enabled.
 - Our nameplate module will now disable itself when the addon namePlateM+ is enabled.
+- The target frame should no longer show various low health level 1 NPCs in starting zones as critters on Retail.
+
+### Fixed
+- Fixed an issue preventing the floating castbar from properly enabling or disabling itself when the Personal Resource Display was toggled in Retail.
 
 ## [5.1.74-Release] 2023-06-24
 ### Added
