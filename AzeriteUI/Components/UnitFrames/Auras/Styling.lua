@@ -227,6 +227,26 @@ ns.AuraStyles.NameplatePostUpdateButton = function(element, button, unit, data, 
 
 end
 
+ns.AuraStyles.ArenaPostUpdateButton = function(element, button, unit, data, position)
+
+	-- Stealable buffs
+	if (not button.isHarmful and data.isStealable and element.showStealableBuffs and not UnitIsUnit("player", unit)) then
+
+	end
+
+	-- Coloring
+	local color
+	if (button.isHarmful and element.showDebuffType) or (not button.isHarmful and element.showBuffType) or (element.showType) then
+		color = Colors.debuff[data.dispelName] or Colors.debuff.none
+	else
+		color = Colors.verydarkgray
+	end
+	if (color) then
+		button.Border:SetBackdropBorderColor(color[1], color[2], color[3])
+	end
+
+end
+
 -- Wrath overrides
 if (ns.IsRetail) then return end
 
