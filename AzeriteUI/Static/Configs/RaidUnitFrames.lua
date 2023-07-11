@@ -211,7 +211,7 @@ ns.RegisterConfig("Raid5Frames", {
 
 	-- Ready Check
 	-----------------------------------------
-	ReadyCheckPosition = { "CENTER", 0, 0 },
+	ReadyCheckPosition = { "CENTER", -64, 0 },
 	ReadyCheckSize = { 32, 32 },
 	ReadyCheckReadyTexture = [[Interface/RAIDFRAME/ReadyCheck-Ready]],
 	ReadyCheckNotReadyTexture = [[Interface/RAIDFRAME/ReadyCheck-NotReady]],
