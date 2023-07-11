@@ -40,7 +40,7 @@
 -- end
 -- @class file
 -- @name AceDB-3.0.lua
--- @release $Id: AceDB-3.0.lua 1284 2022-09-25 09:15:30Z nevcairiel $
+-- @release $Id: AceDB-3.0.lua 1306 2023-06-23 14:55:09Z nevcairiel $
 local ACEDB_MAJOR, ACEDB_MINOR = "AceDB-3.0", 28
 local AceDB = LibStub:NewLibrary(ACEDB_MAJOR, ACEDB_MINOR)
 
@@ -260,7 +260,7 @@ local factionrealmKey = factionKey .. " - " .. realmKey
 local localeKey = GetLocale():lower()
 
 local regionTable = { "US", "KR", "EU", "TW", "CN" }
-local regionKey = regionTable[GetCurrentRegion()] or "TR"
+local regionKey = regionTable[GetCurrentRegion()] or GetCurrentRegionName() or "TR"
 local factionrealmregionKey = factionrealmKey .. " - " .. regionKey
 
 -- Actual database initialization function
