@@ -451,7 +451,7 @@ local UnitFrame_UpdateTextures = function(self)
 	else
 		if (not TargetFrameMod.db.profile.useStandardBossTexture) and ((UnitClassification(unit) == "worldboss") or (level < 1 and IsLevelAtEffectiveMaxLevel(playerLevel))) then
 			key = "Boss"
-		elseif (not TargetFrameMod.db.profile.useStandardCritterTexture) and ((UnitCreatureType("target") == "Critter") or (level == 1 and UnitHealthMax(unit) < 30)) then
+		elseif (not TargetFrameMod.db.profile.useStandardCritterTexture) and ((UnitCreatureType("target") == "Critter") or ((not ns.IsRetail) and (level == 1) and (UnitHealthMax(unit) < 30))) then
 			key = "Critter"
 		else
 			key = (level < 1 or IsLevelAtEffectiveMaxLevel(level)) and "Seasoned" or level < 10 and "Novice" or "Hardened"
