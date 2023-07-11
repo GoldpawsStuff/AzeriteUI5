@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Note that several features are currently under development and most uploaded builds are development builds. I strongly recommend against installing anything from GitHub at this point. Use the official tagged builds from CurseForge and Wago.
 
 ### Added
-- Added first draft of enemy arena frames. Work in progress. These frames mirror the new 5 player raid frames.
+- Added first draft of arena enemy frames. These frames mirror the new 5 player raid frames. Note that several features here are still under development and will be added, like trinket cooldown tracking, big CC display and more.
 - Added separate raid frames for raids of up to 5 players. These frames mirror the look of the enemy arena frames. If these are disabled, party frames with portraits will be shown in raids of up to 5 players.
 - Added separate raid frames for raids of up to 25 players. If the above are disabled, these raid frames will also be shown in raids of up to 5 players.
 - Added separate raid frames for large raids of up to 40 players. If the 25 player raid frames are disabled, these frames will also be shown in raid of up to 25 players. If the 5 player raid frames also are disabled in addition to this, these frames will also be shown in raids of up to 5 players. You still following?
