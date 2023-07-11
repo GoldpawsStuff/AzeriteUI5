@@ -217,6 +217,26 @@ ns.RegisterConfig("Raid5Frames", {
 	ReadyCheckNotReadyTexture = [[Interface/RAIDFRAME/ReadyCheck-NotReady]],
 	ReadyCheckWaitingTexture = [[Interface/RAIDFRAME/ReadyCheck-Waiting]],
 
+	-- Auras
+	-----------------------------------------
+	AurasPosition = { "RIGHT", -216, 2 },
+	AurasSize = { 30*3 + 2*5, 30*2 + 5  },
+	AuraSize = 30,
+	AuraSpacing = 4,
+	AurasNumTotal = 6,
+	AurasDisableMouse = false,
+	AurasDisableCooldown = false,
+	AurasOnlyShowPlayer = false,
+	AurasShowStealableBuffs = true,
+	AurasInitialAnchor = "BOTTOMRIGHT",
+	AurasSpacingX = 4,
+	AurasSpacingY = 4,
+	AurasGrowthX = "LEFT",
+	AurasGrowthY = "UP",
+	AurasTooltipAnchor = "ANCHOR_BOTTOMLEFT",
+	AurasSortMethod = "TIME_REMAINING",
+	AurasSortDirection = "DESCENDING",
+
 	-- Combat Feedback Text
 	-----------------------------------------
 	CombatFeedbackAnchorElement = "Portrait",
