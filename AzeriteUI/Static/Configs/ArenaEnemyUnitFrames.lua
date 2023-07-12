@@ -102,32 +102,31 @@ ns.RegisterConfig("ArenaFrames", {
 	PortraitShadeSize = { 58, 58 },
 	PortraitShadeTexture = GetMedia("shade-circle"),
 	PortraitBorderPosition = { "LEFT", 106, 0 },
-	PortraitBorderSize = { 130, 130	 },
+	PortraitBorderSize = { 130, 130 },
 	PortraitBorderTexture = GetMedia("party_portrait_border"),
 	PortraitBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3], 1 },
 
 	-- Trinket Icon
 	-----------------------------------------
-	TrinketFramePosition = { "RIGHT", 0, -20 },
-	TrinketFrameSize = { 58, 58 },
-	TrinketBackdropPosition = { "CENTER", 0, 0 },
-	TrinketBackdropSize = { 77, 77 },
-	TrinketBackdropTexture = GetMedia("point_plate"),
-	TrinketBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
+	TrinketFramePosition = { "LEFT", 106, 0 },
+	TrinketFrameSize = { 130, 130 },
 	TrinketIconPositon = { "CENTER", 0, 0 },
-	TrinketIconSize = { 34, 34 },
+	TrinketIconSize = { 58, 58 },
 	TrinketIconMask = GetMedia("actionbutton-mask-circular"),
 
 	-- PvP Specialization Icon
 	-----------------------------------------
-	PvPSpecIconFramePosition = { "RIGHT", 0, -20 },
+	PvPSpecIconFramePosition = { "RIGHT", 22, -14 },
 	PvPSpecIconFrameSize = { 58, 58 },
 	PvPSpecIconBackdropPosition = { "CENTER", 0, 0 },
-	PvPSpecIconBackdropSize = { 77, 77 },
-	PvPSpecIconBackdropTexture = GetMedia("point_plate"),
+	--PvPSpecIconBackdropSize = { 77, 77 },
+	--PvPSpecIconBackdropTexture = GetMedia("point_plate"),
+	PvPSpecIconBackdropSize = { 44, 44 },
+	PvPSpecIconBackdropTexture = GetMedia("group-finder-eye-orange"),
 	PvPSpecIconBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 	PvPSpecIconIconPositon = { "CENTER", 0, 0 },
-	PvPSpecIconIconSize = { 34, 34 },
+	PvPSpecIconIconSize = { 24, 24 },
+	--PvPSpecIconIconSize = { 34, 34 },
 	PvPSpecIconIconMask = GetMedia("actionbutton-mask-circular"),
 
 	-- Target Highlighting

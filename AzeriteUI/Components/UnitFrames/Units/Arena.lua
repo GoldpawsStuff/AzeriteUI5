@@ -602,6 +602,7 @@ local style = function(self, unit)
 	specIconFrame:SetSize(unpack(db.PvPSpecIconFrameSize))
 	specIconFrame:SetPoint(unpack(db.PvPSpecIconFramePosition))
 	specIconFrame:SetFrameLevel(portraitOverlayFrame:GetFrameLevel() + 1)
+	--specIconFrame.showFaction = true
 
 	local specIconBackdrop = specIconFrame:CreateTexture(nil, "BACKGROUND", nil, -2)
 	specIconBackdrop:SetPoint(unpack(db.PvPSpecIconBackdropPosition))
@@ -614,38 +615,24 @@ local style = function(self, unit)
 	specIcon:SetSize(unpack(db.PvPSpecIconIconSize))
 	specIcon:SetMask(db.PvPSpecIconIconMask)
 
-	local unitFactionGroup = UnitFactionGroup(self.unit)
-	if(unitFactionGroup == 'Horde') then
-		specIcon:SetTexture([[Interface\Icons\INV_BannerPVP_01]])
-	elseif(unitFactionGroup == 'Alliance') then
-		specIcon:SetTexture([[Interface\Icons\INV_BannerPVP_02]])
-	else
-		specIcon:SetTexture([[INTERFACE\ICONS\INV_MISC_QUESTIONMARK]])
-	end
-
-	--self.SpecIcon = specIconFrame
-	--self.SpecIcon.icon = specIcon
+	self.SpecIcon = specIconFrame
+	self.SpecIcon.icon = specIcon
 
 	-- Trinket Icon
 	--------------------------------------------
 	local trinket = CreateFrame("Frame", nil, self)
 	trinket:SetSize(unpack(db.TrinketFrameSize))
 	trinket:SetPoint(unpack(db.TrinketFramePosition))
-	trinket:SetFrameLevel(portraitOverlayFrame:GetFrameLevel() + 1)
+	trinket:SetFrameLevel(portraitOverlayFrame:GetFrameLevel())
 
-	local trinketBackdrop = trinket:CreateTexture(nil, "BACKGROUND", nil, -2)
-	trinketBackdrop:SetPoint(unpack(db.TrinketBackdropPosition))
-	trinketBackdrop:SetSize(unpack(db.TrinketBackdropSize))
-	trinketBackdrop:SetTexture(db.TrinketBackdropTexture)
-	trinketBackdrop:SetVertexColor(unpack(db.TrinketBackdropColor))
-
-	local trinketIcon = trinket:CreateTexture(nil, "BACKGROUND", nil, -1)
+	local trinketIcon = trinket:CreateTexture(nil, "BACKGROUND", nil, -2)
 	trinketIcon:SetPoint(unpack(db.TrinketIconPositon))
 	trinketIcon:SetSize(unpack(db.TrinketIconSize))
 	trinketIcon:SetMask(db.TrinketIconMask)
 
 	local b,m = ns.API.GetMedia("blank"), db.TrinketIconMask
 	local trinketCooldown = CreateFrame("Cooldown", nil, trinket)
+	trinketCooldown:SetFrameLevel(portraitOverlayFrame:GetFrameLevel() + 1)
 	trinketCooldown:SetAllPoints(trinketIcon)
 	trinketCooldown:SetUseCircularEdge(true)
 	trinketCooldown:SetReverse(false)
@@ -662,18 +649,15 @@ local style = function(self, unit)
 	hooksecurefunc(trinketCooldown, "SetSwipeTexture", function(c,t) if t ~= m then c:SetSwipeTexture(m) end end)
 	hooksecurefunc(trinketCooldown, "SetBlingTexture", function(c,t) if t ~= b then c:SetBlingTexture(b,0,0,0,0) end end)
 	hooksecurefunc(trinketCooldown, "SetEdgeTexture", function(c,t) if t ~= b then c:SetEdgeTexture(b) end end)
-	--hooksecurefunc(trinketCooldown, "SetSwipeColor", function(c,r,g,b,a) if not a or a>.76 then c:SetSwipeColor(r,g,b,.75) end end)
 	hooksecurefunc(trinketCooldown, "SetDrawSwipe", function(c,h) if not h then c:SetDrawSwipe(true) end end)
 	hooksecurefunc(trinketCooldown, "SetDrawBling", function(c,h) if h then c:SetDrawBling(false) end end)
 	hooksecurefunc(trinketCooldown, "SetDrawEdge", function(c,h) if h then c:SetDrawEdge(false) end end)
 	hooksecurefunc(trinketCooldown, "SetHideCountdownNumbers", function(c,h) if not h then c:SetHideCountdownNumbers(true) end end)
 	hooksecurefunc(trinketCooldown, "SetCooldown", function(c) c:SetAlpha(.75) end)
 
-	trinketIcon:SetTexture(select(2, UnitFactionGroup('player')) == 'Horde' and [[Interface\Icons\inv_jewelry_trinketpvp_01]] or [[Interface\Icons\inv_jewelry_trinketpvp_02]])
-
-	--self.Trinket = trinket
-	--self.Trinket.cc = trinketCooldown
-	--self.Trinket.icon = trinketIcon
+	self.Trinket = trinket
+	self.Trinket.cc = trinketCooldown
+	self.Trinket.icon = trinketIcon
 
 	-- Auras
 	--------------------------------------------

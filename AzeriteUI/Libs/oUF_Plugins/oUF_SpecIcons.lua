@@ -24,6 +24,11 @@ local Update = function(self, event, unit)
 	local _, instanceType = IsInInstance()
 	element.instanceType = instanceType
 
+	if(instanceType ~= 'arena' and not element.showFaction) then
+		element:Hide()
+		return
+	end
+
 	--[[ Callback: SpecIcon:PreUpdate(unit)
 	Called before the element has been updated.
 

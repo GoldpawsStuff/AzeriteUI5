@@ -603,6 +603,69 @@ local style = function(self, unit)
 
 	self.Name = name
 
+	-- PvP Specialization Icon
+	--------------------------------------------
+	local specIconFrame = CreateFrame("Frame", nil, self)
+	specIconFrame:SetSize(unpack(db.PvPSpecIconFrameSize))
+	specIconFrame:SetPoint(unpack(db.PvPSpecIconFramePosition))
+	specIconFrame:SetFrameLevel(portraitOverlayFrame:GetFrameLevel() + 1)
+	--specIconFrame.showFaction = true
+
+	local specIconBackdrop = specIconFrame:CreateTexture(nil, "BACKGROUND", nil, -2)
+	specIconBackdrop:SetPoint(unpack(db.PvPSpecIconBackdropPosition))
+	specIconBackdrop:SetSize(unpack(db.PvPSpecIconBackdropSize))
+	specIconBackdrop:SetTexture(db.PvPSpecIconBackdropTexture)
+	specIconBackdrop:SetVertexColor(unpack(db.PvPSpecIconBackdropColor))
+
+	local specIcon = specIconFrame:CreateTexture(nil, "BACKGROUND", nil, -1)
+	specIcon:SetPoint(unpack(db.PvPSpecIconIconPositon))
+	specIcon:SetSize(unpack(db.PvPSpecIconIconSize))
+	specIcon:SetMask(db.PvPSpecIconIconMask)
+
+	self.SpecIcon = specIconFrame
+	self.SpecIcon.icon = specIcon
+
+	-- Trinket Icon
+	--------------------------------------------
+	local trinket = CreateFrame("Frame", nil, self)
+	trinket:SetSize(unpack(db.TrinketFrameSize))
+	trinket:SetPoint(unpack(db.TrinketFramePosition))
+	trinket:SetFrameLevel(portraitOverlayFrame:GetFrameLevel())
+
+	local trinketIcon = trinket:CreateTexture(nil, "BACKGROUND", nil, -2)
+	trinketIcon:SetPoint(unpack(db.TrinketIconPositon))
+	trinketIcon:SetSize(unpack(db.TrinketIconSize))
+	trinketIcon:SetMask(db.TrinketIconMask)
+
+	local b,m = ns.API.GetMedia("blank"), db.TrinketIconMask
+	local trinketCooldown = CreateFrame("Cooldown", nil, trinket)
+	trinketCooldown:SetFrameLevel(portraitOverlayFrame:GetFrameLevel() + 1)
+	trinketCooldown:SetAllPoints(trinketIcon)
+	trinketCooldown:SetUseCircularEdge(true)
+	trinketCooldown:SetReverse(false)
+	trinketCooldown:SetSwipeTexture(m)
+	trinketCooldown:SetDrawSwipe(true)
+	trinketCooldown:SetBlingTexture(b, 0, 0, 0, 0)
+	trinketCooldown:SetDrawBling(false)
+	trinketCooldown:SetEdgeTexture(b)
+	trinketCooldown:SetDrawEdge(false)
+	trinketCooldown:SetHideCountdownNumbers(true)
+
+	ns.Widgets.RegisterCooldown(trinketCooldown)
+
+	hooksecurefunc(trinketCooldown, "SetSwipeTexture", function(c,t) if t ~= m then c:SetSwipeTexture(m) end end)
+	hooksecurefunc(trinketCooldown, "SetBlingTexture", function(c,t) if t ~= b then c:SetBlingTexture(b,0,0,0,0) end end)
+	hooksecurefunc(trinketCooldown, "SetEdgeTexture", function(c,t) if t ~= b then c:SetEdgeTexture(b) end end)
+	hooksecurefunc(trinketCooldown, "SetDrawSwipe", function(c,h) if not h then c:SetDrawSwipe(true) end end)
+	hooksecurefunc(trinketCooldown, "SetDrawBling", function(c,h) if h then c:SetDrawBling(false) end end)
+	hooksecurefunc(trinketCooldown, "SetDrawEdge", function(c,h) if h then c:SetDrawEdge(false) end end)
+	hooksecurefunc(trinketCooldown, "SetHideCountdownNumbers", function(c,h) if not h then c:SetHideCountdownNumbers(true) end end)
+	hooksecurefunc(trinketCooldown, "SetCooldown", function(c) c:SetAlpha(.75) end)
+
+	self.Trinket = trinket
+	self.Trinket.cc = trinketCooldown
+	self.Trinket.icon = trinketIcon
+
 	-- Auras
 	--------------------------------------------
 	local auras = CreateFrame("Frame", nil, self)

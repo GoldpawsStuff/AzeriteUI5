@@ -88,6 +88,26 @@ ns.RegisterConfig("Raid5Frames", {
 	PortraitBorderTexture = GetMedia("party_portrait_border"),
 	PortraitBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3], 1 },
 
+	-- Trinket Icon
+	-----------------------------------------
+	TrinketFramePosition = { "RIGHT", -106, 0 },
+	TrinketFrameSize = { 130, 130 },
+	TrinketIconPositon = { "CENTER", 0, 0 },
+	TrinketIconSize = { 58, 58 },
+	TrinketIconMask = GetMedia("actionbutton-mask-circular"),
+
+	-- PvP Specialization Icon
+	-----------------------------------------
+	PvPSpecIconFramePosition = { "LEFT", -22, -14 },
+	PvPSpecIconFrameSize = { 58, 58 },
+	PvPSpecIconBackdropPosition = { "CENTER", 0, 0 },
+	PvPSpecIconBackdropSize = { 44, 44 },
+	PvPSpecIconBackdropTexture = GetMedia("group-finder-eye-orange"),
+	PvPSpecIconBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
+	PvPSpecIconIconPositon = { "CENTER", 0, 0 },
+	PvPSpecIconIconSize = { 24, 24 },
+	PvPSpecIconIconMask = GetMedia("actionbutton-mask-circular"),
+
 	-- Target Highlighting
 	-----------------------------------------
 	TargetHighlightPosition = { "CENTER", 1, -2 },
