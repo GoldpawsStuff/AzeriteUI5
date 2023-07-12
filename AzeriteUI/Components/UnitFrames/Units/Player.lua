@@ -50,6 +50,7 @@ local playerIsRetribution = playerClass == "PALADIN" and (ns.IsRetail and GetSpe
 
 local defaults = { profile = ns:Merge({
 	showAuras = true,
+	showCastbar = true,
 	aurasBelowFrame = false
 }, ns.Module.defaults) }
 
@@ -892,7 +893,7 @@ PlayerFrameMod.CreateUnitFrames = function(self)
 	-- Vehicle switching is currently broken in Wrath.
 	if (ns.IsWrath) then
 		self.frame:SetAttribute("toggleForVehicle", false)
-		RegisterAttributeDriver(frame, "unit", "[vehicleui] vehicle; player")
+		RegisterAttributeDriver(self.frame, "unit", "[vehicleui] vehicle; player")
 	end
 
 end
@@ -905,6 +906,14 @@ PlayerFrameMod.Update = function(self)
 	else
 		self.frame:DisableElement("Auras")
 	end
+
+	if (self.db.profile.showCastbar) then
+		self.frame:EnableElement("Castbar")
+		self.frame.Castbar:ForceUpdate()
+	else
+		self.frame:DisableElement("Castbar")
+	end
+
 end
 
 PlayerFrameMod.OnEnable = function(self)

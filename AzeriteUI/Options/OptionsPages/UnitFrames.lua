@@ -119,6 +119,11 @@ local GenerateOptions = function()
 			desc = L["Toggle whether to show auras on this unit frame."],
 			order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
+		suboptions.args.showCastbar = {
+			name = L["Show Castbar"],
+			desc = L["Toggle whether to show overlay castbars on this unit frame."],
+			order = 30, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
 		options.args.player = suboptions
 	end
 
@@ -142,6 +147,11 @@ local GenerateOptions = function()
 			name = L["Show Auras"],
 			desc = L["Toggle whether to show auras on this unit frame."],
 			order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+		suboptions.args.showCastbar = {
+			name = L["Show Castbar"],
+			desc = L["Toggle whether to show overlay castbars on this unit frame."],
+			order = 25, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
 		suboptions.args.showName = {
 			name = L["Show Unit Name"],

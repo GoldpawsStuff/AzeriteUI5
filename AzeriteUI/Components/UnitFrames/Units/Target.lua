@@ -42,6 +42,7 @@ local playerLevel = UnitLevel("player")
 
 local defaults = { profile = ns:Merge({
 	showAuras = true,
+	showCastbar = true,
 	showName = true,
 	aurasBelowFrame = false,
 	useStandardBossTexture = false,
@@ -990,12 +991,21 @@ TargetFrameMod.CreateUnitFrames = function(self)
 end
 
 TargetFrameMod.Update = function(self)
+
 	if (self.db.profile.showAuras) then
 		self.frame:EnableElement("Auras")
 		self.frame.Auras:ForceUpdate()
 	else
 		self.frame:DisableElement("Auras")
 	end
+
+	if (self.db.profile.showCastbar) then
+		self.frame:EnableElement("Castbar")
+		self.frame.Castbar:ForceUpdate()
+	else
+		self.frame:DisableElement("Castbar")
+	end
+
 	self.frame.Name:SetShown(self.db.profile.showName)
 	self.frame:PostUpdate()
 end
