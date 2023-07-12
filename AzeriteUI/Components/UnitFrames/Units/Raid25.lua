@@ -221,14 +221,9 @@ local HealPredict_PostUpdate = function(element, unit, myIncomingHeal, otherInco
 		element:Hide()
 	end
 
-	local absorb = element.Absorb
-	if (absorb) then
-		local fraction = absorb/maxHealth
-		if (fraction > .6) then
-			absorb = maxHealth * .6
-		end
-		absorb:SetMinMaxValues(0, maxHealth)
-		absorb:SetValue(absorb)
+	if (element.Absorb) then
+		element.Absorb:SetMinMaxValues(0, absorb/maxHealth < .6 and absorb or maxHealth * .6)
+		element.Absorb:SetValue(absorb)
 	end
 
 end

@@ -216,14 +216,9 @@ local HealPredict_PostUpdate = function(element, unit, myIncomingHeal, otherInco
 		element:Hide()
 	end
 
-	local absorb = element.Absorb
-	if (absorb) then
-		local fraction = absorb/maxHealth
-		if (fraction > .6) then
-			absorb = maxHealth * .6
-		end
-		absorb:SetMinMaxValues(0, maxHealth)
-		absorb:SetValue(absorb)
+	if (element.Absorb) then
+		element.Absorb:SetMinMaxValues(0, absorb/maxHealth < .6 and absorb or maxHealth * .6)
+		element.Absorb:SetValue(absorb)
 	end
 
 end
@@ -513,6 +508,9 @@ local UnitFrame_OnEvent = function(self, event, unit, ...)
 
 	elseif (event == "PLAYER_REGEN_ENABLED" or event == "PLAYER_REGEN_DISABLED") then
 		self.Auras:ForceUpdate()
+
+	elseif (event == "UNIT_ABSORB_AMOUNT_CHANGED") then
+
 
 	elseif (event == "ENABLE_XP_GAIN") then
 		playerXPDisabled = nil
@@ -872,8 +870,16 @@ local style = function(self, unit)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", UnitFrame_OnEvent, true)
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", UnitFrame_OnEvent, true)
 
-	if (ns.IsRetail and playerClass == "PALADIN") then
-		self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", UnitFrame_OnEvent)
+	if (ns.IsRetail) then
+		--self:RegisterEvent("UNIT_HEALTH", UnitFrame_OnEvent)
+		--self:RegisterEvent("UNIT_MAXHEALTH", UnitFrame_OnEvent)
+		--self:RegisterEvent("UNIT_HEAL_PREDICTION", UnitFrame_OnEvent)
+		self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", UnitFrame_OnEvent)
+		--self:RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", UnitFrame_OnEvent)
+
+		if (playerClass == "PALADIN") then
+			self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", UnitFrame_OnEvent)
+		end
 	end
 
 	-- Textures need an update when frame is displayed.
