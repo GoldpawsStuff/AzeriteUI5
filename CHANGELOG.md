@@ -4,10 +4,8 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-07-12
+## [5.2.76-Alpha] 2023-07-12
 - Bumped to Retail Client Patch 10.1.5.
-
-## [5.2.75-Alpha] 2023-07-11
 - Note that several features are currently under development and most uploaded builds are development builds. I strongly recommend against installing anything from GitHub at this point. Use the official tagged builds from CurseForge and Wago.
 
 ### Added
