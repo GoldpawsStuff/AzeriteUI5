@@ -389,7 +389,7 @@ PetFrameMod.CreateUnitFrames = function(self)
 	-- Vehicle switching is currently broken in Wrath.
 	if (ns.IsWrath) then
 		self.frame:SetAttribute("toggleForVehicle", false)
-		RegisterAttributeDriver(frame, "unit", "[vehicleui] player; pet")
+		RegisterAttributeDriver(self.frame, "unit", "[vehicleui] player; pet")
 	end
 
 end
