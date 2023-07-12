@@ -5,17 +5,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [5.2.76-Alpha] 2023-07-12
-- Bumped to Retail Client Patch 10.1.5.
 - Note that several features are currently under development and most uploaded builds are development builds. I strongly recommend against installing anything from GitHub at this point. Use the official tagged builds from CurseForge and Wago.
 
 ### Added
+- Supports Retail 10.1.5.
+- Supports Classic Hardcore 1.14.4.
 - Added first draft of arena enemy frames. These frames mirror the new 5 player raid frames. Note that several features here are still under development and will be added, like trinket cooldown tracking, big CC display and more.
 - Added separate raid frames for raids of up to 5 players. These frames mirror the look of the enemy arena frames. If these are disabled, party frames with portraits will be shown in raids of up to 5 players.
 - Added separate raid frames for raids of up to 25 players. If the above are disabled, these raid frames will also be shown in raids of up to 5 players.
 - Added separate raid frames for large raids of up to 40 players. If the 25 player raid frames are disabled, these frames will also be shown in raid of up to 25 players. If the 5 player raid frames also are disabled in addition to this, these frames will also be shown in raids of up to 5 players. You still following?
 - Added anchors to move and scale the Blizzard UI widgets found at the top center of the screen and below the minimap.
 - Added an option to automatically load an EditMode layout when enabling a settings profile.
-- Added support for Classic Hardcore PTR (WoW 1.14.4).
 
 ### Changed
 - Previously when mousing over a faded actionbar, all faded bars would fade in at once. Now you can make bars only fade in their own buttons and not every single faded button in the user interface at once.
