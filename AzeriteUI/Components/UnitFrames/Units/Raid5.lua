@@ -603,28 +603,6 @@ local style = function(self, unit)
 
 	self.Name = name
 
-	-- PvP Specialization Icon
-	--------------------------------------------
-	local specIconFrame = CreateFrame("Frame", nil, self)
-	specIconFrame:SetSize(unpack(db.PvPSpecIconFrameSize))
-	specIconFrame:SetPoint(unpack(db.PvPSpecIconFramePosition))
-	specIconFrame:SetFrameLevel(portraitOverlayFrame:GetFrameLevel() + 1)
-	--specIconFrame.showFaction = true
-
-	local specIconBackdrop = specIconFrame:CreateTexture(nil, "BACKGROUND", nil, -2)
-	specIconBackdrop:SetPoint(unpack(db.PvPSpecIconBackdropPosition))
-	specIconBackdrop:SetSize(unpack(db.PvPSpecIconBackdropSize))
-	specIconBackdrop:SetTexture(db.PvPSpecIconBackdropTexture)
-	specIconBackdrop:SetVertexColor(unpack(db.PvPSpecIconBackdropColor))
-
-	local specIcon = specIconFrame:CreateTexture(nil, "BACKGROUND", nil, -1)
-	specIcon:SetPoint(unpack(db.PvPSpecIconIconPositon))
-	specIcon:SetSize(unpack(db.PvPSpecIconIconSize))
-	specIcon:SetMask(db.PvPSpecIconIconMask)
-
-	self.SpecIcon = specIconFrame
-	self.SpecIcon.icon = specIcon
-
 	-- Trinket Icon
 	--------------------------------------------
 	local trinket = CreateFrame("Frame", nil, self)
