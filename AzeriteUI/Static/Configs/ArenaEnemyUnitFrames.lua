@@ -119,14 +119,11 @@ ns.RegisterConfig("ArenaFrames", {
 	PvPSpecIconFramePosition = { "RIGHT", 22, -14 },
 	PvPSpecIconFrameSize = { 58, 58 },
 	PvPSpecIconBackdropPosition = { "CENTER", 0, 0 },
-	--PvPSpecIconBackdropSize = { 77, 77 },
-	--PvPSpecIconBackdropTexture = GetMedia("point_plate"),
 	PvPSpecIconBackdropSize = { 44, 44 },
 	PvPSpecIconBackdropTexture = GetMedia("group-finder-eye-orange"),
 	PvPSpecIconBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 	PvPSpecIconIconPositon = { "CENTER", 0, 0 },
 	PvPSpecIconIconSize = { 24, 24 },
-	--PvPSpecIconIconSize = { 34, 34 },
 	PvPSpecIconIconMask = GetMedia("actionbutton-mask-circular"),
 
 	-- Target Highlighting
