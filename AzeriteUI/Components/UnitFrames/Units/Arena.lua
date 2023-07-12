@@ -39,6 +39,7 @@ local ArenaFrameMod = ns:NewModule("ArenaFrames", ns.UnitFrameModule, "LibMoreEv
 -- Lua API
 local math_abs = math.abs
 local next = next
+local select = select
 local setmetatable = setmetatable
 local string_gsub = string.gsub
 local unpack = unpack
@@ -595,12 +596,84 @@ local style = function(self, unit)
 
 	self.Name = name
 
-
-	-- PvP Spec Icon
+	-- PvP Specialization Icon
 	--------------------------------------------
+	local specIconFrame = CreateFrame("Frame", nil, self)
+	specIconFrame:SetSize(unpack(db.PvPSpecIconFrameSize))
+	specIconFrame:SetPoint(unpack(db.PvPSpecIconFramePosition))
+	specIconFrame:SetFrameLevel(portraitOverlayFrame:GetFrameLevel() + 1)
 
-	-- Trinket
+	local specIconBackdrop = specIconFrame:CreateTexture(nil, "BACKGROUND", nil, -2)
+	specIconBackdrop:SetPoint(unpack(db.PvPSpecIconBackdropPosition))
+	specIconBackdrop:SetSize(unpack(db.PvPSpecIconBackdropSize))
+	specIconBackdrop:SetTexture(db.PvPSpecIconBackdropTexture)
+	specIconBackdrop:SetVertexColor(unpack(db.PvPSpecIconBackdropColor))
+
+	local specIcon = specIconFrame:CreateTexture(nil, "BACKGROUND", nil, -1)
+	specIcon:SetPoint(unpack(db.PvPSpecIconIconPositon))
+	specIcon:SetSize(unpack(db.PvPSpecIconIconSize))
+	specIcon:SetMask(db.PvPSpecIconIconMask)
+
+	local unitFactionGroup = UnitFactionGroup(self.unit)
+	if(unitFactionGroup == 'Horde') then
+		specIcon:SetTexture([[Interface\Icons\INV_BannerPVP_01]])
+	elseif(unitFactionGroup == 'Alliance') then
+		specIcon:SetTexture([[Interface\Icons\INV_BannerPVP_02]])
+	else
+		specIcon:SetTexture([[INTERFACE\ICONS\INV_MISC_QUESTIONMARK]])
+	end
+
+	--self.SpecIcon = specIconFrame
+	--self.SpecIcon.icon = specIcon
+
+	-- Trinket Icon
 	--------------------------------------------
+	local trinket = CreateFrame("Frame", nil, self)
+	trinket:SetSize(unpack(db.TrinketFrameSize))
+	trinket:SetPoint(unpack(db.TrinketFramePosition))
+	trinket:SetFrameLevel(portraitOverlayFrame:GetFrameLevel() + 1)
+
+	local trinketBackdrop = trinket:CreateTexture(nil, "BACKGROUND", nil, -2)
+	trinketBackdrop:SetPoint(unpack(db.TrinketBackdropPosition))
+	trinketBackdrop:SetSize(unpack(db.TrinketBackdropSize))
+	trinketBackdrop:SetTexture(db.TrinketBackdropTexture)
+	trinketBackdrop:SetVertexColor(unpack(db.TrinketBackdropColor))
+
+	local trinketIcon = trinket:CreateTexture(nil, "BACKGROUND", nil, -1)
+	trinketIcon:SetPoint(unpack(db.TrinketIconPositon))
+	trinketIcon:SetSize(unpack(db.TrinketIconSize))
+	trinketIcon:SetMask(db.TrinketIconMask)
+
+	local b,m = ns.API.GetMedia("blank"), db.TrinketIconMask
+	local trinketCooldown = CreateFrame("Cooldown", nil, trinket)
+	trinketCooldown:SetAllPoints(trinketIcon)
+	trinketCooldown:SetUseCircularEdge(true)
+	trinketCooldown:SetReverse(false)
+	trinketCooldown:SetSwipeTexture(m)
+	trinketCooldown:SetDrawSwipe(true)
+	trinketCooldown:SetBlingTexture(b, 0, 0, 0, 0)
+	trinketCooldown:SetDrawBling(false)
+	trinketCooldown:SetEdgeTexture(b)
+	trinketCooldown:SetDrawEdge(false)
+	trinketCooldown:SetHideCountdownNumbers(true)
+
+	ns.Widgets.RegisterCooldown(trinketCooldown)
+
+	hooksecurefunc(trinketCooldown, "SetSwipeTexture", function(c,t) if t ~= m then c:SetSwipeTexture(m) end end)
+	hooksecurefunc(trinketCooldown, "SetBlingTexture", function(c,t) if t ~= b then c:SetBlingTexture(b,0,0,0,0) end end)
+	hooksecurefunc(trinketCooldown, "SetEdgeTexture", function(c,t) if t ~= b then c:SetEdgeTexture(b) end end)
+	--hooksecurefunc(trinketCooldown, "SetSwipeColor", function(c,r,g,b,a) if not a or a>.76 then c:SetSwipeColor(r,g,b,.75) end end)
+	hooksecurefunc(trinketCooldown, "SetDrawSwipe", function(c,h) if not h then c:SetDrawSwipe(true) end end)
+	hooksecurefunc(trinketCooldown, "SetDrawBling", function(c,h) if h then c:SetDrawBling(false) end end)
+	hooksecurefunc(trinketCooldown, "SetDrawEdge", function(c,h) if h then c:SetDrawEdge(false) end end)
+	hooksecurefunc(trinketCooldown, "SetHideCountdownNumbers", function(c,h) if not h then c:SetHideCountdownNumbers(true) end end)
+	hooksecurefunc(trinketCooldown, "SetCooldown", function(c) c:SetAlpha(.75) end)
+
+	trinketIcon:SetTexture(select(2, UnitFactionGroup('player')) == 'Horde' and [[Interface\Icons\inv_jewelry_trinketpvp_01]] or [[Interface\Icons\inv_jewelry_trinketpvp_02]])
+
+	--self.Trinket = trinket
+	--self.Trinket.cc = trinketCooldown
+	--self.Trinket.icon = trinketIcon
 
 	-- Auras
 	--------------------------------------------
@@ -677,8 +750,7 @@ end
 
 ArenaFrameMod.GetHeaderSize = function(self)
 	local config = ns.GetConfig("ArenaFrames")
-	return
-		config.UnitSize[1], config.UnitSize[2]*5 + math_abs(self.db.profile.yOffset * 4)
+	return config.UnitSize[1], config.UnitSize[2]*5 + math_abs(self.db.profile.yOffset * 4)
 end
 
 ArenaFrameMod.CreateUnitFrames = function(self)
@@ -693,8 +765,8 @@ ArenaFrameMod.CreateUnitFrames = function(self)
 	frame.units = {}
 
 	for i = 1,5 do
-		local unitFrame = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)
-		--local unitFrame = ns.UnitFrame.Spawn(i == 1 and "targettarget" or i == 3 and "player" or i == 4 and "target" or unit..i, ns.Prefix.."UnitFrame"..name..i)
+		--local unitFrame = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)
+		local unitFrame = ns.UnitFrame.Spawn(i == 1 and "targettarget" or i == 3 and "player" or i == 4 and "target" or unit..i, ns.Prefix.."UnitFrame"..name..i)
 		frame.units[i] = unitFrame
 	end
 

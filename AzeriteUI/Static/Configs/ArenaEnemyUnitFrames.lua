@@ -106,6 +106,30 @@ ns.RegisterConfig("ArenaFrames", {
 	PortraitBorderTexture = GetMedia("party_portrait_border"),
 	PortraitBorderColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3], 1 },
 
+	-- Trinket Icon
+	-----------------------------------------
+	TrinketFramePosition = { "RIGHT", 0, -20 },
+	TrinketFrameSize = { 58, 58 },
+	TrinketBackdropPosition = { "CENTER", 0, 0 },
+	TrinketBackdropSize = { 77, 77 },
+	TrinketBackdropTexture = GetMedia("point_plate"),
+	TrinketBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
+	TrinketIconPositon = { "CENTER", 0, 0 },
+	TrinketIconSize = { 34, 34 },
+	TrinketIconMask = GetMedia("actionbutton-mask-circular"),
+
+	-- PvP Specialization Icon
+	-----------------------------------------
+	PvPSpecIconFramePosition = { "RIGHT", 0, -20 },
+	PvPSpecIconFrameSize = { 58, 58 },
+	PvPSpecIconBackdropPosition = { "CENTER", 0, 0 },
+	PvPSpecIconBackdropSize = { 77, 77 },
+	PvPSpecIconBackdropTexture = GetMedia("point_plate"),
+	PvPSpecIconBackdropColor = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
+	PvPSpecIconIconPositon = { "CENTER", 0, 0 },
+	PvPSpecIconIconSize = { 34, 34 },
+	PvPSpecIconIconMask = GetMedia("actionbutton-mask-circular"),
+
 	-- Target Highlighting
 	-----------------------------------------
 	TargetHighlightPosition = { "CENTER", 1, -2 },
