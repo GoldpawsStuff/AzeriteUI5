@@ -9,8 +9,8 @@ Trinket - Any UI widget.
 
 ## Sub-Widgets
 
-icon                  - A `Texture` used to represent the Trinket.
-cooldownFrame         - A 'Cooldown' used to indicate remaining time before the Trinket is usable.
+icon                - A `Texture` used to represent the Trinket.
+cd                  - A 'Cooldown' used to indicate remaining time before the Trinket is usable.
 
 --]]
 
@@ -18,17 +18,21 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 assert(oUF, 'oUF not loaded')
 
-local Update = function(self, event, ...)
+local ClearCooldowns = function(self)
+	local element = self.Trinket
+	element.spellID = 0
+	element.cd:Clear()
+end
+
+local function Update(self, event, ...)
 	local element = self.Trinket
 	local _, instanceType = IsInInstance()
 
 	if(instanceType ~= 'arena') then
 		element.icon:SetTexture(select(2, UnitFactionGroup('player')) == 'Horde' and [[Interface\Icons\inv_jewelry_trinketpvp_01]] or [[Interface\Icons\inv_jewelry_trinketpvp_02]])
 		element:Hide()
-
+		ClearCooldowns(self)
 		return
-	else
-		element:Show()
 	end
 
 	--[[ Callback: Trinket:PreUpdate(unit)
@@ -43,28 +47,50 @@ local Update = function(self, event, ...)
 
 	if(event == 'ARENA_COOLDOWNS_UPDATE') then
 		local unit = ...
-		local tunit = self.unit
 
 		if(self.unit == unit) then
-			C_PvP.RequestCrowdControlSpell(unit)
+			C_PvP.RequestTrinketSpell(unit)
 
-			local spellID, startTime, duration = C_PvP.GetArenaCrowdControlInfo(unit)
+			local spellID, itemID, startTime, duration
+			if (oUF.isWrath) then
+				spellID, itemID, startTime, duration = C_PvP.GetArenaTrinketInfo(unit)
+			else
+				spellID, startTime, duration = C_PvP.GetArenaTrinketInfo(unit)
+			end
 
 			if(spellID and startTime ~= 0 and duration ~= 0) then
-				CooldownFrame_Set(element.cooldownFrame, startTime / 1000, duration / 1000, 1)
+				CooldownFrame_Set(element.cd, startTime / 1000, duration / 1000, 1)
+			else
+				ClearCooldowns(self)
 			end
 		end
 	elseif(event == 'ARENA_CROWD_CONTROL_SPELL_UPDATE') then
-		local unit, spellID = ...
+		local unit, spellID, itemID
+
+		if (oUF.isWrath) then
+			unit, spellID, itemID = ...
+		else
+			unit, spellID = ...
+		end
 
 		if(self.unit == unit) then
-			local _, _, spellTexture = GetSpellInfo(spellID)
-
-			element.icon:SetTexture(spellTexture)
+			if(itemID ~= 0) then
+				local itemTexture = GetItemIcon(itemID)
+				element.spellID = spellID
+				element.icon:SetTexture(itemTexture)
+			else
+				--local _, _, spellTexture = GetSpellInfo(spellID)
+				local spellTexture, spellTextureNoOverride = GetSpellTexture(spellID)
+				element.spellID = spellID
+				element.icon:SetTexture(spellTextureNoOverride)
+			end
 		end
+
 	elseif(event == 'PLAYER_ENTERING_WORLD') then
-		CooldownFrame_Set(element.cooldownFrame, 1, 1, 1)
+		CooldownFrame_Set(element.cd, 1, 1, 1)
 	end
+
+	element:SetShown(element.spellID and element.spellID ~= 0)
 
 	--[[ Callback: Trinket:PostUpdate(event)
 	Called after the element has been updated.
@@ -100,10 +126,13 @@ local function Enable(self, unit)
 		self:RegisterEvent('ARENA_COOLDOWNS_UPDATE', Path, true)
 		self:RegisterEvent('PLAYER_ENTERING_WORLD', Path, true)
 		self:RegisterEvent('ARENA_CROWD_CONTROL_SPELL_UPDATE', Path, true)
+		if(oUF.isRetail) then
+			self:RegisterEvent('PVP_MATCH_INACTIVE', ClearCooldowns, true)
+		end
 
-		if(not element.cooldownFrame) then
-			element.cooldownFrame = CreateFrame('Cooldown', nil, element)
-			element.cooldownFrame:SetAllPoints(element)
+		if(not element.cd) then
+			element.cd = CreateFrame('Cooldown', nil, element)
+			element.cd:SetAllPoints(element)
 		end
 
 		if(not element.icon) then
@@ -123,6 +152,9 @@ local function Disable(self)
 		self:UnregisterEvent('ARENA_COOLDOWNS_UPDATE', Path)
 		self:UnregisterEvent('PLAYER_ENTERING_WORLD', Path)
 		self:UnregisterEvent('ARENA_CROWD_CONTROL_SPELL_UPDATE', Path)
+		if(oUF.isRetail) then
+			self:UnregisterEvent('PVP_MATCH_INACTIVE', ClearCooldowns)
+		end
 		element:Hide()
 	end
 end

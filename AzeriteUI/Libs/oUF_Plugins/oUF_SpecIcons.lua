@@ -5,7 +5,7 @@ Toggles the visibility of an indicator showing the player's PvP spec.
 
 ## Widget
 
-PVPSpecIcon - Any UI widget.
+SpecIcon - Any UI widget.
 
 ## Sub-Widgets
 
@@ -19,15 +19,15 @@ assert(oUF, 'oUF not loaded')
 
 local Update = function(self, event, unit)
 	if(event == 'ARENA_OPPONENT_UPDATE' and unit ~= self.unit) then return end
-	local element = self.PVPSpecIcon
+	local element = self.SpecIcon
 
 	local _, instanceType = IsInInstance()
 	element.instanceType = instanceType
 
-	--[[ Callback: PVPSpecIcon:PreUpdate(unit)
+	--[[ Callback: SpecIcon:PreUpdate(unit)
 	Called before the element has been updated.
 
-	* self - the PVPSpecIcon element
+	* self - the SpecIcon element
 	* unit - the unit for which the update has been triggered (string)
 	* event - the event which caused the update (string)
 	--]]
@@ -57,10 +57,10 @@ local Update = function(self, event, unit)
 
 	element:Show()
 
-	--[[ Callback: PVPSpecIcon:PostUpdate(event)
+	--[[ Callback: SpecIcon:PostUpdate(event)
 	Called after the element has been updated.
 
-	* self - the PVPSpecIcon element
+	* self - the SpecIcon element
 	* event - the event that caused the update (string)
 	--]]
 	if(element.PostUpdate) then
@@ -69,13 +69,13 @@ local Update = function(self, event, unit)
 end
 
 local function Path(self, ...)
-	--[[ Override: PVPSpecIcon.Override(self, event)
+	--[[ Override: SpecIcon.Override(self, event)
 	Used to completely override the internal update function.
 
 	* self  - the parent object
 	* event - the event triggering the update (string)
 	--]]
-	return (self.PVPSpecIcon.Override or Update) (self, ...)
+	return (self.SpecIcon.Override or Update) (self, ...)
 end
 
 local function ForceUpdate(element)
@@ -83,7 +83,7 @@ local function ForceUpdate(element)
 end
 
 local function Enable(self, unit)
-	local element = self.PVPSpecIcon
+	local element = self.SpecIcon
 	if(element) then
 		element.__owner = self
 
@@ -104,7 +104,7 @@ local function Enable(self, unit)
 end
 
 local function Disable(self)
-	local element = self.PVPSpecIcon
+	local element = self.SpecIcon
 	if(element) then
 		if(oUF.isRetail) then
 			self:UnregisterEvent('ARENA_PREP_OPPONENT_SPECIALIZATIONS', Path)
@@ -116,4 +116,4 @@ local function Disable(self)
 	end
 end
 
-oUF:AddElement('PVPSpecIcon', Path, Enable, Disable)
+oUF:AddElement('SpecIcon', Path, Enable, Disable)

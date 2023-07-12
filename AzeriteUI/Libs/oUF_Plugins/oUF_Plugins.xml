@@ -2,7 +2,7 @@
 
 	<Script file="oUF_CombatFeedback.lua"/>
 	<Script file="oUF_Dispellable.lua"/>
-	<Script file="oUF_PVPSpecIcons.lua"/>
-	<Script file="oUF_Trinkets.lua"/>
+	<Script file="oUF_SpecIcons.lua"/>
+	<Script file="oUF_Trinket.lua"/>
 
 </Ui>
