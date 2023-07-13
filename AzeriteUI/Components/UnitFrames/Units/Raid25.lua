@@ -221,9 +221,14 @@ local HealPredict_PostUpdate = function(element, unit, myIncomingHeal, otherInco
 		element:Hide()
 	end
 
-	if (element.Absorb) then
-		element.Absorb:SetMinMaxValues(0, absorb/maxHealth < .6 and absorb or maxHealth * .6)
-		element.Absorb:SetValue(absorb)
+	if (element.absorbBar) then
+		if (hasOverAbsorb and curHealth >= maxHealth) then
+			absorb = UnitGetTotalAbsorbs(unit)
+			if (absorb > maxHealth * .3) then
+				absorb = maxHealth * .3
+			end
+			element.absorbBar:SetValue(absorb)
+		end
 	end
 
 end
@@ -488,7 +493,7 @@ local style = function(self, unit)
 		end
 		absorb:SetOrientation(orientation)
 
-		self.Health.Absorb = absorb
+		self.HealthPrediction.absorbBar = absorb
 	end
 
 	-- Dispellable Debuffs

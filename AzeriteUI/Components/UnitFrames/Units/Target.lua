@@ -211,9 +211,14 @@ local HealPredict_PostUpdate = function(element, unit, myIncomingHeal, otherInco
 		element:Hide()
 	end
 
-	if (element.Absorb) then
-		element.Absorb:SetMinMaxValues(0, absorb/maxHealth < .6 and absorb or maxHealth * .6)
-		element.Absorb:SetValue(absorb)
+	if (element.absorbBar) then
+		if (hasOverAbsorb and curHealth >= maxHealth) then
+			absorb = UnitGetTotalAbsorbs(unit)
+			if (absorb > maxHealth * .4) then
+				absorb = maxHealth * .4
+			end
+			element.absorbBar:SetValue(absorb)
+		end
 	end
 
 end
@@ -488,7 +493,7 @@ local UnitFrame_UpdateTextures = function(self)
 	local healPredict = self.HealthPrediction
 	healPredict:SetTexture(db.HealthBarTexture)
 
-	local absorb = self.Health.Absorb
+	local absorb = self.HealthPrediction.absorbBar
 	if (absorb) then
 		absorb:SetStatusBarTexture(db.HealthBarTexture)
 		absorb:SetStatusBarColor(unpack(db.HealthAbsorbColor))
@@ -724,7 +729,7 @@ local style = function(self, unit, id)
 		absorb:SetAllPoints(health)
 		absorb:SetFrameLevel(health:GetFrameLevel() + 3)
 
-		self.Health.Absorb = absorb
+		self.HealthPrediction.absorbBar = absorb
 	end
 
 	-- Portrait

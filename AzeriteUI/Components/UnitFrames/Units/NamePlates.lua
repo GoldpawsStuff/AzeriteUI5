@@ -253,9 +253,14 @@ local HealPredict_PostUpdate = function(element, unit, myIncomingHeal, otherInco
 		element:Hide()
 	end
 
-	if (element.Absorb) then
-		element.Absorb:SetMinMaxValues(0, absorb/maxHealth < .6 and absorb or maxHealth * .6)
-		element.Absorb:SetValue(absorb)
+	if (element.absorbBar) then
+		if (hasOverAbsorb and curHealth >= maxHealth) then
+			absorb = UnitGetTotalAbsorbs(unit)
+			if (absorb > maxHealth * .3) then
+				absorb = maxHealth * .3
+			end
+			element.absorbBar:SetValue(absorb)
+		end
 	end
 
 end
@@ -530,7 +535,7 @@ local NamePlate_PostUpdate = function(self, event, unit, ...)
 	self.Power:SetOrientation(main)
 	self.Health:SetOrientation(main)
 	self.Health.Preview:SetOrientation(main)
-	if (self.Health.Absorb) then self.Health.Absorb:SetOrientation(reverse) end
+	if (self.HealthPrediction.absorbBar) then self.HealthPrediction.absorbBar:SetOrientation(reverse) end
 
 	Classification_Update(self, event, unit, ...)
 	TargetHighlight_Update(self, event, unit, ...)
@@ -819,7 +824,7 @@ local style = function(self, unit, id)
 		end
 		absorb:SetOrientation(orientation)
 
-		self.Health.Absorb = absorb
+		self.HealthPrediction.absorbBar = absorb
 	end
 
 	-- Target Highlight
