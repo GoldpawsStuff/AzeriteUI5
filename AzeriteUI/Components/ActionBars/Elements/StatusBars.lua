@@ -427,7 +427,7 @@ StatusBars.UpdateBars = function(self, event, ...)
 			bar.Percent:SetText("")
 		else
 			if (event == "PLAYER_LEVEL_UP") then
-				playerLevel = ...
+				playerLevel = UnitLevel("player")
 			end
 
 			local forced = bar.currentType ~= "xp"

@@ -519,15 +519,7 @@ local UnitFrame_OnEvent = function(self, event, unit, ...)
 		playerXPDisabled = true
 
 	elseif (event == "PLAYER_LEVEL_UP") then
-		local level = ...
-		if (level and (level ~= playerLevel)) then
-			playerLevel = level
-		else
-			local level = UnitLevel("player")
-			if (level ~= playerLevel) then
-				playerLevel = level
-			end
-		end
+		playerLevel = UnitLevel("player")
 	end
 	UnitFrame_PostUpdate(self)
 end
