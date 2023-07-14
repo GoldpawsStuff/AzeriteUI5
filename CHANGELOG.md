@@ -5,18 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [5.2.77-Alpha] 2023-07-13
-### Added
-- Added options to disable the player- and target unit frame overlay castbars.
-
-### Fixed
-- Fixed issues preventing any absorb bars from showin up at all. We now separate between absorbs when health is missing and absorbs when health is at maximum. The absorb bar will never take up more space than that of the missing health when health is missing, except when the health of the unit is at maximum, then it will be overlayed, but limited to less than health of the full health bar in size. It makes sense when you see it.
-
-## [5.2.76-Alpha] 2023-07-12
+- Supports Retail 10.1.5.
+- Supports Classic Hardcore 1.14.4.
 - Note that several features are currently under development and most uploaded builds are development builds. I strongly recommend against installing anything from GitHub at this point. Use the official tagged builds from CurseForge and Wago.
 
 ### Added
-- Supports Retail 10.1.5.
-- Supports Classic Hardcore 1.14.4.
+- Added options to disable the player- and target unit frame overlay castbars.
 - Added first draft of arena enemy frames. These frames mirror the new 5 player raid frames. Note that several features here are still under development and will be added, like trinket cooldown tracking, big CC display and more.
 - Added separate raid frames for raids of up to 5 players. These frames mirror the look of the enemy arena frames. If these are disabled, party frames with portraits will be shown in raids of up to 5 players.
 - Added separate raid frames for raids of up to 25 players. If the above are disabled, these raid frames will also be shown in raids of up to 5 players.
@@ -32,6 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - The target frame should no longer show various low health level 1 NPCs in starting zones as critters on Retail.
 
 ### Fixed
+- Fixed issues preventing any absorb bars from showin up at all. We now separate between absorbs when health is missing and absorbs when health is at maximum. The absorb bar will never take up more space than that of the missing health when health is missing, except when the health of the unit is at maximum, then it will be overlayed, but limited to less than health of the full health bar in size. It makes sense when you see it.
 - Fixed an issue preventing the floating castbar from properly enabling or disabling itself when the Personal Resource Display was toggled in Retail.
 
 ## [5.1.74-Release] 2023-06-24
