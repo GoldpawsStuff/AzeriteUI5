@@ -5,8 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-07-14
+### Changed
+- Removed a few of the most annoying quest overlay textures from the Minimap.
+
 ### Fixed
 - The bag options in retail now actually does change the sorting and insertion directions.
+- The absorb overlay on nameplates should no longer be shrunken and weird.
 
 ## [5.2.77-Alpha] 2023-07-13
 - Supports Retail 10.1.5.
