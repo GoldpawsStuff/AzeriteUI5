@@ -810,6 +810,7 @@ local style = function(self, unit, id)
 		absorb:SetFrameLevel(health:GetFrameLevel() + 3)
 		absorb:SetStatusBarTexture(db.HealthBarTexture)
 		absorb:SetStatusBarColor(unpack(db.HealthAbsorbColor))
+		absorb:SetTexCoord(unpack(db.HealthBarTexCoord))
 		absorb:SetSparkMap(db.HealthBarSparkMap)
 
 		local orientation
