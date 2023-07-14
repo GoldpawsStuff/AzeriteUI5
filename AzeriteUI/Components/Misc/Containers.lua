@@ -25,20 +25,20 @@
 --]]
 local _, ns = ...
 
-if (not C_Container) then return end
+if (not C_Container) then return print("C_Container not found") end
 
 local Containers = ns:NewModule("Containers", ns.Module, "LibMoreEvents-1.0")
 
 local defaults = { profile = ns:Merge({
-	sort = "ltr",
-	insert = "rtl"
+	sort = "rtl",
+	insert = "ltr"
 }, ns.Module.defaults) }
 
 Containers.GenerateDefaults = function(self)
 	return defaults
 end
 
-Containers.RefreshConfig = function(self)
+Containers.UpdateSettings = function(self)
 	if (C_Container.SetSortBagsRightToLeft) then
 		if (self.db.profile.sort == "rtl") then
 			C_Container.SetSortBagsRightToLeft(true)
@@ -47,9 +47,9 @@ Containers.RefreshConfig = function(self)
 		end
 	end
 	if (C_Container.SetInsertItemsLeftToRight) then
-		if (self.db.profile.sort == "ltr") then
+		if (self.db.profile.insert == "ltr") then
 			C_Container.SetInsertItemsLeftToRight(true)
-		elseif (self.db.profile.sort == "rtl") then
+		elseif (self.db.profile.insert == "rtl") then
 			C_Container.SetInsertItemsLeftToRight(false)
 		end
 	end
