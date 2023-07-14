@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-07-14
+### Fixed
+- The bag options in retail now actually does change the sorting and insertion directions.
+
 ## [5.2.77-Alpha] 2023-07-13
 - Supports Retail 10.1.5.
 - Supports Classic Hardcore 1.14.4.
