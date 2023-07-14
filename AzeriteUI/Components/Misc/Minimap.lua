@@ -1304,6 +1304,8 @@ MinimapMod.OnEnable = function(self)
 	self.frame:EnableMouseWheel(true)
 	self.frame:SetScript("OnMouseWheel", Minimap_OnMouseWheel)
 	self.frame:SetScript("OnMouseUp", Minimap_OnMouseUp)
+	self.frame:SetArchBlobRingScalar(0)
+	self.frame:SetQuestBlobRingScalar(0)
 
 	self:CreateCustomElements()
 	self:CreateAnchor(MINIMAP_LABEL):SetDefaultScale(mapScale * ns.API.GetEffectiveScale())
