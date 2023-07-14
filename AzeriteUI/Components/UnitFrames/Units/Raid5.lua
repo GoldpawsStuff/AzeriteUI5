@@ -513,50 +513,63 @@ local style = function(self, unit)
 		self.HealthPrediction.absorbBar = absorb
 	end
 
+	local Colors = ns.Colors
+	local GetMedia = ns.API.GetMedia
+	local GetFont = ns.API.GetFont
+
 	-- Dispellable Debuffs
 	--------------------------------------------
-	--[[
-	local dispellable = {}
-	dispellable.disableMouse = true
+	if (ns.IsDevelopment and IsShiftKeyDown()) then
 
-	local dispelIcon = CreateFrame("Button", dispellable:GetDebugName() .. "Button", healthOverlay)
-	--dispelIcon:Hide()
-	dispelIcon:SetFrameLevel(overlay:GetFrameLevel() + 2)
-	dispelIcon:SetSize(24,24)
-	dispelIcon:SetPoint("CENTER")
-	dispellable.dispellIcon = dispelIcon
+		local dispellable = {}
+		dispellable.disableMouse = true
 
-	local dispelIconTexture = dispelIcon:CreateTexture(nil, "BACKGROUND", nil, 1)
-	dispelIconTexture:SetAllPoints()
-	dispelIconTexture:SetMask(GetMedia("actionbutton-mask-square"))
-	dispelIcon.icon = dispelIconTexture
+		local dispelIcon = CreateFrame("Button", self:GetName().."DispellableButton", healthOverlay)
+		dispelIcon:Hide()
+		dispelIcon:SetFrameLevel(overlay:GetFrameLevel() + 2)
+		dispelIcon:SetSize(30,30)
+		dispelIcon:SetPoint("RIGHT", 50, -2)
+		dispellable.dispellIcon = dispelIcon
 
-	local dispelIconCount = dispelIcon.Border:CreateFontString(nil, "OVERLAY")
-	dispelIconCount:SetFontObject(GetFont(12,true))
-	dispelIconCount:SetTextColor(Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3])
-	dispelIconCount:SetPoint("BOTTOMRIGHT", dispelIcon, "BOTTOMRIGHT", -2, 3)
-	dispelIcon.count = dispelIconCount
+		local dispelIconBorder = CreateFrame("Frame", nil, dispelIcon, ns.BackdropTemplate)
+		dispelIconBorder:SetBackdrop({ edgeFile = GetMedia("border-aura"), edgeSize = 12 })
+		dispelIconBorder:SetBackdropBorderColor(Colors.aura[1], Colors.aura[2], Colors.aura[3])
+		dispelIconBorder:SetPoint("TOPLEFT", -6, 6)
+		dispelIconBorder:SetPoint("BOTTOMRIGHT", 6, -6)
+		dispelIconBorder:SetFrameLevel(dispelIcon:GetFrameLevel() + 2)
+		--dispelIcon.overlay = dispelIconBorder
 
-	local dispelIconBorder = CreateFrame("Frame", nil, dispelIcon, ns.BackdropTemplate)
-	dispelIconBorder:SetBackdrop({ edgeFile = GetMedia("border-aura"), edgeSize = 12 })
-	dispelIconBorder:SetBackdropBorderColor(Colors.aura[1], Colors.aura[2], Colors.aura[3])
-	dispelIconBorder:SetPoint("TOPLEFT", -6, 6)
-	dispelIconBorder:SetPoint("BOTTOMRIGHT", 6, -6)
-	dispelIconBorder:SetFrameLevel(dispelIcon:GetFrameLevel() + 2)
-	dispelIcon.overlay = dispelIconBorder
+		local dispelIconTexture = dispelIcon:CreateTexture(nil, "BACKGROUND", nil, 1)
+		dispelIconTexture:SetAllPoints()
+		dispelIconTexture:SetMask(GetMedia("actionbutton-mask-square"))
+		dispelIcon.icon = dispelIconTexture
 
-	local dispelIconTime = dispelIcon.overlay:CreateFontString(nil, "OVERLAY")
-	dispelIconTime:SetFontObject(GetFont(14,true))
-	dispelIconTime:SetTextColor(Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3])
-	dispelIconTime:SetPoint("TOPLEFT", dispelIcon, "TOPLEFT", -4, 4)
-	dispelIcon.time = dispelIconTime
+		local dispelIconTime = dispelIconBorder:CreateFontString(nil, "OVERLAY")
+		dispelIconTime:SetFontObject(GetFont(14,true))
+		dispelIconTime:SetTextColor(Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3])
+		dispelIconTime:SetPoint("TOPLEFT", dispelIcon, "TOPLEFT", -4, 4)
+		dispelIcon.time = dispelIconTime
 
-	-- Using a virtual cooldown element with the timer attached,
-	-- allowing them to piggyback on the back-end's cooldown updates.
-	dispelIcon.cd = ns.Widgets.RegisterCooldown(dispelIcon.time)
+		local dispelIconCount = dispelIconBorder:CreateFontString(nil, "OVERLAY")
+		dispelIconCount:SetFontObject(GetFont(12,true))
+		dispelIconCount:SetTextColor(Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3])
+		dispelIconCount:SetPoint("BOTTOMRIGHT", dispelIcon, "BOTTOMRIGHT", -2, 3)
+		dispelIcon.count = dispelIconCount
 
-	--self.Dispellable = dispellable
-	--]]
+		-- Using a virtual cooldown element with the timer attached,
+		-- allowing them to piggyback on the back-end's cooldown updates.
+		dispelIcon.cd = ns.Widgets.RegisterCooldown(dispelIcon.time)
+
+		local dispelTexture = {
+			UpdateColor = function(dispelTexture, debuffType, r, g, b, a)
+				dispelIconBorder:SetBackdropBorderColor(r, g, b)
+			end
+		}
+		dispellable.dispelTexture = dispelTexture
+
+		self.Dispellable = dispellable
+
+	end
 
 	-- Readycheck
 	--------------------------------------------
@@ -769,7 +782,7 @@ RaidFrame5Mod.GetHeaderAttributes = function(self)
 	"sortMethod", "INDEX", -- INDEX, NAME -- Member sorting within each group
 	"sortDir", "ASC", -- ASC, DESC
 	"groupFilter", "1,2,3,4,5,6,7,8", -- Group filter
-	"showSolo", false, -- show while non-grouped
+	"showSolo", ns.IsDevelopment and IsShiftKeyDown(), -- show while non-grouped
 	"showPlayer", true, -- show the player while in a party
 	"showRaid", true, -- show while in a raid group
 	"showParty", true, -- show while in a party
