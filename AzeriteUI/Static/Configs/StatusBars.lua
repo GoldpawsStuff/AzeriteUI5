@@ -53,9 +53,9 @@ ns.RegisterConfig("StatusBars", {
 	RingSize = { 208, 208 },
 	RingTexture = GetMedia("minimap-bars-single"),
 	RingSparkOffset = -1/10,
-	RingSparkInset = 18 * 208/256,
+	RingSparkInset = 24 * 208/256,
 	RingSparkFlash = { nil, nil, 1, 1 },
-	RingSparkSize = { 34 * 208/256, 26 },
+	RingSparkSize = { 34 * 208/256, 30 },
 	RingDegreeOffset = 90*3 - 14,
 	RingDegreeSpan = 360 - 14*2,
 
