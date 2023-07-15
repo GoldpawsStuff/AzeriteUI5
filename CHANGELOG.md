@@ -4,18 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-07-15
-### Changed
-- Removed a few of the most annoying quest overlay textures from the Minimap.
-- The alert frames are now by default moved to the top of the screen and grow downwards. I plan to add options for this.
-
-### Fixed
-- The bag options in retail now actually does change the sorting and insertion directions.
-- The absorb overlay on nameplates should no longer be shrunken and weird.
-- The encounter bar (including dragonriding vigor) shouldn't pop as much around the screen as before.
-- Fixed an issue where the description text on the experience status bar would show the wrong level as the next level immediately after leveling up.
-
-## [5.2.77-Alpha] 2023-07-13
+## [5.2.78-Beta] 2023-07-15
 - Supports Retail 10.1.5.
 - Supports Classic Hardcore 1.14.4.
 - Note that several features are currently under development and most uploaded builds are development builds. I strongly recommend against installing anything from GitHub at this point. Use the official tagged builds from CurseForge and Wago.
@@ -35,10 +24,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Party frames will now by default appear for raids of up to 5 players when none of the available sized frames are enabled.
 - Our nameplate module will now disable itself when the addon namePlateM+ is enabled.
 - The target frame should no longer show various low health level 1 NPCs in starting zones as critters on Retail.
+- The alert frames are now by default moved to the top of the screen and grow downwards. I plan to add options for this.
+- Removed a few of the most annoying quest overlay textures from the Minimap.
 
 ### Fixed
 - Fixed issues preventing any absorb bars from showin up at all. We now separate between absorbs when health is missing and absorbs when health is at maximum. The absorb bar will never take up more space than that of the missing health when health is missing, except when the health of the unit is at maximum, then it will be overlayed, but limited to less than health of the full health bar in size. It makes sense when you see it.
 - Fixed an issue preventing the floating castbar from properly enabling or disabling itself when the Personal Resource Display was toggled in Retail.
+- The bag options in retail now actually does change the sorting and insertion directions.
+- The absorb overlay on nameplates should no longer be shrunken and weird.
+- The encounter bar (including dragonriding vigor) shouldn't pop as much around the screen as before.
+- Fixed an issue where the description text on the experience status bar would show the wrong level as the next level immediately after leveling up.
 
 ## [5.1.74-Release] 2023-06-24
 ### Added
