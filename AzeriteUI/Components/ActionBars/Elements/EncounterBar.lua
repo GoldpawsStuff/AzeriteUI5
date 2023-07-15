@@ -67,12 +67,12 @@ EncounterBar.UpdateAnchor = function(self)
 	end
 end
 
-EncounterBar.PreUpdatePositionAndScale = function(self)
+EncounterBar.OnPositionAndScaleChange = function(self)
 	if (self:IsHooked(_G.EncounterBar, "SetPoint")) then
 		self:Unhook(_G.EncounterBar, "SetPoint")
 	end
 	self:UpdatePositionAndScale()
-	self:SecureHook(_G.EncounterBar, "SetPoint", "PreUpdatePositionAndScale")
+	self:SecureHook(_G.EncounterBar, "SetPoint", "OnPositionAndScaleChange")
 end
 
 EncounterBar.PrepareFrames = function(self)
@@ -82,7 +82,7 @@ EncounterBar.PrepareFrames = function(self)
 	_G.EncounterBar.HighlightSystem = ns.Noop
 	_G.EncounterBar.ClearHighlight = ns.Noop
 
-	self:SecureHook(_G.EncounterBar, "SetPoint", "PreUpdatePositionAndScale")
+	self:SecureHook(_G.EncounterBar, "SetPoint", "OnPositionAndScaleChange")
 end
 
 EncounterBar.OnEnable = function(self)
