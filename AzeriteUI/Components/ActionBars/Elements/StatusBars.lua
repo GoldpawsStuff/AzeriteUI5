@@ -50,8 +50,6 @@ local unpack = unpack
 local Colors = ns.Colors
 local AbbreviateNumber = ns.API.AbbreviateNumber
 
-local playerLevel = UnitLevel("player")
-
 local getScale = function()
 	local mod = ns:GetModule("Minimap", true)
 	return mod and mod:GetScale() or 1
@@ -418,17 +416,16 @@ StatusBars.UpdateBars = function(self, event, ...)
 			bonus:SetMinMaxValues(0, 1, true)
 		end
 	else
+
 		if (IsPlayerAtEffectiveMaxLevel() or IsXPUserDisabled()) then
 			bar.currentType = nil
 			bar:Hide()
 			bonus:Hide()
 			bar.Value:SetText("")
 			bar.Description:SetText("")
+
 			bar.Percent:SetText("")
 		else
-			if (event == "PLAYER_LEVEL_UP") then
-				playerLevel = UnitLevel("player")
-			end
 
 			local forced = bar.currentType ~= "xp"
 			local restedLeft = GetXPExhaustion()
@@ -454,7 +451,7 @@ StatusBars.UpdateBars = function(self, event, ...)
 			end
 
 			bar.Value:SetFormattedText("%s", AbbreviateNumber(max-min))
-			bar.Description:SetFormattedText(L["to level %s"], playerLevel + 1)
+			bar.Description:SetFormattedText(L["to level %s"], UnitLevel("player") + 1)
 			bar.Value:SetTextColor(r, g, b)
 			bar.Percent:SetTextColor(r, g, b)
 
