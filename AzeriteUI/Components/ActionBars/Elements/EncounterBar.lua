@@ -27,7 +27,7 @@ local _, ns = ...
 
 if (not ns.WoW10) then return end
 
-local EncounterBar = ns:NewModule("EncounterBar", ns.Module, "LibMoreEvents-1.0")
+local EncounterBar = ns:NewModule("EncounterBar", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
 
 local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
 
@@ -67,12 +67,22 @@ EncounterBar.UpdateAnchor = function(self)
 	end
 end
 
+EncounterBar.PreUpdatePositionAndScale = function(self)
+	if (self:IsHooked(_G.EncounterBar, "SetPoint")) then
+		self:Unhook(_G.EncounterBar, "SetPoint")
+	end
+	self:UpdatePositionAndScale()
+	self:SecureHook(_G.EncounterBar, "SetPoint", "PreUpdatePositionAndScale")
+end
+
 EncounterBar.PrepareFrames = function(self)
 
-	self.frame = _G.EncounterBar
-	self.frame.HighlightSystem = ns.Noop
-	self.frame.ClearHighlight = ns.Noop
+	self.frame = _G.EncounterBar -- UIWidgetPowerBarContainerFrame
 
+	_G.EncounterBar.HighlightSystem = ns.Noop
+	_G.EncounterBar.ClearHighlight = ns.Noop
+
+	self:SecureHook(_G.EncounterBar, "SetPoint", "PreUpdatePositionAndScale")
 end
 
 EncounterBar.OnEnable = function(self)
