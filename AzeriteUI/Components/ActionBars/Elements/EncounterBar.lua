@@ -68,11 +68,14 @@ EncounterBar.UpdateAnchor = function(self)
 end
 
 EncounterBar.OnPositionAndScaleChange = function(self)
+	if (MovieFrame:IsShown()) or (CinematicFrame:IsShown()) then
+		return
+	end
 	if (self:IsHooked(_G.EncounterBar, "SetPoint")) then
 		self:Unhook(_G.EncounterBar, "SetPoint")
+		self:UpdatePositionAndScale()
+		self:SecureHook(_G.EncounterBar, "SetPoint", "OnPositionAndScaleChange")
 	end
-	self:UpdatePositionAndScale()
-	self:SecureHook(_G.EncounterBar, "SetPoint", "OnPositionAndScaleChange")
 end
 
 EncounterBar.PrepareFrames = function(self)
