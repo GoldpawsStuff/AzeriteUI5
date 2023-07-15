@@ -25,7 +25,7 @@
 --]]
 local _, ns = ...
 
-if (ns.IsRetail) then return end
+--if (ns.IsRetail) then return end
 
 local AlertFrames = ns:NewModule("AlertFrames", "AceHook-3.0")
 
@@ -130,9 +130,11 @@ AlertFrames.OnInitialize = function(self)
 	AlertFrameHolder:SetPoint(unpack(config.AlertFramesPosition))
 	AlertFrameHolder:SetSize(unpack(config.AlertFramesSize))
 
-	AlertFrame.ignoreFramePositionManager = true
-	AlertFrame:SetParent(UIParent)
-	AlertFrame:OnLoad()
+	if (not ns.IsRetail) then
+		--AlertFrame.ignoreFramePositionManager = true
+		--AlertFrame:SetParent(UIParent)
+		--AlertFrame:OnLoad()
+	end
 
 	for index,alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
 		AlertSubSystem_AdjustPosition(AlertFrame, alertFrameSubSystem)
@@ -140,7 +142,9 @@ AlertFrames.OnInitialize = function(self)
 
 	GroupLootContainer.ignoreFramePositionManager = true
 
-	UIPARENT_MANAGED_FRAME_POSITIONS["GroupLootContainer"] = nil
+	if (not ns.IsRetail) then
+		UIPARENT_MANAGED_FRAME_POSITIONS["GroupLootContainer"] = nil
+	end
 
 	self:SecureHook(AlertFrame, "AddAlertFrameSubSystem", AlertSubSystem_AdjustPosition)
 	self:SecureHook(AlertFrame, "UpdateAnchors", AlertFrame_PostUpdateAnchors)

@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-07-14
+## [Unreleased] 2023-07-15
 ### Changed
 - Removed a few of the most annoying quest overlay textures from the Minimap.
+- The alert frames are now by default moved to the top of the screen and grow downwards. I plan to add options for this.
 
 ### Fixed
 - The bag options in retail now actually does change the sorting and insertion directions.
