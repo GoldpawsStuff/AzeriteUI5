@@ -55,7 +55,7 @@ local defaults = { profile = ns:Merge({
 	unitsPerColumn = 5, -- maximum units per column
 	maxColumns = 8, -- should be 40/unitsPerColumn
 	columnSpacing = -12, -- spacing between columns
-	columnAnchorPoint = "TOP" -- anchor point of column, columns grow opposite
+	columnAnchorPoint = "TOPLEFT" -- anchor point of column, columns grow opposite
 
 }, ns.Module.defaults) }
 
