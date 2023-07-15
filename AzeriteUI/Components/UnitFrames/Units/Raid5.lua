@@ -513,13 +513,13 @@ local style = function(self, unit)
 		self.HealthPrediction.absorbBar = absorb
 	end
 
-	local Colors = ns.Colors
-	local GetMedia = ns.API.GetMedia
-	local GetFont = ns.API.GetFont
-
 	-- Dispellable Debuffs
 	--------------------------------------------
-	if (ns.IsDevelopment and IsShiftKeyDown()) then
+	if (ns.IsDevelopment) then
+
+		local Colors = ns.Colors
+		local GetMedia = ns.API.GetMedia
+		local GetFont = ns.API.GetFont
 
 		local dispellable = {}
 		dispellable.disableMouse = true
@@ -782,7 +782,7 @@ RaidFrame5Mod.GetHeaderAttributes = function(self)
 	"sortMethod", "INDEX", -- INDEX, NAME -- Member sorting within each group
 	"sortDir", "ASC", -- ASC, DESC
 	"groupFilter", "1,2,3,4,5,6,7,8", -- Group filter
-	"showSolo", ns.IsDevelopment and IsShiftKeyDown(), -- show while non-grouped
+	"showSolo", false, -- show while non-grouped
 	"showPlayer", true, -- show the player while in a party
 	"showRaid", true, -- show while in a raid group
 	"showParty", true, -- show while in a party
