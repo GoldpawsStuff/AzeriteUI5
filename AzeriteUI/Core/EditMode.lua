@@ -185,6 +185,9 @@ EditModeManager.OnInitialize = function(self)
 	EditModeManagerFrame.AccountSettings.RefreshActionBarShown = ns.Noop
 	EditModeManagerFrame.AccountSettings.RefreshEncounterBar = ns.Noop
 
+	MainStatusTrackingBarContainer.OnEditModeEnter = ns.Noop
+	MicroMenuContainer.OnEditModeEnter = ns.Noop
+
 	self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
