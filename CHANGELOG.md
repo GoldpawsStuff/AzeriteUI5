@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - The bag options in retail now actually does change the sorting and insertion directions.
 - The absorb overlay on nameplates should no longer be shrunken and weird.
 - The encounter bar (including dragonriding vigor) shouldn't pop as much around the screen as before.
+- Fixed an issue where the description text on the experience status bar would show the wrong level as the next level immediately after leveling up.
 
 ## [5.2.77-Alpha] 2023-07-13
 - Supports Retail 10.1.5.
