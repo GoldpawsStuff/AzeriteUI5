@@ -724,7 +724,7 @@ end
 GroupHeader.Enable = function(self)
 	if (InCombatLockdown()) then return end
 
-	local visibility = "show" -- RaidFrame5Mod:GetVisibilityDriver()
+	local visibility = RaidFrame5Mod:GetVisibilityDriver()
 
 	UnregisterAttributeDriver(self, "state-visibility")
 	RegisterAttributeDriver(self, "state-visibility", visibility)
