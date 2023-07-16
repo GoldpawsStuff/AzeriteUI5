@@ -80,7 +80,7 @@ local mapScale = ns.WoW10 and 1 or 198/140
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	theme = "Azerite",
-	useHalfClock = true,
+	useHalfClock = GetCurrentRegionName() == "US",
 	useServerTime = false
 }, ns.Module.defaults) }
 
