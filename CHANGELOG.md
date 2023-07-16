@@ -4,11 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-07-16
-### Fixed
-- The target unit frame castbar and auras should remain hidden once disabled through the `/azerite` options menu now.
-
-## [5.2.78-Beta] 2023-07-15
+## [5.2.79-Beta] 2023-07-16
 - Supports Retail 10.1.5.
 - Supports Classic Hardcore 1.14.4.
 - Note that several features are currently under development and most uploaded builds are development builds. I strongly recommend against installing anything from GitHub at this point. Use the official tagged builds from CurseForge and Wago.
@@ -38,6 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - The absorb overlay on nameplates should no longer be shrunken and weird.
 - The encounter bar (including dragonriding vigor) shouldn't pop as much around the screen as before.
 - Fixed an issue where the description text on the experience status bar would show the wrong level as the next level immediately after leveling up.
+- The target unit frame castbar and auras should remain hidden once disabled through the `/azerite` options menu now.
 
 ## [5.1.74-Release] 2023-06-24
 ### Added
