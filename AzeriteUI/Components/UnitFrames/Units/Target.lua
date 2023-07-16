@@ -539,14 +539,22 @@ local UnitFrame_UpdateTextures = function(self)
 	if (key == "Critter") then
 		health.Value:Hide()
 		health.Percent:Hide()
-		cast:ForceUpdate()
+		if (self:IsElementEnabled("Castbar")) then
+			cast:ForceUpdate()
+		end
 		self:DisableElement("Auras")
 	else
 		health.Value:Show()
 		health.Percent:Show()
-		cast:ForceUpdate()
-		self:EnableElement("Auras")
-		self.Auras:ForceUpdate()
+		if (self:IsElementEnabled("Castbar")) then
+			cast:ForceUpdate()
+		end
+		if (TargetFrameMod.db.profile.showAuras) then
+			self:EnableElement("Auras")
+		end
+		if (self:IsElementEnabled("Auras")) then
+			self.Auras:ForceUpdate()
+		end
 	end
 
 	if (key == "Boss") then
@@ -554,14 +562,18 @@ local UnitFrame_UpdateTextures = function(self)
 		local auras = self.Auras
 		auras.numTotal = db.AurasNumTotalBoss
 		auras:SetSize(unpack(db.AurasSizeBoss))
-		auras:ForceUpdate()
+		if (self:IsElementEnabled("Auras")) then
+			auras:ForceUpdate()
+		end
 
 	elseif (key ~= "Boss") then
 		local db = ns.GetConfig("TargetFrame")
 		local auras = self.Auras
 		auras.numTotal = db.AurasNumTotal
 		auras:SetSize(unpack(db.AurasSize))
-		auras:ForceUpdate()
+		if (self:IsElementEnabled("Auras")) then
+			auras:ForceUpdate()
+		end
 	end
 
 	ns:Fire("UnitFrame_Target_Updated", unit, key)

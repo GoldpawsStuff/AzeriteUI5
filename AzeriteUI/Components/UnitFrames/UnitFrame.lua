@@ -174,7 +174,9 @@ UnitFrameMod.UpdateSettings = function(self)
 				if (auras) then
 					auras.PreSetPosition = ns.AuraSorts.Alternate -- only in classic
 					auras.SortAuras = ns.AuraSorts.AlternateFuncton -- only in retail
-					auras:ForceUpdate()
+					if (frame:IsElementEnabled("Auras")) then
+						auras:ForceUpdate()
+					end
 				end
 			end
 		end
@@ -186,7 +188,9 @@ UnitFrameMod.UpdateSettings = function(self)
 				if (auras) then
 					auras.PreSetPosition = ns.AuraSorts.Alternate -- only in classic
 					auras.SortAuras = ns.AuraSorts.AlternateFuncton -- only in retail
-					auras:ForceUpdate()
+					if (frame:IsElementEnabled("Auras")) then
+						auras:ForceUpdate()
+					end
 				end
 			end
 		end
@@ -199,7 +203,9 @@ UnitFrameMod.UpdateSettings = function(self)
 				if (auras) then
 					auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
 					auras.SortAuras = ns.AuraSorts.DefaultFunction -- only in retail
-					auras:ForceUpdate()
+					if (frame:IsElementEnabled("Auras")) then
+						auras:ForceUpdate()
+					end
 				end
 			end
 		end
@@ -211,7 +217,9 @@ UnitFrameMod.UpdateSettings = function(self)
 				if (auras) then
 					auras.PreSetPosition = ns.AuraSorts.Default -- only in classic
 					auras.SortAuras = ns.AuraSorts.DefaultFunction -- only in retail
-					auras:ForceUpdate()
+					if (frame:IsElementEnabled("Auras")) then
+						auras:ForceUpdate()
+					end
 				end
 			end
 		end
