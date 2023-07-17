@@ -5,15 +5,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [5.2.80-Beta] 2023-07-17
-### Changed
-- Updated the oUF for retail to the most recent WoW 10.1.5 compatible version.
-- Did a lot of aura tweaking for arena and raid(5) frames.
-- The 12 hour clock format is now only the default for the US region, while other regions get a 24 hour clock format as default. This is just a change to the default setting, which only will affect non-US user that currently had the setting set to its default.
-
-### Fixed
-- Fixed issues related to PvP trinkets in the arena unit frames.
-
-## [5.2.79-Beta] 2023-07-16
 - Supports Retail 10.1.5.
 - Supports Classic Hardcore 1.14.4.
 - Note that several features are currently under development and most uploaded builds are development builds. I strongly recommend against installing anything from GitHub at this point. Use the official tagged builds from CurseForge and Wago.
@@ -35,6 +26,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - The target frame should no longer show various low health level 1 NPCs in starting zones as critters on Retail.
 - The alert frames are now by default moved to the top of the screen and grow downwards. I plan to add options for this.
 - Removed a few of the most annoying quest overlay textures from the Minimap.
+- Updated the oUF for retail to the most recent WoW 10.1.5 compatible version.
+- Did a lot of aura tweaking for arena and raid(5) frames.
+- The 12 hour clock format is now only the default for the US region, while other regions get a 24 hour clock format as default. This is just a change to the default setting, which only will affect non-US user that currently had the setting set to its default.
 
 ### Fixed
 - Fixed issues preventing any absorb bars from showin up at all. We now separate between absorbs when health is missing and absorbs when health is at maximum. The absorb bar will never take up more space than that of the missing health when health is missing, except when the health of the unit is at maximum, then it will be overlayed, but limited to less than health of the full health bar in size. It makes sense when you see it.
@@ -44,6 +38,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - The encounter bar (including dragonriding vigor) shouldn't pop as much around the screen as before.
 - Fixed an issue where the description text on the experience status bar would show the wrong level as the next level immediately after leveling up.
 - The target unit frame castbar and auras should remain hidden once disabled through the `/azerite` options menu now.
+- Fixed issues related to PvP trinkets in the arena unit frames.
 
 ## [5.1.74-Release] 2023-06-24
 ### Added
