@@ -664,6 +664,8 @@ local style = function(self, unit)
 	auras:SetPoint(unpack(db.AurasPosition))
 	auras.size = db.AuraSize
 	auras.spacing = db.AuraSpacing
+	auras.numBuffs = db.AurasNumBuffs
+	auras.numDebuffs = db.AurasNumDebuffs
 	auras.numTotal = db.AurasNumTotal
 	auras.disableMouse = db.AurasDisableMouse
 	auras.disableCooldown = db.AurasDisableCooldown
@@ -682,6 +684,9 @@ local style = function(self, unit)
 	auras.PostUpdateButton = ns.AuraStyles.ArenaPostUpdateButton
 	auras.CustomFilter = ns.AuraFilters.ArenaAuraFilter -- classic
 	auras.FilterAura = ns.AuraFilters.ArenaAuraFilter -- retail
+	auras.filter = "RAID" -- Buffs the player can apply and debuffs the player can dispell
+	auras.buffFilter = nil
+	auras.debuffFilter = nil
 
 	if (ns:GetModule("UnitFrames").db.global.disableAuraSorting) then
 		auras.PreSetPosition = ns.AuraSorts.Alternate -- only in classic

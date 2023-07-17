@@ -625,6 +625,8 @@ local style = function(self, unit)
 	auras:SetPoint(unpack(db.AurasPosition))
 	auras.size = db.AuraSize
 	auras.spacing = db.AuraSpacing
+	auras.numBuffs = db.AurasNumBuffs
+	auras.numDebuffs = db.AurasNumDebuffs
 	auras.numTotal = db.AurasNumTotal
 	auras.disableMouse = db.AurasDisableMouse
 	auras.disableCooldown = db.AurasDisableCooldown
@@ -643,6 +645,9 @@ local style = function(self, unit)
 	auras.PostUpdateButton = ns.AuraStyles.ArenaPostUpdateButton
 	auras.CustomFilter = ns.AuraFilters.ArenaAuraFilter -- classic
 	auras.FilterAura = ns.AuraFilters.ArenaAuraFilter -- retail
+	auras.filter = nil
+	auras.buffFilter = nil
+	auras.debuffFilter = "PLAYER" -- Debuffs applied by the player
 
 	if (ns:GetModule("UnitFrames").db.global.disableAuraSorting) then
 		auras.PreSetPosition = ns.AuraSorts.Alternate -- only in classic
@@ -713,75 +718,58 @@ ArenaFrameMod.CreateUnitFrames = function(self)
 		frame.units[i] = unitFrame
 	end
 
-	if true then
+	local config = ns.GetConfig("ArenaFrames")
 
-		local config = ns.GetConfig("ArenaFrames")
+	local layoutManager = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+	layoutManager:SetAllPoints(frame)
+	layoutManager:SetAttribute("unitWidth", config.UnitSize[1])
+	layoutManager:SetAttribute("unitHeight", config.UnitSize[2])
+	layoutManager:SetAttribute("yOffset", self.db.profile.yOffset)
 
-		local layoutManager = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-		layoutManager:SetAllPoints(frame)
-		layoutManager:SetAttribute("unitWidth", config.UnitSize[1])
-		layoutManager:SetAttribute("unitHeight", config.UnitSize[2])
-		layoutManager:SetAttribute("yOffset", self.db.profile.yOffset)
+	layoutManager:SetAttribute("UpdateLayout", [[
 
-		layoutManager:SetAttribute("UpdateLayout", [[
-
-			-- count visible units
-			local visible = 0;
-			for i = 1,5 do
-				local unit = self:GetFrameRef("Frame"..i):GetAttribute("unit");
-				if (unit and UnitExists(unit)) then
-					visible = visible + 1;
-				end
-			end
-
-			-- do the calculations
-			local unitHeight = self:GetAttribute("unitHeight");
-			local unitSpacing = abs(self:GetAttribute("yOffset"));
-			local fullHeight = unitHeight*5 + unitSpacing*4;
-			local groupHeight = (visible > 1) and (visible*unitHeight + (visible-1)*unitSpacing) or unitHeight;
-			local offsetY = -(fullHeight - groupHeight)/2;
-
-			-- do the layout
-			local count = 0;
-			for i = 1,5 do
-				local unit = self:GetFrameRef("Frame"..i):GetAttribute("unit");
-				if (unit and UnitExists(unit)) then
-					local unitFrame = self:GetFrameRef("Frame"..i);
-					unitFrame:ClearAllPoints();
-					unitFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, offsetY - (count * (unitHeight + unitSpacing)));
-					count = count + 1;
-				end
-			end
-		]])
-
+		-- count visible units
+		local visible = 0;
 		for i = 1,5 do
-			layoutManager:SetFrameRef("Frame"..i, frame.units[i])
+			local unit = self:GetFrameRef("Frame"..i):GetAttribute("unit");
+			if (unit and UnitExists(unit)) then
+				visible = visible + 1;
+			end
 		end
 
-		local onLayoutChange = [[
-			self:GetFrameRef("Updater"):RunAttribute("UpdateLayout");
-		]]
+		-- do the calculations
+		local unitHeight = self:GetAttribute("unitHeight");
+		local unitSpacing = abs(self:GetAttribute("yOffset"));
+		local fullHeight = unitHeight*5 + unitSpacing*4;
+		local groupHeight = (visible > 1) and (visible*unitHeight + (visible-1)*unitSpacing) or unitHeight;
+		local offsetY = -(fullHeight - groupHeight)/2;
 
+		-- do the layout
+		local count = 0;
 		for i = 1,5 do
-			local listener = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-			listener:SetFrameRef("Updater", layoutManager)
-			listener:SetAttribute("_onstate-layout", onLayoutChange)
-			RegisterStateDriver(listener, "layout", "[@arena"..i..",exists]arena"..i.."on;arena"..i.."off")
+			local unit = self:GetFrameRef("Frame"..i):GetAttribute("unit");
+			if (unit and UnitExists(unit)) then
+				local unitFrame = self:GetFrameRef("Frame"..i);
+				unitFrame:ClearAllPoints();
+				unitFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, offsetY - (count * (unitHeight + unitSpacing)));
+				count = count + 1;
+			end
 		end
+	]])
 
-		-- Debugging
-		if (false) then
-			local listener = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-			listener:SetFrameRef("Updater", layoutManager)
-			listener:SetAttribute("_onstate-layout", onLayoutChange)
-			RegisterStateDriver(listener, "layout", "[@target,exists]targeton;targetoff")
+	for i = 1,5 do
+		layoutManager:SetFrameRef("Frame"..i, frame.units[i])
+	end
 
-			local listener = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-			listener:SetFrameRef("Updater", layoutManager)
-			listener:SetAttribute("_onstate-layout", onLayoutChange)
-			RegisterStateDriver(listener, "layout", "[@targettarget,exists]toton;totoff")
-		end
+	local onLayoutChange = [[
+		self:GetFrameRef("Updater"):RunAttribute("UpdateLayout");
+	]]
 
+	for i = 1,5 do
+		local listener = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+		listener:SetFrameRef("Updater", layoutManager)
+		listener:SetAttribute("_onstate-layout", onLayoutChange)
+		RegisterStateDriver(listener, "layout", "[@arena"..i..",exists]arena"..i.."on;arena"..i.."off")
 	end
 
 	self.frame = frame

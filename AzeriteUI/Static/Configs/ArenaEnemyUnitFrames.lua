@@ -153,10 +153,12 @@ ns.RegisterConfig("ArenaFrames", {
 	-- Auras
 	-----------------------------------------
 	AurasPosition = { "LEFT", 216 + 1, 2 },
-	AurasSize = { 30*4 + 4*3, 30*2 + 4  },
+	AurasSize = { 30*3 + 4*2, 30*2 + 4  },
 	AuraSize = 30,
 	AuraSpacing = 4,
-	AurasNumTotal = 8,
+	AurasNumBuffs = 3,
+	AurasNumDebuffs = 3,
+	AurasNumTotal = 6,
 	AurasDisableMouse = false,
 	AurasDisableCooldown = false,
 	AurasOnlyShowPlayer = false,

@@ -127,26 +127,8 @@ ns.AuraFilters.ArenaAuraFilter = function(button, unit, data)
 
 	if (data.isStealable) then
 		return true
-	elseif (button.noDuration) then
-		return
 	else
-		if (UnitCanAttack("player", unit)) then
-			if (button.isHarmful) then
-				if (data.isNameplateOnly or data.nameplateShowAll or (data.nameplateShowPersonal and button.isPlayer)) then
-					return true
-				end
-			else
-				return (data.duration < 31)
-			end
-		else
-			if (data.isNameplateOnly or data.nameplateShowAll or (data.nameplateShowPersonal and button.isPlayer)) then
-				return true
-			else
-				if (not button.isHarmful and button.isPlayer and data.canApplyAura) then
-					return (data.duration < 31) or (data.applications > 1)
-				end
-			end
-		end
+		return (not button.noDuration) and ((data.duration < 31) or (data.applications > 1))
 	end
 end
 
