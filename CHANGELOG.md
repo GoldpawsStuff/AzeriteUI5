@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-07-17
 ### Changed
+- Updated the oUF for retail to the most recent WoW 10.1.5 compatible version.
 - The 12 hour clock format is now only the default for the US region, while other regions get a 24 hour clock format as default. This is just a change to the default setting, which only will affect non-US user that currently had the setting set to its default.
 
 ### Fixed
