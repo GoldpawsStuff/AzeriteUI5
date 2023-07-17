@@ -116,7 +116,7 @@ ns.RegisterConfig("ArenaFrames", {
 
 	-- PvP Specialization Icon
 	-----------------------------------------
-	PvPSpecIconFramePosition = { "RIGHT", 22, -14 },
+	PvPSpecIconFramePosition = { "RIGHT", 22 - 1, -14 },
 	PvPSpecIconFrameSize = { 58, 58 },
 	PvPSpecIconBackdropPosition = { "CENTER", 0, 0 },
 	PvPSpecIconBackdropSize = { 44, 44 },
@@ -152,11 +152,11 @@ ns.RegisterConfig("ArenaFrames", {
 
 	-- Auras
 	-----------------------------------------
-	AurasPosition = { "LEFT", 216, 2 },
-	AurasSize = { 30*3 + 2*5, 30*2 + 5  },
+	AurasPosition = { "LEFT", 216 + 1, 2 },
+	AurasSize = { 30*4 + 4*3, 30*2 + 4  },
 	AuraSize = 30,
 	AuraSpacing = 4,
-	AurasNumTotal = 6,
+	AurasNumTotal = 8,
 	AurasDisableMouse = false,
 	AurasDisableCooldown = false,
 	AurasOnlyShowPlayer = false,
