@@ -61,6 +61,7 @@ ExtraButtons.UpdateButton = function(self, button)
 	if (button.NormalTexture) then button.NormalTexture:SetAlpha(0) end -- Zone
 	if (button.Flash) then button.Flash:SetTexture(nil) end -- Extra
 	if (button.style) then button.style:SetAlpha(0) end -- Extra
+	if (button.SpellActivationAlert) then button.SpellActivationAlert:SetAlpha(0) end -- Extra
 
 	-- Todo: Check which ones are there, this might not be needed.
 	if (button.SetNormalTexture) then
