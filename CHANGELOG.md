@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-07-17
+## [5.2.80-Beta] 2023-07-17
 ### Changed
 - Updated the oUF for retail to the most recent WoW 10.1.5 compatible version.
 - Did a lot of aura tweaking for arena and raid(5) frames.
