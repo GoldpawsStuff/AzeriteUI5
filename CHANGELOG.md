@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-07-17
+### Removed
+- Removed the new spell activation alert surrounding the extra action button. It's redundant, as the extra buttons only appear when needed anyway.
+
 ## [5.2.80-Beta] 2023-07-17
 - Supports Retail 10.1.5.
 - Supports Classic Hardcore 1.14.4.
