@@ -9,8 +9,8 @@ Trinket - Any UI widget.
 
 ## Sub-Widgets
 
-icon                - A `Texture` used to represent the Trinket.
-cd                  - A 'Cooldown' used to indicate remaining time before the Trinket is usable.
+icon   - A `Texture` used to represent the Trinket.
+cd     - A 'Cooldown' used to indicate remaining time before the Trinket is usable.
 
 --]]
 
@@ -49,8 +49,6 @@ local function Update(self, event, ...)
 		local unit = ...
 
 		if(self.unit == unit) then
-			C_PvP.RequestTrinketSpell(unit)
-
 			local spellID, itemID, startTime, duration
 			if (oUF.isWrath) then
 				spellID, itemID, startTime, duration = C_PvP.GetArenaTrinketInfo(unit)
