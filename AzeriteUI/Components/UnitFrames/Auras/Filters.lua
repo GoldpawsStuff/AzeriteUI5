@@ -79,16 +79,18 @@ ns.AuraFilters.PartyAuraFilter = function(button, unit, data)
 
 	if (data.sourceUnit == unit) then
 		return
-	end
-
-	if (data.isBossDebuff) then
+	elseif (data.isBossDebuff) then
 		return true
-	end
-
-	if (UnitAffectingCombat("player")) then
-		return (not button.noDuration and data.duration < 301) or (data.applications > 1)
+	elseif (button.noDuration) then
+		return
 	else
-		return (not button.noDuration) or (data.applications > 1)
+		if (data.isNameplateOnly or data.nameplateShowAll or (data.nameplateShowPersonal and button.isPlayer)) then
+			return true
+		else
+			if (not button.isHarmful and button.isPlayer and data.canApplyAura) then
+				return (data.duration < 31) or (data.applications > 1)
+			end
+		end
 	end
 end
 
@@ -128,14 +130,24 @@ ns.AuraFilters.ArenaAuraFilter = function(button, unit, data)
 	elseif (button.noDuration) then
 		return
 	else
-		if (button.isHarmful) then
-			return (data.duration < 301) or (data.applications > 1)
+		if (UnitCanAttack("player", unit)) then
+			if (button.isHarmful) then
+				if (data.isNameplateOnly or data.nameplateShowAll or (data.nameplateShowPersonal and button.isPlayer)) then
+					return true
+				end
+			else
+				return (data.duration < 31)
+			end
 		else
-			return (data.duration < 31) or (data.applications > 1)
+			if (data.isNameplateOnly or data.nameplateShowAll or (data.nameplateShowPersonal and button.isPlayer)) then
+				return true
+			else
+				if (not button.isHarmful and button.isPlayer and data.canApplyAura) then
+					return (data.duration < 31) or (data.applications > 1)
+				end
+			end
 		end
 	end
-
-	return true
 end
 
 if (ns.IsRetail) then return end
@@ -200,16 +212,14 @@ ns.AuraFilters.PartyAuraFilter = function(element, unit, button, name, texture,
 
 	if (caster == unit) then
 		return
-	end
-
-	if (isBossDebuff) then
+	elseif (isBossDebuff) then
 		return true
-	end
-
-	if (UnitAffectingCombat("player")) then
-		return (not button.noDuration) or (count and count > 1)
+	elseif (button.noDuration) then
+		return
+	elseif (UnitAffectingCombat("player")) then
+		return (duration < 301 or (count and count > 1))
 	else
-		return (not button.noDuration and duration < 301) or (count and count > 1)
+		return (count and count > 1)
 	end
 end
 
@@ -255,10 +265,18 @@ ns.AuraFilters.ArenaAuraFilter = function(element, unit, button, name, texture,
 	elseif (button.noDuration) then
 		return
 	else
-		if (button.isDebuff) then
-			return (duration < 301) or (count and count > 1)
+		if (UnitCanAttack("player", unit)) then
+			if (button.isDebuff) then
+				return (duration < 301)
+			else
+				return (duration < 31)
+			end
 		else
-			return (duration < 31) or (count and count > 1)
+			if (button.isDebuff) then
+				return (duration < 301) or (count and count > 1)
+			else
+				return (duration < 31) or (count and count > 1)
+			end
 		end
 	end
 end
