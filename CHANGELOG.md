@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - The 12 hour clock format is now only the default for the US region, while other regions get a 24 hour clock format as default. This is just a change to the default setting, which only will affect non-US user that currently had the setting set to its default.
 
+### Fixed
+- Fixed issues related to PvP trinkets in the arena unit frames.
+
 ## [5.2.79-Beta] 2023-07-16
 - Supports Retail 10.1.5.
 - Supports Classic Hardcore 1.14.4.
