@@ -431,9 +431,6 @@ end
 
 ToTFrameMod.OnEnable = function(self)
 
-	-- Disable Blizzard tot frame.
-	oUF:DisableBlizzard("targettarget")
-
 	self:CreateUnitFrames()
 	self:CreateAnchor(SHOW_TARGET_OF_TARGET_TEXT)
 

@@ -1016,9 +1016,6 @@ end
 
 TargetFrameMod.OnEnable = function(self)
 
-	-- Disable Blizzard target frame.
-	oUF:DisableBlizzard("target")
-
 	self:CreateUnitFrames()
 	self:CreateAnchor(HUD_EDIT_MODE_TARGET_FRAME_LABEL or TARGET)
 

@@ -923,9 +923,6 @@ end
 
 PlayerFrameMod.OnEnable = function(self)
 
-	-- Disable Blizzard player frame.
-	oUF:DisableBlizzard("player")
-
 	-- Disable Blizzard player alternate power bar,
 	-- as we're integrating this into the standard power crystal.
 	if (PlayerPowerBarAlt) then

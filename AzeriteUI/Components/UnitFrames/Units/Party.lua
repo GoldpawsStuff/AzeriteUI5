@@ -838,11 +838,6 @@ end
 
 PartyFrameMod.OnEnable = function(self)
 
-	-- Disable Blizzard party frames
-	for i = 1, MEMBERS_PER_RAID_GROUP do -- wrong constant
-		oUF:DisableBlizzard("party"..i)
-	end
-
 	self:CreateUnitFrames()
 	self:CreateAnchor(PARTY)
 

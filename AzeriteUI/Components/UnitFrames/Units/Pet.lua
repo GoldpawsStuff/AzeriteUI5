@@ -396,9 +396,6 @@ end
 
 PetFrameMod.OnEnable = function(self)
 
-	-- Disable Blizzard pet frame.
-	oUF:DisableBlizzard("pet")
-
 	self:CreateUnitFrames()
 	self:CreateAnchor(PET)
 

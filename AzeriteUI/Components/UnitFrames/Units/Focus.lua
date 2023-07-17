@@ -399,9 +399,6 @@ end
 
 FocusFrameMod.OnEnable = function(self)
 
-	-- Disable Blizzard focus frame
-	oUF:DisableBlizzard("focus")
-
 	self:CreateUnitFrames()
 	self:CreateAnchor(FOCUS)
 

@@ -789,11 +789,6 @@ end
 
 ArenaFrameMod.OnEnable = function(self)
 
-	-- Disable Blizzard arena enemy frames.
-	for i = 1,5 do
-		oUF:DisableBlizzard("arena"..i)
-	end
-
 	self:CreateUnitFrames()
 	self:CreateAnchor(L["Arena Enemy Frames"])
 

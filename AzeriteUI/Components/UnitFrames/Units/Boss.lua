@@ -507,11 +507,6 @@ end
 
 BossFrameMod.OnEnable = function(self)
 
-	-- Disable Blizzard boss frames.
-	for i = 1, MAX_BOSS_FRAMES do
-		oUF:DisableBlizzard("boss"..i)
-	end
-
 	self:CreateUnitFrames()
 	self:CreateAnchor(BOSSES)
 
