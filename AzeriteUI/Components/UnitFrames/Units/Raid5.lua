@@ -807,7 +807,7 @@ RaidFrame5Mod.GetVisibilityDriver = function(self)
 	-- Hide in groups of 6 or more.
 	local driver = "custom [@raid6,exists]hide;"
 
-	-- Show in raids of 1-5 and in parties if party frames are disabled..
+	-- Show in raids of 1-5 and in parties if party frames are disabled.
 	if (party) then
 		driver = driver .. "[group:raid]show;"
 	else

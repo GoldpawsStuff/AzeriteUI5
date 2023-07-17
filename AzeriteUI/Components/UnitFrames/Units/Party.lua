@@ -737,7 +737,7 @@ PartyFrameMod.GetVisibilityDriver = function(self)
 	local raid40 = ns:GetModule("RaidFrame40").db.profile.enabled
 
 	-- Hide in groups of 6 or more, show in parties.
-	local driver = "custom [@raid6,exists]hide;[@party1,exists]show;"
+	local driver = "custom [@raid6,exists]hide;[group:party]show;"
 
 	-- Show in raid groups of 1-5 if no raid frames are enabled.
 	if (not raid5 and not raid25 and not raid40) then
