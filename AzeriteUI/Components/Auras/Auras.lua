@@ -326,6 +326,9 @@ Auras.CreateBuffs = function(self)
 		-----------------------------------------
 		-- The primary buff window.
 		local buffs = CreateFrame("Frame", ns.Prefix.."BuffHeader", frame, "SecureAuraHeaderTemplate")
+		buffs:UnregisterEvent("UNIT_AURA") -- blizzard registers for all units. we don't need that.
+		buffs:RegisterUnitEvent("UNIT_AURA", "player", "vehicle")
+		buffs:SetAttribute("unit", "player")
 		buffs:SetFrameLevel(10)
 		buffs:SetSize(36,36)
 		buffs:SetPoint("TOPRIGHT", 0, 0)
