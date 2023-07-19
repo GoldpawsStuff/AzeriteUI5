@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added mirror timer bars to Retail.
 
 ### Changed
-- The mirror timers are now movable.
+- The mirror timers are now movable in all versions.
 
 ### Fixed
 - Fixed the alignment of the arena prep frames.
