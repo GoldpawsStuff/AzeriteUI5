@@ -737,6 +737,8 @@ ArenaFrameMod.CreateUnitFrames = function(self)
 			end
 		end
 
+		if (visible == 0) then return end
+
 		-- do the calculations
 		local unitHeight = self:GetAttribute("unitHeight");
 		local unitSpacing = abs(self:GetAttribute("yOffset"));
@@ -775,10 +777,49 @@ ArenaFrameMod.CreateUnitFrames = function(self)
 	self.frame = frame
 end
 
+ArenaFrameMod.UpdateLayout = function(self)
+	if (InCombatLockdown()) then return end
+
+	local config = ns.GetConfig("ArenaFrames")
+
+	local numOpponentSpecs = GetNumArenaOpponentSpecs()
+	if (numOpponentSpecs and numOpponentSpecs > 0) then
+
+		local unitWidth, unitHeight = unpack(config.UnitSize)
+		local unitSpacing = math_abs(self.db.profile.yOffset)
+		local fullHeight = unitHeight*5 + unitSpacing*4
+		local groupHeight = (numOpponentSpecs > 1) and (numOpponentSpecs*unitHeight + (numOpponentSpecs-1)*unitSpacing) or unitHeight
+		local offsetY = -(fullHeight - groupHeight)/2
+
+		for i = 1,numOpponentSpecs do
+			local frame = self.frame.units[i]
+			frame:ClearAllPoints();
+			frame:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, offsetY - (i * (unitHeight + unitSpacing)));
+		end
+	end
+end
+
+ArenaFrameMod.OnEvent = function(self, event, ...)
+	if (event == "ARENA_PREP_OPPONENT_SPECIALIZATIONS") then
+		if (InCombatLockdown()) then
+			self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+			return
+		end
+		self:UpdateLayout()
+
+	elseif (event == "PLAYER_REGEN_ENABLED") then
+		if (InCombatLockdown()) then return end
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+		self:UpdateLayout()
+	end
+end
+
 ArenaFrameMod.OnEnable = function(self)
 
 	self:CreateUnitFrames()
 	self:CreateAnchor(L["Arena Enemy Frames"])
 
 	ns.Module.OnEnable(self)
+
+	self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS", "OnEvent")
 end
