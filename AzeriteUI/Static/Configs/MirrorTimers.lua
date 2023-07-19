@@ -32,9 +32,11 @@ local GetMedia = ns.API.GetMedia
 
 ns.RegisterConfig("MirrorTimers", {
 	MirrorTimerPosition = { "TOP", UIParent, "TOP", 0, -370 },
+	MirrorTimerTimerSize = { 111 + 20, 12 + 20 },
 
 	MirrorTimerBarPosition = { "CENTER", 0, 0 },
 	MirrorTimerBarSize = { 111, 12 },
+	MirrorTimerBarPadding = 20,
 	MirrorTimerBarTexture = GetMedia("cast_bar"),
 	MirrorTimerBarColor = { Colors.quest.red[1], Colors.quest.red[2], Colors.quest.red[3] },
 
