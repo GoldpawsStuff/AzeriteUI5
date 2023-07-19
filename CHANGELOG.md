@@ -4,20 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-07-19
-### Added
-- Added mirror timer bars to Retail.
-
-### Changed
-- The mirror timers are now movable in all versions.
-
-### Fixed
-- Fixed the alignment of the arena prep frames.
-
-### Removed
-- Removed the new spell activation alert surrounding the extra action button. It's redundant, as the extra buttons only appear when needed anyway.
-
-## [5.2.80-Beta] 2023-07-17
+## [5.2.81-RC] 2023-07-19
 - Supports Retail 10.1.5.
 - Supports Classic Hardcore 1.14.4.
 - Note that several features are currently under development and most uploaded builds are development builds. I strongly recommend against installing anything from GitHub at this point. Use the official tagged builds from CurseForge and Wago.
@@ -30,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added separate raid frames for large raids of up to 40 players. If the 25 player raid frames are disabled, these frames will also be shown in raid of up to 25 players. If the 5 player raid frames also are disabled in addition to this, these frames will also be shown in raids of up to 5 players. You still following?
 - Added anchors to move and scale the Blizzard UI widgets found at the top center of the screen and below the minimap.
 - Added an option to automatically load an EditMode layout when enabling a settings profile.
+- Added mirror timer bars to Retail.
 
 ### Changed
 - Previously when mousing over a faded actionbar, all faded bars would fade in at once. Now you can make bars only fade in their own buttons and not every single faded button in the user interface at once.
@@ -42,6 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Updated the oUF for retail to the most recent WoW 10.1.5 compatible version.
 - Did a lot of aura tweaking for arena and raid(5) frames.
 - The 12 hour clock format is now only the default for the US region, while other regions get a 24 hour clock format as default. This is just a change to the default setting, which only will affect non-US user that currently had the setting set to its default.
+- The mirror timers are now movable in all versions.
 
 ### Fixed
 - Fixed issues preventing any absorb bars from showin up at all. We now separate between absorbs when health is missing and absorbs when health is at maximum. The absorb bar will never take up more space than that of the missing health when health is missing, except when the health of the unit is at maximum, then it will be overlayed, but limited to less than health of the full health bar in size. It makes sense when you see it.
@@ -52,6 +41,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Fixed an issue where the description text on the experience status bar would show the wrong level as the next level immediately after leveling up.
 - The target unit frame castbar and auras should remain hidden once disabled through the `/azerite` options menu now.
 - Fixed issues related to PvP trinkets in the arena unit frames.
+- Fixed the alignment of the arena prep frames.
+
+### Removed
+- Removed the new spell activation alert surrounding the extra action button. It's redundant, as the extra buttons only appear when needed anyway.
 
 ## [5.1.74-Release] 2023-06-24
 ### Added
