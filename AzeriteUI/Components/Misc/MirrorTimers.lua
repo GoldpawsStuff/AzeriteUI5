@@ -49,7 +49,7 @@ MirrorTimers.GenerateDefaults = function(self)
 		scale = ns.API.GetEffectiveScale(),
 		[1] = "TOP",
 		[2] = 0 ,
-		[3] = -370 * ns.API.GetEffectiveScale()
+		[3] = -230 * ns.API.GetEffectiveScale()
 	}
 	return defaults
 end
@@ -210,7 +210,7 @@ MirrorTimers.UpdateLayout = function(self)
 					timerFrame:SetPoint("TOP", previous, "BOTTOM", 0, -config.MirrorTimerBarPadding)
 				end
 			else
-				timerFrame:SetPoint("TOP", self.frame, "TOP")
+				timerFrame:SetPoint(unpack(config.MirrorTimerBarPosition))
 			end
 
 			previous = timerFrame
