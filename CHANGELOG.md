@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-07-17
+## [Unreleased] 2023-07-19
+### Added
+- Added mirror timer bars to Retail.
+
+### Changed
+- The mirror timers are now movable.
+
 ### Removed
 - Removed the new spell activation alert surrounding the extra action button. It's redundant, as the extra buttons only appear when needed anyway.
 
