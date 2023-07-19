@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - The mirror timers are now movable.
 
+### Fixed
+- Fixed the alignment of the arena prep frames.
+
 ### Removed
 - Removed the new spell activation alert surrounding the extra action button. It's redundant, as the extra buttons only appear when needed anyway.
 
