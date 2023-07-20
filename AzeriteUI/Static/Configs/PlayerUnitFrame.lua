@@ -381,8 +381,21 @@ ns.RegisterConfig("PlayerFrame", {
 		PowerBackdropThreatSize = { 198,98 },
 		PowerBackdropThreatPosition = { "BOTTOM", 7, -51 },
 		PowerBackdropThreatTexture = GetMedia("pw_crystal_case_glow"),
-		-----------------------------------------
 
+		-- Mana Orb
+		-----------------------------------------
+		ManaOrbSize = { 103, 103 },
+		ManaOrbPosition = { "BOTTOMLEFT", 29, 27 },
+		ManaOrbTexture = { GetMedia("orb2"), GetMedia("orb2") },
+
+		ManaOrbBackdropSize = { 180, 180 },
+		ManaOrbBackdropPosition = { "CENTER", 0, 0 },
+		ManaOrbBackdropTexture = GetMedia("orb-backdrop2"),
+		ManaOrbBackdropColor = { 1, 1, 1, 1 },
+
+		ManaOrbShadeSize = { 127, 127 },
+		ManaOrbShadePosition = { "CENTER", 0, 0 },
+		ManaOrbShadeTexture = GetMedia("shade-circle"),
 		ManaOrbShadeColor = { 0, 0, 0, 1 },
 
 		ManaOrbForegroundSize = { 188, 188 },
@@ -394,6 +407,5 @@ ns.RegisterConfig("PlayerFrame", {
 		ManaOrbThreatSize = { 188, 188 },
 		ManaOrbThreatPosition = { "CENTER", 0, 0 },
 		ManaOrbThreatTexture = GetMedia("orb_case_glow")
-
 	}
 })
