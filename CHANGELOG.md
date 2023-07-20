@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.82-RC] 2023-07-20
+### Fixed
+- The issue with the missing mana orb positioning info for maximum level characters has been fixed.
+- The minimap error popping up at login or reload in Classic and Wrath have been fixed.
+
 ## [5.2.81-RC] 2023-07-19
 - Supports Retail 10.1.5.
 - Supports Classic Hardcore 1.14.4.
