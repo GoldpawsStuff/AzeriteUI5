@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-07-21
+### Fixed
+- Raid layouts should be less weird now.
+
 ## [5.2.82-RC] 2023-07-20
 ### Fixed
 - The issue with the missing mana orb positioning info for maximum level characters has been fixed.

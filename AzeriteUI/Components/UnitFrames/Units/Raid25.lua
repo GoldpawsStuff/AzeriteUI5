@@ -55,7 +55,7 @@ local defaults = { profile = ns:Merge({
 	unitsPerColumn = 5, -- maximum units per column
 	maxColumns = 5, -- should be 25/unitsPerColumn
 	columnSpacing = 10, -- spacing between columns
-	columnAnchorPoint = "TOPLEFT" -- anchor point of column, columns grow opposite
+	columnAnchorPoint = "LEFT" -- anchor point of column, columns grow opposite
 
 }, ns.Module.defaults) }
 
@@ -776,6 +776,13 @@ RaidFrame25Mod.GetVisibilityDriver = function(self)
 	return driver
 end
 
+RaidFrame25Mod.GetHeaderSize = function(self)
+	local config = ns.GetConfig("RaidFrames")
+	return
+		config.UnitSize[1]*5 + math_abs(self.db.profile.columnSpacing * 4),
+		config.UnitSize[2]*5 + math_abs(self.db.profile.yOffset * 4)
+end
+
 RaidFrame25Mod.UpdateHeader = function(self)
 	if (not self.frame) then return end
 	if (InCombatLockdown()) then
@@ -798,17 +805,40 @@ RaidFrame25Mod.UpdateHeader = function(self)
 	end
 
 	self.frame:SetSize(self:GetHeaderSize())
-	self.frame.content:ClearAllPoints()
-	self.frame.content:SetPoint(self.db.profile.columnAnchorPoint, self.frame, self.db.profile.columnAnchorPoint)
 
+	self:UpdatePosition()
 	self:UpdateAnchor()
 end
 
-RaidFrame25Mod.GetHeaderSize = function(self)
-	local config = ns.GetConfig("RaidFrames")
-	return
-		config.UnitSize[1]*5 + math_abs(self.db.profile.columnSpacing * 4),
-		config.UnitSize[2]*5 + math_abs(self.db.profile.yOffset * 4)
+RaidFrame25Mod.UpdatePosition = function(self)
+	local point = "TOPLEFT"
+	if (self.db.profile.columnAnchorPoint == "LEFT") then
+		if (self.db.profile.point == "TOP") then
+			point = "TOPLEFT"
+		elseif (self.db.profile.point == "BOTTOM") then
+			point = "BOTTOMLEFT"
+		end
+	elseif (self.db.profile.columnAnchorPoint == "RIGHT") then
+		if (self.db.profile.point == "TOP") then
+			point = "TOPRIGHT"
+		elseif (self.db.profile.point == "BOTTOM") then
+			point = "BOTTOMRIGHT"
+		end
+	elseif (self.db.profile.columnAnchorPoint == "TOP") then
+		if (self.db.profile.point == "LEFT") then
+			point = "TOPLEFT"
+		elseif (self.db.profile.point == "RIGHT") then
+			point = "TOPRIGHT"
+		end
+	elseif (self.db.profile.columnAnchorPoint == "BOTTOM") then
+		if (self.db.profile.point == "LEFT") then
+			point = "BOTTOMLEFT"
+		elseif (self.db.profile.point == "RIGHT") then
+			point = "BOTTOMRIGHT"
+		end
+	end
+	self.frame.content:ClearAllPoints()
+	self.frame.content:SetPoint(point, self.frame, point)
 end
 
 RaidFrame25Mod.UpdateUnits = function(self)
@@ -835,7 +865,7 @@ RaidFrame25Mod.CreateUnitFrames = function(self)
 	self.frame:SetSize(self:GetHeaderSize())
 
 	self.frame.content = oUF:SpawnHeader(self:GetHeaderAttributes())
-	self.frame.content:SetPoint(self.db.profile.columnAnchorPoint, self.frame, self.db.profile.columnAnchorPoint)
+	self:UpdatePosition()
 
 	-- Embed our custom methods
 	for method,func in next,GroupHeader do
