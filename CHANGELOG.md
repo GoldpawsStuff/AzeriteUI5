@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-07-21
 ### Fixed
+- Fixed wrong function call in the arena trinket plugin in Retail.
 - Raid layouts should be less weird now.
 
 ## [5.2.82-RC] 2023-07-20
