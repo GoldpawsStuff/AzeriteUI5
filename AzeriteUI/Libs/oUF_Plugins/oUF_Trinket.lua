@@ -53,7 +53,7 @@ local function Update(self, event, ...)
 			if (oUF.isWrath) then
 				spellID, itemID, startTime, duration = C_PvP.GetArenaTrinketInfo(unit)
 			else
-				spellID, startTime, duration = C_PvP.GetArenaTrinketInfo(unit)
+				spellID, startTime, duration = C_PvP.GetArenaCrowdControlInfo(unit)
 			end
 
 			if(spellID and startTime ~= 0 and duration ~= 0) then
