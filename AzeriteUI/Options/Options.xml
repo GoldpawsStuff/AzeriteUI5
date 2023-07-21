@@ -5,6 +5,7 @@
 	<Script file="OptionsPages\Auras.lua"/>
 	<Script file="OptionsPages\Bags.lua"/>
 	<Script file="OptionsPages\Minimap.lua"/>
+	<Script file="OptionsPages\Nameplates.lua"/>
 	<Script file="OptionsPages\Tooltips.lua"/>
 	<Script file="OptionsPages\UnitFrames.lua"/>
 

@@ -43,6 +43,7 @@ ns.NamePlates = {}
 
 local defaults = { profile = ns:Merge({
 	enabled = true,
+	showAuras = true,
 	scale = 1
 }, ns.Module.defaults) }
 
@@ -479,7 +480,7 @@ local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 		self.Castbar.Text:SetPoint(unpack(db.CastBarNamePositionPlayer))
 
 	else
-		if (not self:IsElementEnabled("Auras")) then
+		if (NamePlatesMod.db.profile.showAuras and not self:IsElementEnabled("Auras")) then
 			self:EnableElement("Auras")
 			if (self.Auras.ForceUpdate) then
 				self.Auras:ForceUpdate()
@@ -1102,6 +1103,12 @@ NamePlatesMod.HookNamePlates = function(self)
 	end)
 
 	clearClutter(NamePlateDriverFrame)
+end
+
+NamePlatesMod.UpdateSettings = function(self)
+	for plate in next,ns.NamePlates[self] do
+		NamePlate_PostUpdateElements(plate, "ForceUpdate")
+	end
 end
 
 NamePlatesMod.OnInitialize = function(self)
