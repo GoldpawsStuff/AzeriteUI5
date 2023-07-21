@@ -4,9 +4,12 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-07-21
+## [5.2.84-RC] 2023-07-21
 ### Added
 - Added the option to toggle nameplate auras.
+
+### Fixed
+- Fixed an issue upon login with the mirror timers (breath, fatigue) in Classic and Wrath.
 
 ## [5.2.83-RC] 2023-07-21
 ### Fixed
