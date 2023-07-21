@@ -64,9 +64,11 @@ MirrorTimers.PrepareFrames = function(self)
 		MirrorTimerContainer:SetParent(ns.Hider)
 		MirrorTimerContainer:Hide()
 	else
-		MirrorTimerFrame:UnregisterAllEvents()
-		MirrorTimerFrame:SetParent(ns.Hider)
-		MirrorTimerFrame:Hide()
+		if (MirrorTimerFrame) then
+			MirrorTimerFrame:UnregisterAllEvents()
+			MirrorTimerFrame:SetParent(ns.Hider)
+			MirrorTimerFrame:Hide()
+		end
 		UIParent:UnregisterEvent("MIRROR_TIMER_START")
 	end
 
