@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-07-21
+## [5.2.83-RC] 2023-07-21
 ### Fixed
 - Fixed wrong function call in the arena trinket plugin in Retail.
 - Raid layouts should be less weird now.
