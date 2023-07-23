@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-07-23
+### Fixed
+- Fixed an issue that would cause the options menu to bug out when trying to load settings for auto-disabled modules.
+
 ## [5.2.84-RC] 2023-07-21
 ### Added
 - Added the option to toggle nameplate auras.
