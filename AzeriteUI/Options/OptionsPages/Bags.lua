@@ -30,7 +30,10 @@ local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
 local Options = ns:GetModule("Options")
 
 local getmodule = function()
-	return ns:GetModule("Containers", true)
+	local module = ns:GetModule("Containers", true)
+	if (module and module:IsEnabled()) then
+		return module
+	end
 end
 
 local setter = function(info,val)

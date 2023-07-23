@@ -36,7 +36,10 @@ local tonumber = tonumber
 local tostring = tostring
 
 local getmodule = function()
-	return ns:GetModule("Auras", true)
+	local module = ns:GetModule("Auras", true)
+	if (module and module:IsEnabled()) then
+		return module
+	end
 end
 
 local setter = function(info,val)

@@ -40,7 +40,10 @@ local tonumber = tonumber
 local tostring = tostring
 
 local getmodule = function()
-	return ns:GetModule("ActionBars", true)
+	local module = ns:GetModule("ActionBars", true)
+	if (module and module:IsEnabled()) then
+		return module
+	end
 end
 
 local setter = function(info,val)
@@ -83,7 +86,10 @@ end
 
 local GenerateIndexedBarOptions = function(moduleName, displayName, order)
 	local getmodule = function()
-		return ns:GetModule(moduleName, true)
+		local module = ns:GetModule(moduleName, true)
+		if (module and module:IsEnabled()) then
+			return module
+		end
 	end
 	if (not getmodule(moduleName)) then return end
 	local options = {
@@ -349,7 +355,10 @@ end
 
 local GenerateBarOptions = function(moduleName, displayName, order, maxButtons)
 	local getmodule = function()
-		return ns:GetModule(moduleName, true)
+		local module = ns:GetModule(moduleName, true)
+		if (module and module:IsEnabled()) then
+			return module
+		end
 	end
 	if (not getmodule(moduleName)) then return end
 

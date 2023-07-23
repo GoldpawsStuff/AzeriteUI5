@@ -33,7 +33,10 @@ local Options = ns:GetModule("Options")
 local string_format = string.format
 
 local getmodule = function()
-	return ns:GetModule("Minimap", true)
+	local module = ns:GetModule("Minimap", true)
+	if (module and module:IsEnabled()) then
+		return module
+	end
 end
 
 local setter = function(info,val)

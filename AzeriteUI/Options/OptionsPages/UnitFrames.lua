@@ -67,7 +67,13 @@ local GenerateSubOptions = function(moduleName)
 end
 
 local GenerateOptions = function()
-	local getmodule = function(name) return ns:GetModule(name or "UnitFrames", true) end
+	local getmodule = function(name)
+		local module = ns:GetModule(name or "UnitFrames", true)
+		if (module and module:IsEnabled()) then
+			return module
+		end
+	end
+
 	if (not getmodule()) then return end
 
 	local setter = function(info,val) getmodule().db.profile[info[#info]] = val; getmodule():UpdateSettings() end
