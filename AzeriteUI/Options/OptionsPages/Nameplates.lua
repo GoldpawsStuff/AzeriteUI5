@@ -71,6 +71,14 @@ local GenerateOptions = function()
 				type = "toggle", width = "full",
 				set = setter,
 				get = getter
+			},
+			showAurasOnTargetOnly = {
+				name = L["Show Auras only on current target."],
+				order = 10,
+				type = "toggle", width = "full",
+				hidden = function(info) return not getoption(info,"showAuras") end,
+				set = setter,
+				get = getter
 			}
 		}
 	}

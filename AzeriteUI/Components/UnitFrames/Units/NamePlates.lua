@@ -44,6 +44,7 @@ ns.NamePlates = {}
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	showAuras = true,
+	showAurasOnTargetOnly = false,
 	scale = 1
 }, ns.Module.defaults) }
 
@@ -480,12 +481,20 @@ local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 		self.Castbar.Text:SetPoint(unpack(db.CastBarNamePositionPlayer))
 
 	else
-		if (NamePlatesMod.db.profile.showAuras and not self:IsElementEnabled("Auras")) then
-			self:EnableElement("Auras")
-			if (self.Auras.ForceUpdate) then
-				self.Auras:ForceUpdate()
+
+		if (NamePlatesMod.db.profile.showAuras and (not NamePlatesMod.db.profile.showAurasOnTargetOnly or self.isTarget)) then
+			if (not self:IsElementEnabled("Auras")) then
+				self:EnableElement("Auras")
+				if (self.Auras.ForceUpdate) then
+					self.Auras:ForceUpdate()
+				end
+			end
+		else
+			if (self:IsElementEnabled("Auras")) then
+				self:DisableElement("Auras")
 			end
 		end
+
 		if (self.isMouseOver or self.isTarget or self.isSoftTarget or self.inCombat) then
 			-- SetIgnoreParentAlpha requires explicit true/false, or it'll bug out.
 			self:SetIgnoreParentAlpha(((self.isMouseOver or self.isSoftTarget) and not self.isTarget) and true or false)
@@ -1106,7 +1115,7 @@ NamePlatesMod.HookNamePlates = function(self)
 end
 
 NamePlatesMod.UpdateSettings = function(self)
-	for plate in next,ns.NamePlates[self] do
+	for plate in next,ns.NamePlates do
 		NamePlate_PostUpdateElements(plate, "ForceUpdate")
 	end
 end
