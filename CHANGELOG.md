@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-07-24
 ### Changed
+- You can now choose between the Wrath ice power crystal and the regular power crystal colored by resource type in all WoW client versions.
 - Finetuned the minimap ringbar spark position and size to work better for Wrath and Classic Era.
 
 ## [5.2.85-RC] 2023-07-23
