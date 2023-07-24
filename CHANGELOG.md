@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-07-24
+## [5.2.86-RC] 2023-07-24
 ### Added
 - The range fading of group unit frames is now optional. It is enabled by default for large raid frames (6-40 players) and disabled by default for small sized raid frames (1-5 players).
 - You can now choose between the Wrath ice power crystal and the regular power crystal colored by resource type in all WoW client versions.
