@@ -67,6 +67,18 @@ EncounterBar.UpdateAnchor = function(self)
 	end
 end
 
+EncounterBar.UpdatePositionAndScale = function(self, ...)
+	local rehook
+	if (self:IsHooked(_G.EncounterBar, "SetPoint")) then
+		self:Unhook(_G.EncounterBar, "SetPoint")
+		rehook = true
+	end
+	ns.UnitFrameModule.UpdatePositionAndScale(self, ...)
+	if (rehook) then
+		self:SecureHook(_G.EncounterBar, "SetPoint", "OnPositionAndScaleChange")
+	end
+end
+
 EncounterBar.OnPositionAndScaleChange = function(self)
 	if (MovieFrame:IsShown()) or (CinematicFrame:IsShown()) then
 		return
