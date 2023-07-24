@@ -51,7 +51,8 @@ local playerIsRetribution = playerClass == "PALADIN" and (ns.IsRetail and GetSpe
 local defaults = { profile = ns:Merge({
 	showAuras = true,
 	showCastbar = true,
-	aurasBelowFrame = false
+	aurasBelowFrame = false,
+	useWrathCrystal = ns.IsWrath
 }, ns.Module.defaults) }
 
 PlayerFrameMod.GenerateDefaults = function(self)
@@ -419,7 +420,7 @@ local UnitFrame_UpdateTextures = function(self)
 	power:ClearAllPoints()
 	power:SetPoint(unpack(db.PowerBarPosition))
 	power:SetSize(unpack(db.PowerBarSize))
-	power:SetStatusBarTexture(db.PowerBarTexture)
+	power:SetStatusBarTexture(PlayerFrameMod.db.profile.useWrathCrystal and db.PowerBarTextureWrath or db.PowerBarTexture)
 	power:SetTexCoord(unpack(db.PowerBarTexCoord))
 	power:SetOrientation(db.PowerBarOrientation)
 	power:SetSparkMap(db.PowerBarSparkMap)
@@ -428,7 +429,7 @@ local UnitFrame_UpdateTextures = function(self)
 	powerBackdrop:ClearAllPoints()
 	powerBackdrop:SetPoint(unpack(db.PowerBackdropPosition))
 	powerBackdrop:SetSize(unpack(db.PowerBackdropSize))
-	powerBackdrop:SetTexture(db.PowerBackdropTexture)
+	powerBackdrop:SetTexture(PlayerFrameMod.db.profile.useWrathCrystal and db.PowerBackdropTextureWrath or db.PowerBackdropTexture)
 
 	local powerCase = self.Power.Case
 	powerCase:ClearAllPoints()
@@ -665,7 +666,7 @@ local style = function(self, unit)
 	self.Power = power
 	self.Power.Override = ns.API.UpdatePower
 	self.Power.PostUpdate = Power_UpdateVisibility
-	self.Power.PostUpdateColor = not ns.IsWrath and Power_PostUpdateColor
+	self.Power.PostUpdateColor = not PlayerFrameMod.db.profile.useWrathCrystal and Power_PostUpdateColor
 
 	local powerBackdrop = power:CreateTexture(nil, "BACKGROUND", nil, -2)
 	local powerCase = power:CreateTexture(nil, "ARTWORK", nil, 2)
@@ -920,6 +921,17 @@ PlayerFrameMod.Update = function(self)
 		self.frame:DisableElement("Castbar")
 	end
 
+	if (self.db.profile.useWrathCrystal) then
+		self.frame.Power.PostUpdateColor = nil
+		self.frame.Power:SetStatusBarColor(1,1,1,1)
+	else
+		self.frame.Power.PostUpdateColor = Power_PostUpdateColor
+		if (self.frame:IsElementEnabled("Power")) then
+			self.frame.Power:ForceUpdate()
+		end
+	end
+
+	self.frame:PostUpdate()
 end
 
 PlayerFrameMod.OnEnable = function(self)

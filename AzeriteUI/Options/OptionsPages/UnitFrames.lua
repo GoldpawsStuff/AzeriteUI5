@@ -130,6 +130,11 @@ local GenerateOptions = function()
 			desc = L["Toggle whether to show overlay castbars on this unit frame."],
 			order = 30, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
+		suboptions.args.useWrathCrystal = {
+			name = L["Use Ice Crystal"],
+			desc = L["Toggle whether to show the Wrath power crystal instead of the system colored generic power crystal."],
+			order = 40, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
 		options.args.player = suboptions
 	end
 

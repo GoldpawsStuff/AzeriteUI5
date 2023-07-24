@@ -207,14 +207,16 @@ ns.RegisterConfig("PlayerFrame", {
 		-----------------------------------------
 		PowerBarSize = { 120, 140 },
 		PowerBarPosition = { "BOTTOMLEFT", 20, 38 },
-		PowerBarTexture = ns.IsWrath and GetMedia("power-crystal-ice-front") or GetMedia("power_crystal_front"),
+		PowerBarTexture = GetMedia("power_crystal_front"),
+		PowerBarTextureWrath = GetMedia("power-crystal-ice-front"),
 		PowerBarTexCoord = { 50/255, 206/255, 37/255, 219/255 },
 		PowerBarOrientation = "UP",
 		PowerBarSparkMap = crystalSparkMap,
 
 		PowerBackdropSize = { 196, 196 },
 		PowerBackdropPosition = { "CENTER", 0, 0 },
-		PowerBackdropTexture = ns.IsWrath and GetMedia("power-crystal-ice-back") or GetMedia("power_crystal_back"),
+		PowerBackdropTexture = GetMedia("power_crystal_back"),
+		PowerBackdropTextureWrath = GetMedia("power-crystal-ice-back"),
 
 		PowerBarForegroundSize = { 198,98 },
 		PowerBarForegroundPosition = { "BOTTOM", 7, -51 },
@@ -283,14 +285,16 @@ ns.RegisterConfig("PlayerFrame", {
 		-----------------------------------------
 		PowerBarSize = { 120, 140 },
 		PowerBarPosition = { "BOTTOMLEFT", 20, 38 },
-		PowerBarTexture = ns.IsWrath and GetMedia("power-crystal-ice-front") or GetMedia("power_crystal_front"),
+		PowerBarTexture = GetMedia("power_crystal_front"),
+		PowerBarTextureWrath = GetMedia("power-crystal-ice-front"),
 		PowerBarTexCoord = { 50/255, 206/255, 37/255, 219/255 },
 		PowerBarOrientation = "UP",
 		PowerBarSparkMap = crystalSparkMap,
 
 		PowerBackdropSize = { 196, 196 },
 		PowerBackdropPosition = { "CENTER", 0, 0 },
-		PowerBackdropTexture = ns.IsWrath and GetMedia("power-crystal-ice-back") or GetMedia("power_crystal_back"),
+		PowerBackdropTexture = GetMedia("power_crystal_back"),
+		PowerBackdropTextureWrath = GetMedia("power-crystal-ice-back"),
 
 		PowerBarForegroundSize = { 198,98 },
 		PowerBarForegroundPosition = { "BOTTOM", 7, -51 },
@@ -359,14 +363,16 @@ ns.RegisterConfig("PlayerFrame", {
 		-----------------------------------------
 		PowerBarSize = { 120, 140 },
 		PowerBarPosition = { "BOTTOMLEFT", 20, 38 },
-		PowerBarTexture = ns.IsWrath and GetMedia("power-crystal-ice-front") or GetMedia("power_crystal_front"),
+		PowerBarTexture = GetMedia("power_crystal_front"),
+		PowerBarTextureWrath = GetMedia("power-crystal-ice-front"),
 		PowerBarTexCoord = { 50/255, 206/255, 37/255, 219/255 },
 		PowerBarOrientation = "UP",
 		PowerBarSparkMap = crystalSparkMap,
 
 		PowerBackdropSize = { 196, 196 },
 		PowerBackdropPosition = { "CENTER", 0, 0 },
-		PowerBackdropTexture = ns.IsWrath and GetMedia("power-crystal-ice-back") or GetMedia("power_crystal_back"),
+		PowerBackdropTexture = GetMedia("power_crystal_back"),
+		PowerBackdropTextureWrath = GetMedia("power-crystal-ice-back"),
 
 		PowerBarForegroundSize = { 198,98 },
 		PowerBarForegroundPosition = { "BOTTOM", 7, -51 },
