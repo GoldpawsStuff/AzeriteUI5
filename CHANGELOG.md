@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Disabled the non-functioning dispellable aura element to avoid raid frames bugging out in Wrath and Classic.
+- Worked around an issue where the Encounter bar (dragon riding vigour e.g.) sometimes would bug out when encountering a loading screen while mounted on the dragon mount.
 
 ## [5.2.85-RC] 2023-07-23
 ### Added
