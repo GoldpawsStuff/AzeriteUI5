@@ -30,6 +30,8 @@ local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 
+local mapScale = ns.WoW10 and 1 or 198/140
+
 ns.RegisterConfig("StatusBars", {
 
 	-- Toggle Button
@@ -52,12 +54,12 @@ ns.RegisterConfig("StatusBars", {
 	RingPosition = { "CENTER", 0, 2 },
 	RingSize = { 208, 208 },
 	RingTexture = GetMedia("minimap-bars-single"),
-	RingSparkOffset = -1/10,
-	RingSparkInset = 24 * 208/256,
+	RingSparkOffset = -1/10, -- offset in degrees from the end of the bar to the spark
+	RingSparkInset = (24 * 208/256)/mapScale, -- distance from outer diameter to start of spark
 	RingSparkFlash = { nil, nil, 1, 1 },
-	RingSparkSize = { 34 * 208/256, 30 },
-	RingDegreeOffset = 90*3 - 14,
-	RingDegreeSpan = 360 - 14*2,
+	RingSparkSize = { 34 * 208/256, 30/mapScale }, -- width = thickness along ring bar, height = length across
+	RingDegreeOffset = 90*3 - 14, -- offset from top center in degrees to the start of the ring bar
+	RingDegreeSpan = 360 - 14*2, -- degrees of the circle covered by the bar
 
 	-- Ring Value Text
 	RingValuePosition = { "CENTER", 0, 1 },
