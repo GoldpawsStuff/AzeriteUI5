@@ -5,9 +5,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-07-24
-### Changed
+### Added
+- The range fading of group unit frames is now optional. It is enabled by default for large raid frames (6-40 players) and disabled by default for small sized raid frames (1-5 players).
 - You can now choose between the Wrath ice power crystal and the regular power crystal colored by resource type in all WoW client versions.
+
+### Changed
 - Finetuned the minimap ringbar spark position and size to work better for Classic and Wrath.
+
+### Fixed
+- Disabled the non-functioning dispellable aura element to avoid raid frames bugging out in Wrath and Classic.
 
 ## [5.2.85-RC] 2023-07-23
 ### Added

@@ -248,6 +248,11 @@ local GenerateOptions = function()
 		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("RaidFrame5")
 		suboptions.name = L["Raid Frames"] .. " (5)"
 		suboptions.order = 160
+		suboptions.args.useRangeIndicator = {
+			name = L["Use Range Indicator"],
+			desc = L["Toggle whether to fade unit frames of units that are out of range."],
+			order = 11, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
 		options.args.raid5 = suboptions
 	end
 
@@ -256,6 +261,11 @@ local GenerateOptions = function()
 		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("RaidFrame25")
 		suboptions.name = L["Raid Frames"] .. " (25)"
 		suboptions.order = 161
+		suboptions.args.useRangeIndicator = {
+			name = L["Use Range Indicator"],
+			desc = L["Toggle whether to fade unit frames of units that are out of range."],
+			order = 11, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
 		options.args.raid25 = suboptions
 	end
 
@@ -264,6 +274,11 @@ local GenerateOptions = function()
 		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("RaidFrame40")
 		suboptions.name = L["Raid Frames"] .. " (40)"
 		suboptions.order = 162
+		suboptions.args.useRangeIndicator = {
+			name = L["Use Range Indicator"],
+			desc = L["Toggle whether to fade unit frames of units that are out of range."],
+			order = 11, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
 		options.args.raid40 = suboptions
 	end
 

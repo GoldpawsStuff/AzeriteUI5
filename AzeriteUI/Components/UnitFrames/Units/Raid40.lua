@@ -44,6 +44,7 @@ local unpack = unpack
 local defaults = { profile = ns:Merge({
 
 	enabled = true,
+	useRangeIndicator = true,
 
 	point = "LEFT", -- anchor point of unitframe, group members within column grow opposite
 	xOffset = 10, -- horizontal offset within the same column
@@ -794,6 +795,15 @@ RaidFrame40Mod.UpdateUnits = function(self)
 	if (not self.frame) then return end
 	for i = 1, self.frame:GetNumChildren() do
 		local frame = select(i, self.frame:GetChildren())
+		if (self.db.profile.useRangeIndicator) then
+			if (not frame:IsElementEnabled("Range")) then
+				frame:EnableElement("Range")
+			end
+		else
+			if (frame:IsElementEnabled("Range")) then
+				frame:DisableElement("Range")
+			end
+		end
 		frame:UpdateAllElements("RefreshUnit")
 	end
 end

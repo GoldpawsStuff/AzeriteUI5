@@ -44,6 +44,7 @@ local unpack = unpack
 local defaults = { profile = ns:Merge({
 
 	enabled = true,
+	useRangeIndicator = false,
 
 	point = "TOP", -- anchor point of unitframe, group members within column grow opposite
 	xOffset = 0, -- horizontal offset within the same column
@@ -515,7 +516,7 @@ local style = function(self, unit)
 
 	-- Dispellable Debuffs
 	--------------------------------------------
-	if (ns.IsDevelopment) then
+	if (ns.IsDevelopment and false) then
 
 		local Colors = ns.Colors
 		local GetMedia = ns.API.GetMedia
@@ -893,6 +894,15 @@ RaidFrame5Mod.UpdateUnits = function(self)
 	if (not self.frame) then return end
 	for i = 1, self.frame:GetNumChildren() do
 		local frame = select(i, self.frame:GetChildren())
+		if (self.db.profile.useRangeIndicator) then
+			if (not frame:IsElementEnabled("Range")) then
+				frame:EnableElement("Range")
+			end
+		else
+			if (frame:IsElementEnabled("Range")) then
+				frame:DisableElement("Range")
+			end
+		end
 		frame:UpdateAllElements("RefreshUnit")
 	end
 end

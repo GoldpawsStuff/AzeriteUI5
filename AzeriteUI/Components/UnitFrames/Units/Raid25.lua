@@ -44,6 +44,7 @@ local unpack = unpack
 local defaults = { profile = ns:Merge({
 
 	enabled = true,
+	useRangeIndicator = true,
 
 	point = "TOP", -- anchor point of unitframe, group members within column grow opposite
 	xOffset = 0, -- horizontal offset within the same column
@@ -498,61 +499,64 @@ local style = function(self, unit)
 
 	-- Dispellable Debuffs
 	--------------------------------------------
-	local Colors = ns.Colors
-	local GetMedia = ns.API.GetMedia
-	local GetFont = ns.API.GetFont
+	if (ns.IsDevelopment and false) then
 
-	local dispellable = {}
-	dispellable.disableMouse = true
+		local Colors = ns.Colors
+		local GetMedia = ns.API.GetMedia
+		local GetFont = ns.API.GetFont
 
-	local dispelIcon = CreateFrame("Button", self:GetName().."DispellableButton", healthOverlay)
-	dispelIcon:Hide()
-	dispelIcon:SetFrameLevel(overlay:GetFrameLevel() + 2)
-	dispelIcon:SetSize(24,24)
-	dispelIcon:SetPoint("CENTER", 0, -1)
-	dispellable.dispellIcon = dispelIcon
+		local dispellable = {}
+		dispellable.disableMouse = true
 
-	local dispelIconBorder = CreateFrame("Frame", nil, dispelIcon, ns.BackdropTemplate)
-	dispelIconBorder:SetBackdrop({ edgeFile = GetMedia("border-aura"), edgeSize = 12 })
-	dispelIconBorder:SetBackdropBorderColor(Colors.aura[1], Colors.aura[2], Colors.aura[3])
-	dispelIconBorder:SetPoint("TOPLEFT", -6, 6)
-	dispelIconBorder:SetPoint("BOTTOMRIGHT", 6, -6)
-	dispelIconBorder:SetFrameLevel(dispelIcon:GetFrameLevel() + 2)
-	--dispelIcon.overlay = dispelIconBorder
+		local dispelIcon = CreateFrame("Button", self:GetName().."DispellableButton", healthOverlay)
+		dispelIcon:Hide()
+		dispelIcon:SetFrameLevel(overlay:GetFrameLevel() + 2)
+		dispelIcon:SetSize(24,24)
+		dispelIcon:SetPoint("CENTER", 0, -1)
+		dispellable.dispellIcon = dispelIcon
 
-	local dispelIconTexture = dispelIcon:CreateTexture(nil, "BACKGROUND", nil, 1)
-	dispelIconTexture:SetAllPoints()
-	dispelIconTexture:SetMask(GetMedia("actionbutton-mask-square"))
-	dispelIcon.icon = dispelIconTexture
+		local dispelIconBorder = CreateFrame("Frame", nil, dispelIcon, ns.BackdropTemplate)
+		dispelIconBorder:SetBackdrop({ edgeFile = GetMedia("border-aura"), edgeSize = 12 })
+		dispelIconBorder:SetBackdropBorderColor(Colors.aura[1], Colors.aura[2], Colors.aura[3])
+		dispelIconBorder:SetPoint("TOPLEFT", -6, 6)
+		dispelIconBorder:SetPoint("BOTTOMRIGHT", 6, -6)
+		dispelIconBorder:SetFrameLevel(dispelIcon:GetFrameLevel() + 2)
+		--dispelIcon.overlay = dispelIconBorder
 
-	local dispelIconTime = dispelIconBorder:CreateFontString(nil, "OVERLAY")
-	dispelIconTime:SetFontObject(GetFont(14,true))
-	dispelIconTime:SetTextColor(Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3])
-	dispelIconTime:SetPoint("TOPLEFT", dispelIcon, "TOPLEFT", -4, 4)
-	dispelIcon.time = dispelIconTime
+		local dispelIconTexture = dispelIcon:CreateTexture(nil, "BACKGROUND", nil, 1)
+		dispelIconTexture:SetAllPoints()
+		dispelIconTexture:SetMask(GetMedia("actionbutton-mask-square"))
+		dispelIcon.icon = dispelIconTexture
 
-	local dispelIconCount = dispelIconBorder:CreateFontString(nil, "OVERLAY")
-	dispelIconCount:SetFontObject(GetFont(12,true))
-	dispelIconCount:SetTextColor(Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3])
-	dispelIconCount:SetPoint("BOTTOMRIGHT", dispelIcon, "BOTTOMRIGHT", -2, 3)
-	dispelIcon.count = dispelIconCount
+		local dispelIconTime = dispelIconBorder:CreateFontString(nil, "OVERLAY")
+		dispelIconTime:SetFontObject(GetFont(14,true))
+		dispelIconTime:SetTextColor(Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3])
+		dispelIconTime:SetPoint("TOPLEFT", dispelIcon, "TOPLEFT", -4, 4)
+		dispelIcon.time = dispelIconTime
 
-	-- Using a virtual cooldown element with the timer attached,
-	-- allowing them to piggyback on the back-end's cooldown updates.
-	dispelIcon.cd = ns.Widgets.RegisterCooldown(dispelIcon.time)
+		local dispelIconCount = dispelIconBorder:CreateFontString(nil, "OVERLAY")
+		dispelIconCount:SetFontObject(GetFont(12,true))
+		dispelIconCount:SetTextColor(Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3])
+		dispelIconCount:SetPoint("BOTTOMRIGHT", dispelIcon, "BOTTOMRIGHT", -2, 3)
+		dispelIcon.count = dispelIconCount
 
-	local dispelTexture = {
-		UpdateColor = function(dispelTexture, debuffType, r, g, b, a)
-			dispelIconBorder:SetBackdropBorderColor(r, g, b)
-		end
-	}
-	dispellable.dispelTexture = dispelTexture
+		-- Using a virtual cooldown element with the timer attached,
+		-- allowing them to piggyback on the back-end's cooldown updates.
+		dispelIcon.cd = ns.Widgets.RegisterCooldown(dispelIcon.time)
 
-	self.Dispellable = dispellable
+		local dispelTexture = {
+			UpdateColor = function(dispelTexture, debuffType, r, g, b, a)
+				dispelIconBorder:SetBackdropBorderColor(r, g, b)
+			end
+		}
+		dispellable.dispelTexture = dispelTexture
 
-	--if (ns.IsDevelopment) then
-	--	self.Dispellable.PostUpdate = function(element, displayed) if (displayed) then print(element.__current) end end
-	--end
+		self.Dispellable = dispellable
+
+		--if (ns.IsDevelopment) then
+		--	self.Dispellable.PostUpdate = function(element, displayed) if (displayed) then print(element.__current) end end
+		--end
+	end
 
 	-- Readycheck
 	--------------------------------------------
@@ -845,6 +849,15 @@ RaidFrame25Mod.UpdateUnits = function(self)
 	if (not self.frame) then return end
 	for i = 1, self.frame:GetNumChildren() do
 		local frame = select(i, self.frame:GetChildren())
+		if (self.db.profile.useRangeIndicator) then
+			if (not frame:IsElementEnabled("Range")) then
+				frame:EnableElement("Range")
+			end
+		else
+			if (frame:IsElementEnabled("Range")) then
+				frame:DisableElement("Range")
+			end
+		end
 		frame:UpdateAllElements("RefreshUnit")
 	end
 end
