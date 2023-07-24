@@ -132,7 +132,7 @@ local GenerateOptions = function()
 		}
 		suboptions.args.useWrathCrystal = {
 			name = L["Use Ice Crystal"],
-			desc = L["Toggle whether to show the Wrath power crystal instead of the system colored generic power crystal."],
+			desc = L["Toggle whether to show the ice power crystal or the regular power crystal colored by resource type."],
 			order = 40, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
 		options.args.player = suboptions
