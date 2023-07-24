@@ -138,8 +138,14 @@ L["Sets the relative scale of this element. Default scale is set to match the id
 L["Sets the vertical offset from your chosen anchor point. Positive values means up, negative values means down."] = true
 L["Sets when a new line of buttons should begin."] = true
 L["Sets which button the zigzag pattern should begin at."] = true
+L["Show Auras"] = true
+L["Show Auras only on current target."] = true
+L["Show in parties."] = true
+L["Show in party sized raid groups (1-5 Players)."] = true
+L["Show in raids."] = true
 L["Show itemID"] = true
 L["Show spellID"] = true
+L["Show Unit Name"] = true
 L["Sort Direction"] = true
 L["Soul Shards"] = "靈魂裂片"
 L["Stagger"] = "醉仙緩勁"

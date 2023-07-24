@@ -143,6 +143,7 @@ L["Sets the vertical offset from your chosen anchor point. Positive values means
 L["Sets when a new line of buttons should begin."] = true
 L["Sets which button the zigzag pattern should begin at."] = true
 L["Show Auras"] = true
+L["Show Auras only on current target."] = true
 L["Show in parties."] = true
 L["Show in party sized raid groups (1-5 Players)."] = true
 L["Show in raids."] = true
