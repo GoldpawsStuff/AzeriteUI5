@@ -650,12 +650,14 @@ ActionBarMod.CreateMaxDpsOverlays = function(self, event, addon)
 		local col = color and { color.r, color.g, color.b, color.a } or nil
 		if (not color) and (type) then
 			if (type == "normal") then
-				local c = this.db.global.highlightColor
-				col = { c.r, c.g, c.b, c.a }
+				--local c = this.db.global.highlightColor
+				--col = { c.r, c.g, c.b, c.a }
+				col = { 1, 1, 1 }
 
 			elseif (type == "cooldown") then
-				local c = this.db.global.cooldownColor
-				col = { c.r, c.g, c.b, c.a }
+				--local c = this.db.global.cooldownColor
+				--col = { c.r, c.g, c.b, c.a }
+				col = { 190/255, 119/255, 238/255 }
 			end
 		end
 		button.maxDpsGlowColor = col
