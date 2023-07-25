@@ -128,18 +128,14 @@ ns.UnitFrameModule = ns:Merge({
 	end,
 
 	UpdateEnabled = function(self)
+		if (InCombatLockdown()) then
+			return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEnabledEvent")
+		end
 		local config = self.db.profile
-		if (config.enabled and not self.frame:IsEnabled()) or (not config.enabled and self.frame:IsEnabled()) then
-
-			if (InCombatLockdown()) then
-				return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEnabledEvent")
-			end
-
-			if (config.enabled) then
-				self.frame:Enable()
-			else
-				self.frame:Disable()
-			end
+		if (config.enabled) then
+			self.frame:Enable()
+		else
+			self.frame:Disable()
 		end
 	end,
 
