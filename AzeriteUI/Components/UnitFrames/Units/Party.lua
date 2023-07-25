@@ -682,6 +682,7 @@ GroupHeader.Enable = function(self)
 	RegisterAttributeDriver(self, "state-visibility", visibility)
 
 	self.visibility = visibility
+	self.enabled = true
 end
 
 GroupHeader.Disable = function(self)
@@ -691,10 +692,11 @@ GroupHeader.Disable = function(self)
 	RegisterAttributeDriver(self, "state-visibility", "hide")
 
 	self.visibility = nil
+	self.enabled = false
 end
 
 GroupHeader.IsEnabled = function(self)
-	return self.visibility and true or false
+	return self.enabled
 end
 
 PartyFrameMod.GetHeaderAttributes = function(self)
