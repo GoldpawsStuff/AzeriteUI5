@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - The MaxDps outline colors are no longer set by your MaxDps settings, but instead hardcoded to bright white for next spell and purple for cooldowns. Just feels more epic that way.
 
 ### Fixed
-- - Changed how the EncounterBar (vigor, etc) is reanchored to avoid that pesky C loop overflow sometimes happening after portals.
+- Changed how the EncounterBar (vigor, etc) is reanchored to avoid that pesky C loop overflow sometimes happening after portals.
 
 ## [5.2.87-RC] 2023-07-25
 ### Fixed
