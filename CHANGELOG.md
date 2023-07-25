@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-07-25
+### Fixed
+- Raid frames of various sizes are now possible to properly toggle without the need for a reload.
+- When disabling range fading on raid frames the unitframes should now reset to full opacity.
+
+### Removed
+- Removed overlay castbars from raid(25) and raid(40) unitframes. We don't need this level of information from that many raid members.
+
 ## [5.2.86-RC] 2023-07-24
 ### Added
 - The range fading of group unit frames is now optional. It is enabled by default for large raid frames (6-40 players) and disabled by default for small sized raid frames (1-5 players).
