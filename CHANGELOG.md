@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-07-25
+### Changed
+- The MaxDps outline colors are no longer set by your MaxDps settings, but instead hardcoded to bright white for next spell and purple for cooldowns. Just feels more epic that way.
+
 ## [5.2.87-RC] 2023-07-25
 ### Fixed
 - Raid frames of various sizes are now possible to properly toggle without the need for a reload.
