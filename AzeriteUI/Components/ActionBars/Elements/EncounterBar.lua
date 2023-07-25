@@ -67,27 +67,52 @@ EncounterBar.UpdateAnchor = function(self)
 	end
 end
 
+EncounterBar.UpdatePositionAndScale = function(self)
+	if (not self.frame) then return end
+
+	if (InCombatLockdown()) then
+		self.updateneeded = true
+		return
+	end
+
+	if (self.PreUpdatePositionAndScale) then
+		if (self:PreUpdatePositionAndScale()) then return end
+	end
+
+	self.updateneeded = nil
+
+	local config = self.db.profile.savedPosition
+	if (config) then
+		setScale(self.frame, config.scale)
+		clearSetPoint(self.frame, config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
+	end
+
+	if (self.PostUpdatePositionAndScale) then
+		self:PostUpdatePositionAndScale()
+	end
+end
+
 EncounterBar.UpdatePositionAndScale = function(self, ...)
-	local rehook
-	if (self:IsHooked(_G.EncounterBar, "SetPoint")) then
-		self:Unhook(_G.EncounterBar, "SetPoint")
-		rehook = true
+	if (not self.frame) then return end
+
+	if (InCombatLockdown()) then
+		self.updateneeded = true
+		return
 	end
-	ns.UnitFrameModule.UpdatePositionAndScale(self, ...)
-	if (rehook) then
-		self:SecureHook(_G.EncounterBar, "SetPoint", "OnPositionAndScaleChange")
-	end
+
+	self.updateneeded = nil
+
+	local config = self.db.profile.savedPosition
+	self.frame:SetScaleBase(config.scale)
+	self.frame:ClearAllPoints()
+	self.frame:SetPointBase(config[1], UIParent, config[1], config[2]/config.scale, config[3]/config.scale)
 end
 
 EncounterBar.OnPositionAndScaleChange = function(self)
 	if (MovieFrame:IsShown()) or (CinematicFrame:IsShown()) then
 		return
 	end
-	if (self:IsHooked(_G.EncounterBar, "SetPoint")) then
-		self:Unhook(_G.EncounterBar, "SetPoint")
-		self:UpdatePositionAndScale()
-		self:SecureHook(_G.EncounterBar, "SetPoint", "OnPositionAndScaleChange")
-	end
+	self:UpdatePositionAndScale()
 end
 
 EncounterBar.PrepareFrames = function(self)
