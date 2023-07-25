@@ -415,15 +415,15 @@ local style = function(self, unit)
 
 	-- Cast Overlay
 	--------------------------------------------
-	local castbar = self:CreateBar()
-	castbar:SetAllPoints(health)
-	castbar:SetFrameLevel(self:GetFrameLevel() + 5)
-	castbar:SetSparkMap(db.HealthBarSparkMap)
-	castbar:SetStatusBarTexture(db.HealthBarTexture)
-	castbar:SetStatusBarColor(unpack(db.HealthCastOverlayColor))
-	castbar:DisableSmoothing(true)
+	--local castbar = self:CreateBar()
+	--castbar:SetAllPoints(health)
+	--castbar:SetFrameLevel(self:GetFrameLevel() + 5)
+	--castbar:SetSparkMap(db.HealthBarSparkMap)
+	--castbar:SetStatusBarTexture(db.HealthBarTexture)
+	--castbar:SetStatusBarColor(unpack(db.HealthCastOverlayColor))
+	--castbar:DisableSmoothing(true)
 
-	self.Castbar = castbar
+	--self.Castbar = castbar
 
 	-- Health Value
 	--------------------------------------------
@@ -634,6 +634,7 @@ GroupHeader.Enable = function(self)
 	RegisterAttributeDriver(self, "state-visibility", visibility)
 
 	self.visibility = visibility
+	self.enabled = true
 end
 
 GroupHeader.Disable = function(self)
@@ -643,10 +644,11 @@ GroupHeader.Disable = function(self)
 	RegisterAttributeDriver(self, "state-visibility", "hide")
 
 	self.visibility = nil
+	self.enabled = false
 end
 
 GroupHeader.IsEnabled = function(self)
-	return self.visibility and true or false
+	return self.enabled
 end
 
 RaidFrame40Mod.DisableBlizzard = function(self)
@@ -802,6 +804,7 @@ RaidFrame40Mod.UpdateUnits = function(self)
 		else
 			if (frame:IsElementEnabled("Range")) then
 				frame:DisableElement("Range")
+				frame:SetAlpha(1)
 			end
 		end
 		frame:UpdateAllElements("RefreshUnit")
