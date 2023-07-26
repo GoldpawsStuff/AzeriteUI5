@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-07-26
+### Removed
+- Nameplate widget containers and soft target frames are now hidden. We mark soft targets with outlines, we'll add another way to track friendship reputations, if that really is needed.
+
 ## [5.2.88-RC] 2023-07-25
 ### Changed
 - The MaxDps outline colors are no longer set by your MaxDps settings, but instead hardcoded to bright white for next spell and purple for cooldowns. Just feels more epic that way.
