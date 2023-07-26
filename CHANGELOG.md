@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-07-26
+## [5.2.89-RC] 2023-07-26
 ### Removed
 - Nameplate widget containers and soft target frames are now hidden. We mark soft targets with outlines, we'll add another way to track friendship reputations, if that really is needed.
 
