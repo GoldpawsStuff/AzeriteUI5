@@ -997,6 +997,14 @@ local callback = function(self, event, unit)
 
 		self.isPRD = UnitIsUnit(unit, "player")
 
+		if (self.WidgetContainer) then
+			self.WidgetContainer:SetParent(ns.Hider)
+		end
+
+		if (self.SoftTargetFrame) then
+			self.WidgetContainer:SetParent(ns.Hider)
+		end
+
 		ns.NamePlates[self] = true
 		ns.ActiveNamePlates[self] = true
 
