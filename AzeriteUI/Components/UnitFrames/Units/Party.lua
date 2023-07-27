@@ -40,6 +40,8 @@ local string_gsub = string.gsub
 local type = type
 local unpack = unpack
 
+local Units = {}
+
 local defaults = { profile = ns:Merge({
 
 	showAuras = true,
@@ -354,7 +356,8 @@ local style = function(self, unit)
 
 	-- Apply common scripts and member values.
 	ns.UnitFrame.InitializeUnitFrame(self)
-	ns.UnitFrames[self] = true -- add to our registry
+	ns.UnitFrames[self] = true -- add to global registry
+	Units[self] = true -- add to local registry
 
 	-- Overlay for icons and text
 	--------------------------------------------
@@ -796,8 +799,7 @@ PartyFrameMod.Update = function(self)
 	self:UpdateHeader()
 	self:UpdateUnits()
 
-	for i = 1, self.frame:GetNumChildren() do
-		local frame = select(i, self.frame:GetChildren())
+	for frame in next,Units do
 		if (self.db.profile.showAuras) then
 			frame:EnableElement("Auras")
 			frame.Auras:ForceUpdate()
