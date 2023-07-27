@@ -103,7 +103,7 @@ Tracker.PrepareFrames = function(self)
 		local watchText
 		local watchTextIndex = 1
 		local objectivesCompleted
-		local text, finished
+		local text, type, finished
 
 		for i = 1, GetNumQuestWatches() do
 			questIndex = GetQuestIndexForWatch(i)
