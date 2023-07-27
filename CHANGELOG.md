@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-07-27
+### Fixed
+- Changed how grouped units are tracked locally to fix issues with changes to range fading of raid frames not working properly.
+
 ## [5.2.90-RC] 2023-07-27
 ### Fixed
 - Fixed a breaking bug occurring in Classic Era that could cause the global lua function `type` to be replaced with a string, thus breaking the entire user interface and nearly all addons. According to some other WoW UI devs, I should be flogged.
