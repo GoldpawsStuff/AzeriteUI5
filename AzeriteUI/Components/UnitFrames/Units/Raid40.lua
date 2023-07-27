@@ -674,7 +674,7 @@ end
 RaidFrame40Mod.GetHeaderAttributes = function(self)
 	local db = self.db.profile
 
-	return ns.Prefix.."Raid", nil, nil,
+	return ns.Prefix.."Raid40", nil, nil,
 	"initial-width", ns.GetConfig("RaidFrames").UnitSize[1],
 	"initial-height", ns.GetConfig("RaidFrames").UnitSize[2],
 	"oUF-initialConfigFunction", [[
@@ -798,14 +798,9 @@ RaidFrame40Mod.UpdateUnits = function(self)
 	for i = 1, self.frame:GetNumChildren() do
 		local frame = select(i, self.frame:GetChildren())
 		if (self.db.profile.useRangeIndicator) then
-			if (not frame:IsElementEnabled("Range")) then
-				frame:EnableElement("Range")
-			end
+			frame.Range.outsideAlpha = .6
 		else
-			if (frame:IsElementEnabled("Range")) then
-				frame:DisableElement("Range")
-				frame:SetAlpha(1)
-			end
+			frame.Range.outsideAlpha = 1
 		end
 		frame:UpdateAllElements("RefreshUnit")
 	end

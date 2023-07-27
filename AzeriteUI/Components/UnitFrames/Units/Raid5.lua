@@ -776,7 +776,7 @@ end
 RaidFrame5Mod.GetHeaderAttributes = function(self)
 	local db = self.db.profile
 
-	return ns.Prefix.."Raid", nil, nil,
+	return ns.Prefix.."Raid5", nil, nil,
 	"initial-width", ns.GetConfig("Raid5Frames").UnitSize[1],
 	"initial-height", ns.GetConfig("Raid5Frames").UnitSize[2],
 	"oUF-initialConfigFunction", [[
@@ -897,14 +897,9 @@ RaidFrame5Mod.UpdateUnits = function(self)
 	for i = 1, self.frame:GetNumChildren() do
 		local frame = select(i, self.frame:GetChildren())
 		if (self.db.profile.useRangeIndicator) then
-			if (not frame:IsElementEnabled("Range")) then
-				frame:EnableElement("Range")
-			end
+			frame.Range.outsideAlpha = .6
 		else
-			if (frame:IsElementEnabled("Range")) then
-				frame:DisableElement("Range")
-				frame:SetAlpha(1)
-			end
+			frame.Range.outsideAlpha = 1
 		end
 		frame:UpdateAllElements("RefreshUnit")
 	end
