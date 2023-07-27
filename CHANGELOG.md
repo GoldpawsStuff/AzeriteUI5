@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.90-RC] 2023-07-27
+### Fixed
+- Fixed a breaking bug occurring in Classic Era that could cause the global lua function `type` to be replaced with a string, thus breaking the entire user interface and nearly all addons. According to some other WoW UI devs, I should be flogged.
+
 ## [5.2.89-RC] 2023-07-26
 ### Removed
 - Nameplate widget containers and soft target frames are now hidden. We mark soft targets with outlines, we'll add another way to track friendship reputations, if that really is needed.
