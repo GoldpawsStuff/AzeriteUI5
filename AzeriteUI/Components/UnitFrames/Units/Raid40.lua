@@ -618,8 +618,7 @@ end
 local GroupHeader = {}
 
 GroupHeader.ForAll = function(self, methodOrFunc, ...)
-	for i = 1, self:GetNumChildren() do
-		local frame = select(i, self.frame:GetChildren())
+	for frame in next,Units do
 		if (type(methodOrFunc) == "string") then
 			frame[methodOrFunc](frame, ...)
 		else
@@ -631,27 +630,31 @@ end
 GroupHeader.Enable = function(self)
 	if (InCombatLockdown()) then return end
 
-	local visibility = RaidFrame40Mod:GetVisibilityDriver()
-
-	UnregisterAttributeDriver(self, "state-visibility")
-	RegisterAttributeDriver(self, "state-visibility", visibility)
-
-	self.visibility = visibility
+	self:UpdateVisibilityDriver()
 	self.enabled = true
 end
 
 GroupHeader.Disable = function(self)
 	if (InCombatLockdown()) then return end
 
-	UnregisterAttributeDriver(self, "state-visibility")
-	RegisterAttributeDriver(self, "state-visibility", "hide")
-
-	self.visibility = nil
+	self:UpdateVisibilityDriver()
 	self.enabled = false
 end
 
 GroupHeader.IsEnabled = function(self)
 	return self.enabled
+end
+
+GroupHeader.UpdateVisibilityDriver = function(self)
+	if (InCombatLockdown()) then return end
+
+	local enabled, visibility, showParty = RaidFrame40Mod:GetVisibilityDriver()
+
+	UnregisterAttributeDriver(self, "state-visibility")
+	RegisterAttributeDriver(self, "state-visibility", visibility)
+
+	self:SetAttribute("showParty", showParty)
+	self.visibility = enabled and visibility
 end
 
 RaidFrame40Mod.DisableBlizzard = function(self)
@@ -713,22 +716,19 @@ RaidFrame40Mod.GetVisibilityDriver = function(self)
 	local raid25 = ns:GetModule("RaidFrame25").db.profile.enabled
 	local raid40 = ns:GetModule("RaidFrame40").db.profile.enabled
 
-	-- Show in groups of 26 or more.
-	local driver = "custom [@raid26,exists]show;"
-
-	-- Show in groups of 6 or more if raid25 is disabled.
-	if (not raid25) then
-		driver = driver .. "[@raid6,exists]show;"
+	if (raid40) then
+		if (party or raid5 or raid25) then
+			if (raid25) then
+				return true, "[@raid26,exists]show;hide", nil
+			else
+				return true, "[@raid6,exists]show;hide", nil
+			end
+		else
+			return true, "[group]show;hide", true
+		end
+	else
+		return false, "hide", nil
 	end
-
-	-- Show in all groups if all smaller groups frames are disabled.
-	if (not raid5 and not party) then
-		driver = driver .. "[group]show;"
-	end
-
-	driver = driver.."hide"
-
-	return driver
 end
 
 RaidFrame40Mod.GetHeaderSize = function(self)
@@ -739,33 +739,33 @@ RaidFrame40Mod.GetHeaderSize = function(self)
 end
 
 RaidFrame40Mod.UpdateHeader = function(self)
-	if (not self.frame) then return end
+	local header = self:GetUnitFrameOrHeader()
+	if (not header) then return end
+
 	if (InCombatLockdown()) then
 		self.needHeaderUpdate = true
 		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 		return
 	end
+
+	header:UpdateVisibilityDriver()
+
 	for _,attrib in next,{
-		"point",
-		"xOffset",
-		"yOffset",
-		"groupBy",
-		"groupingOrder",
-		"unitsPerColumn",
-		"maxColumns",
-		"columnSpacing",
-		"columnAnchorPoint"
+		"point","xOffset","yOffset",
+		"groupBy","groupingOrder",
+		"unitsPerColumn","maxColumns",
+		"columnSpacing","columnAnchorPoint"
 	} do
-		self.frame:SetAttribute(attrib, self.db.profile[attrib])
+		header:SetAttribute(attrib, self.db.profile[attrib])
 	end
 
-	self.frame:SetSize(self:GetHeaderSize())
+	self:GetFrame():SetSize(self:GetHeaderSize())
 
-	self:UpdatePosition()
-	self:UpdateAnchor()
+	self:UpdateHeaderAnchorPoint() -- update where the group header is anchored to our anchorframe.
+	self:UpdateAnchor() -- the general update does this too, but we need it in case nothing but this function has been called.
 end
 
-RaidFrame40Mod.UpdatePosition = function(self)
+RaidFrame40Mod.UpdateHeaderAnchorPoint = function(self)
 	local point = "TOPLEFT"
 	if (self.db.profile.columnAnchorPoint == "LEFT") then
 		if (self.db.profile.point == "TOP") then
@@ -792,12 +792,13 @@ RaidFrame40Mod.UpdatePosition = function(self)
 			point = "BOTTOMRIGHT"
 		end
 	end
-	self.frame.content:ClearAllPoints()
-	self.frame.content:SetPoint(point, self.frame, point)
+	local header = self:GetUnitFrameOrHeader()
+	header:ClearAllPoints()
+	header:SetPoint(point, self:GetFrame(), point)
 end
 
 RaidFrame40Mod.UpdateUnits = function(self)
-	if (not self.frame) then return end
+	if (not self:GetFrame()) then return end
 	for frame in next,Units do
 		if (self.db.profile.useRangeIndicator) then
 			frame:EnableElement("Range")
@@ -825,13 +826,11 @@ RaidFrame40Mod.CreateUnitFrames = function(self)
 	self.frame:SetSize(self:GetHeaderSize())
 
 	self.frame.content = oUF:SpawnHeader(self:GetHeaderAttributes())
-	self:UpdatePosition()
+	self:UpdateHeaderAnchorPoint()
 
 	-- Embed our custom methods
 	for method,func in next,GroupHeader do
-		self.frame[method] = function(self, ...)
-			func(self.content, ...)
-		end
+		self.frame.content[method] = func
 	end
 
 	-- Sometimes some elements are wrong or "get stuck" upon exiting the editmode.

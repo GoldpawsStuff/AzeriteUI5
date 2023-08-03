@@ -771,7 +771,9 @@ PartyFrameMod.UpdateHeader = function(self)
 		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 		return
 	end
+
 	self.frame:UpdateVisibilityDriver()
+
 	for _,attr in next,{
 		"showPlayer",
 		"point","xOffset","yOffset",
@@ -781,7 +783,9 @@ PartyFrameMod.UpdateHeader = function(self)
 	} do
 		self.frame:SetAttribute(attr, self.db.profile[attr])
 	end
+
 	self.frame:SetSize(self:GetHeaderSize())
+
 	self:UpdateAnchor() -- the general update does this too, but we need it in case nothing but this function has been called.
 end
 
