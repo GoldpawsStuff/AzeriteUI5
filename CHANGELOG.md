@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-08-03
+## [5.2.92-RC] 2023-08-03
 ### Fixed
 - Did a major overhaul of the groupe frame visibility drivers, as it turns out they were fairly bugged.
 - The override action bar should no longer pop up if reloading while it would have been visible in the blizzard interface.
