@@ -133,9 +133,9 @@ ns.UnitFrameModule = ns:Merge({
 		end
 		local config = self.db.profile
 		if (config.enabled) then
-			self.frame:Enable()
+			self:GetUnitFrameOrHeader():Enable()
 		else
-			self.frame:Disable()
+			self:GetUnitFrameOrHeader():Disable()
 		end
 	end,
 
@@ -151,6 +151,14 @@ ns.UnitFrameModule = ns:Merge({
 
 	Update = function(self)
 		-- Placeholder. Update unitframe settings here.
+	end,
+
+	GetFrame = function(self)
+		return self.frame
+	end,
+
+	GetUnitFrameOrHeader = function(self)
+		return self.frame.content or self.frame
 	end,
 
 	CreateAnchor = function(self, label, watchVariables, colorGroup)
