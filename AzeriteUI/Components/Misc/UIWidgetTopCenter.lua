@@ -71,14 +71,14 @@ UIWidgetTopCenter.PrepareFrames = function(self)
 
 	-- This will prevent UIParent_ManageFramePositions() from being executed
 	-- *for some reason it's not working? Why not?
-	contents.IsShown = function() return false end
+	--contents.IsShown = function() return false end
 
 	self.frame = frame
 	self.frame.contents = contents
 
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", "OnEvent")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	self:SecureHook(frame.contents, "SetPoint", "UpdateContentPosition")
+	self:SecureHook(self.frame.contents, "SetPoint", "UpdateContentPosition")
 end
 
 UIWidgetTopCenter.OnEvent = function(self, event, ...)
@@ -87,6 +87,7 @@ UIWidgetTopCenter.OnEvent = function(self, event, ...)
 			self.frame:Hide()
 		else
 			self.frame:Show()
+			self:UpdateContentPosition()
 		end
 	end
 end
