@@ -37,6 +37,7 @@ local math_pi = math_pi
 local next = next
 local select = select
 local string_gsub = string.gsub
+local string_split = string.split
 local type = type
 local unpack = unpack
 
@@ -679,27 +680,31 @@ end
 GroupHeader.Enable = function(self)
 	if (InCombatLockdown()) then return end
 
-	local visibility = PartyFrameMod:GetVisibilityDriver()
-
-	UnregisterAttributeDriver(self, "state-visibility")
-	RegisterAttributeDriver(self, "state-visibility", visibility)
-
-	self.visibility = visibility
+	self:UpdateVisibilityDriver()
 	self.enabled = true
 end
 
 GroupHeader.Disable = function(self)
 	if (InCombatLockdown()) then return end
 
-	UnregisterAttributeDriver(self, "state-visibility")
-	RegisterAttributeDriver(self, "state-visibility", "hide")
-
-	self.visibility = nil
+	self:UpdateVisibilityDriver()
 	self.enabled = false
 end
 
 GroupHeader.IsEnabled = function(self)
 	return self.enabled
+end
+
+GroupHeader.UpdateVisibilityDriver = function(self)
+	if (InCombatLockdown()) then return end
+
+	local enabled, visibility, showRaid = PartyFrameMod:GetVisibilityDriver()
+
+	UnregisterAttributeDriver(self, "state-visibility")
+	RegisterAttributeDriver(self, "state-visibility", visibility)
+
+	self:SetAttribute("showRaid", enabled and showRaid)
+	self.visibility = enabled and visibility
 end
 
 PartyFrameMod.GetHeaderAttributes = function(self)
@@ -741,43 +746,15 @@ PartyFrameMod.GetVisibilityDriver = function(self)
 	local raid25 = ns:GetModule("RaidFrame25").db.profile.enabled
 	local raid40 = ns:GetModule("RaidFrame40").db.profile.enabled
 
-	-- Hide in groups of 6 or more, show in parties.
-	local driver = "custom [@raid6,exists]hide;[group:party]show;"
-
-	-- Show in raid groups of 1-5 if no raid frames are enabled.
-	if (not raid5 and not raid25 and not raid40) then
-		driver = driver .. "[group:raid]show;"
+	if (party) then
+		if (raid5 or raid25 or raid40) then
+			return true, "[group:party,nogroup:raid]show;hide", nil
+		else
+			return true, "[group]show;hide", true
+		end
+	else
+		return false, "hide", nil
 	end
-
-	driver = driver.."hide"
-
-	return driver
-end
-
-PartyFrameMod.UpdateHeader = function(self)
-	if (not self.frame) then return end
-	if (InCombatLockdown()) then
-		self.needHeaderUpdate = true
-		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-		return
-	end
-	for _,attrib in next,{
-		"showPlayer",
-		"point",
-		"xOffset",
-		"yOffset",
-		"groupBy",
-		"groupingOrder",
-		"unitsPerColumn",
-		"maxColumns",
-		"columnSpacing",
-		"columnAnchorPoint"
-	} do
-		self.frame:SetAttribute(attrib, self.db.profile[attrib])
-	end
-
-	self.frame:SetSize(self:GetHeaderSize())
-	self:UpdateAnchor()
 end
 
 PartyFrameMod.GetHeaderSize = function(self)
@@ -787,18 +764,29 @@ PartyFrameMod.GetHeaderSize = function(self)
 		config.UnitSize[2]*1 + math_abs(self.db.profile.columnSpacing * 0)
 end
 
-PartyFrameMod.UpdateUnits = function(self)
+PartyFrameMod.UpdateHeader = function(self)
 	if (not self.frame) then return end
-	for i = 1, self.frame:GetNumChildren() do
-		local frame = select(i, self.frame:GetChildren())
-		frame:UpdateAllElements("RefreshUnit")
+	if (InCombatLockdown()) then
+		self.needHeaderUpdate = true
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+		return
 	end
+	self.frame:UpdateVisibilityDriver()
+	for _,attr in next,{
+		"showPlayer",
+		"point","xOffset","yOffset",
+		"groupBy","groupingOrder",
+		"unitsPerColumn","maxColumns",
+		"columnSpacing","columnAnchorPoint"
+	} do
+		self.frame:SetAttribute(attr, self.db.profile[attr])
+	end
+	self.frame:SetSize(self:GetHeaderSize())
+	self:UpdateAnchor() -- the general update does this too, but we need it in case nothing but this function has been called.
 end
 
-PartyFrameMod.Update = function(self)
-	self:UpdateHeader()
-	self:UpdateUnits()
-
+PartyFrameMod.UpdateUnits = function(self)
+	if (not self.frame) then return end
 	for frame in next,Units do
 		if (self.db.profile.showAuras) then
 			frame:EnableElement("Auras")
@@ -806,7 +794,13 @@ PartyFrameMod.Update = function(self)
 		else
 			frame:DisableElement("Auras")
 		end
+		frame:UpdateAllElements("RefreshUnit")
 	end
+end
+
+PartyFrameMod.Update = function(self)
+	self:UpdateHeader()
+	self:UpdateUnits()
 end
 
 PartyFrameMod.CreateUnitFrames = function(self)
