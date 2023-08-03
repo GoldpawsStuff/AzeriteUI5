@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-07-28
+## [Unreleased] 2023-08-03
 ### Fixed
 - The override action bar should no longer pop up if reloading while it would have been visible in the blizzard interface.
+- Changed to anchoring of the blizzard top center UI widget frame to make it bug out and become without text less often.
 
 ## [5.2.91-RC] 2023-07-27
 ### Fixed
