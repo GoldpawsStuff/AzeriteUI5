@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-08-03
 ### Fixed
-- Did a major overhaul of the party frame visibility driver, as it turns out it was fairly bugged. Working on raid5, raid25 and raid40 too.
+- Did a major overhaul of the groupe frame visibility drivers, as it turns out they were fairly bugged.
 - The override action bar should no longer pop up if reloading while it would have been visible in the blizzard interface.
 - Changed to anchoring of the blizzard top center UI widget frame to make it bug out and become without text less often.
 
