@@ -13,6 +13,7 @@ L["Action Bar %d"] = "Barre d’actions %d"
 L["Action Bar Settings"] = "Paramètre de la barre d’actions"
 L["Action Bars"] = "Barres d’action"
 L["ActionBars are banks of hotkeys that allow you to quickly access abilities and inventory items. Here you can activate additional ActionBars and control their behaviors."] = "Les barres d'actions sont des rangées de raccourcis facilitant l'accès à vos capacités ou à vos objets. Ici, vous pouvez activer et paramétrer des barres d'actions supplémentaires."
+L["Alerts"] = true
 L["Anchor Point"] = true
 L["Apply"] = "Appliquer"
 L["Arcane Charges"] = "Charges arcaniques"

@@ -13,6 +13,7 @@ L["Action Bar %d"] = "Aktionsleiste %d"
 L["Action Bar Settings"] = "Aktionsleisteneinstellungen"
 L["Action Bars"] = "Aktionsleisten"
 L["ActionBars are banks of hotkeys that allow you to quickly access abilities and inventory items. Here you can activate additional ActionBars and control their behaviors."] = "Über Aktionsleisten kann schnell auf Fähigkeiten und Gegenstände im Inventar zurückgegriffen werden. Hier könnt Ihr zusätzliche Aktionsleisten aktivieren und anpassen."
+L["Alerts"] = true
 L["Anchor Point"] = "Ankerpunkt"
 L["Apply"] = "Übernehmen"
 L["Arcane Charges"] = "Arkane Aufladungen"

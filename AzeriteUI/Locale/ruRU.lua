@@ -13,6 +13,7 @@ L["Action Bar %d"] = "Панель команд %d"
 L["Action Bar Settings"] = "Настройки панелей команд"
 L["Action Bars"] = "Панели команд"
 L["ActionBars are banks of hotkeys that allow you to quickly access abilities and inventory items. Here you can activate additional ActionBars and control their behaviors."] = "Панели команд обеспечивают быстрый доступ к способностям и предметам персонажа. Здесь вы можете включить дополнительные панели команд и настроить их."
+L["Alerts"] = true
 L["Anchor Point"] = "Точка привязки"
 L["Apply"] = "Применить"
 L["Arcane Charges"] = "Чародейские заряды"

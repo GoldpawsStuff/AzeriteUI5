@@ -12,6 +12,7 @@ L["Action Bar %d"] = true
 L["Action Bar Settings"] = true
 L["Action Bars"] = true
 L["ActionBars are banks of hotkeys that allow you to quickly access abilities and inventory items. Here you can activate additional ActionBars and control their behaviors."] = true
+L["Alerts"] = true
 L["Anchor Point"] = true
 L["Apply"] = true
 L["Arcane Charges"] = true
