@@ -23,19 +23,44 @@
 	SOFTWARE.
 
 --]]
-local _, ns = ...
+local Addon, ns = ...
 
---if (ns.IsRetail) then return end
+local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
 
-local AlertFrames = ns:NewModule("AlertFrames", "AceHook-3.0")
+local AlertFrames = ns:NewModule("AlertFrames", ns.Module, "AceHook-3.0")
 
 -- Lua API
 local ipairs = ipairs
 local table_remove = table.remove
 local unpack = unpack
 
+local points = {
+	TOP = { "TOP", "BOTTOM", 0, -1 },
+	TOPLEFT = { "TOP", "BOTTOM", 0, -1 },
+	TOPRIGHT = { "TOP", "BOTTOM", 0, -1 },
+	CENTER = { "BOTTOM", "TOP", 0, -1 },
+	LEFT = { "BOTTOM", "TOP", 0, -1 },
+	RIGHT = { "BOTTOM", "TOP", 0, -1 },
+	BOTTOM = { "BOTTOM", "TOP", 0, -1 },
+	BOTTOMLEFT = { "BOTTOM", "TOP", 0, -1 },
+	BOTTOMRIGHT = { "BOTTOM", "TOP", 0, -1 },
+}
+
+local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+
+AlertFrames.GenerateDefaults = function(self)
+	defaults.profile.savedPosition = {
+		scale = ns.API.GetEffectiveScale(),
+		[1] = "TOP",
+		[2] = 0 * ns.API.GetEffectiveScale(),
+		[3] = -40 * ns.API.GetEffectiveScale()
+	}
+	return defaults
+end
+
 local GroupLootContainer_PostUpdate = function(self)
 	local config = ns.GetConfig("AlertFrames")
+	local point, relPoint, x, y = unpack(points[AlertFrames.db.profile.savedPosition[1]])
 
 	local lastIdx = nil
 	for i = 1, self.maxIndex do
@@ -44,9 +69,9 @@ local GroupLootContainer_PostUpdate = function(self)
 		if (frame) then
 			frame:ClearAllPoints()
 			if (prevFrame and prevFrame ~= frame) then
-				frame:SetPoint(config.AlertFramesPoint, prevFrame, config.AlertFramesRelativePoint, 0, config.AlertFramesOffsetY)
+				frame:SetPoint(point, prevFrame, relPoint, 0, config.AlertFramesPadding * y)
 			else
-				frame:SetPoint(config.AlertFramesPoint, self, config.AlertFramesPoint, 0, 0)
+				frame:SetPoint(point, self, point, 0, 0)
 			end
 			lastIdx = i
 		end
@@ -61,11 +86,12 @@ end
 
 local AlertSubSystem_AdjustAnchors = function(self, relativeAlert)
 	local config = ns.GetConfig("AlertFrames")
+	local point, relPoint, x, y = unpack(points[AlertFrames.db.profile.savedPosition[1]])
 
 	local alertFrame = self.alertFrame
 	if (alertFrame and alertFrame:IsShown()) then
 		alertFrame:ClearAllPoints()
-		alertFrame:SetPoint(config.AlertFramesPoint, relativeAlert, config.AlertFramesRelativePoint, 0, config.AlertFramesOffsetY)
+		alertFrame:SetPoint(point, relativeAlert, relPoint, 0, config.AlertFramesPadding * y)
 		return alertFrame
 	end
 	return relativeAlert
@@ -73,11 +99,12 @@ end
 
 local AlertSubSystem_AdjustAnchorsNonAlert = function(self, relativeAlert)
 	local config = ns.GetConfig("AlertFrames")
+	local point, relPoint, x, y = unpack(points[AlertFrames.db.profile.savedPosition[1]])
 
 	local anchorFrame = self.anchorFrame
 	if (anchorFrame and anchorFrame:IsShown()) then
 		anchorFrame:ClearAllPoints()
-		anchorFrame:SetPoint(config.AlertFramesPoint, relativeAlert, config.AlertFramesRelativePoint, 0, config.AlertFramesOffsetY)
+		anchorFrame:SetPoint(point, relativeAlert, relPoint, 0, config.AlertFramesPadding * y)
 		return anchorFrame
 	end
 	return relativeAlert
@@ -85,10 +112,11 @@ end
 
 local AlertSubSystem_AdjustQueuedAnchors = function(self, relativeAlert)
 	local config = ns.GetConfig("AlertFrames")
+	local point, relPoint, x, y = unpack(points[AlertFrames.db.profile.savedPosition[1]])
 
 	for alertFrame in self.alertFramePool:EnumerateActive() do
 		alertFrame:ClearAllPoints()
-		alertFrame:SetPoint(config.AlertFramesPoint, relativeAlert, config.AlertFramesRelativePoint, 0, config.AlertFramesOffsetY)
+		alertFrame:SetPoint(point, relativeAlert, relPoint, 0, config.AlertFramesPadding * y)
 		relativeAlert = alertFrame
 	end
 	return relativeAlert
@@ -106,35 +134,43 @@ end
 
 local AlertFrame_PostUpdateAnchors = function()
 	local config = ns.GetConfig("AlertFrames")
+	local point, relPoint, x, y = unpack(points[AlertFrames.db.profile.savedPosition[1]])
 
 	local AlertFrameHolder = _G[ns.Prefix.."AlertFrameHolder"]
 
 	AlertFrameHolder:ClearAllPoints()
-	AlertFrameHolder:SetPoint(unpack(config.AlertFramesPosition))
+	AlertFrameHolder:SetPoint(unpack(AlertFrames.db.profile.savedPosition))
 
 	AlertFrame:ClearAllPoints()
 	AlertFrame:SetAllPoints(AlertFrameHolder)
 
 	GroupLootContainer:ClearAllPoints()
-	GroupLootContainer:SetPoint(config.AlertFramesPoint, AlertFrameHolder, config.AlertFramesRelativePoint, 0, config.AlertFramesOffsetY)
+	GroupLootContainer:SetPoint(point, AlertFrameHolder, relPoint, 0, config.AlertFramesPadding * y)
 
 	if (GroupLootContainer:IsShown()) then
 		GroupLootContainer_PostUpdate(GroupLootContainer)
 	end
 end
 
-AlertFrames.OnInitialize = function(self)
+AlertFrames.PostUpdatePositionAndScale = function(self)
+	AlertFrame_PostUpdateAnchors()
+end
+
+AlertFrames.PrepareFrames = function(self)
+
 	local config = ns.GetConfig("AlertFrames")
 
-	local AlertFrameHolder = CreateFrame("Frame", ns.Prefix.."AlertFrameHolder", UIParent)
-	AlertFrameHolder:SetPoint(unpack(config.AlertFramesPosition))
-	AlertFrameHolder:SetSize(unpack(config.AlertFramesSize))
+	local frame = CreateFrame("Frame", ns.Prefix.."AlertFrameHolder", UIParent)
+	frame:SetSize(unpack(config.AlertFramesSize))
+	frame:SetPoint(unpack(AlertFrames.db.profile.savedPosition))
 
-	if (not ns.IsRetail) then
-		--AlertFrame.ignoreFramePositionManager = true
-		--AlertFrame:SetParent(UIParent)
-		--AlertFrame:OnLoad()
-	end
+	self.frame = frame
+
+	--if (not ns.IsRetail) then
+	--	AlertFrame.ignoreFramePositionManager = true
+	--	AlertFrame:SetParent(UIParent)
+	--	AlertFrame:OnLoad()
+	--end
 
 	for index,alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
 		AlertSubSystem_AdjustPosition(AlertFrame, alertFrameSubSystem)
@@ -149,4 +185,12 @@ AlertFrames.OnInitialize = function(self)
 	self:SecureHook(AlertFrame, "AddAlertFrameSubSystem", AlertSubSystem_AdjustPosition)
 	self:SecureHook(AlertFrame, "UpdateAnchors", AlertFrame_PostUpdateAnchors)
 	self:SecureHook("GroupLootContainer_Update", GroupLootContainer_PostUpdate)
+end
+
+AlertFrames.OnEnable = function(self)
+	self:PrepareFrames()
+	self:CreateAnchor(L["Alerts"])
+	self.anchor:SetScalable(false)
+
+	ns.Module.OnEnable(self)
 end
