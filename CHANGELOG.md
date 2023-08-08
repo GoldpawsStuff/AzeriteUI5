@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-08-08
+### Changed
+- The alert frame anchor is now movable. Alerts refer to most centered temporary popups like item upgrades, group loot and special currency gains. Moving the anchor also affects alert growth direction, where if anchored to the top horizontal portion of the screen will grow downwards, everything else upwards.
+
 ## [5.2.92-RC] 2023-08-03
 ### Fixed
 - Did a major overhaul of the groupe frame visibility drivers, as it turns out they were fairly bugged.
