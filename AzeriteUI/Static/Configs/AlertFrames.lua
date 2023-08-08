@@ -26,10 +26,6 @@
 local Addon, ns = ...
 
 ns.RegisterConfig("AlertFrames", {
-	AlertFramesPosition = { "TOP", UIParent, "TOP", 0, -40 },
 	AlertFramesSize = { 180, 20 },
-
-	AlertFramesPoint = "TOP",
-	AlertFramesRelativePoint = "BOTTOM",
-	AlertFramesOffsetY = -10
+	AlertFramesPadding = 10
 })
