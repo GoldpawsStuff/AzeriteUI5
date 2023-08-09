@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-08-08
+## [Unreleased] 2023-08-09
+### Changed
+- The party frames now have an option to be shown in small party sized raid groups. When this option is enabled, the raid(5) frames will stop existing.
+
 ### Changed
 - The alert frame anchor is now movable. Alerts refer to most centered temporary popups like item upgrades, group loot and special currency gains. Moving the anchor also affects alert growth direction, where if anchored to the top horizontal portion of the screen will grow downwards, everything else upwards.
 
