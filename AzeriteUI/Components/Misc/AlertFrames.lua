@@ -27,7 +27,11 @@ local Addon, ns = ...
 
 local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
 
-local AlertFrames = ns:NewModule("AlertFrames", ns.Module, "AceHook-3.0")
+local AlertFrames = ns:NewModule("AlertFrames", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
+
+-- GLOBALS: CreateFrame
+-- GLOBALS: AlertFrame, GroupLootContainer, UIParent
+-- GLOBALS: UIPARENT_MANAGED_FRAME_POSITIONS
 
 -- Lua API
 local ipairs = ipairs
@@ -38,15 +42,18 @@ local points = {
 	TOP = { "TOP", "BOTTOM", 0, -1 },
 	TOPLEFT = { "TOP", "BOTTOM", 0, -1 },
 	TOPRIGHT = { "TOP", "BOTTOM", 0, -1 },
-	CENTER = { "BOTTOM", "TOP", 0, -1 },
-	LEFT = { "BOTTOM", "TOP", 0, -1 },
-	RIGHT = { "BOTTOM", "TOP", 0, -1 },
-	BOTTOM = { "BOTTOM", "TOP", 0, -1 },
-	BOTTOMLEFT = { "BOTTOM", "TOP", 0, -1 },
-	BOTTOMRIGHT = { "BOTTOM", "TOP", 0, -1 },
+	CENTER = { "BOTTOM", "TOP", 0, 1 },
+	LEFT = { "BOTTOM", "TOP", 0, 1 },
+	RIGHT = { "BOTTOM", "TOP", 0, 1 },
+	BOTTOM = { "BOTTOM", "TOP", 0, 1 },
+	BOTTOMLEFT = { "BOTTOM", "TOP", 0, 1 },
+	BOTTOMRIGHT = { "BOTTOM", "TOP", 0, 1 },
 }
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({
+	useAutomaticGrowth = true,
+	growUpwards = false
+}, ns.Module.defaults) }
 
 AlertFrames.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
@@ -58,9 +65,17 @@ AlertFrames.GenerateDefaults = function(self)
 	return defaults
 end
 
+local GetPoints = function()
+	if (AlertFrames.db.profile.useAutomaticGrowth) then
+		return unpack(points[AlertFrames.db.profile.savedPosition[1]])
+	else
+		return unpack(AlertFrames.db.profile.growUpwards and points.BOTTOM or points.TOP)
+	end
+end
+
 local GroupLootContainer_PostUpdate = function(self)
 	local config = ns.GetConfig("AlertFrames")
-	local point, relPoint, x, y = unpack(points[AlertFrames.db.profile.savedPosition[1]])
+	local point, relPoint, x, y = GetPoints()
 
 	local lastIdx = nil
 	for i = 1, self.maxIndex do
@@ -86,7 +101,7 @@ end
 
 local AlertSubSystem_AdjustAnchors = function(self, relativeAlert)
 	local config = ns.GetConfig("AlertFrames")
-	local point, relPoint, x, y = unpack(points[AlertFrames.db.profile.savedPosition[1]])
+	local point, relPoint, x, y = GetPoints()
 
 	local alertFrame = self.alertFrame
 	if (alertFrame and alertFrame:IsShown()) then
@@ -99,7 +114,7 @@ end
 
 local AlertSubSystem_AdjustAnchorsNonAlert = function(self, relativeAlert)
 	local config = ns.GetConfig("AlertFrames")
-	local point, relPoint, x, y = unpack(points[AlertFrames.db.profile.savedPosition[1]])
+	local point, relPoint, x, y = GetPoints()
 
 	local anchorFrame = self.anchorFrame
 	if (anchorFrame and anchorFrame:IsShown()) then
@@ -112,7 +127,7 @@ end
 
 local AlertSubSystem_AdjustQueuedAnchors = function(self, relativeAlert)
 	local config = ns.GetConfig("AlertFrames")
-	local point, relPoint, x, y = unpack(points[AlertFrames.db.profile.savedPosition[1]])
+	local point, relPoint, x, y = GetPoints()
 
 	for alertFrame in self.alertFramePool:EnumerateActive() do
 		alertFrame:ClearAllPoints()
@@ -132,9 +147,15 @@ local AlertSubSystem_AdjustPosition = function(alertFrame, subSystem)
 	end
 end
 
+local AlertSubSystem_AdjustAllPositions = function()
+	for index,alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
+		AlertSubSystem_AdjustPosition(AlertFrame, alertFrameSubSystem)
+	end
+end
+
 local AlertFrame_PostUpdateAnchors = function()
 	local config = ns.GetConfig("AlertFrames")
-	local point, relPoint, x, y = unpack(points[AlertFrames.db.profile.savedPosition[1]])
+	local point, relPoint, x, y = GetPoints()
 
 	local AlertFrameHolder = _G[ns.Prefix.."AlertFrameHolder"]
 
@@ -154,6 +175,7 @@ end
 
 AlertFrames.PostUpdatePositionAndScale = function(self)
 	AlertFrame_PostUpdateAnchors()
+	AlertSubSystem_AdjustAllPositions()
 end
 
 AlertFrames.PrepareFrames = function(self)
@@ -171,10 +193,7 @@ AlertFrames.PrepareFrames = function(self)
 	--	AlertFrame:SetParent(UIParent)
 	--	AlertFrame:OnLoad()
 	--end
-
-	for index,alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
-		AlertSubSystem_AdjustPosition(AlertFrame, alertFrameSubSystem)
-	end
+	--AlertSubSystem_AdjustAllPositions()
 
 	GroupLootContainer.ignoreFramePositionManager = true
 
