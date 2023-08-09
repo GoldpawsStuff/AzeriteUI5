@@ -815,13 +815,14 @@ end
 
 RaidFrame5Mod.GetVisibilityDriver = function(self)
 	local party = ns:GetModule("PartyFrames").db.profile.enabled
+	local partyInRaids = party and ns:GetModule("PartyFrames").db.profile.showInRaids
 	local raid5 = ns:GetModule("RaidFrame5").db.profile.enabled
 	local raid25 = ns:GetModule("RaidFrame25").db.profile.enabled
 	local raid40 = ns:GetModule("RaidFrame40").db.profile.enabled
 
-	if (raid5) then
+	if (not partyInRaids and raid5) then
 		if (party) then
-			return true, "[@raid6,exists]hide;[group:raid]show;hide", nil
+			return true, "[@raid6,exists]hide;[group:raid,nogroup:party]show;hide", nil
 		else
 			return true, "[@raid6,exists]hide;[group]show;hide", true
 		end

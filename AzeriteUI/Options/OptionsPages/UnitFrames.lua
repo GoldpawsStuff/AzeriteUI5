@@ -239,6 +239,11 @@ local GenerateOptions = function()
 			desc = L["Toggle whether to show the player while in a party."],
 			order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
+		suboptions.args.showInRaids = {
+			name = L["Show in raids."],
+			desc = L["Show in party sized raid groups (1-5 Players)."],
+			order = 21, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
 		options.args.party = suboptions
 	end
 
@@ -248,6 +253,9 @@ local GenerateOptions = function()
 		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("RaidFrame5")
 		suboptions.name = L["Raid Frames"] .. " (5)"
 		suboptions.order = 160
+		suboptions.hidden = function(info)
+			return getmodule("PartyFrames").db.profile.enabled and getmodule("PartyFrames").db.profile["showInRaids"]
+		end
 		suboptions.args.useRangeIndicator = {
 			name = L["Use Range Indicator"],
 			desc = L["Toggle whether to fade unit frames of units that are out of range."],

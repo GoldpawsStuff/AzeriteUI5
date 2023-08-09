@@ -47,6 +47,7 @@ local defaults = { profile = ns:Merge({
 
 	showAuras = true,
 	showPlayer = false,
+	showInRaids = false,
 
 	point = "LEFT", -- anchor point of unitframe, group members within column grow opposite
 	xOffset = 0, -- horizontal offset within the same column
@@ -747,10 +748,10 @@ PartyFrameMod.GetVisibilityDriver = function(self)
 	local raid40 = ns:GetModule("RaidFrame40").db.profile.enabled
 
 	if (party) then
-		if (raid5 or raid25 or raid40) then
-			return true, "[group:party,nogroup:raid]show;hide", nil
-		else
+		if (self.db.profile.showInRaids or not(raid5 or raid25 or raid40)) then
 			return true, "[group]show;hide", true
+		else
+			return true, "[group:party,nogroup:raid]show;hide", nil
 		end
 	else
 		return false, "hide", nil
