@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.95-RC] 2023-08-10
+### Fixed
+- The option to disconnect pet action bar fading from the main action bar fading now actually works. Only the pet bar will fade in when this option is enabled now.
+
 ## [5.2.94-RC] 2023-08-10
 ### Fixed
 - Fixed an issue where a movable frame anchor's default position would be recorded without taking its default scale into consideration, resulting in weird placements when shift + clicking the frame in `/lock` mode.
