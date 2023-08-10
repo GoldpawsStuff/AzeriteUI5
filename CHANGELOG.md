@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-08-10
 ### Fixed
+- Fixed an issue where a movable frame anchor's default position would be recorded without taking its default scale into consideration, resulting in weird placements when shift + clicking the frame in `/lock` mode.
 - Fixed an issue where enabling an action bar which hadn't previously been visible that session would result in the icon mask not being applied.
 
 ## [5.2.93-RC] 2023-08-09
