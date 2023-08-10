@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-08-10
+### Fixed
+- Fixed an issue where enabling an action bar which hadn't previously been visible that session would result in the icon mask not being applied.
+
 ## [5.2.93-RC] 2023-08-09
 ### Changed
 - The party frames now have an option to be shown in small party sized raid groups. When this option is enabled, the raid(5) frames will stop existing.
