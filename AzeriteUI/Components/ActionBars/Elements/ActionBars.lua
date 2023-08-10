@@ -550,6 +550,7 @@ ActionBarMod.CreateBars = function(self)
 		config.clickOnDown = self.db.profile.clickOnDown
 
 		local bar = ns.ActionBar:Create(BAR_TO_ID[i], config, ns.Prefix.."ActionBar"..i)
+		bar:Show() -- bar must be initially visible for button mask to be properly removed. weird.
 		bar.buttonWidth, bar.buttonHeight = unpack(ns.GetConfig("ActionButton").ButtonSize)
 		bar.defaults = defaults.profile.bars[i]
 
