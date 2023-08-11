@@ -26,6 +26,6 @@
 local Addon, ns = ...
 
 ns.RegisterConfig("AlertFrames", {
-	AlertFramesSize = { 180, 20 },
+	AlertFramesSize = { 400, 80 }, -- 180, 20
 	AlertFramesPadding = 10
 })
