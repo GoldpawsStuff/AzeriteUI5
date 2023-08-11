@@ -36,6 +36,7 @@ local Colors = ns.Colors
 
 -- Retrieve a unit's color
 local GetUnitColor = function(unit)
+	local color
 	if (unit) then
 		if ((not UnitPlayerControlled(unit)) and UnitIsTapDenied(unit) and UnitCanAttack("player", unit)) then
 			color = Colors.tapped
