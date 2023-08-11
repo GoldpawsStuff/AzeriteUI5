@@ -26,6 +26,8 @@
 local _, ns = ...
 if (not ns.IsRetail) then return end
 
+if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return end
+
 local ExtraButtons = ns:NewModule("ExtraActionButtons", "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Lua API

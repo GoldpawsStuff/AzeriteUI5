@@ -26,6 +26,8 @@
 local _, ns = ...
 if (not ns.IsClassic) then return end
 
+if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return end
+
 local BlizzardABDisabler = ns:NewModule("BlizzardABDisabler", "LibMoreEvents-1.0", "AceHook-3.0")
 
 local hideActionBarFrame = function(frame, clearEvents, reanchor, noAnchorChanges)

@@ -26,6 +26,8 @@
 local _, ns = ...
 if (not ns.API.IsAddOnEnabled("Bartender4")) then return end
 
+if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return end
+
 local Bartender = ns:NewModule("Bartender", "LibMoreEvents-1.0")
 
 -- Disable and unhook Bartender's micro menu module

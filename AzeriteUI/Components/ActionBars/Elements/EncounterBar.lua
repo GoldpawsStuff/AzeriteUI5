@@ -27,6 +27,8 @@ local _, ns = ...
 
 if (not ns.WoW10) then return end
 
+if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return end
+
 local EncounterBar = ns:NewModule("EncounterBar", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
 
 local defaults = { profile = ns:Merge({}, ns.Module.defaults) }

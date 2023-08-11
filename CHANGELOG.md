@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-08-11
+### Changed
+- Neither the action bars, pet bar, stance bar or modifications to the encounter bar, zone ability buttons or the extra action buttons will be loaded if ConsolePort's bar module is enabled.
+
 ## [5.2.95-RC] 2023-08-10
 ### Fixed
 - The option to disconnect pet action bar fading from the main action bar fading now actually works. Only the pet bar will fade in when this option is enabled now.
