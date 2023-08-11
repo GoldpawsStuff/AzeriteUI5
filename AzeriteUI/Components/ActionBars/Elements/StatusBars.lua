@@ -239,7 +239,7 @@ local Button_UpdateTooltip = function(button)
 		GameTooltip:Show()
 
 	elseif (bar.currentType == "reputation") then
-		local r, g, b = unpack(Colors[bar.isFriend and "friendship" or "reaction"][bar.standingID])
+		local r, g, b = unpack(bar.standingID and Colors.reaction[bar.standingID] or Colors.reaction[#Colors.reaction])
 
 		GameTooltip_SetDefaultAnchor(GameTooltip, bar)
 		GameTooltip:AddDoubleLine(bar.name, bar.standingLabel, r, g, b, unpack(Colors.gray))
@@ -345,13 +345,9 @@ StatusBars.UpdateBars = function(self, event, ...)
 	local bonusShown = bonus:IsShown()
 	local showButton
 
-	local name, _, min, max, current = GetWatchedFactionInfo()
-	if (name) then
-		local forced = bar.currentType ~= "reputation"
-		local gender = UnitSex("player")
+	local name, standingID, min, max, current, factionID = GetWatchedFactionInfo()
 
-		-- Figure out the standingID of the watched faction
-		local standingID, standingLabel, isFriend
+	if (name and not standingID) then
 		for i = 1, GetNumFactions() do
 			local factionName, _, standingId = GetFactionInfo(i)
 			if (factionName == name) then
@@ -359,56 +355,140 @@ StatusBars.UpdateBars = function(self, event, ...)
 				break
 			end
 		end
+	end
 
-		if (standingID) then
-			local barMax = max - min
-			local barValue = current - min
-			if (barMax == 0) then
-				bar:SetMinMaxValues(0, 1, forced)
-				bar:SetValue(1, forced)
-			else
-				bar:SetMinMaxValues(0, barMax, forced)
-				bar:SetValue(barValue, forced)
+	if (name and standingID) then
+
+		local forced = bar.currentType ~= "reputation"
+
+		local isMajor = C_Reputation and C_Reputation.IsMajorFaction and C_Reputation.IsMajorFaction(factionID)
+		local isParagon = C_Reputation and C_Reputation.IsFactionParagon and C_Reputation.IsFactionParagon(factionID)
+		local isFriend
+		local level, maxLevel
+		local barMax, barValue
+		local standingLabel, nextStandingLabel
+
+		local color = standingID and Colors.reaction[standingID] or Colors.reaction[#Colors.reaction]
+
+		if (isParagon) then
+
+			local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID)
+			barMax = threshold
+			barValue = currentValue % threshold
+
+			color = Colors.reaction[#Colors.reaction]
+
+			level = nil
+			maxLevel = nil
+			isParagon = true
+
+		elseif (isMajor) then
+
+			local factionData = C_MajorFactions.GetMajorFactionData(factionID)
+			local renownLevelsInfo = C_MajorFactions.GetRenownLevels(factionID)
+			local isCapped = C_MajorFactions.HasMaximumRenown(factionID)
+
+
+			level = factionData.renownLevel
+			maxLevel = renownLevelsInfo[#renownLevelsInfo].level
+
+			barMax =  factionData.renownLevelThreshold
+			barValue = isCapped and factionData.renownLevelThreshold or factionData.renownReputationEarned or 0
+
+			color = Colors.reaction[#Colors.reaction]
+
+			standingLabel = RENOWN_LEVEL_LABEL .. factionData.renownLevel
+
+			if (level and maxLevel and level < maxLevel) then
+				nextStandingLabel = RENOWN_LEVEL_LABEL .. (factionData.renownLevel + 1)
 			end
 
-			local r, g, b = unpack(Colors[isFriend and "friendship" or "reaction"][standingID])
-			bar:SetStatusBarColor(r, g, b)
-			bar.currentType = "reputation"
-
-			if (not isFriend) then
-				standingLabel = GetText("FACTION_STANDING_LABEL"..standingID, gender)
-			end
-
-			bar.name = name
-			bar.isFriend = isFriend
-			bar.standingID, bar.standingLabel = standingID, standingLabel
-
-			bar.Value:SetFormattedText("%s", AbbreviateNumber(barMax-barValue))
-
-			local nextStanding = standingID and _G["FACTION_STANDING_LABEL"..(standingID + 1)] and GetText("FACTION_STANDING_LABEL"..standingID + 1, gender)
-			if (nextStanding) then
-				bar.Description:SetFormattedText(L["to %s"], nextStanding)
-			else
-				bar.Description:SetText("")
-			end
-
-			bar.Value:SetTextColor(r, g, b)
-			bar.Percent:SetTextColor(r, g, b)
-
-			local perc = math_floor(barValue/barMax*100)
-			if (perc > 0) then
-				bar.Percent:SetFormattedText("%.0f", perc)
-			else
-				bar.Percent:SetText("*")
-			end
-
-			bar:Show()
-
-			showButton = true
+			isMajor = true
 
 		else
-			bar:Hide()
+
+			local reputationInfo = C_GossipInfo and C_GossipInfo.GetFriendshipReputation and C_GossipInfo.GetFriendshipReputation(factionID)
+			local friendshipID = reputationInfo and reputationInfo.friendshipFactionID
+			if (friendshipID and friendshipID > 0) then
+
+				local repRankInfo = C_GossipInfo.GetFriendshipReputationRanks(factionID)
+
+				level = standingID
+				maxLevel = repRankInfo.maxLevel
+
+				standingLabel = reputationInfo.reaction
+
+				if (reputationInfo.nextThreshold) then
+					min, max, current = reputationInfo.reactionThreshold, reputationInfo.nextThreshold, reputationInfo.standing
+				else
+					min, max, current = 0, 1, 1
+				end
+
+				barMax = max - min
+				barValue = current - min
+				isFriend = true
+
+			else
+
+				local gender = UnitSex("player")
+
+				standingLabel = GetText("FACTION_STANDING_LABEL"..standingID, gender)
+				nextStandingLabel = _G["FACTION_STANDING_LABEL"..(standingID + 1)] and GetText("FACTION_STANDING_LABEL"..standingID + 1, gender)
+
+				level = standingID
+				maxLevel = MAX_REPUTATION_REACTION
+
+				barMax = max - min
+				barValue = current - min
+
+			end
 		end
+
+		bar.isParagon = isParagon
+		bar.isMajor = isMajor
+		bar.isFriend = isFriend
+
+		if (barMax == 0) then
+			bar:SetMinMaxValues(0, 1, forced)
+			bar:SetValue(1, forced)
+		else
+			bar:SetMinMaxValues(0, barMax, forced)
+			bar:SetValue(barValue, forced)
+		end
+
+		local r, g, b = unpack(color)
+		bar:SetStatusBarColor(r, g, b)
+		bar.currentType = "reputation"
+
+		bar.name = name
+		bar.standingID, bar.standingLabel = standingID, standingLabel
+
+
+		if (nextStandingLabel) then
+			bar.Value:SetFormattedText("%s", AbbreviateNumber(barMax-barValue))
+			bar.Description:SetFormattedText(L["to %s"], nextStandingLabel)
+
+		elseif (maxLevel and level and level < maxLevel) then
+			bar.Value:SetFormattedText("%s", AbbreviateNumber(barMax-barValue))
+			bar.Description:SetText(L["to next level"])
+		else
+			bar.Value:SetFormattedText("%s", AbbreviateNumber(barValue))
+			bar.Description:SetText("")
+		end
+
+		bar.Value:SetTextColor(r, g, b)
+		bar.Percent:SetTextColor(r, g, b)
+
+		local perc = math_floor(barValue/barMax*100)
+		if (perc > 0) then
+			bar.Percent:SetFormattedText("%.0f", perc)
+		else
+			bar.Percent:SetText("*")
+		end
+
+		bar:Show()
+
+		showButton = true
 
 		if (bonusShown) then
 			bonus:Hide()
