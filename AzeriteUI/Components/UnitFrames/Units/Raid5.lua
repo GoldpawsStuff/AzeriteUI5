@@ -822,7 +822,7 @@ RaidFrame5Mod.GetVisibilityDriver = function(self)
 
 	if (not partyInRaids and raid5) then
 		if (party) then
-			return true, "[@raid6,exists]hide;[group:raid,nogroup:party]show;hide", nil
+			return true, "[@raid6,exists]hide;[group:raid]show;hide", nil
 		else
 			return true, "[@raid6,exists]hide;[group]show;hide", true
 		end

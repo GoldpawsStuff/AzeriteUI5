@@ -723,7 +723,7 @@ RaidFrame40Mod.GetVisibilityDriver = function(self)
 		elseif (raid5 or partyInRaids) then
 			return true, "[@raid6,exists]show;hide", nil
 		elseif (party) then
-			return true, "[group:raid,nogroup:party]show;hide", nil
+			return true, "[group:raid]show;hide", nil
 		else
 			return true, "[group]show;hide", true
 		end
