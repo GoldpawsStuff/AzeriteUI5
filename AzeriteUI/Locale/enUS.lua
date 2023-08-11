@@ -163,6 +163,7 @@ L["Texture Variations"] = true
 L["The new profile needs a name."] = true
 L["to %s"] = true
 L["to level %s"] = true
+L["to next level"] = true -- GARRISON_FOLLOWER_XP_STRING
 L["Toggle whether to add itemID to item tooltips or not."] = true
 L["Toggle whether to add spellIDs and auraIDs in tooltips containing actions, spells or auras."] = true
 L["Toggle whether to enable the buttons of this action bar to fade out."] = true
