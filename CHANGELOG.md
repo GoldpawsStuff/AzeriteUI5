@@ -4,10 +4,13 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-08-11
+## [5.2.96-RC] 2023-08-11
 ### Changed
 - Friendly bosses will no longer get a huge target frame, regardless of options chosen for this. Only attackable enemy bosses will get the huge frame.
 - Neither the action bars, pet bar, stance bar or modifications to the encounter bar, zone ability buttons or the extra action buttons will be loaded if ConsolePort's bar module is enabled.
+
+### Fixed
+- Update macro drivers for the visibility of small party sized raid frames. Does this ever end?
 
 ## [5.2.95-RC] 2023-08-10
 ### Fixed
