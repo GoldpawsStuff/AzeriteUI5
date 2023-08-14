@@ -23,10 +23,11 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
+
 if (not UIWidgetTopCenterContainerFrame) then return end
 
-local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
+local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
 local UIWidgetTopCenter = ns:NewModule("UIWidgetTopCenter", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
 

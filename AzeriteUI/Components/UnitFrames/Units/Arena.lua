@@ -23,13 +23,13 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
 if (ns.IsClassic) then return end
 
 local oUF = ns.oUF
 
-local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
+local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
 local ArenaFrameMod = ns:NewModule("ArenaFrames", ns.UnitFrameModule, "LibMoreEvents-1.0")
 

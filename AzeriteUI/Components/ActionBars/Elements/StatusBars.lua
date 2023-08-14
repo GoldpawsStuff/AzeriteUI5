@@ -23,9 +23,9 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
-local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
+local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
 local StatusBars = ns:NewModule("PlayerStatusBars", "LibMoreEvents-1.0")
 

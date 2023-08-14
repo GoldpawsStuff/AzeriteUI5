@@ -1,5 +1,4 @@
-local Addon = ...
-local L = LibStub("AceLocale-3.0"):NewLocale(Addon, "enUS", true, true)
+local L = LibStub("AceLocale-3.0"):NewLocale((...), "enUS", true, true)
 
 L["<Ctrl and Right-Click to undo last change>"] = true
 L["<Left-Click and drag to move>"] = true

@@ -23,9 +23,9 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
-local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
+local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
 local MovableFramesManager = ns:NewModule("MovableFramesManager", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
 local EMP --= ns:GetModule("EditMode", true)

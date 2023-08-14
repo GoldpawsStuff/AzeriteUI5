@@ -23,9 +23,9 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
-local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
+local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
 local AlertFrames = ns:NewModule("AlertFrames", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
 

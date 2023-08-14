@@ -23,9 +23,9 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 
-local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
+local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
 local FlavorDifferences = ns:NewModule("FlavorDifferences", "AceConsole-3.0", "LibMoreEvents-1.0")
 

@@ -1,5 +1,4 @@
-local Addon = ...
-local L = LibStub("AceLocale-3.0"):NewLocale(Addon, "frFR")
+local L = LibStub("AceLocale-3.0"):NewLocale((...), "frFR")
 if (not L) then return end
 
 L["<Ctrl and Right-Click to undo last change>"] = true

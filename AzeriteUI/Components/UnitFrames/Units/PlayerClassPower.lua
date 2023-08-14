@@ -23,10 +23,10 @@
 	SOFTWARE.
 
 --]]
-local Addon, ns = ...
+local _, ns = ...
 local oUF = ns.oUF
 
-local L = LibStub("AceLocale-3.0"):GetLocale(Addon)
+local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
 local ClassPowerMod = ns:NewModule("PlayerClassPowerFrame", ns.Module, "LibMoreEvents-1.0")
 
