@@ -2,6 +2,7 @@
 
 	<Script file="AlertFrames.lua"/>
 	<Script file="ArcheologyBar.lua"/>
+	<Script file="Banners.lua"/>
 	<Script file="ChatFrames.lua"/>
 	<Script file="Containers.lua"/>
 	<Script file="Durability.lua"/>
