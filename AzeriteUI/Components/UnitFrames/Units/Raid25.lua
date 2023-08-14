@@ -299,18 +299,12 @@ local GroupRoleIndicator_Override = function(self, event)
 	end
 end
 
+-- Update leader indicator position
+-- when master looter indicator is shown or hidden.
 local MasterLooterIndicator_PostUpdate = function(self, isShown)
 	local leaderIndicator = self.__owner.LeaderIndicator
 	leaderIndicator:ClearAllPoints()
-
-	if (isShown) then
-		if (not leaderIndicator.points) then
-			leaderIndicator.points = { leaderIndicator:GetPoint() }
-		end
-		leaderIndicator:SetPoint("RIGHT", self, "LEFT")
-	elseif (leaderIndicator.points) then
-		leaderIndicator:SetPoint(unpack(leaderIndicator.points))
-	end
+	leaderIndicator:SetPoint("RIGHT", isShown and self or self.__owner.Name, "LEFT")
 end
 
 -- Update targeting highlight outline
