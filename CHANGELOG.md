@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-08-14
+### Changed
+- The various mid-screen banner announcements are now movable. Examples of banners are the level up display, honor level gain display, the boss fight banner and so on.
+
 ### Fixed
 - You should no longer get an error message when master looter is set or changed in Classic Era and Wrath.
 
