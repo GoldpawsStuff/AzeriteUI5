@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-08-14
+### Fixed
+- You should no longer get an error message when master looter is set or changed in Classic Era and Wrath.
+
 ## [5.2.97-RC] 2023-08-11
 ### Changed
 - The anchor for alert frames in `/lock` is now a bit larger.
