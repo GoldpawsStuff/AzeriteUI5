@@ -73,10 +73,20 @@ end
 Banners.TopBannerManager_Show = function(self, frame, data, isExclusiveQueued)
 	if (self.banners[frame]) then return end
 
+	local isCurrent = TopBannerMgr.currentBanner and TopBannerMgr.currentBanner.frame == frame
+	if (isCurrent) then
+		frame:StopBanner()
+	end
+
 	frame:ClearAllPoints()
 	frame:SetPoint("CENTER", self.frame, "CENTER", 0, 0)
 
 	self.banners[frame] = true
+
+	if (isCurrent) then
+		frame:PlayBanner(data)
+	end
+
 end
 
 Banners.PrepareFrames = function(self)
@@ -86,29 +96,10 @@ Banners.PrepareFrames = function(self)
 	frame:SetPoint(unpack(Banners.db.profile.savedPosition))
 
 	self.frame = frame
-
 	self.banners = {}
 
-	--self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	--self:RegisterEvent("ADDON_LOADED", "OnEvent")
 	self:SecureHook("TopBannerManager_Show", "TopBannerManager_Show")
 end
-
---Banners.UpdateBanners = function(self)
---	for i,data in next,banners do
---		local banner = _G[data[2]]
---		if (banner and not self.banners[banner]) then
---			banner:ClearAllPoints()
---			banner:SetPoint("CENTER", self.frame, "CENTER", 0, 0)
---			banners[i] = nil
---			self.banners[banner] = data
---		end
---	end
---end
-
---Banners.OnEvent = function(self, event, ...)
---	self:UpdateBanners()
---end
 
 Banners.OnEnable = function(self)
 	self:PrepareFrames()
