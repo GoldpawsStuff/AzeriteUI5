@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-08-17
+## [5.2.98-RC] 2023-08-17
 ### Added
 - There is now a text notification on the minimap when you're resting.
 
