@@ -59,7 +59,8 @@ local noop = ns.Noop
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	enableBarFading = true, -- whether to enable non-combat/hover button fading
-	fadeInCombat = false, -- whether to keep fading out even in combat
+	fadeInCombat = true, -- whether to keep fading out even in combat
+	fadeAlone = true,
 	fadeFrom = 1, -- which button to start the button fading from
 	numbuttons = NUM_PET_ACTION_SLOTS, -- total number of buttons on the bar
 	layout = "grid", -- currently applied layout type
@@ -300,6 +301,7 @@ PetBar.CreateButton = function(self, buttonConfig)
 
 	local id = #self.buttons + 1
 	local button = ns.PetButton.Create(id, self:GetName().."Button"..id, self, buttonConfig)
+	button.header = self
 
 	self:SetFrameRef("Button"..id, button)
 	self.buttons[id] = button
