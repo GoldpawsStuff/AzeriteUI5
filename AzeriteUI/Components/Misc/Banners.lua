@@ -39,7 +39,9 @@ local banners = {
 	{ nil, "ArtifactLevelUpToast", 128, 128, "TOP", 0, -123 },
 	{ nil, "AzeriteLevelUpToast", 128, 128, "TOP", 0, -123 },
 	{ nil, "BossBanner", 128, 156, "TOP", 0, -120 },
+	{ nil, "HonorLevelUpBanner", 128, 128, "TOP", 0, -133 },
 	{ nil, "LevelUpDisplay", 418, 72, "TOP", 0, -190 },
+	{ nil, "PrestigeLevelUpBanner", 128, 128, "TOP", 0, -270 },
 	{ "Blizzard_ChallengesUI", "ChallengeModeCompleteBanner", 128, 356, "TOP", 0, -120 },
 	{ "Blizzard_CovenantToasts", "CovenantChoiceToast", 128, 128, "TOP", 0, -160 },
 	{ "Blizzard_CovenantToasts", "CovenantRenownToast", 128, 128, "TOP", 0, -160 },
@@ -97,6 +99,13 @@ Banners.PrepareFrames = function(self)
 
 	self.frame = frame
 	self.banners = {}
+
+	for i,data in next,banners do
+		local addon, name, w, h, point, x, y = unpack(data)
+		if (_G[name]) then
+			self:TopBannerManager_Show(_G[name])
+		end
+	end
 
 	self:SecureHook("TopBannerManager_Show", "TopBannerManager_Show")
 end
