@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-08-14
+## [Unreleased] 2023-08-17
+### Added
+- There is now a text notification on the minimap when you're resting.
+
 ### Changed
 - The various mid-screen banner announcements are now movable. Examples of banners are the level up display, honor level gain display, the boss fight banner and so on.
 
