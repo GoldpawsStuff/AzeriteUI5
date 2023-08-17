@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.99-RC] 2023-08-17
+### Added
+- The `HonorLevelUpBanner` and `PrestigeLevelUpBanner` frames should also be moved along with the other banners in `/lock` mode now.
+
 ## [5.2.98-RC] 2023-08-17
 ### Added
 - There is now a text notification on the minimap when you're resting.
