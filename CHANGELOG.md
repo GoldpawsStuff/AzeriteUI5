@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - You should no longer get an error message when master looter is set or changed in Classic Era and Wrath.
+- The option to only show the pet bar on mouseover even in combat now actually works.
 
 ## [5.2.97-RC] 2023-08-11
 ### Changed
