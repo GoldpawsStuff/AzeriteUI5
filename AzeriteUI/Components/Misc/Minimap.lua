@@ -587,11 +587,35 @@ MinimapMod.UpdateMail = function(self)
 	if (hasMail or hasCraftingOrder) then
 		mail:Show()
 		mail.frame:Show()
+
+		--local resting = self.resting
+		--if (resting) then
+		--	resting:ClearAllPoints()
+		--	resting:SetPoint("BOTTOM", mail, "TOP", 0, 0)
+		--end
 	else
 		mail:Hide()
 		mail.frame:Hide()
+
+		--local resting = self.resting
+		--if (resting) then
+		--	resting:ClearAllPoints()
+		--	resting:SetPoint(mail:GetPoint())
+		--end
 	end
 
+end
+
+MinimapMod.UpdateResting = function(self)
+	local resting = self.resting
+	if (not resting) then
+		return
+	end
+	if (IsResting()) then
+		resting:Show()
+	else
+		resting:Hide()
+	end
 end
 
 MinimapMod.UpdateTimers = function(self)
@@ -1008,6 +1032,17 @@ MinimapMod.CreateCustomElements = function(self)
 
 	self.mail = mail
 
+	-- Resting Text
+	local resting = frame:CreateFontString(nil, "OVERLAY", nil, 1)
+	resting:SetFontObject(db.ZoneTextFont)
+	resting:SetPoint("RIGHT", self.zoneName, "LEFT", -4, 0)
+	resting:SetJustifyH("CENTER")
+	resting:SetJustifyV("MIDDLE")
+	resting:SetTextColor(unpack(db.ClockColor))
+	resting:SetText("|cff888888(|r"..L_RESTING.."|cff888888)|r")
+
+	self.resting = resting
+
 	local dropdown = LibDD:Create_UIDropDownMenu(ns.Prefix.."MiniMapTrackingDropDown", UIParent)
 	dropdown:SetID(1)
 	dropdown:SetClampedToScreen(true)
@@ -1315,7 +1350,8 @@ MinimapMod.OnEnable = function(self)
 
 	ns.Module.OnEnable(self)
 
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateResting")
+	self:RegisterEvent("PLAYER_UPDATE_RESTING", "OnEvent")
 	self:RegisterEvent("VARIABLES_LOADED", "OnEvent")
 	self:RegisterEvent("CVAR_UPDATE", "UpdateTimers")
 	self:RegisterEvent("UPDATE_PENDING_MAIL", "UpdateMail")
