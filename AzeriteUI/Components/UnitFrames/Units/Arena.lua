@@ -34,19 +34,40 @@ local L = LibStub("AceLocale-3.0"):GetLocale((...))
 local ArenaFrameMod = ns:NewModule("ArenaFrames", ns.UnitFrameModule, "LibMoreEvents-1.0")
 
 -- GLOBALS: CreateFrame, InCombatLockdown, Enum
--- GLOBALS: UnitIsUnit, UnitHasVehicleUI, UnitPowerType
+-- GLOBALS: GetNumArenaOpponentSpecs, UnitIsUnit, UnitHasVehicleUI, UnitPowerType
 
 -- Lua API
 local math_abs = math.abs
+local math_max = math.max
+local math_min = math.min
+local math_ceil = math.ceil
 local next = next
 local select = select
 local setmetatable = setmetatable
 local string_gsub = string.gsub
+local string_upper = string.upper
+local type = type
 local unpack = unpack
 
+local Units = {}
+
 local defaults = { profile = ns:Merge({
+
 	enabled = true,
-	yOffset = -12
+	useRangeIndicator = false,
+
+	point = "TOP", -- anchor point of unitframe, group members within column grow opposite
+	xOffset = 0, -- horizontal offset within the same column
+	yOffset = -12, -- vertical offset within the same column
+
+	groupBy = "GROUP", -- GROUP, CLASS, ROLE
+	groupingOrder = "1,2,3,4,5,6,7,8", -- must match choice in groupBy
+
+	unitsPerColumn = 5, -- maximum units per column
+	maxColumns = 1, -- should be 40/unitsPerColumn
+	columnSpacing = 10, -- spacing between columns
+	columnAnchorPoint = "RIGHT" -- anchor point of column, columns grow opposite
+
 }, ns.Module.defaults) }
 
 ArenaFrameMod.GenerateDefaults = function(self)
@@ -65,6 +86,32 @@ end
 -- Simplify the tagging process a little.
 local prefix = function(msg)
 	return string_gsub(msg, "*", ns.Prefix)
+end
+
+-- Sourced from FrameXML\SecureGroupHeaders.lua
+-- relativePoint, xMultiplier, yMultiplier = getRelativePointAnchor(point)
+-- Given a point return the opposite point and which axes the point depends on.
+local getRelativePointAnchor = function(point)
+	point = string_upper(point)
+	if (point == "TOP") then
+		return "BOTTOM", 0, -1
+	elseif (point == "BOTTOM") then
+		return "TOP", 0, 1
+	elseif (point == "LEFT") then
+		return "RIGHT", 1, 0
+	elseif (point == "RIGHT") then
+		return "LEFT", -1, 0
+	elseif (point == "TOPLEFT") then
+		return "BOTTOMRIGHT", 1, -1
+	elseif (point == "TOPRIGHT") then
+		return "BOTTOMLEFT", -1, -1
+	elseif (point == "BOTTOMLEFT") then
+		return "TOPRIGHT", 1, 1
+	elseif (point == "BOTTOMRIGHT") then
+		return "TOPLEFT", -1, 1
+	else
+		return "CENTER", 0, 0
+	end
 end
 
 -- Element Callbacks
@@ -312,10 +359,12 @@ local style = function(self, unit)
 	local db = ns.GetConfig("ArenaFrames")
 
 	self:SetSize(unpack(db.UnitSize))
+	self:SetFrameLevel(self:GetFrameLevel() + 10)
 
 	-- Apply common scripts and member values.
 	ns.UnitFrame.InitializeUnitFrame(self)
 	ns.UnitFrames[self] = true -- add to our registry
+	Units[self] = true -- add to local registry
 
 	-- Overlay for icons and text
 	--------------------------------------------
@@ -675,30 +724,40 @@ end
 
 -- Fake GroupHeader
 ---------------------------------------------------
-local GroupHeader = CreateFrame("Frame")
-local GroupHeader_MT = { __index = GroupHeader }
+local GroupHeader = {}
+
+GroupHeader.ForAll = function(self, methodOrFunc, ...)
+	for frame in next,Units do
+		if (type(methodOrFunc) == "string") then
+			frame[methodOrFunc](frame, ...)
+		else
+			methodOrFunc(frame, ...)
+		end
+	end
+end
 
 GroupHeader.Enable = function(self)
 	if (InCombatLockdown()) then return end
-	for i,frame in next,self.units do
+	for frame in next,Units do
 		frame:Enable()
 	end
+	self.enabled = true
 end
 
 GroupHeader.Disable = function(self)
 	if (InCombatLockdown()) then return end
-	for i,frame in next,self.units do
+	for frame in next,Units do
 		frame:Disable()
 	end
+	self.enabled = false
 end
 
 GroupHeader.IsEnabled = function(self)
-	return self.units[1]:IsEnabled()
+	return self.enabled
 end
 
 ArenaFrameMod.GetHeaderSize = function(self)
-	local config = ns.GetConfig("ArenaFrames")
-	return config.UnitSize[1], config.UnitSize[2]*5 + math_abs(self.db.profile.yOffset * 4)
+	return self:GetCalculatedHeaderSize(5)
 end
 
 ArenaFrameMod.CreateUnitFrames = function(self)
@@ -708,95 +767,255 @@ ArenaFrameMod.CreateUnitFrames = function(self)
 	oUF:RegisterStyle(ns.Prefix..name, style)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
-	local frame = setmetatable(CreateFrame("Frame", nil, UIParent), GroupHeader_MT)
-	frame:SetSize(self:GetHeaderSize())
-	frame.units = {}
+	self.frame = CreateFrame("Frame", nil, UIParent)
+	self.frame.content = CreateFrame("Frame", ns.Prefix.."ArenaEnemyFrames", UIParent, "SecureHandlerStateTemplate")
+
+	-- Embed our custom methods
+	for method,func in next,GroupHeader do
+		self.frame.content[method] = func
+	end
 
 	for i = 1,5 do
 		local unitFrame = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)
-		--local unitFrame = ns.UnitFrame.Spawn(i == 1 and "targettarget" or i == 3 and "player" or i == 4 and "target" or unit..i, ns.Prefix.."UnitFrame"..name..i)
-		frame.units[i] = unitFrame
+		--local unitFrame = ns.UnitFrame.Spawn(i == 1 and "player" or i == 2 and "pet" or "player", ns.Prefix.."UnitFrame"..name..i)
+		self.frame.content:SetFrameRef("child"..i, unitFrame)
+		self.frame.content:SetAttribute("child"..i, unitFrame)
+	end
+
+	self:UpdateHeader()
+	--self:UpdateHeaderAnchorPoint()
+	--self:UpdateLayout()
+
+	-- need to make it update on the fly securely since units can leave in the middle of an arena.
+	--for i in next,Units do
+	--	local listener = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+	--	listener:SetFrameRef("Updater", self.frame.content)
+	--	listener:SetAttribute("_onstate-layout", [[ self:GetFrameRef("Updater"):RunAttribute("UpdateLayout"); ]])
+	--	RegisterStateDriver(listener, "layout", "[@arena"..i..",exists]arena"..i.."on;arena"..i.."off")
+	--end
+
+end
+
+ArenaFrameMod.UpdateHeader = function(self)
+	local header = self:GetUnitFrameOrHeader()
+	if (not header) then return end
+
+	if (InCombatLockdown()) then
+		self.needHeaderUpdate = true
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+		return
 	end
 
 	local config = ns.GetConfig("ArenaFrames")
+	header:SetAttribute("unitWidth", config.UnitSize[1])
+	header:SetAttribute("unitHeight", config.UnitSize[2])
 
-	local layoutManager = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-	layoutManager:SetAllPoints(frame)
-	layoutManager:SetAttribute("unitWidth", config.UnitSize[1])
-	layoutManager:SetAttribute("unitHeight", config.UnitSize[2])
-	layoutManager:SetAttribute("yOffset", self.db.profile.yOffset)
-
-	layoutManager:SetAttribute("UpdateLayout", [[
-
-		-- count visible units
-		local visible = 0;
-		for i = 1,5 do
-			local unit = self:GetFrameRef("Frame"..i):GetAttribute("unit");
-			if (unit and UnitExists(unit)) then
-				visible = visible + 1;
-			end
-		end
-
-		if (visible == 0) then return end
-
-		-- do the calculations
-		local unitHeight = self:GetAttribute("unitHeight");
-		local unitSpacing = abs(self:GetAttribute("yOffset"));
-		local fullHeight = unitHeight*5 + unitSpacing*4;
-		local groupHeight = (visible > 1) and (visible*unitHeight + (visible-1)*unitSpacing) or unitHeight;
-		local offsetY = -(fullHeight - groupHeight)/2;
-
-		-- do the layout
-		local count = 0;
-		for i = 1,5 do
-			local unit = self:GetFrameRef("Frame"..i):GetAttribute("unit");
-			if (unit and UnitExists(unit)) then
-				local unitFrame = self:GetFrameRef("Frame"..i);
-				unitFrame:ClearAllPoints();
-				unitFrame:SetPoint("TOPRIGHT", self, "TOPRIGHT", 0, offsetY - (count * (unitHeight + unitSpacing)));
-				count = count + 1;
-			end
-		end
-	]])
-
-	for i = 1,5 do
-		layoutManager:SetFrameRef("Frame"..i, frame.units[i])
+	for _,attrib in next,{
+		"point","xOffset","yOffset",
+		"groupBy","groupingOrder",
+		"unitsPerColumn","maxColumns",
+		"columnSpacing","columnAnchorPoint"
+	} do
+		header:SetAttribute(attrib, self.db.profile[attrib])
 	end
 
-	local onLayoutChange = [[
-		self:GetFrameRef("Updater"):RunAttribute("UpdateLayout");
-	]]
+	self.frame:SetSize(self:GetHeaderSize())
+	self:UpdateLayout()
 
-	for i = 1,5 do
-		local listener = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-		listener:SetFrameRef("Updater", layoutManager)
-		listener:SetAttribute("_onstate-layout", onLayoutChange)
-		RegisterStateDriver(listener, "layout", "[@arena"..i..",exists]arena"..i.."on;arena"..i.."off")
+	self:UpdateHeaderAnchorPoint() -- update where the group header is anchored to our anchorframe.
+	self:UpdateAnchor() -- the general update does this too, but we need it in case nothing but this function has been called.
+end
+
+ArenaFrameMod.UpdateHeaderAnchorPoint = function(self)
+	local point = "TOPLEFT"
+	if (self.db.profile.columnAnchorPoint == "LEFT") then
+		if (self.db.profile.point == "TOP") then
+			point = "TOPLEFT"
+		elseif (self.db.profile.point == "BOTTOM") then
+			point = "BOTTOMLEFT"
+		end
+	elseif (self.db.profile.columnAnchorPoint == "RIGHT") then
+		if (self.db.profile.point == "TOP") then
+			point = "TOPRIGHT"
+		elseif (self.db.profile.point == "BOTTOM") then
+			point = "BOTTOMRIGHT"
+		end
+	elseif (self.db.profile.columnAnchorPoint == "TOP") then
+		if (self.db.profile.point == "LEFT") then
+			point = "TOPLEFT"
+		elseif (self.db.profile.point == "RIGHT") then
+			point = "TOPRIGHT"
+		end
+	elseif (self.db.profile.columnAnchorPoint == "BOTTOM") then
+		if (self.db.profile.point == "LEFT") then
+			point = "BOTTOMLEFT"
+		elseif (self.db.profile.point == "RIGHT") then
+			point = "BOTTOMRIGHT"
+		end
 	end
+	local header = self:GetUnitFrameOrHeader()
+	header:ClearAllPoints()
+	header:SetPoint(point, self:GetFrame(), point)
+end
 
-	self.frame = frame
+ArenaFrameMod.UpdateUnits = function(self)
+	if (not self:GetFrame()) then return end
+	for frame in next,Units do
+		if (self.db.profile.useRangeIndicator) then
+			frame:EnableElement("Range")
+		else
+			frame:DisableElement("Range")
+			frame:SetAlpha(1)
+		end
+		frame:UpdateAllElements("RefreshUnit")
+	end
+end
+
+ArenaFrameMod.Update = function(self)
+	self:UpdateHeader()
+	self:UpdateUnits()
 end
 
 ArenaFrameMod.UpdateLayout = function(self)
 	if (InCombatLockdown()) then return end
 
+	local db = self.db.profile
 	local config = ns.GetConfig("ArenaFrames")
+	local header = self:GetUnitFrameOrHeader()
+	local frame = self:GetFrame()
 
-	local numOpponentSpecs = GetNumArenaOpponentSpecs()
-	if (numOpponentSpecs and numOpponentSpecs > 0) then
+	local point = db.point or "TOP" --default anchor point of "TOP"
+	local relativePoint, xOffsetMult, yOffsetMult = getRelativePointAnchor(point)
+	local xMultiplier, yMultiplier =  math_abs(xOffsetMult), math_abs(yOffsetMult)
+	local xOffset = db.xOffset or 0 --default of 0
+	local yOffset = db.yOffset or 0 --default of 0
+	local sortDir = db.sortDir or "ASC" --sort ascending by default
+	local columnSpacing = db.columnSpacing or 0
+	local startingIndex = db.startingIndex or 1
 
-		local unitWidth, unitHeight = unpack(config.UnitSize)
-		local unitSpacing = math_abs(self.db.profile.yOffset)
-		local fullHeight = unitHeight*5 + unitSpacing*4
-		local groupHeight = (numOpponentSpecs > 1) and (numOpponentSpecs*unitHeight + (numOpponentSpecs-1)*unitSpacing) or unitHeight
-		local offsetY = -(fullHeight - groupHeight)/2
+	local unitCount = GetNumArenaOpponentSpecs() or 0
 
-		for i = 1,numOpponentSpecs do
-			local frame = self.frame.units[i]
-			frame:ClearAllPoints();
-			frame:SetPoint("TOPRIGHT", self.frame, "TOPRIGHT", 0, offsetY - (i * (unitHeight + unitSpacing)));
-		end
+	-- Dev
+	--if (unitCount == 0) then
+	--	for frame in next,Units do
+	--		if (UnitExists(frame.unit)) then
+	--			unitCount = unitCount + 1
+	--		end
+	--	end
+	--end
+
+	local numDisplayed = unitCount - (startingIndex - 1)
+	local unitsPerColumn = db.unitsPerColumn
+	local numColumns
+	if (unitsPerColumn and numDisplayed > unitsPerColumn) then
+		numColumns = math_min(math_ceil(numDisplayed/unitsPerColumn), (db.maxColumns or 1))
+	else
+		unitsPerColumn = numDisplayed
+		numColumns = 1
 	end
+	local loopStart = startingIndex
+	local loopFinish = math_min((startingIndex - 1) + unitsPerColumn * numColumns, unitCount)
+	local step = 1
+
+	numDisplayed = loopFinish - (loopStart - 1)
+
+	if (sortDir == "DESC") then
+		loopStart = unitCount - (startingIndex - 1)
+		loopFinish = loopStart - (numDisplayed - 1)
+		step = -1
+	end
+
+	local columnAnchorPoint, columnRelPoint, colxMulti, colyMulti
+	if (numColumns > 1) then
+		columnAnchorPoint = db.columnAnchorPoint
+		columnRelPoint, colxMulti, colyMulti = getRelativePointAnchor(columnAnchorPoint)
+	end
+
+	local unitNum = 0
+	local columnNum = 1
+	local columnUnitCount = 0
+	local currentAnchor = header
+
+	for i = loopStart, loopFinish, step do
+		unitNum = unitNum + 1
+		columnUnitCount = columnUnitCount + 1
+		if (columnUnitCount > unitsPerColumn) then
+			columnUnitCount = 1
+			columnNum = columnNum + 1
+		end
+
+		local unitFrame = header:GetAttribute("child"..unitNum)
+		unitFrame:ClearAllPoints()
+
+		if (unitNum == 1) then
+			unitFrame:SetPoint(point, currentAnchor, point, 0, 0)
+			if (columnAnchorPoint) then
+				unitFrame:SetPoint(columnAnchorPoint, currentAnchor, columnAnchorPoint, 0, 0)
+			end
+
+		elseif (columnUnitCount == 1) then
+			local columnAnchor = header:GetAttribute("child"..(unitNum - unitsPerColumn))
+			unitFrame:SetPoint(columnAnchorPoint, columnAnchor, columnRelPoint, colxMulti * columnSpacing, colyMulti * columnSpacing)
+
+		else
+			unitFrame:SetPoint(point, currentAnchor, relativePoint, xMultiplier * xOffset, yMultiplier * yOffset)
+		end
+
+		currentAnchor = unitFrame
+	end
+
+	header:SetSize(self:GetCalculatedHeaderSize(numDisplayed))
+end
+
+ArenaFrameMod.GetCalculatedHeaderSize = function(self, numDisplayed)
+
+	local config = ns.GetConfig("ArenaFrames")
+	local db = self.db.profile
+
+	local header = self:GetUnitFrameOrHeader()
+	local unitButtonWidth = config.UnitSize[1]
+	local unitButtonHeight = config.UnitSize[2]
+	local unitsPerColumn = db.unitsPerColumn
+	local point = db.point or "TOP"
+	local relativePoint, xOffsetMult, yOffsetMult = getRelativePointAnchor(point)
+	local xMultiplier, yMultiplier =  math_abs(xOffsetMult), math_abs(yOffsetMult)
+	local xOffset = db.xOffset or 0
+	local yOffset = db.yOffset or 0
+	local columnSpacing = db.columnSpacing or 0
+
+	local numColumns
+	if (unitsPerColumn and numDisplayed > unitsPerColumn) then
+		numColumns = math_min(math_ceil(numDisplayed/unitsPerColumn), (db.maxColumns or 1))
+	else
+		unitsPerColumn = numDisplayed
+		numColumns = 1
+	end
+
+	local columnAnchorPoint, columnRelPoint, colxMulti, colyMulti
+	if (numColumns > 1) then
+		columnAnchorPoint = db.columnAnchorPoint
+		columnRelPoint, colxMulti, colyMulti = getRelativePointAnchor(columnAnchorPoint)
+	end
+
+	local width, height
+
+	if (numDisplayed > 0) then
+		width = xMultiplier * (unitsPerColumn - 1) * unitButtonWidth + ((unitsPerColumn - 1) * (xOffset * xOffsetMult)) + unitButtonWidth
+		height = yMultiplier * (unitsPerColumn - 1) * unitButtonHeight + ((unitsPerColumn - 1) * (yOffset * yOffsetMult)) + unitButtonHeight
+
+		if (numColumns > 1) then
+			width = width + ((numColumns -1) * math_abs(colxMulti) * (width + columnSpacing))
+			height = height + ((numColumns -1) * math_abs(colyMulti) * (height + columnSpacing))
+		end
+	else
+		local minWidth = db.minWidth or (yMultiplier * unitButtonWidth)
+		local minHeight = db.minHeight or (xMultiplier * unitButtonHeight)
+
+		width = math_max(minWidth, 0.1)
+		height = math_max(minHeight, 0.1)
+	end
+
+	return width, height
 end
 
 ArenaFrameMod.OnEvent = function(self, event, ...)
@@ -805,12 +1024,22 @@ ArenaFrameMod.OnEvent = function(self, event, ...)
 			self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 			return
 		end
-		self:UpdateLayout()
+		self:UpdateHeader()
+
+	elseif (event == "PLAYER_ENTERING_WORLD") then
+		if (InCombatLockdown()) then
+			self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+			return
+		end
+		self:UpdateHeader()
 
 	elseif (event == "PLAYER_REGEN_ENABLED") then
 		if (InCombatLockdown()) then return end
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-		self:UpdateLayout()
+		if (self.needHeaderUpdate) then
+			self.needHeaderUpdate = nil
+			self:UpdateHeader()
+		end
 	end
 end
 
@@ -821,5 +1050,6 @@ ArenaFrameMod.OnEnable = function(self)
 
 	ns.Module.OnEnable(self)
 
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS", "OnEvent")
 end
