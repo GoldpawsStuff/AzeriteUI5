@@ -95,7 +95,7 @@ local function Enable(self, unit)
 		self:RegisterEvent('ARENA_OPPONENT_UPDATE', Path, true)
 		self:RegisterEvent('PLAYER_ENTERING_WORLD', Path, true)
 		if(oUF.isRetail) then
-			self:RegisterEvent('ARENA_PREP_OPPONENT_SPECIALIZATIONS', Path)
+			self:RegisterEvent('ARENA_PREP_OPPONENT_SPECIALIZATIONS', Path, true)
 		end
 
 		if(not element.icon) then
