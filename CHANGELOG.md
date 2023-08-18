@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-08-18
+### Fixed
+- The boss frames, arena enemy frames and various group frames now responds to scale changes again.
+- Anchoring inconsistencies in the arena enemy frames have been solved. They should mirror the raid(5) frames more accurately now.
+
 ## [5.2.99-RC] 2023-08-17
 ### Added
 - The `HonorLevelUpBanner` and `PrestigeLevelUpBanner` frames should also be moved along with the other banners in `/lock` mode now.
