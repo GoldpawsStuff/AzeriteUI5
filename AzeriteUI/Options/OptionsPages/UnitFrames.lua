@@ -303,6 +303,11 @@ local GenerateOptions = function()
 		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("ArenaFrames")
 		suboptions.name = L["Arena Enemy Frames"]
 		suboptions.order = 180
+		suboptions.args.useRangeIndicator = {
+			name = L["Use Range Indicator"],
+			desc = L["Toggle whether to fade unit frames of units that are out of range."],
+			order = 11, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
 		options.args.arena = suboptions
 	end
 
