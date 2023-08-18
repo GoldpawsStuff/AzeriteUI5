@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-08-18
+## [5.2.100-RC] 2023-08-18
 ### Fixed
 - The boss frames, arena enemy frames and various group frames now responds to scale changes again. Be warned that this might change the scale of those frames, and is not a bug. It's the previous unscalable size that was the bug.
 - Anchoring inconsistencies in the arena enemy frames have been solved. They should mirror the raid(5) frames more accurately now.
