@@ -55,8 +55,8 @@ local defaults = { profile = ns:Merge({
 	groupBy = "GROUP", -- GROUP, CLASS, ROLE
 	groupingOrder = "1,2,3,4,5,6,7,8", -- must match choice in groupBy
 
-	unitsPerColumn = 5, -- maximum units per column
-	maxColumns = 1, -- should be 40/unitsPerColumn
+	unitsPerColumn = 5,
+	maxColumns = 1,
 	columnSpacing = 10, -- spacing between columns
 	columnAnchorPoint = "LEFT" -- anchor point of column, columns grow opposite
 
@@ -773,6 +773,7 @@ end
 RaidFrame5Mod.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_REGEN_ENABLED") then
 		if (InCombatLockdown()) then return end
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 		if (self.needHeaderUpdate) then
 			self.needHeaderUpdate = nil
 			self:UpdateHeader()
