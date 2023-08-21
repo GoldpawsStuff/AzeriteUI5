@@ -1351,7 +1351,7 @@ MinimapMod.OnEnable = function(self)
 	ns.Module.OnEnable(self)
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateResting")
-	self:RegisterEvent("PLAYER_UPDATE_RESTING", "OnEvent")
+	self:RegisterEvent("PLAYER_UPDATE_RESTING", "UpdateResting")
 	self:RegisterEvent("VARIABLES_LOADED", "OnEvent")
 	self:RegisterEvent("CVAR_UPDATE", "UpdateTimers")
 	self:RegisterEvent("UPDATE_PENDING_MAIL", "UpdateMail")
