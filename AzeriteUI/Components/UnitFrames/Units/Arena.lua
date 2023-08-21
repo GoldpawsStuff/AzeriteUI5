@@ -386,7 +386,7 @@ local style = function(self, unit)
 	health.predictThreshold = .01
 	health.colorDisconnected = true
 	health.colorClass = true
-	health.colorClassPet = true
+	--health.colorClassPet = true
 	health.colorReaction = true
 	health.colorHealth = true
 
@@ -756,6 +756,57 @@ GroupHeader.IsEnabled = function(self)
 	return self.enabled
 end
 
+ArenaFrameMod.GetCalculatedHeaderSize = function(self, numDisplayed)
+
+	local config = ns.GetConfig("ArenaFrames")
+	local db = self.db.profile
+
+	local header = self:GetUnitFrameOrHeader()
+	local unitButtonWidth = config.UnitSize[1]
+	local unitButtonHeight = config.UnitSize[2]
+	local unitsPerColumn = db.unitsPerColumn
+	local point = db.point or "TOP"
+	local relativePoint, xOffsetMult, yOffsetMult = getRelativePointAnchor(point)
+	local xMultiplier, yMultiplier =  math_abs(xOffsetMult), math_abs(yOffsetMult)
+	local xOffset = db.xOffset or 0
+	local yOffset = db.yOffset or 0
+	local columnSpacing = db.columnSpacing or 0
+
+	local numColumns
+	if (unitsPerColumn and numDisplayed > unitsPerColumn) then
+		numColumns = math_min(math_ceil(numDisplayed/unitsPerColumn), (db.maxColumns or 1))
+	else
+		unitsPerColumn = numDisplayed
+		numColumns = 1
+	end
+
+	local columnAnchorPoint, columnRelPoint, colxMulti, colyMulti
+	if (numColumns > 1) then
+		columnAnchorPoint = db.columnAnchorPoint
+		columnRelPoint, colxMulti, colyMulti = getRelativePointAnchor(columnAnchorPoint)
+	end
+
+	local width, height
+
+	if (numDisplayed > 0) then
+		width = xMultiplier * (unitsPerColumn - 1) * unitButtonWidth + ((unitsPerColumn - 1) * (xOffset * xOffsetMult)) + unitButtonWidth
+		height = yMultiplier * (unitsPerColumn - 1) * unitButtonHeight + ((unitsPerColumn - 1) * (yOffset * yOffsetMult)) + unitButtonHeight
+
+		if (numColumns > 1) then
+			width = width + ((numColumns -1) * math_abs(colxMulti) * (width + columnSpacing))
+			height = height + ((numColumns -1) * math_abs(colyMulti) * (height + columnSpacing))
+		end
+	else
+		local minWidth = db.minWidth or (yMultiplier * unitButtonWidth)
+		local minHeight = db.minHeight or (xMultiplier * unitButtonHeight)
+
+		width = math_max(minWidth, 0.1)
+		height = math_max(minHeight, 0.1)
+	end
+
+	return width, height
+end
+
 ArenaFrameMod.GetHeaderSize = function(self)
 	return self:GetCalculatedHeaderSize(5)
 end
@@ -858,24 +909,6 @@ ArenaFrameMod.UpdateHeaderAnchorPoint = function(self)
 	header:SetPoint(point, self:GetFrame(), point)
 end
 
-ArenaFrameMod.UpdateUnits = function(self)
-	if (not self:GetFrame()) then return end
-	for frame in next,Units do
-		if (self.db.profile.useRangeIndicator) then
-			frame:EnableElement("Range")
-		else
-			frame:DisableElement("Range")
-			frame:SetAlpha(1)
-		end
-		frame:UpdateAllElements("RefreshUnit")
-	end
-end
-
-ArenaFrameMod.Update = function(self)
-	self:UpdateHeader()
-	self:UpdateUnits()
-end
-
 ArenaFrameMod.UpdateLayout = function(self)
 	if (InCombatLockdown()) then return end
 
@@ -967,55 +1000,22 @@ ArenaFrameMod.UpdateLayout = function(self)
 	header:SetSize(self:GetCalculatedHeaderSize(numDisplayed))
 end
 
-ArenaFrameMod.GetCalculatedHeaderSize = function(self, numDisplayed)
-
-	local config = ns.GetConfig("ArenaFrames")
-	local db = self.db.profile
-
-	local header = self:GetUnitFrameOrHeader()
-	local unitButtonWidth = config.UnitSize[1]
-	local unitButtonHeight = config.UnitSize[2]
-	local unitsPerColumn = db.unitsPerColumn
-	local point = db.point or "TOP"
-	local relativePoint, xOffsetMult, yOffsetMult = getRelativePointAnchor(point)
-	local xMultiplier, yMultiplier =  math_abs(xOffsetMult), math_abs(yOffsetMult)
-	local xOffset = db.xOffset or 0
-	local yOffset = db.yOffset or 0
-	local columnSpacing = db.columnSpacing or 0
-
-	local numColumns
-	if (unitsPerColumn and numDisplayed > unitsPerColumn) then
-		numColumns = math_min(math_ceil(numDisplayed/unitsPerColumn), (db.maxColumns or 1))
-	else
-		unitsPerColumn = numDisplayed
-		numColumns = 1
-	end
-
-	local columnAnchorPoint, columnRelPoint, colxMulti, colyMulti
-	if (numColumns > 1) then
-		columnAnchorPoint = db.columnAnchorPoint
-		columnRelPoint, colxMulti, colyMulti = getRelativePointAnchor(columnAnchorPoint)
-	end
-
-	local width, height
-
-	if (numDisplayed > 0) then
-		width = xMultiplier * (unitsPerColumn - 1) * unitButtonWidth + ((unitsPerColumn - 1) * (xOffset * xOffsetMult)) + unitButtonWidth
-		height = yMultiplier * (unitsPerColumn - 1) * unitButtonHeight + ((unitsPerColumn - 1) * (yOffset * yOffsetMult)) + unitButtonHeight
-
-		if (numColumns > 1) then
-			width = width + ((numColumns -1) * math_abs(colxMulti) * (width + columnSpacing))
-			height = height + ((numColumns -1) * math_abs(colyMulti) * (height + columnSpacing))
+ArenaFrameMod.UpdateUnits = function(self)
+	if (not self:GetFrame()) then return end
+	for frame in next,Units do
+		if (self.db.profile.useRangeIndicator) then
+			frame:EnableElement("Range")
+		else
+			frame:DisableElement("Range")
+			frame:SetAlpha(1)
 		end
-	else
-		local minWidth = db.minWidth or (yMultiplier * unitButtonWidth)
-		local minHeight = db.minHeight or (xMultiplier * unitButtonHeight)
-
-		width = math_max(minWidth, 0.1)
-		height = math_max(minHeight, 0.1)
+		frame:UpdateAllElements("RefreshUnit")
 	end
+end
 
-	return width, height
+ArenaFrameMod.Update = function(self)
+	self:UpdateHeader()
+	self:UpdateUnits()
 end
 
 ArenaFrameMod.OnEvent = function(self, event, ...)

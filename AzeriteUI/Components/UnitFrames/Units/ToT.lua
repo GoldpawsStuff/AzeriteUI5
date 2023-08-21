@@ -288,7 +288,7 @@ local style = function(self, unit)
 	health.colorTapping = true
 	health.colorThreat = true
 	health.colorClass = true
-	health.colorClassPet = true
+	--health.colorClassPet = true
 	health.colorHappiness = true
 	health.colorReaction = true
 
