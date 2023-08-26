@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.103-RC] 2023-08-26
+### Fixed
+- Fixed an issue with raid(5) in Wrath.
+
 ## [5.2.102-RC] 2023-08-24
 ### Changed
 - Updated for Classic client patch 1.14.4.
