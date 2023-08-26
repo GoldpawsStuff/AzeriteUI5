@@ -926,16 +926,14 @@ ArenaFrameMod.UpdateLayout = function(self)
 	local columnSpacing = db.columnSpacing or 0
 	local startingIndex = db.startingIndex or 1
 
-	local unitCount = GetNumArenaOpponentSpecs() or 0
-
-	-- Dev
-	--if (unitCount == 0) then
-	--	for frame in next,Units do
-	--		if (UnitExists(frame.unit)) then
-	--			unitCount = unitCount + 1
-	--		end
-	--	end
-	--end
+	local unitCount = GetNumArenaOpponentSpecs and GetNumArenaOpponentSpecs() or GetNumArenaOpponents and GetNumArenaOpponents() or 0
+	if (unitCount == 0) then
+		for frame in next,Units do
+			if (UnitExists(frame.unit)) then
+				unitCount = unitCount + 1
+			end
+		end
+	end
 
 	local numDisplayed = unitCount - (startingIndex - 1)
 	local unitsPerColumn = db.unitsPerColumn
