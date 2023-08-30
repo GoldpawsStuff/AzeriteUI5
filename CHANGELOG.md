@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.105-RC] 2023-08-30
+### Added
+- The Classic QuestTimerFrame is now movable.
+
 ## [5.2.104-RC] 2023-08-30
 ### Fixed
 - Fixed an issue where the classic pet bar didn't respond to hotkeys, just the mouse.
