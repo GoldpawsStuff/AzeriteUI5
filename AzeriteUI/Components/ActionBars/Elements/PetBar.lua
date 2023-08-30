@@ -377,24 +377,46 @@ PetBar.UpdateBindings = function(self)
 
 	if (not self:IsEnabled()) then return end
 
-	for id,button in next,self.buttons do
-		local bindingAction = button.keyBoundTarget
-		if (bindingAction) then
+	if (ns.IsRetail) then
+		for id,button in next,self.buttons do
+			local bindingAction = button.keyBoundTarget
+			if (bindingAction) then
 
-			-- iterate through the registered keys for the action
-			local buttonName = button:GetName()
-			for keyNumber = 1,select("#", GetBindingKey(bindingAction)) do
+				-- iterate through the registered keys for the action
+				local buttonName = button:GetName()
+				for keyNumber = 1,select("#", GetBindingKey(bindingAction)) do
 
-				-- get a key for the action
-				local key = select(keyNumber, GetBindingKey(bindingAction))
-				if (key and (key ~= "")) then
+					-- get a key for the action
+					local key = select(keyNumber, GetBindingKey(bindingAction))
+					if (key and (key ~= "")) then
 
-					-- this is why we need named buttons
-					SetOverrideBindingClick(self, false, key, buttonName) -- assign the key to our own button
+						-- this is why we need named buttons
+						SetOverrideBindingClick(self, false, key, buttonName) -- assign the key to our own button
+
+					end
 				end
 			end
 		end
+	else
+		for id,button in next,self.buttons do
+			local bindingAction = button.keyBoundTarget
+			if (bindingAction) then
+
+				-- iterate through the registered keys for the action
+				local buttonName = "CLICK "..button:GetName()..":LeftButton"
+				for keyNumber = 1,select("#", GetBindingKey(buttonName)) do
+
+					-- get a key for the action
+					local key = select(keyNumber, GetBindingKey(buttonName))
+					if (key and (key ~= "")) then
+						SetOverrideBinding(self, false, key, bindingAction) -- assign the key to our own button
+					end
+				end
+			end
+		end
+
 	end
+
 end
 
 PetBar.UpdateVisibilityDriver = function(self)
