@@ -49,7 +49,14 @@ QuestTimers.PrepareFrames = function(self)
 
 	QuestTimerFrame:SetParent(UIParent)
 	QuestTimerFrame:ClearAllPoints()
-	QuestTimerFrame:SetAllPoints(frame)
+	QuestTimerFrame:SetPoint("TOP", frame)
+
+	hooksecurefunc(QuestTimerFrame, "SetPoint", function(self, point, anchor, ...)
+		if (anchor ~= frame) then
+			self:ClearAllPoints()
+			self:SetPoint("TOP", frame)
+		end
+	end)
 
 	self.frame = frame
 end
