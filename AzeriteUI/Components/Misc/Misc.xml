@@ -9,6 +9,7 @@
 	<Script file="ErrorsFrame.lua"/>
 	<Script file="Minimap.lua"/>
 	<Script file="MirrorTimers.lua"/>
+	<Script file="QuestTimers.lua"/>
 	<Script file="RaidBossEmotes.lua"/>
 	<Script file="RaidWarnings.lua"/>
 	<Script file="Tooltips.lua"/>
