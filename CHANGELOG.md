@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.107-RC] 2023-09-06
+- Updated for Retail client patch 10.1.7.
+
 ## [5.2.106-RC] 2023-08-30
 ### Fixed
 - The Classic QuestTimerFrame is now actually movable, instead of just stretchable.
