@@ -172,12 +172,16 @@ ns.AuraFilters.TargetAuraFilter = function(element, unit, button, name, texture,
 		return true
 	end
 
-	--do return true end
-
 	if (UnitAffectingCombat("player")) then
-		return (not button.noDuration) or (count and count > 1)
-	else
 		return (not button.noDuration and duration < 301) or (count and count > 1)
+	else
+		if (UnitCanAttack("player", unit)) then
+			return (not button.noDuration and duration < 301) or (count and count > 1)
+		elseif (UnitPlayerControlled(unit)) then
+			return (not button.noDuration) or (count and count > 1)
+		else
+			return true
+		end
 	end
 end
 
