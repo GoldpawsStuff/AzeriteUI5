@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-09-11
+## [5.2.108-RC] 2023-09-11
+### Added
+- Added better support for ConsolePort keybinds on our own actionbuttons.
+
 ### Changed
 - Pet Happiness when not optimal will now replace the health value display on the pet unit frame in Wrath and Classic.
 - The target unit frame aura filter has been slightly modified in Wrath and Classic. Experimental work in progress.
