@@ -327,7 +327,12 @@ local style = function(self, unit)
 	healthValue:SetTextColor(unpack(db.HealthValueColor))
 	healthValue:SetJustifyH(db.HealthValueJustifyH)
 	healthValue:SetJustifyV(db.HealthValueJustifyV)
-	self:Tag(healthValue, prefix("[*:Health(true)]"))
+
+	if (ns.IsRetail or ns.PlayerClass == "HUNTER") then
+		self:Tag(healthValue, prefix("[*:Health(true)]"))
+	else
+		self:Tag(healthValue, prefix("[*:PetHappinessThenHealth]"))
+	end
 
 	self.Health.Value = healthValue
 
