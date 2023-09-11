@@ -343,7 +343,7 @@ if (oUF.isClassic or oUF.isTBC or oUF.isWrath) then
 		end
 	end
 else
-	Methods[prefix("*:Level")] = function(unit, asPrefix)
+	Methods[prefix("*:Level")] = function(unit, realUnit, asPrefix)
 		local l = UnitEffectiveLevel(unit)
 		if (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
 			l = UnitBattlePetLevel(unit)
@@ -365,7 +365,13 @@ else
 end
 
 Events[prefix("*:Level:Prefix")] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_CHANGED"
-Methods[prefix("*:Level:Prefix")] = function(unit)
-	local l = Methods[prefix("*:Level")](unit, true)
+Methods[prefix("*:Level:Prefix")] = function(unit, realUnit)
+	local l = Methods[prefix("*:Level")](unit, realUnit, true)
 	return (l and l ~= T_BOSS) and l.." " or l
+end
+
+Events[prefix("*:PetHappinessThenHealth")] = "UNIT_HAPPINESS"
+Methods[prefix("*:PetHappinessThenHealth")] = function(unit, realUnit)
+	local happiness, damagePercentage, loyaltyRate = GetPetHappiness()
+	return (happiness and happiness < 3) and _G["PET_HAPPINESS"..happiness] or Methods[prefix("*:Health")](unit, realUnit, true)
 end
