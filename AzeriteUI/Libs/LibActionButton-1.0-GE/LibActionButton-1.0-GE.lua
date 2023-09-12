@@ -28,6 +28,19 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ]]
+--[[
+	This is a modified version of LibActionButton-1.0,
+	intended for usage with user interfaces and addons by Goldpaw.
+
+	### Changed
+	- Hides stack counts when the count is one or less
+	- Hides charge counts when the count is zero
+
+	### Removed
+	- Removed LibButtonGlow-1.0 integration
+	- Removed Masque integration
+]]
+
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
 local MINOR_VERSION = 108 --[[ [GE-Fix] Based on LibActionButton-1.0.107 ]]
 
@@ -50,8 +63,8 @@ local UseCustomFlyout = WoWRetail
 
 local KeyBound = LibStub("LibKeyBound-1.0", true)
 local CBH = LibStub("CallbackHandler-1.0")
-local LBG --[[ [GE-Fix:Remove] = LibStub("LibButtonGlow-1.0", true) [/GE-Fix] ]]
-local Masque --[[ [GE-Fix:Remove] = LibStub("Masque", true) [/GE-Fix] ]]
+local LBG --[[ [GE-Fix:Remove] = LibStub("LibButtonGlow-1.0", true) ]]
+local Masque --[[ [GE-Fix:Remove] = LibStub("Masque", true) ]]
 
 lib.eventFrame = lib.eventFrame or CreateFrame("Frame")
 lib.eventFrame:UnregisterAllEvents()
@@ -1813,12 +1826,12 @@ function UpdateCount(self)
 		if count > (self.maxDisplayCount or 9999) then
 			self.Count:SetText("*")
 		else
-			self.Count:SetText(count > 1 and count or "") --[[-- [GE-Fix]: Hide when no stacks --]]--
+			self.Count:SetText(count > 1 and count or "") --[[-- [GE-Fix]: Hide when there's only one item --]]--
 		end
 	else
 		local charges, maxCharges, _chargeStart, _chargeDuration = self:GetCharges()
 		if charges and maxCharges and maxCharges > 1 then
-			self.Count:SetText(charges > 0 and charges or "") --[[-- [GE-Fix]: Hide when no stacks --]]--
+			self.Count:SetText(charges > 0 and charges or "") --[[-- [GE-Fix]: Hide when there are zero charges --]]--
 		else
 			self.Count:SetText("")
 		end
