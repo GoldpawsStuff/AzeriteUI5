@@ -373,13 +373,13 @@ local style = function(button)
 	button.iconBorder = border
 
 	-- Custom spell highlight
-	local spellHighlight = overlay:CreateTexture(nil, "ARTWORK", nil, -7)
-	spellHighlight:SetSize(unpack(db.ButtonSpellHighlightSize))
-	spellHighlight:SetPoint(unpack(db.ButtonSpellHighlightPosition))
-	spellHighlight:SetTexture(db.ButtonSpellHighlightTexture)
-	spellHighlight:SetVertexColor(249/255, 188/255, 65/255, .75)
-	spellHighlight:Hide()
-	button.spellHighlight = spellHighlight
+	local spellActivationAlert = overlay:CreateTexture(nil, "ARTWORK", nil, -7)
+	spellActivationAlert:SetSize(unpack(db.ButtonSpellHighlightSize))
+	spellActivationAlert:SetPoint(unpack(db.ButtonSpellHighlightPosition))
+	spellActivationAlert:SetTexture(db.ButtonSpellHighlightTexture)
+	spellActivationAlert:SetVertexColor(249/255, 188/255, 65/255, .75)
+	spellActivationAlert:Hide()
+	button.CustomSpellActivationAlert = spellActivationAlert
 
 	-- Custom cooldown count
 	local cooldownCount = overlay:CreateFontString(nil, "ARTWORK", nil, 1)

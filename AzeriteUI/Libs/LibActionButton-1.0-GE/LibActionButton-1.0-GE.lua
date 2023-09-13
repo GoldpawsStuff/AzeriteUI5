@@ -1210,9 +1210,9 @@ function InitializeMaxDpsIntegration()
 		end
 	end
 
-	local function UpdateButtonGlow(...)
-		MaxDps_UpdateButtonGlow(...)
-		UpdateButtonGlowEvents()
+	local function UpdateButtonGlow(self, ...)
+		MaxDps_UpdateButtonGlow(self, ...)
+		UpdateButtonGlowEvents(self, ...)
 	end
 
 	local function Glow(self, button, id, texture, type, color)
