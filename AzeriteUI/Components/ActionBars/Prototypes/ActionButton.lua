@@ -27,38 +27,12 @@ local _, ns = ...
 
 local LAB = LibStub("LibActionButton-1.0-GE")
 
--- Default button config
-local defaults = {
-	outOfRangeColoring = "button",
-	tooltip = "enabled",
-	showGrid = false,
-	colors = {
-		range = { 1, .15, .15 },
-		mana = { .25, .25, 1 }
-	},
-	hideElements = {
-		macro = true,
-		hotkey = false,
-		equipped = true,
-		border = true,
-		borderIfEmpty = true
-	},
-	keyBoundTarget = false,
-	keyBoundClickButton = "LeftButton",
-	clickOnDown = false,
-	flyoutDirection = "UP"
-}
-
 ns.ActionButtons = {}
 ns.ActionButton = {}
-ns.ActionButton.defaults = defaults
 
 ns.ActionButton.Create = function(id, name, header, buttonConfig)
 
-	local config = buttonConfig or ns:Copy(defaults)
-	config.clickOnDown = header.config.clickOnDown
-
-	local button = LAB:CreateButton(id, name, header, config)
+	local button = LAB:CreateButton(id, name, header, buttonConfig--[[, "AzeriteActionButtonTemplate"]])
 	button:SetAttribute("checkselfcast", true)
 	button:SetAttribute("checkfocuscast", true)
 	button:SetAttribute("checkmouseovercast", true)

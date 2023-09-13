@@ -116,7 +116,7 @@ local style = function(button)
 	end
 
 	local m = db.ButtonMaskTexture
-	local b = GetMedia("blank")
+	local b = "" -- GetMedia("blank")
 
 	button:SetAttribute("buttonLock", true)
 	button:SetSize(unpack(db.ButtonSize))
