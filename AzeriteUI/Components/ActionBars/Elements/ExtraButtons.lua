@@ -57,7 +57,7 @@ ExtraButtons.UpdateButton = function(self, button)
 	local db = ns.GetConfig("ExtraActionButton")
 
 	local m = db.ExtraButtonMask
-	local b = GetMedia("blank")
+	local b = "" -- GetMedia("blank")
 
 	if (button.icon or button.Icon) then (button.icon or button.Icon):SetAlpha(0) end
 	if (button.NormalTexture) then button.NormalTexture:SetAlpha(0) end -- Zone
