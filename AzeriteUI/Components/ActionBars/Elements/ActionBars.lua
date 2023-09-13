@@ -219,80 +219,8 @@ ActionBarMod.GenerateDefaults = function(self)
 end
 
 ---------------------------------------------
--- LAB Overrides & MaxDps Integration
+-- LAB Overrides
 ---------------------------------------------
-local showMaxDps = function(self)
-	if (self.spellHighlight) then
-		if (self.maxDpsGlowColor) then
-			local r, g, b, a = unpack(self.maxDpsGlowColor)
-			self.spellHighlight:SetVertexColor(r, g, b, a or .75)
-		else
-			self.spellHighlight:SetVertexColor(249/255, 188/255, 65/255, .75)
-		end
-		self.spellHighlight:Show()
-	end
-end
-
-local hideMaxDps = function(self)
-	if (self.spellHighlight) then
-		if (not self.maxDpsGlowShown) then
-			self.spellHighlight:Hide()
-		end
-	end
-end
-
-local updateMaxDps = function(self)
-	if (self.maxDpsGlowShown) then
-		showMaxDps(self)
-	else
-		local spellId = self:GetSpellId()
-		if (spellId and IsSpellOverlayed(spellId)) then
-			showMaxDps(self)
-		else
-			hideMaxDps(self)
-		end
-	end
-end
-
-local updateUsable = function(self)
-	local config = self.config
-
-	if (UnitIsDeadOrGhost("player") or (IsMounted() and not self.header.isDragonRiding)) then
-		self.icon:SetDesaturated(true)
-		self.icon:SetVertexColor(.4, .36, .32)
-
-	elseif (self.outOfRange) then
-		self.icon:SetDesaturated(true)
-		self.icon:SetVertexColor(unpack(config.colors.range))
-	else
-		local isUsable, notEnoughMana = self:IsUsable()
-		if (isUsable) then
-			self.icon:SetDesaturated(false)
-			self.icon:SetVertexColor(1, 1, 1)
-
-		elseif (notEnoughMana) then
-			self.icon:SetDesaturated(true)
-			self.icon:SetVertexColor(unpack(config.colors.mana))
-		else
-			self.icon:SetDesaturated(true)
-			self.icon:SetVertexColor(.4, .36, .32)
-		end
-	end
-
-	if (C_LevelLink and self._state_type == "action") then
-		local isLevelLinkLocked = C_LevelLink.IsActionLocked(self._state_action)
-		if (not self.icon:IsDesaturated()) then
-			self.icon:SetDesaturated(isLevelLinkLocked)
-			if (isLevelLinkLocked) then
-				self.icon:SetVertexColor(.4, .36, .32)
-			end
-		end
-		if (self.LevelLinkLockIcon) then
-			self.LevelLinkLockIcon:SetShown(isLevelLinkLocked)
-		end
-	end
-
-end
 
 local onEnter = function(self)
 	self.icon.darken:SetAlpha(0)
@@ -312,6 +240,8 @@ local style = function(button)
 
 	local db = ns.GetConfig("ActionButton")
 
+	-- TODO: Move resets to the back-end and create styling methods.
+
 	-- Clean up the button template
 	for _,i in next,{ "AutoCastShine", "Border", "Name", "NewActionTexture", "NormalTexture", "SpellHighlightAnim", "SpellHighlightTexture",
 		--[[ WoW10 ]] "CheckedTexture", "HighlightTexture", "BottomDivider", "RightDivider", "SlotArt", "SlotBackground" } do
@@ -319,7 +249,7 @@ local style = function(button)
 	end
 
 	local m = db.ButtonMaskTexture
-	local b = GetMedia("blank")
+	local b = "" -- GetMedia("blank")
 
 	button:SetAttribute("buttonLock", true)
 	button:SetSize(unpack(db.ButtonSize))
@@ -409,7 +339,7 @@ local style = function(button)
 
 	button.UpdateCharge = function(self)
 		local m = db.ButtonMaskTexture
-		local b = GetMedia("blank")
+		local b = "" --GetMedia("blank")
 		local cooldown = self.chargeCooldown
 		if (not cooldown) then return end
 		cooldown:SetFrameStrata(self:GetFrameStrata())
@@ -427,8 +357,6 @@ local style = function(button)
 		cooldown:ClearAllPoints()
 		cooldown:SetAllPoints(self.icon)
 	end
-
-	--button.UpdateLocal = updateUsable
 
 	-- Custom overlay frame
 	local overlay = CreateFrame("Frame", nil, button)
@@ -629,63 +557,6 @@ ActionBarMod.CreatePetBattleController = function(self)
 	self.petBattleController = petBattleController
 end
 
-ActionBarMod.CreateMaxDpsOverlays = function(self, event, addon)
-
-	-- Just in case this was loaded on demand.
-	if (addon and addon ~= "MaxDps") then return end
-	if (addon == "MaxDps") then
-		self:UnregisterEvent("ADDON_LOADED", "CreateMaxDpsOverlays")
-	end
-
-	-- Register our actionbutton library fork with MaxDps.
-	MaxDps:RegisterLibActionButton(LAB_Name) -- Used to be LAB_Version, needs name now.
-
-	-- This will hide the MaxDps overlays for the most part.
-	MaxDps.GetTexture = function() end
-
-	local maxDpsGlow = MaxDps.Glow
-	MaxDps.Glow = function(this, button, id, texture, type, color)
-		if (not self.buttons[button]) then
-			return maxDpsGlow(this, button, id, texture, type, color)
-		end
-		local col = color and { color.r, color.g, color.b, color.a } or nil
-		if (not color) and (type) then
-			if (type == "normal") then
-				--local c = this.db.global.highlightColor
-				--col = { c.r, c.g, c.b, c.a }
-				col = { 1, 1, 1 }
-
-			elseif (type == "cooldown") then
-				--local c = this.db.global.cooldownColor
-				--col = { c.r, c.g, c.b, c.a }
-				col = { 190/255, 119/255, 238/255 }
-			end
-		end
-		button.maxDpsGlowColor = col
-		button.maxDpsGlowShown = true
-		updateMaxDps(button)
-	end
-
-	local maxDpsHideGlow = MaxDps.HideGlow
-	MaxDps.HideGlow = function(this, button, id)
-		if (not self.buttons[button]) then
-			return maxDpsHideGlow(this, button, id)
-		end
-		button.maxDpsGlowColor = nil
-		button.maxDpsGlowShown = nil
-		updateMaxDps(button)
-	end
-
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnMaxDPSEvent")
-	self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", "OnMaxDPSEvent")
-	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM", "OnMaxDPSEvent")
-
-	LAB.RegisterCallback(self, "OnButtonShowOverlayGlow", "OnMaxDPSEvent")
-	LAB.RegisterCallback(self, "OnButtonHideOverlayGlow", "OnMaxDPSEvent")
-
-	self.MaxDps = true
-end
-
 ActionBarMod.GenerateBarDisplayName = function(self, id)
 	local barID = tonumber(id)
 	if (barID == RIGHT_ACTIONBAR_PAGE) then
@@ -715,7 +586,7 @@ ActionBarMod.UpdateChargeCooldowns = function(self)
 	end
 
 	local m = ns.GetConfig("ActionButton").ButtonMaskTexture
-	local b = GetMedia("blank")
+	local b = "" -- GetMedia("blank")
 
 	local i = 1
 	local cooldown = _G["LAB10ChargeCooldown"..i]
@@ -773,10 +644,12 @@ ActionBarMod.UpdateAnchors = function(self)
 	end
 end
 
-ActionBarMod.UpdateBars = function(self)
+ActionBarMod.UpdateBars = function(self, event)
 	if (InCombatLockdown()) then
-		self.needupdate = true
-		return
+		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateBars")
+	end
+	if (event == "PLAYER_REGEN_ENABLED") then
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "UpdateBars")
 	end
 	for id,bar in next,self.bars do
 		bar:Update()
@@ -822,11 +695,13 @@ ActionBarMod.UpdatePositionAndScales = function(self)
 	end
 end
 
-ActionBarMod.UpdateEnabled = function(self)
+ActionBarMod.UpdateEnabled = function(self, event)
 	if (not next(self.bars)) then return end
 	if (InCombatLockdown()) then
-		self.needupdate = true
-		return
+		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateBars")
+	end
+	if (event == "PLAYER_REGEN_ENABLED") then
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "UpdateBars")
 	end
 	for id,bar in next,self.bars do
 		if (bar.config.enabled) then
@@ -837,10 +712,12 @@ ActionBarMod.UpdateEnabled = function(self)
 	end
 end
 
-ActionBarMod.UpdateSettings = function(self)
+ActionBarMod.UpdateSettings = function(self, event)
 	if (InCombatLockdown()) then
-		self.needupdate = true
-		return
+		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateSettings")
+	end
+	if (event == "PLAYER_REGEN_ENABLED") then
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "UpdateBars")
 	end
 	if (ns.WoW10) then
 		SetCVar("ActionButtonUseKeyDown", self.db.profile.clickOnDown)
@@ -860,20 +737,6 @@ ActionBarMod.RefreshConfig = function(self)
 		bar.config = self.db.profile.bars[i]
 	end
 	self:UpdateSettings()
-end
-
-ActionBarMod.OnEvent = function(self, event, ...)
-	if (event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UPDATE_SHAPESHIFT_FORM") then
-		self:UpdateSettings()
-
-	elseif (event == "PLAYER_REGEN_ENABLED") then
-		if (InCombatLockdown()) then return end
-
-		if (self.needupdate) then
-			self.needupdate = nil
-			self:UpdateSettings()
-		end
-	end
 end
 
 ActionBarMod.OnAnchorEvent = function(self, event, ...)
@@ -927,92 +790,6 @@ ActionBarMod.OnAnchorEvent = function(self, event, ...)
 	end
 end
 
-ActionBarMod.OnButtonEvent = function(self, event, ...)
-	if (event == "OnButtonUpdate") then
-		local button = ...
-		if (self.buttons[button]) then
-			button.cooldown:ClearAllPoints()
-			button.cooldown:SetAllPoints(button.icon)
-			button.cooldown:SetDrawEdge(false)
-
-			local i = 1
-			while (button.icon:GetMaskTexture(i)) do
-				button.icon:RemoveMaskTexture(button.icon:GetMaskTexture(i))
-				i = i + 1
-			end
-			button.icon:SetMask(ns.GetConfig("ActionButton").ButtonMaskTexture)
-
-			local spellID = button:GetSpellId()
-			if (spellID and IsSpellOverlayed(spellID)) then
-				button.spellHighlight:Show()
-			else
-				button.spellHighlight:Hide()
-			end
-
-			updateUsable(button)
-		end
-
-	elseif (event == "OnButtonUsable" or event == "OnButtonState") then
-		local button = ...
-		if (self.buttons[button]) then
-			updateUsable(button)
-		end
-
-	elseif (event == "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW") then
-		local arg1 = ...
-		for button in next, LAB.activeButtons do
-			if (self.buttons[button]) then
-				local spellID = button:GetSpellId()
-				if (spellID and spellID == arg1) then
-					button.spellHighlight:Show()
-				else
-					if (button._state_type == "action") then
-						local actionType, id = GetActionInfo(button._state_action)
-						if (actionType == "flyout" and FlyoutHasSpell(id, arg1)) then
-							button.spellHighlight:Hide()
-						end
-					end
-				end
-			end
-		end
-
-	elseif (event == "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE") then
-		local arg1 = ...
-		for button in next, LAB.activeButtons do
-			if (self.buttons[button]) then
-				local spellID = button:GetSpellId()
-				if (spellID and spellID == arg1) then
-					button.spellHighlight:Hide()
-				else
-					if (button._state_type == "action") then
-						local actionType, id = GetActionInfo(button._state_action)
-						if (actionType == "flyout" and FlyoutHasSpell(id, arg1)) then
-							button.spellHighlight:Hide()
-						end
-					end
-				end
-			end
-		end
-
-	elseif (event == "UPDATE_BINDINGS") then
-		self:UpdateBindings()
-	end
-end
-
-ActionBarMod.OnMaxDPSEvent = function(self, event, ...)
-	if (event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UPDATE_SHAPESHIFT_FORM") then
-		for button in next, LAB.activeButtons do
-			if (self.buttons[button]) then
-				if (button.maxDpsGlowShown) then
-					button.maxDpsGlowColor = nil
-					button.maxDpsGlowShown = nil
-					updateMaxDps(button)
-				end
-			end
-		end
-	end
-end
-
 ActionBarMod.OnEnable = function(self)
 	self:CreateBars()
 	self:CreateAnchors()
@@ -1022,18 +799,8 @@ ActionBarMod.OnEnable = function(self)
 	self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
 	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
 
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-
-	self:RegisterEvent("UPDATE_BINDINGS", "OnButtonEvent")
-
-	if (not IsAddOnEnabled("MaxDps")) then
-		self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW", "OnButtonEvent")
-		self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE", "OnButtonEvent")
-	end
-
-	LAB.RegisterCallback(self, "OnButtonUpdate", "OnButtonEvent")
-	LAB.RegisterCallback(self, "OnButtonUsable", "OnButtonEvent")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateSettings")
+	self:RegisterEvent("UPDATE_BINDINGS", "UpdateBindings")
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnAnchorEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnAnchorEvent")
@@ -1058,13 +825,4 @@ ActionBarMod.OnInitialize = function(self)
 	self.buttons = {}
 	self.anchors = {}
 
-	if (ns.IsRetail) then
-		if (IsAddOnEnabled("MaxDps")) then
-			if (IsAddOnLoaded("MaxDps")) then
-				self:CreateMaxDpsOverlays()
-			else
-				self:RegisterEvent("ADDON_LOADED", "CreateMaxDpsOverlays")
-			end
-		end
-	end
 end
