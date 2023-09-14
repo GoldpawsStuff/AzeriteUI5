@@ -315,6 +315,7 @@ Auras.CreateBuffs = function(self)
 		local config = self.db.profile
 
 		local frame = CreateFrame("Frame", ns.Prefix.."BuffHeaderFrame", UIParent)
+		frame.ignoreGridCounterOnHover = true
 		frame:SetSize(config.wrapAfter * (36 + config.paddingX), (36 + config.paddingY) * math_ceil(BUFF_MAX_DISPLAY / config.wrapAfter))
 		frame:SetPoint(config.savedPosition[1], UIParent, config.savedPosition[1], config.savedPosition[2], config.savedPosition[3])
 		frame:SetScale(config.savedPosition.scale)
@@ -380,6 +381,7 @@ Auras.CreateBuffs = function(self)
 		-- The proxybutton appearing in the aura listing
 		-- representing the existence of consolidated auras.
 		local proxy = CreateFrame("Button", buffs:GetName().."ProxyButton", buffs, "SecureUnitButtonTemplate, SecureHandlerEnterLeaveTemplate")
+		proxy.ignoreGridCounterOnHover = true
 		proxy:Hide()
 		proxy:SetSize(36,36)
 		--proxy:SetIgnoreParentAlpha(true)
@@ -407,6 +409,7 @@ Auras.CreateBuffs = function(self)
 
 		-- Consolidation frame where the consolidated auras appear.
 		local consolidation = CreateFrame("Frame", buffs:GetName().."Consolidation", buffs.proxy, "SecureFrameTemplate")
+		consolidation.ignoreGridCounterOnHover = true
 		consolidation:Hide()
 		consolidation:SetIgnoreParentAlpha(true)
 		consolidation:SetSize(36, 36)

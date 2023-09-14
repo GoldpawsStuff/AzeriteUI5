@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 12
+local MINOR_VERSION = 13
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -64,7 +64,7 @@ local setAlpha = getmetatable(CreateFrame("Frame")).__index.SetAlpha
 lib.UpdateFadeFrame = function(self, frame)
 
 	local isActionButton = self.fadeFrameType[frame] == "actionbutton"
-	if (isActionButton and (self.inCombat and not (frame.header and frame.header.config and frame.header.config.fadeInCombat) and frame:GetTexture()) or (self.gridCounter >= 1)) then
+	if (isActionButton and (self.inCombat and not (frame.header and frame.header.config and frame.header.config.fadeInCombat) and frame:GetTexture()) or (self.gridCounter >= 1 and not frame.ignoreGridCounterOnHover)) then
 		setAlpha(frame, 1)
 		return
 	end
