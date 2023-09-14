@@ -236,112 +236,94 @@ local onLeave = function(self)
 	end
 end
 
-local style = function(button)
+local style = function(self)
 
 	local db = ns.GetConfig("ActionButton")
-
-	-- TODO: Move resets to the back-end and create styling methods.
-
-	-- Clean up the button template
-	for _,i in next,{ "AutoCastShine", "Border", "Name", "NewActionTexture", "NormalTexture", "SpellHighlightAnim", "SpellHighlightTexture",
-		--[[ WoW10 ]] "CheckedTexture", "HighlightTexture", "BottomDivider", "RightDivider", "SlotArt", "SlotBackground" } do
-		if (button[i] and button[i].Stop) then button[i]:Stop() elseif button[i] then button[i]:SetParent(UIHider) end
-	end
 
 	local m = db.ButtonMaskTexture
 	local b = "" -- GetMedia("blank")
 
-	button:SetAttribute("buttonLock", true)
-	button:SetSize(unpack(db.ButtonSize))
-	button:SetHitRectInsets(unpack(db.ButtonHitRects))
-	button:SetNormalTexture("")
-	button:SetHighlightTexture("")
-	button:SetCheckedTexture("")
-	button:GetHighlightTexture():Hide()
-	button:GetCheckedTexture():Hide()
+	self:SetAttribute("buttonLock", true)
+	self:SetSize(unpack(db.ButtonSize))
+	self:SetHitRectInsets(unpack(db.ButtonHitRects))
+	--self:SetNormalTexture("")
+	self:SetHighlightTexture("")
+	self:SetCheckedTexture("")
+	self:GetHighlightTexture():Hide()
+	self:GetCheckedTexture():Hide()
 
 	-- New 3.4.1 checked texture keeps being reset.
-	hooksecurefunc(button, "SetChecked", function() button:GetCheckedTexture():Hide() end)
+	hooksecurefunc(self, "SetChecked", function() self:GetCheckedTexture():Hide() end)
 
 	-- Custom slot texture
-	local backdrop = button:CreateTexture(nil, "BACKGROUND", nil, -7)
-	backdrop:SetSize(unpack(db.ButtonBackdropSize))
-	backdrop:SetPoint(unpack(db.ButtonBackdropPosition))
-	backdrop:SetTexture(db.ButtonBackdropTexture)
-	backdrop:SetVertexColor(unpack(db.ButtonBackdropColor))
-	button.backdrop = backdrop
+	self.backdrop = self:CreateTexture(nil, "BACKGROUND", nil, -7)
+	self.backdrop:SetSize(unpack(db.ButtonBackdropSize))
+	self.backdrop:SetPoint(unpack(db.ButtonBackdropPosition))
+	self.backdrop:SetTexture(db.ButtonBackdropTexture)
+	self.backdrop:SetVertexColor(unpack(db.ButtonBackdropColor))
 
 	-- Icon
-	local icon = button.icon
-	icon:SetDrawLayer("BACKGROUND", 1)
-	icon:ClearAllPoints()
-	icon:SetPoint(unpack(db.ButtonIconPosition))
-	icon:SetSize(unpack(db.ButtonIconSize))
-
-	local i = 1
-	while button.icon:GetMaskTexture(i) do
-		button.icon:RemoveMaskTexture(button.icon:GetMaskTexture(i))
-		i = i + 1
-	end
-	if (button.IconMask) then
-		icon:RemoveMaskTexture(button.IconMask)
-	end
-	icon:SetMask(m)
+	self.icon:SetDrawLayer("BACKGROUND", 1)
+	self.icon:ClearAllPoints()
+	self.icon:SetPoint(unpack(db.ButtonIconPosition))
+	self.icon:SetSize(unpack(db.ButtonIconSize))
+	self.icon:SetMask(m)
 
 	-- Custom icon darkener
-	local darken = button:CreateTexture(nil, "BACKGROUND", nil, 2)
-	darken:SetAllPoints(button.icon)
+	local darken = self:CreateTexture(nil, "BACKGROUND", nil, 2)
+	darken:SetAllPoints(self.icon)
 	darken:SetTexture(m)
 	darken:SetVertexColor(0, 0, 0, .1)
-	button.icon.darken = darken
+	self.icon.darken = darken
 
-	button:SetScript("OnEnter", onEnter)
-	button:SetScript("OnLeave", onLeave)
+	self:SetScript("OnEnter", onEnter)
+	self:SetScript("OnLeave", onLeave)
 
 	-- Some crap WoW10 border I can't figure out how to remove right now.
-	button:DisableDrawLayer("ARTWORK")
+	self:DisableDrawLayer("ARTWORK")
 
 	-- Button is pushed
 	-- Responds to mouse and keybinds
 	-- if we allow blizzard to handle it.
-	local pushedTexture = button:CreateTexture(nil, "OVERLAY", nil, 1)
+	local pushedTexture = self.PushedTexture -- self:CreateTexture(nil, "OVERLAY", nil, 1)
 	pushedTexture:SetVertexColor(1, 1, 1, .2)
 	pushedTexture:SetTexture(m)
-	pushedTexture:SetAllPoints(button.icon)
-	button.PushedTexture = pushedTexture
+	pushedTexture:SetAllPoints(self.icon)
+	--self.PushedTexture = pushedTexture
 
-	button:SetPushedTexture(button.PushedTexture)
-	button:GetPushedTexture():SetBlendMode("ADD")
-	button:GetPushedTexture():SetDrawLayer("OVERLAY", 1)
+	--self:SetPushedTexture(self.PushedTexture)
+	self:GetPushedTexture():SetBlendMode("ADD")
+	self:GetPushedTexture():SetDrawLayer("OVERLAY", 1)
 
 	-- Autoattack flash
-	local flash = button.Flash
+	local flash = self.Flash
 	flash:SetDrawLayer("OVERLAY", 2)
-	flash:SetAllPoints(icon)
+	flash:SetAllPoints(self.icon)
 	flash:SetVertexColor(1, 0, 0, .25)
 	flash:SetTexture(m)
 	flash:Hide()
 
 	-- Button cooldown frame
-	local cooldown = button.cooldown
-	cooldown:SetFrameLevel(button:GetFrameLevel() + 1)
-	cooldown:ClearAllPoints()
-	cooldown:SetAllPoints(button.icon)
-	cooldown:SetUseCircularEdge(true)
-	cooldown:SetReverse(false)
-	cooldown:SetSwipeTexture(m)
-	cooldown:SetDrawSwipe(true)
-	cooldown:SetBlingTexture(b, 0, 0, 0, 0)
-	cooldown:SetDrawBling(false)
-	cooldown:SetEdgeTexture(b)
-	cooldown:SetDrawEdge(false)
-	cooldown:SetHideCountdownNumbers(true)
+	self.cooldown:SetFrameLevel(self:GetFrameLevel() + 1)
+	self.cooldown:ClearAllPoints()
+	self.cooldown:SetAllPoints(self.icon)
+	self.cooldown:SetUseCircularEdge(true)
+	self.cooldown:SetReverse(false)
+	self.cooldown:SetSwipeTexture(m)
+	self.cooldown:SetDrawSwipe(true)
+	self.cooldown:SetBlingTexture(b, 0, 0, 0, 0)
+	self.cooldown:SetDrawBling(false)
+	self.cooldown:SetEdgeTexture(b)
+	self.cooldown:SetDrawEdge(false)
+	self.cooldown:SetHideCountdownNumbers(true)
 
-	button.UpdateCharge = function(self)
+	self.UpdateCharge = function(self)
 		local m = db.ButtonMaskTexture
-		local b = "" --GetMedia("blank")
+		local b = GetMedia("blank")
+
 		local cooldown = self.chargeCooldown
 		if (not cooldown) then return end
+
 		cooldown:SetFrameStrata(self:GetFrameStrata())
 		cooldown:SetFrameLevel(self:GetFrameLevel() + 2)
 		cooldown:SetUseCircularEdge(true)
@@ -358,73 +340,69 @@ local style = function(button)
 		cooldown:SetAllPoints(self.icon)
 	end
 
-	-- Custom overlay frame
-	local overlay = CreateFrame("Frame", nil, button)
-	overlay:SetFrameLevel(button:GetFrameLevel() + 3)
-	overlay:SetAllPoints()
-	button.overlay = overlay
+	-- Overlay Frame
+	self.overlay = CreateFrame("Frame", nil, self)
+	self.overlay:SetFrameLevel(self:GetFrameLevel() + 3)
+	self.overlay:SetAllPoints()
 
-	local border = overlay:CreateTexture(nil, "BORDER", nil, 1)
-	border:SetPoint(unpack(db.ButtonBorderPosition))
-	border:SetSize(unpack(db.ButtonBorderSize))
-	border:SetTexture(db.ButtonBorderTexture)
-	border:SetVertexColor(unpack(db.ButtonBorderColor))
-	--border:SetAlpha(0)
-	button.iconBorder = border
+	-- Icon Border
+	self.iconBorder = self.overlay:CreateTexture(nil, "BORDER", nil, 1)
+	self.iconBorder:SetPoint(unpack(db.ButtonBorderPosition))
+	self.iconBorder:SetSize(unpack(db.ButtonBorderSize))
+	self.iconBorder:SetTexture(db.ButtonBorderTexture)
+	self.iconBorder:SetVertexColor(unpack(db.ButtonBorderColor))
 
-	-- Custom spell highlight
-	local spellActivationAlert = overlay:CreateTexture(nil, "ARTWORK", nil, -7)
-	spellActivationAlert:SetSize(unpack(db.ButtonSpellHighlightSize))
-	spellActivationAlert:SetPoint(unpack(db.ButtonSpellHighlightPosition))
-	spellActivationAlert:SetTexture(db.ButtonSpellHighlightTexture)
-	spellActivationAlert:SetVertexColor(249/255, 188/255, 65/255, .75)
-	spellActivationAlert:Hide()
-	button.CustomSpellActivationAlert = spellActivationAlert
+	-- Spell Activation / MaxDps
+	self.CustomSpellActivationAlert = self.overlay:CreateTexture(nil, "ARTWORK", nil, -7)
+	self.CustomSpellActivationAlert:SetSize(unpack(db.ButtonSpellHighlightSize))
+	self.CustomSpellActivationAlert:SetPoint(unpack(db.ButtonSpellHighlightPosition))
+	self.CustomSpellActivationAlert:SetTexture(db.ButtonSpellHighlightTexture)
+	self.CustomSpellActivationAlert:SetVertexColor(249/255, 188/255, 65/255, .75)
+	self.CustomSpellActivationAlert:Hide()
 
-	-- Custom cooldown count
-	local cooldownCount = overlay:CreateFontString(nil, "ARTWORK", nil, 1)
-	cooldownCount:SetPoint(unpack(db.ButtonCooldownCountPosition))
-	cooldownCount:SetFontObject(db.ButtonCooldownCountFont)
-	cooldownCount:SetJustifyH(db.ButtonCooldownCountJustifyH)
-	cooldownCount:SetJustifyV(db.ButtonCooldownCountJustifyV)
-	cooldownCount:SetTextColor(unpack(db.ButtonCooldownCountColor))
-	button.cooldownCount = cooldownCount
+	-- Cooldown Timer Text
+	self.cooldownCount = self.overlay:CreateFontString(nil, "ARTWORK", nil, 1)
+	self.cooldownCount:SetPoint(unpack(db.ButtonCooldownCountPosition))
+	self.cooldownCount:SetFontObject(db.ButtonCooldownCountFont)
+	self.cooldownCount:SetJustifyH(db.ButtonCooldownCountJustifyH)
+	self.cooldownCount:SetJustifyV(db.ButtonCooldownCountJustifyV)
+	self.cooldownCount:SetTextColor(unpack(db.ButtonCooldownCountColor))
 
-	-- Button charge/stack count
-	local count = button.Count
-	count:SetParent(overlay)
-	count:SetDrawLayer("OVERLAY", 1)
-	count:ClearAllPoints()
-	count:SetPoint(unpack(db.ButtonCountPosition))
-	count:SetFontObject(db.ButtonCountFont)
-	count:SetJustifyH(db.ButtonCountJustifyH)
-	count:SetJustifyV(db.ButtonCountJustifyV)
-	count:SetTextColor(unpack(db.ButtonCountColor))
+	-- Spell Charge / Item Stack Count
+	self.Count:SetParent(self.overlay)
+	self.Count:SetDrawLayer("OVERLAY", 1)
+	self.Count:ClearAllPoints()
+	self.Count:SetPoint(unpack(db.ButtonCountPosition))
+	self.Count:SetFontObject(db.ButtonCountFont)
+	self.Count:SetJustifyH(db.ButtonCountJustifyH)
+	self.Count:SetJustifyV(db.ButtonCountJustifyV)
+	self.Count:SetTextColor(unpack(db.ButtonCountColor))
 
-	-- Button keybind
-	local hotkey = button.HotKey
-	hotkey:SetParent(overlay)
-	hotkey:SetDrawLayer("OVERLAY", 1)
-	hotkey:ClearAllPoints()
-	hotkey:SetPoint(unpack(db.ButtonKeybindPosition))
-	hotkey:SetJustifyH(db.ButtonKeybindJustifyH)
-	hotkey:SetJustifyV(db.ButtonKeybindJustifyV)
-	hotkey:SetFontObject(db.ButtonKeybindFont)
-	hotkey:SetTextColor(unpack(db.ButtonKeybindColor))
+	-- HotKey
+	self.HotKey:SetParent(self.overlay)
+	self.HotKey:SetDrawLayer("OVERLAY", 1)
+	self.HotKey:ClearAllPoints()
+	self.HotKey:SetPoint(unpack(db.ButtonKeybindPosition))
+	self.HotKey:SetJustifyH(db.ButtonKeybindJustifyH)
+	self.HotKey:SetJustifyV(db.ButtonKeybindJustifyV)
+	self.HotKey:SetFontObject(db.ButtonKeybindFont)
+	self.HotKey:SetTextColor(unpack(db.ButtonKeybindColor))
 
-	RegisterCooldown(button.cooldown, button.cooldownCount)
+	RegisterCooldown(self.cooldown, self.cooldownCount)
 
-	hooksecurefunc(cooldown, "SetSwipeTexture", function(c,t) if t ~= m then c:SetSwipeTexture(m) end end)
-	hooksecurefunc(cooldown, "SetBlingTexture", function(c,t) if t ~= b then c:SetBlingTexture(b,0,0,0,0) end end)
-	hooksecurefunc(cooldown, "SetEdgeTexture", function(c,t) if t ~= b then c:SetEdgeTexture(b) end end)
-	--hooksecurefunc(cooldown, "SetSwipeColor", function(c,r,g,b,a) if not a or a>.76 then c:SetSwipeColor(r,g,b,.75) end end)
-	hooksecurefunc(cooldown, "SetDrawSwipe", function(c,h) if not h then c:SetDrawSwipe(true) end end)
-	hooksecurefunc(cooldown, "SetDrawBling", function(c,h) if h then c:SetDrawBling(false) end end)
-	hooksecurefunc(cooldown, "SetDrawEdge", function(c,h) if h then c:SetDrawEdge(false) end end)
-	hooksecurefunc(cooldown, "SetHideCountdownNumbers", function(c,h) if not h then c:SetHideCountdownNumbers(true) end end)
-	hooksecurefunc(cooldown, "SetCooldown", function(c) c:SetAlpha(.75) end)
+	-- ToDo: Handle this in the back-end
+	hooksecurefunc(self.cooldown, "SetSwipeTexture", function(c,t) if t ~= m then c:SetSwipeTexture(m) end end)
+	hooksecurefunc(self.cooldown, "SetBlingTexture", function(c,t) if t ~= b then c:SetBlingTexture(b,0,0,0,0) end end)
+	hooksecurefunc(self.cooldown, "SetEdgeTexture", function(c,t) if t ~= b then c:SetEdgeTexture(b) end end)
+	--hooksecurefunc(self.cooldown, "SetSwipeColor", function(c,r,g,b,a) if not a or a>.76 then c:SetSwipeColor(r,g,b,.75) end end)
+	hooksecurefunc(self.cooldown, "SetDrawSwipe", function(c,h) if not h then c:SetDrawSwipe(true) end end)
+	hooksecurefunc(self.cooldown, "SetDrawBling", function(c,h) if h then c:SetDrawBling(false) end end)
+	hooksecurefunc(self.cooldown, "SetDrawEdge", function(c,h) if h then c:SetDrawEdge(false) end end)
+	hooksecurefunc(self.cooldown, "SetHideCountdownNumbers", function(c,h) if not h then c:SetHideCountdownNumbers(true) end end)
+	hooksecurefunc(self.cooldown, "SetCooldown", function(c) c:SetAlpha(.75) end)
 
-	local buttonConfig = button.config or {}
+	local buttonConfig = self.config or {}
+
 	buttonConfig.text = {
 		hotkey = {
 			font = {
@@ -457,16 +435,9 @@ local style = function(button)
 			justifyH = db.ButtonCountJustifyH,
 		}
 	}
-	button:UpdateConfig(buttonConfig)
+	self:UpdateConfig(buttonConfig)
 
-	-- Disable masque for our buttons,
-	-- they are not compatible.
-	button.AddToMasque = noop
-	button.AddToButtonFacade = noop
-	button.LBFSkinned = nil
-	button.MasqueSkinned = nil
-
-	return button
+	return self
 end
 
 ActionBarMod.CreateBars = function(self)
@@ -578,56 +549,6 @@ end
 
 ActionBarMod.SetDefaults = function(self, defaults)
 	self.db:RegisterDefaults(defaults)
-end
-
-ActionBarMod.UpdateChargeCooldowns = function(self)
-	if (not self.chargeCooldowns) then
-		self.chargeCooldowns = {}
-	end
-
-	local m = ns.GetConfig("ActionButton").ButtonMaskTexture
-	local b = "" -- GetMedia("blank")
-
-	local i = 1
-	local cooldown = _G["LAB10ChargeCooldown"..i]
-	while cooldown do
-		if (not self.chargeCooldowns[cooldown]) then
-
-			cooldown:SetFrameLevel(button:GetFrameLevel() + 1)
-			cooldown:ClearAllPoints()
-			cooldown:SetAllPoints(button.icon)
-			cooldown:SetUseCircularEdge(true)
-			cooldown:SetReverse(false)
-			cooldown:SetSwipeTexture(m)
-			cooldown:SetDrawSwipe(true)
-			cooldown:SetBlingTexture(b, 0, 0, 0, 0)
-			cooldown:SetDrawBling(false)
-			cooldown:SetEdgeTexture(b)
-			cooldown:SetDrawEdge(false)
-			cooldown:SetHideCountdownNumbers(true)
-
-			hooksecurefunc(cooldown, "SetSwipeTexture", function(c,t) if t ~= m then c:SetSwipeTexture(m) end end)
-			hooksecurefunc(cooldown, "SetBlingTexture", function(c,t) if t ~= b then c:SetBlingTexture(b,0,0,0,0) end end)
-			hooksecurefunc(cooldown, "SetEdgeTexture", function(c,t) if t ~= b then c:SetEdgeTexture(b) end end)
-			--hooksecurefunc(cooldown, "SetSwipeColor", function(c,r,g,b,a) if not a or a>.76 then c:SetSwipeColor(r,g,b,.75) end end)
-			hooksecurefunc(cooldown, "SetDrawSwipe", function(c,h) if not h then c:SetDrawSwipe(true) end end)
-			hooksecurefunc(cooldown, "SetDrawBling", function(c,h) if h then c:SetDrawBling(false) end end)
-			hooksecurefunc(cooldown, "SetDrawEdge", function(c,h) if h then c:SetDrawEdge(false) end end)
-			hooksecurefunc(cooldown, "SetHideCountdownNumbers", function(c,h) if not h then c:SetHideCountdownNumbers(true) end end)
-			hooksecurefunc(cooldown, "SetCooldown", function(c) c:SetAlpha(.75) end)
-
-			hooksecurefunc(cooldown, "Show", function(self)
-				local parent = self:GetParent()
-				self:GetFrameStrata(parent:GetFrameStrata())
-				self:SetFrameLevel(parent:GetFrameLevel() + 1)
-			end)
-
-			self.chargeCooldowns[cooldown] = true
-		end
-		i = i + 1
-		cooldown = _G["LAB10ChargeCooldown"..i]
-	end
-
 end
 
 ActionBarMod.UpdateAnchors = function(self)
@@ -791,6 +712,7 @@ ActionBarMod.OnAnchorEvent = function(self, event, ...)
 end
 
 ActionBarMod.OnEnable = function(self)
+
 	self:CreateBars()
 	self:CreateAnchors()
 	self:UpdateSettings()
