@@ -38,7 +38,7 @@ local string_format = string.format
 local tonumber = tonumber
 local unpack = unpack
 
--- GLOBALS: C_LevelLink, hooksecurefunc, InCombatLockdown, IsMounted, IsSpellOverlayed, UnitIsDeadOrGhost
+-- GLOBALS: C_LevelLink, hooksecurefunc, InCombatLockdown, IsMounted, UnitIsDeadOrGhost
 
 -- Addon API
 local Colors = ns.Colors
@@ -48,8 +48,8 @@ local RegisterCooldown = ns.Widgets.RegisterCooldown
 local UIHider = ns.Hider
 local noop = ns.Noop
 
--- Just not there in Wrath
-local IsSpellOverlayed = IsSpellOverlayed or function() end
+-- Constants
+local _COMBAT, _TARGET, _DIM_WHEN_RESTING, _DIM_WHEN_INACTIVE, _RESTING
 
 -- Return blizzard barID by barnum.
 local BAR_TO_ID = {
@@ -70,7 +70,9 @@ for i,j in next,BAR_TO_ID do ID_TO_BAR[j] = i end
 
 -- Module defaults.
 local defaults = { profile = ns:Merge({
-	clickOnDown = false
+	clickOnDown = false,
+	dimWhenResting = false,
+	dimWhenInactive = false
 }, ns.Module.defaults) }
 
 ActionBarMod.GenerateDefaults = function(self)
@@ -218,24 +220,6 @@ ActionBarMod.GenerateDefaults = function(self)
 	return defaults
 end
 
----------------------------------------------
--- LAB Overrides
----------------------------------------------
-
-local onEnter = function(self)
-	self.icon.darken:SetAlpha(0)
-	if (self.OnEnter) then
-		self:OnEnter()
-	end
-end
-
-local onLeave = function(self)
-	self.icon.darken:SetAlpha(.1)
-	if (self.OnLeave) then
-		self:OnLeave()
-	end
-end
-
 local style = function(self)
 
 	local db = ns.GetConfig("ActionButton")
@@ -246,14 +230,15 @@ local style = function(self)
 	self:SetAttribute("buttonLock", true)
 	self:SetSize(unpack(db.ButtonSize))
 	self:SetHitRectInsets(unpack(db.ButtonHitRects))
+	self.hitRects = { unpack(db.ButtonHitRects) }
 	--self:SetNormalTexture("")
-	self:SetHighlightTexture("")
-	self:SetCheckedTexture("")
-	self:GetHighlightTexture():Hide()
-	self:GetCheckedTexture():Hide()
+	--self:SetHighlightTexture("")
+	--self:SetCheckedTexture("")
+	--self:GetHighlightTexture():Hide()
+	--self:GetCheckedTexture():Hide()
 
 	-- New 3.4.1 checked texture keeps being reset.
-	hooksecurefunc(self, "SetChecked", function() self:GetCheckedTexture():Hide() end)
+	--hooksecurefunc(self, "SetChecked", function() self:GetCheckedTexture():Hide() end)
 
 	-- Custom slot texture
 	self.backdrop = self:CreateTexture(nil, "BACKGROUND", nil, -7)
@@ -269,41 +254,53 @@ local style = function(self)
 	self.icon:SetSize(unpack(db.ButtonIconSize))
 	self.icon:SetMask(m)
 
-	-- Custom icon darkener
-	local darken = self:CreateTexture(nil, "BACKGROUND", nil, 2)
-	darken:SetAllPoints(self.icon)
-	darken:SetTexture(m)
-	darken:SetVertexColor(0, 0, 0, .1)
-	self.icon.darken = darken
+	--self.icon.saturation = self:CreateTexture(nil, "BACKGROUND", nil, 2)
+	--self.icon.saturation:SetDesaturated(true)
+	--self.icon.saturation:SetAllPoints(self.icon)
+	--self.icon.saturation:SetMask(m)
 
-	self:SetScript("OnEnter", onEnter)
-	self:SetScript("OnLeave", onLeave)
+	--self.icon.darken = self:CreateTexture(nil, "BACKGROUND", nil, 3)
+	--self.icon.darken:SetAllPoints(self.icon)
+	--self.icon.darken:SetTexture(m)
+	--self.icon.darken:SetVertexColor(0, 0, 0, 1)
+
+	--hooksecurefunc(self.icon, "SetTexture", function(icon, ...) icon.saturation:SetTexture(...) end)
+	--hooksecurefunc(self.icon, "SetVertexColor", function(icon, ...) icon.saturation:SetVertexColor(...) end)
+	--hooksecurefunc(self.icon, "SetVertexColor", function(icon, ...) icon.saturation:SetVertexColor(...) end)
+
+	--self:SetScript("OnEnter", OnEnter)
+	--self:SetScript("OnLeave", OnLeave)
 
 	-- Some crap WoW10 border I can't figure out how to remove right now.
 	self:DisableDrawLayer("ARTWORK")
 
-	-- Button is pushed
-	-- Responds to mouse and keybinds
-	-- if we allow blizzard to handle it.
-	local pushedTexture = self.PushedTexture -- self:CreateTexture(nil, "OVERLAY", nil, 1)
-	pushedTexture:SetVertexColor(1, 1, 1, .2)
-	pushedTexture:SetTexture(m)
-	pushedTexture:SetAllPoints(self.icon)
-	--self.PushedTexture = pushedTexture
-
-	--self:SetPushedTexture(self.PushedTexture)
+	self:GetPushedTexture():SetTexture(m)
+	self:GetPushedTexture():SetVertexColor(1, 1, 1, .2)
+	self:GetPushedTexture():SetAllPoints(self.icon)
 	self:GetPushedTexture():SetBlendMode("ADD")
-	self:GetPushedTexture():SetDrawLayer("OVERLAY", 1)
+	self:GetPushedTexture():SetDrawLayer("OVERLAY", 2)
+
+	self:GetCheckedTexture():SetTexture(m)
+	self:GetCheckedTexture():SetVertexColor(1, .82, .1, .2)
+	self:GetCheckedTexture():SetAllPoints(self.icon)
+	self:GetCheckedTexture():SetBlendMode("ADD")
+	self:GetCheckedTexture():SetDrawLayer("OVERLAY", 1)
+
+	self:GetHighlightTexture():SetTexture(m)
+	self:GetHighlightTexture():SetVertexColor(1, 1, 1, .2)
+	self:GetHighlightTexture():SetAllPoints(self.icon)
+	self:GetHighlightTexture():SetBlendMode("ADD")
+	self:GetHighlightTexture():SetDrawLayer("HIGHLIGHT")
 
 	-- Autoattack flash
-	local flash = self.Flash
-	flash:SetDrawLayer("OVERLAY", 2)
-	flash:SetAllPoints(self.icon)
-	flash:SetVertexColor(1, 0, 0, .25)
-	flash:SetTexture(m)
-	flash:Hide()
+	self.Flash:SetDrawLayer("OVERLAY", 2)
+	self.Flash:SetAllPoints(self.icon)
+	self.Flash:SetVertexColor(1, 0, 0, .25)
+	self.Flash:SetTexture(m)
+	self.Flash:Hide()
 
 	-- Button cooldown frame
+	-- ToDo: Make all this more streamlined through the back-end
 	self.cooldown:SetFrameLevel(self:GetFrameLevel() + 1)
 	self.cooldown:ClearAllPoints()
 	self.cooldown:SetAllPoints(self.icon)
@@ -341,19 +338,19 @@ local style = function(self)
 	end
 
 	-- Overlay Frame
-	self.overlay = CreateFrame("Frame", nil, self)
-	self.overlay:SetFrameLevel(self:GetFrameLevel() + 3)
-	self.overlay:SetAllPoints()
+	self.OverlayFrame = CreateFrame("Frame", nil, self)
+	self.OverlayFrame:SetFrameLevel(self:GetFrameLevel() + 3)
+	self.OverlayFrame:SetAllPoints()
 
 	-- Icon Border
-	self.iconBorder = self.overlay:CreateTexture(nil, "BORDER", nil, 1)
-	self.iconBorder:SetPoint(unpack(db.ButtonBorderPosition))
-	self.iconBorder:SetSize(unpack(db.ButtonBorderSize))
-	self.iconBorder:SetTexture(db.ButtonBorderTexture)
-	self.iconBorder:SetVertexColor(unpack(db.ButtonBorderColor))
+	self.IconBorder = self.OverlayFrame:CreateTexture(nil, "BORDER", nil, 1)
+	self.IconBorder:SetPoint(unpack(db.ButtonBorderPosition))
+	self.IconBorder:SetSize(unpack(db.ButtonBorderSize))
+	self.IconBorder:SetTexture(db.ButtonBorderTexture)
+	self.IconBorder:SetVertexColor(unpack(db.ButtonBorderColor))
 
 	-- Spell Activation / MaxDps
-	self.CustomSpellActivationAlert = self.overlay:CreateTexture(nil, "ARTWORK", nil, -7)
+	self.CustomSpellActivationAlert = self.OverlayFrame:CreateTexture(nil, "ARTWORK", nil, -7)
 	self.CustomSpellActivationAlert:SetSize(unpack(db.ButtonSpellHighlightSize))
 	self.CustomSpellActivationAlert:SetPoint(unpack(db.ButtonSpellHighlightPosition))
 	self.CustomSpellActivationAlert:SetTexture(db.ButtonSpellHighlightTexture)
@@ -361,7 +358,7 @@ local style = function(self)
 	self.CustomSpellActivationAlert:Hide()
 
 	-- Cooldown Timer Text
-	self.cooldownCount = self.overlay:CreateFontString(nil, "ARTWORK", nil, 1)
+	self.cooldownCount = self.OverlayFrame:CreateFontString(nil, "ARTWORK", nil, 1)
 	self.cooldownCount:SetPoint(unpack(db.ButtonCooldownCountPosition))
 	self.cooldownCount:SetFontObject(db.ButtonCooldownCountFont)
 	self.cooldownCount:SetJustifyH(db.ButtonCooldownCountJustifyH)
@@ -369,7 +366,7 @@ local style = function(self)
 	self.cooldownCount:SetTextColor(unpack(db.ButtonCooldownCountColor))
 
 	-- Spell Charge / Item Stack Count
-	self.Count:SetParent(self.overlay)
+	self.Count:SetParent(self.OverlayFrame)
 	self.Count:SetDrawLayer("OVERLAY", 1)
 	self.Count:ClearAllPoints()
 	self.Count:SetPoint(unpack(db.ButtonCountPosition))
@@ -379,7 +376,7 @@ local style = function(self)
 	self.Count:SetTextColor(unpack(db.ButtonCountColor))
 
 	-- HotKey
-	self.HotKey:SetParent(self.overlay)
+	self.HotKey:SetParent(self.OverlayFrame)
 	self.HotKey:SetDrawLayer("OVERLAY", 1)
 	self.HotKey:ClearAllPoints()
 	self.HotKey:SetPoint(unpack(db.ButtonKeybindPosition))
@@ -449,7 +446,7 @@ ActionBarMod.CreateBars = function(self)
 		config.clickOnDown = self.db.profile.clickOnDown
 
 		local bar = ns.ActionBar:Create(BAR_TO_ID[i], config, ns.Prefix.."ActionBar"..i)
-		bar:Show() -- bar must be initially visible for button mask to be properly removed. weird.
+		--bar:Show() -- bar must be initially visible for button mask to be properly removed. weird.
 		bar.buttonWidth, bar.buttonHeight = unpack(ns.GetConfig("ActionButton").ButtonSize)
 		bar.defaults = defaults.profile.bars[i]
 
@@ -577,6 +574,15 @@ ActionBarMod.UpdateBars = function(self, event)
 	end
 end
 
+ActionBarMod.UpdateButtons = function(self)
+	for i,bar in next,self.bars do
+		for j,button in next,bar.buttons do
+			if j > bar.config.numbuttons then break end
+			button:UpdateConfig()
+		end
+	end
+end
+
 ActionBarMod.UpdateBindings = function(self)
 	for i,bar in next,self.bars do
 		if (bar:IsEnabled()) then
@@ -640,14 +646,23 @@ ActionBarMod.UpdateSettings = function(self, event)
 	if (event == "PLAYER_REGEN_ENABLED") then
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "UpdateBars")
 	end
+
+	-- Follow the global click on down settings in WoW10 and above.
 	if (ns.WoW10) then
 		SetCVar("ActionButtonUseKeyDown", self.db.profile.clickOnDown)
 	end
+
+	-- Copy global settings to individual bars for easier updates.
+	-- We do not grant user access to these settings per bar.
 	for i,bar in next,self.bars do
 		bar.config.clickOnDown = self.db.profile.clickOnDown
+		bar.dimWhenResting = self.db.profile.dimWhenResting
+		bar.dimWhenInactive = self.db.profile.dimWhenInactive
 	end
+
 	self:UpdateEnabled()
 	self:UpdateBars()
+	self:UpdateButtons()
 	self:UpdateBindings()
 	self:UpdatePositionAndScales()
 	self:UpdateAnchors()
