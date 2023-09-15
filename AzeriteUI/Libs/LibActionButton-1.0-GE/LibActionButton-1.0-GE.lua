@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 111
+local MINOR_VERSION = 114
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -151,7 +151,7 @@ local DefaultConfig = {
 		macro = true,
 		hotkey = false,
 		equipped = true,
-		border = true,
+		border = false,
 		borderIfEmpty = true
 	},
 	keyBoundTarget = false,
@@ -259,7 +259,7 @@ function lib:CreateButton(id, name, header, config)
 
 	-- Hide unused elements
 	button.AutoCastShine:SetParent(Hider)
-	button.Border:SetParent(Hider)
+	--button.Border:SetParent(Hider)
 	button.NewActionTexture:SetParent(Hider)
 	button.NormalTexture:SetTexture()
 	button.NormalTexture:SetParent(Hider)
@@ -1112,10 +1112,16 @@ function Generic:OnEnter()
 		KeyBound:Set(self)
 	end
 
+	self.isMouseOver = true
+
+	UpdateUsable(self)
 	UpdateFlyout(self)
 end
 
 function Generic:OnLeave()
+	self.isMouseOver = nil
+
+	UpdateUsable(self)
 	UpdateFlyout(self)
 
 	if GameTooltip:IsForbidden() then return end
@@ -1294,6 +1300,10 @@ function InitializeEventHandler()
 		lib.eventFrame:RegisterEvent("SPELL_FLYOUT_UPDATE")
 	end
 
+	lib.eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+	lib.eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+	lib.eventFrame:RegisterEvent("PLAYER_UPDATE_RESTING")
+
 	if IsAddOnLoaded("MaxDps") then
 		InitializeMaxDpsIntegration()
 	elseif MaxDpsIsEnabled then
@@ -1398,6 +1408,9 @@ function OnEvent(frame, event, arg1, ...)
 			end
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_VEHICLE_ACTIONBAR" then
+		lib.isresting = IsResting()
+		lib.hastarget = UnitExists("target")
+		lib.incombat = UnitAffectingCombat("player")
 		ForAllButtons(Update)
 	elseif event == "UPDATE_SHAPESHIFT_FORM" then
 		-- XXX: throttle these updates since Blizzard broke the event and its now extremely spammy in some clients
@@ -1427,7 +1440,9 @@ function OnEvent(frame, event, arg1, ...)
 	elseif event == "UPDATE_BINDINGS" then
 		ForAllButtons(UpdateHotkeys)
 	elseif event == "PLAYER_TARGET_CHANGED" then
+		lib.hastarget = UnitExists("target")
 		UpdateRangeTimer()
+		ForAllButtons(UpdateUsable)
 	elseif (event == "ACTIONBAR_UPDATE_STATE") or
 		((event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player")) or
 		((event == "COMPANION_UPDATE") and (arg1 == "MOUNT")) then
@@ -1556,6 +1571,15 @@ function OnEvent(frame, event, arg1, ...)
 		end
 	elseif event == "SPELL_UPDATE_ICON" then
 		ForAllButtons(Update, true)
+	elseif event == "PLAYER_REGEN_DISABLED" then
+		lib.incombat = true
+		ForAllButtons(UpdateUsable)
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		lib.incombat = false
+		ForAllButtons(UpdateUsable)
+	elseif event == "PLAYER_UPDATE_RESTING" then
+		lib.isresting = IsResting()
+		ForAllButtons(UpdateUsable)
 	elseif event == "ADDON_LOADED" and arg1 == "MaxDps" then
 		lib.eventFrame:UnregisterEvent("ADDON_LOADED")
 		InitializeMaxDpsIntegration()
@@ -1634,7 +1658,10 @@ function HideGrid()
 	end
 	if gridCounter == 0 then
 		for button in next, ButtonRegistry do
-			if button:IsShown() and not button:GetTexture()--[[button:HasAction()]] and not button.config.showGrid then
+			-- Using GetTexture instead of HasAction,
+			-- as the latter fires as almost always true in vehicles,
+			-- which seriously messes with our attempts to hide empty buttons.
+			if button:IsShown() and not button:GetTexture() and not button.config.showGrid then
 				button:SetAlpha(0.0)
 			end
 		end
@@ -1721,6 +1748,21 @@ end
 -----------------------------------------------------------
 --- button styling
 
+function Generic:HideCheckedTexture()
+	self:SetCheckedTexture("")
+	self:GetCheckedTexture():Hide()
+end
+
+function Generic:HidePushedTexture()
+	self:SetPushedTexture("")
+	self:GetPushedTexture():Hide()
+end
+
+function Generic:HideHighlightTexture()
+	self:SetHighlightTexture("")
+	self:GetHighlightTexture():Hide()
+end
+
 
 -----------------------------------------------------------
 --- button management
@@ -1740,10 +1782,12 @@ function Generic:UpdateAction(force)
 end
 
 function Update(self)
+	local texture = self:GetTexture()
+
 	-- Using GetTexture instead of HasAction,
 	-- as the latter fires as almost always true in vehicles,
 	-- which seriously messes with our attempts to hide empty buttons.
-	if self:GetTexture() then
+	if texture then
 		ActiveButtons[self] = true
 		if self._state_type == "action" then
 			ActionButtons[self] = true
@@ -1776,12 +1820,14 @@ function Update(self)
 		end
 	end
 
-	-- Add a green border if button is an equipped item
-	if self:IsEquipped() and not self.config.hideElements.equipped then
-		self.Border:SetVertexColor(0, 1.0, 0, 0.35)
-		self.Border:Show()
-	else
-		self.Border:Hide()
+	-- Show an optional equipped texture for equipped items
+	if self.Equipped then
+		if self:IsEquipped() and not self.config.hideElements.equipped then
+			self.Equipped:Show()
+			print("showing equipped border")
+		else
+			self.Equipped:Hide()
+		end
 	end
 
 	-- Update Action Text
@@ -1791,9 +1837,6 @@ function Update(self)
 		self.Name:SetText("")
 	end
 
-	-- Update icon and hotkey
-	local texture = self:GetTexture()
-
 	-- Zone ability button handling
 	self.zoneAbilityDisabled = false
 	self.icon:SetDesaturated(false)
@@ -1802,34 +1845,6 @@ function Update(self)
 		self.icon:SetTexture(texture)
 		self.icon:Show()
 		self.rangeTimer = - 1
-		if WoWRetail then
-			--self.SlotBackground:Hide()
-			--if self.config.hideElements.border then
-			--	if self.NormalTexture then self.NormalTexture:SetTexture() end
-			--	self.icon:RemoveMaskTexture(self.IconMask)
-			--	self.HighlightTexture:SetSize(52, 51)
-			--	self.HighlightTexture:SetPoint("TOPLEFT", self, "TOPLEFT", -2.5, 2.5)
-			--	self.CheckedTexture:SetSize(52, 51)
-			--	self.CheckedTexture:SetPoint("TOPLEFT", self, "TOPLEFT", -2.5, 2.5)
-			--	self.cooldown:ClearAllPoints()
-			--	self.cooldown:SetAllPoints()
-			--else
-			--	self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow")
-			--	self.icon:AddMaskTexture(self.IconMask)
-			--	self.HighlightTexture:SetSize(46, 45)
-			--	self.HighlightTexture:SetPoint("TOPLEFT")
-			--	self.CheckedTexture:SetSize(46, 45)
-			--	self.CheckedTexture:SetPoint("TOPLEFT")
-			--	self.cooldown:ClearAllPoints()
-			--	self.cooldown:SetPoint("TOPLEFT", self, "TOPLEFT", 3, -2)
-			--	self.cooldown:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -3, 3)
-			--end
-		else
-			--if self.NormalTexture then
-			--	self:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2")
-			--	self.NormalTexture:SetTexCoord(0, 0, 0, 0)
-			--end
-		end
 	else
 		self.icon:Hide()
 		self.cooldown:Hide()
@@ -1838,21 +1853,6 @@ function Update(self)
 			self.HotKey:Hide()
 		else
 			self.HotKey:SetVertexColor(unpack(self.config.text.hotkey.color))
-		end
-		if WoWRetail then
-			--self.SlotBackground:Show()
-			--if self.NormalTexture then
-			--	if self.config.hideElements.borderIfEmpty then
-			--		self.NormalTexture:SetTexture()
-			--	else
-			--		self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow")
-			--	end
-			--end
-		else
-			--if self.NormalTexture then
-			--	self:SetNormalTexture("Interface\\Buttons\\UI-Quickslot")
-			--	self.NormalTexture:SetTexCoord(-0.15, 1.15, -0.15, 1.17)
-			--end
 		end
 	end
 
@@ -1899,37 +1899,54 @@ end
 
 function UpdateUsable(self)
 
-	if (UnitIsDeadOrGhost("player") or (IsMounted() and not self.header.isDragonRiding)) then
-		self.icon:SetDesaturated(true)
+	if UnitIsDeadOrGhost("player") or (IsMounted() and not self.header.isDragonRiding) then
+		self.icon:SetDesaturation(1)
 		self.icon:SetVertexColor(unpack(self.config.colors.disabled))
 
-	elseif (self.outOfRange) then
-		self.icon:SetDesaturated(true)
+	elseif self.outOfRange then
+		self.icon:SetDesaturation(1)
 		self.icon:SetVertexColor(unpack(self.config.colors.range))
 	else
 		local isUsable, notEnoughMana = self:IsUsable()
-		if (isUsable) then
-			self.icon:SetDesaturated(false)
-			self.icon:SetVertexColor(1, 1, 1)
-
-		elseif (notEnoughMana) then
-			self.icon:SetDesaturated(true)
+		if isUsable then
+			if self.isMouseOver or lib.hastarget or lib.incombat then
+				self.icon:SetDesaturation(0)
+				self.icon:SetVertexColor(1, 1, 1)
+			else
+				if self.header.dimWhenInactive then
+					if self.header.dimWhenResting then
+						if lib.isresting then
+							self.icon:SetDesaturation(1)
+							self.icon:SetVertexColor(unpack(self.config.colors.disabled))
+						else
+							self.icon:SetDesaturation(0)
+							self.icon:SetVertexColor(1, 1, 1)
+						end
+					else
+						self.icon:SetDesaturation(1)
+						self.icon:SetVertexColor(unpack(self.config.colors.disabled))
+					end
+				else
+					self.icon:SetDesaturation(0)
+					self.icon:SetVertexColor(1, 1, 1)
+				end
+			end
+		elseif notEnoughMana then
+			self.icon:SetDesaturation(1)
 			self.icon:SetVertexColor(unpack(self.config.colors.mana))
 		else
-			self.icon:SetDesaturated(true)
+			self.icon:SetDesaturation(1)
 			self.icon:SetVertexColor(unpack(self.config.colors.disabled))
 		end
 	end
 
-	if (C_LevelLink and self._state_type == "action") then
+	if C_LevelLink and self._state_type == "action" then
 		local isLevelLinkLocked = C_LevelLink.IsActionLocked(self._state_action)
-		if (not self.icon:IsDesaturated()) then
-			self.icon:SetDesaturated(isLevelLinkLocked)
-			if (isLevelLinkLocked) then
-				self.icon:SetVertexColor(unpack(self.config.colors.disabled))
-			end
+		if (isLevelLinkLocked) then
+			self.icon:SetDesaturation(1)
+			self.icon:SetVertexColor(unpack(self.config.colors.disabled))
 		end
-		if (self.LevelLinkLockIcon) then
+		if self.LevelLinkLockIcon then
 			self.LevelLinkLockIcon:SetShown(isLevelLinkLocked)
 		end
 	end
