@@ -557,6 +557,8 @@ ActionBarMod.UpdateButtons = function(self)
 	for i,bar in next,self.bars do
 		for j,button in next,bar.buttons do
 			if j > bar.config.numbuttons then break end
+			-- Updating the config will trigger a full button update,
+			-- even though this method isn't directly exposed.
 			button:UpdateConfig(button.config)
 		end
 	end
