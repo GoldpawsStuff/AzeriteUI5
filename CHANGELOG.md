@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-09-15
+## [Unreleased] 2023-09-17
 ### Added
 - Added options to dim down the actionbuttons when resting or at any time when not engaged in combat or having a current target. They are disabled by default, but available from the front page of the actionbar menu.
 
