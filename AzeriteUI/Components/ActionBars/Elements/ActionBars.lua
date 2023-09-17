@@ -231,11 +231,6 @@ local style = function(self)
 	self:SetSize(unpack(db.ButtonSize))
 	self:SetHitRectInsets(unpack(db.ButtonHitRects))
 	self.hitRects = { unpack(db.ButtonHitRects) }
-	--self:SetNormalTexture("")
-	--self:SetHighlightTexture("")
-	--self:SetCheckedTexture("")
-	--self:GetHighlightTexture():Hide()
-	--self:GetCheckedTexture():Hide()
 
 	-- New 3.4.1 checked texture keeps being reset.
 	--hooksecurefunc(self, "SetChecked", function() self:GetCheckedTexture():Hide() end)
@@ -254,25 +249,8 @@ local style = function(self)
 	self.icon:SetSize(unpack(db.ButtonIconSize))
 	self.icon:SetMask(m)
 
-	--self.icon.saturation = self:CreateTexture(nil, "BACKGROUND", nil, 2)
-	--self.icon.saturation:SetDesaturated(true)
-	--self.icon.saturation:SetAllPoints(self.icon)
-	--self.icon.saturation:SetMask(m)
-
-	--self.icon.darken = self:CreateTexture(nil, "BACKGROUND", nil, 3)
-	--self.icon.darken:SetAllPoints(self.icon)
-	--self.icon.darken:SetTexture(m)
-	--self.icon.darken:SetVertexColor(0, 0, 0, 1)
-
-	--hooksecurefunc(self.icon, "SetTexture", function(icon, ...) icon.saturation:SetTexture(...) end)
-	--hooksecurefunc(self.icon, "SetVertexColor", function(icon, ...) icon.saturation:SetVertexColor(...) end)
-	--hooksecurefunc(self.icon, "SetVertexColor", function(icon, ...) icon.saturation:SetVertexColor(...) end)
-
-	--self:SetScript("OnEnter", OnEnter)
-	--self:SetScript("OnLeave", OnLeave)
-
 	-- Some crap WoW10 border I can't figure out how to remove right now.
-	self:DisableDrawLayer("ARTWORK")
+	--self:DisableDrawLayer("ARTWORK")
 
 	self:GetPushedTexture():SetTexture(m)
 	self:GetPushedTexture():SetVertexColor(1, 1, 1, .2)
@@ -432,6 +410,7 @@ local style = function(self)
 			justifyH = db.ButtonCountJustifyH,
 		}
 	}
+
 	self:UpdateConfig(buttonConfig)
 
 	return self
@@ -578,7 +557,7 @@ ActionBarMod.UpdateButtons = function(self)
 	for i,bar in next,self.bars do
 		for j,button in next,bar.buttons do
 			if j > bar.config.numbuttons then break end
-			button:UpdateConfig()
+			button:UpdateConfig(button.config)
 		end
 	end
 end
