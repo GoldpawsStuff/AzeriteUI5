@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 115
+local MINOR_VERSION = 116
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -162,49 +162,49 @@ local DefaultConfig = {
 		hotkey = {
 			font = {
 				font = false, -- "Fonts\\ARIALN.TTF",
-				size = WoWRetail and 14 or 13,
-				flags = "OUTLINE",
+				size = 14, -- WoWRetail and 14 or 13,
+				flags = "OUTLINE"
 			},
 			color = { 0.75, 0.75, 0.75 },
 			position = {
 				anchor = "TOPRIGHT",
 				relAnchor = "TOPRIGHT",
 				offsetX = -2,
-				offsetY = -4,
+				offsetY = -4
 			},
-			justifyH = "RIGHT",
+			justifyH = "RIGHT"
 		},
 		count = {
 			font = {
 				font = false, -- "Fonts\\ARIALN.TTF",
 				size = 16,
-				flags = "OUTLINE",
+				flags = "OUTLINE"
 			},
 			color = { 1, 1, 1 },
 			position = {
 				anchor = "BOTTOMRIGHT",
 				relAnchor = "BOTTOMRIGHT",
 				offsetX = -2,
-				offsetY = 4,
+				offsetY = 4
 			},
-			justifyH = "RIGHT",
+			justifyH = "RIGHT"
 		},
 		macro = {
 			font = {
 				font = false, -- "Fonts\\FRIZQT__.TTF",
 				size = 10,
-				flags = "OUTLINE",
+				flags = "OUTLINE"
 			},
 			color = { 1, 1, 1 },
 			position = {
 				anchor = "BOTTOM",
 				relAnchor = "BOTTOM",
 				offsetX = 0,
-				offsetY = 2,
+				offsetY = 2
 			},
-			justifyH = "CENTER",
-		},
-	},
+			justifyH = "CENTER"
+		}
+	}
 }
 
 -----------------------------------------------------------
