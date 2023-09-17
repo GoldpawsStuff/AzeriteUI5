@@ -65,6 +65,7 @@ local config = {
 Tracker.PrepareFrames = function(self)
 
 	 local frame = CreateFrame("Frame", nil, UIParent)
+	 frame:SetFrameStrata("LOW")
 	 frame:SetSize(config.Width, config.TrackerHeight)
 	 frame:SetPoint(unpack(defaults.profile.savedPosition))
 
