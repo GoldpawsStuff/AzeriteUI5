@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 114
+local MINOR_VERSION = 115
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -333,6 +333,11 @@ function lib:CreateButton(id, name, header, config)
 
 	-- somewhat of a hack for the Flyout buttons to not error.
 	button.action = 0
+
+	-- support wow10
+	button:SetAttribute("checkselfcast", true)
+	button:SetAttribute("checkfocuscast", true)
+	button:SetAttribute("checkmouseovercast", true)
 
 	lib.callbacks:Fire("OnButtonCreated", button)
 
