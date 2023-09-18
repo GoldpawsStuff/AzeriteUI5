@@ -562,6 +562,9 @@ PetBarMod.UpdateBindings = function(self)
 	end
 end
 
+-- Called by the movable frame manager
+-- when defaults somehow are changed,
+-- like when the user interface scale is modified.
 PetBarMod.UpdateDefaults = function(self)
 	if (not self.anchor) then return end
 

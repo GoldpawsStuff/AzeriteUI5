@@ -559,7 +559,7 @@ ActionBarMod.UpdateButtons = function(self)
 			if j > bar.config.numbuttons then break end
 			-- Updating the config will trigger a full button update,
 			-- even though this method isn't directly exposed.
-			button:UpdateConfig(button.config)
+			button:UpdateConfig(button.config) -- pass its config, or it'll reset!
 		end
 	end
 end
@@ -572,6 +572,9 @@ ActionBarMod.UpdateBindings = function(self)
 	end
 end
 
+-- Called by the movable frame manager
+-- when defaults somehow are changed,
+-- like when the user interface scale is modified.
 ActionBarMod.UpdateDefaults = function(self)
 	local defaults = self:GetDefaults()
 	for i,bar in next,self.bars do
