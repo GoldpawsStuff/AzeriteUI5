@@ -1,12 +1,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
+	<!--@non-debug@
 	<Script file="LibStub\LibStub.lua"/>
 	<Include file="CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
-
-	<!-- Addon API -->
+	<Include file="TaintLess\TaintLess.xml"/>
 	<Include file="AceAddon-3.0\AceAddon-3.0.xml"/>
 	<Include file="AceDB-3.0\AceDB-3.0.xml"/>
-	<Include file="AceDB-3.0-GE\AceDB-3.0-GE.xml"/>
 	<Include file="AceDBOptions-3.0\AceDBOptions-3.0.xml"/>
 	<Include file="AceEvent-3.0\AceEvent-3.0.xml"/>
 	<Include file="AceTimer-3.0\AceTimer-3.0.xml"/>
@@ -17,25 +16,19 @@
 	<Include file="AceConfig-3.0\AceConfig-3.0.xml"/>
 	<Include file="UTF8\utf8.xml"/>
 	<Include file="LibSharedMedia-3.0\lib.xml"/>
+	<Include file="LibUIDropDownMenu\LibUIDropDownMenu.xml"/>
+	@end-non-debug@-->
 
-	<!-- ActionButton Libraries -->
 	<Include file="LibKeyBound-1.0\lib.xml"/>
-	<Script file="LibButtonGlow-1.0\LibButtonGlow-1.0.lua"/>
-	<Script file="LibActionButton-1.0-GE\LibActionButton-1.0-GE.lua"/>
-
-	<!-- UnitFrame Libraries -->
 	<Include file="LibPlayerSpells-1.0\lib.xml"/>
 	<Include file="oUF\oUF.xml"/>
 	<Include file="oUF_Plugins\oUF_Plugins.xml"/>
-
-	<!-- DropDown Library -->
-	<Include file="LibUIDropDownMenu\LibUIDropDownMenu.xml"/>
-
-	<!-- EditMode Integration -->
 	<Include file="LibDropDown\embed.xml"/>
 	<Include file="LibEditModeOverride\LibEditModeOverride.xml"/>
 
-	<!-- My Custom Libraries -->
+	<Script file="LibActionButton-1.0-GE\LibActionButton-1.0-GE.lua"/>
+	<Include file="AceDB-3.0-GE\AceDB-3.0-GE.xml"/>
+
 	<Script file="LibMoreEvents-1.0\LibMoreEvents-1.0.lua"/>
 	<Script file="LibFadingFrames-1.0\LibFadingFrames-1.0.lua"/>
 	<Script file="LibOrb-1.0\LibOrb-1.0.lua"/>

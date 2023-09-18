@@ -14,10 +14,6 @@
 ## SavedVariables: AzeriteUI5_DB
 ## OptionalDeps: TaintLess, Ace3, Clique, LibKeyBound-1.0
 
-# TaintLess [23-09-09]
-# https://www.townlong-yak.com/addons/taintless
-TaintLess.xml
-
 # Fontstyles
 Fontstyles.xml
 

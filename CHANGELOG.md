@@ -9,9 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added options to dim down the actionbuttons when resting or at any time when not engaged in combat or having a current target. They are disabled by default, but available from the front page of the actionbar menu.
 
 ### Changed
-- Added TaintLess as an optional dependency to make sure the standalone is loaded first.
-- Update the embedded TaintLess.xml to version [23-09-09].
 - Started on a rework of the actionbutton library.
+- Added various Ace3 libraries as externals and removed them from the project folder structure.
+- Added TaintLess as an optional dependency to make sure the standalone is loaded first for those using it.
+- Updated the embedded TaintLess.xml.
 
 ## [5.2.108-RC] 2023-09-11
 ### Added
