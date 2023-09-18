@@ -5,10 +5,12 @@ embedded-libraries:
     - ace3
     - ouf
     - libeditmodeoverride
+    - taintless
 
 optional-dependencies:
     - ace3
     - clique
+    - taintless
 
 tools-used:
     - ouf
