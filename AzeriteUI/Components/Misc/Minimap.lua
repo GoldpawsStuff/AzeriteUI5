@@ -88,6 +88,9 @@ MinimapMod.GetScale = function(self)
 	return mapScale
 end
 
+-- Generate module defaults on the fly
+-- to recalculate default values relying on
+-- changing factors like user interface scale.
 MinimapMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = mapScale * ns.API.GetEffectiveScale(),

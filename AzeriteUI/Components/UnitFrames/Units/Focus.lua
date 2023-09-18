@@ -36,6 +36,9 @@ local string_gsub = string.gsub
 
 local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
 
+-- Generate module defaults on the fly
+-- to recalculate default values relying on
+-- changing factors like user interface scale.
 FocusFrameMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),

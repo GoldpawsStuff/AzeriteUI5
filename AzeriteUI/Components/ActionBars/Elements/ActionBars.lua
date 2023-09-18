@@ -75,6 +75,9 @@ local defaults = { profile = ns:Merge({
 	dimWhenInactive = false
 }, ns.Module.defaults) }
 
+-- Generate module defaults on the fly
+-- to recalculate default values relying on
+-- changing factors like user interface scale.
 ActionBarMod.GenerateDefaults = function(self)
 	defaults.profile.bars = {
 		[1] = ns:Merge({ --[[ primary action bar ]]

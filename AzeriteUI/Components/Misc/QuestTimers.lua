@@ -31,6 +31,9 @@ local QuestTimers = ns:NewModule("QuestTimers", ns.Module, "LibMoreEvents-1.0")
 
 local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
 
+-- Generate module defaults on the fly
+-- to recalculate default values relying on
+-- changing factors like user interface scale.
 QuestTimers.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),

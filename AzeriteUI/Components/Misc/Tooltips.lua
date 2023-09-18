@@ -73,6 +73,9 @@ local defaults = { profile = ns:Merge({
 	showSpellID = false,
 }, ns.Module.defaults) }
 
+-- Generate module defaults on the fly
+-- to recalculate default values relying on
+-- changing factors like user interface scale.
 Tooltips.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),

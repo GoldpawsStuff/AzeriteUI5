@@ -44,6 +44,9 @@ local defaults = { profile = ns:Merge({
 	growUpwards = false
 }, ns.Module.defaults) }
 
+-- Generate module defaults on the fly
+-- to recalculate default values relying on
+-- changing factors like user interface scale.
 MirrorTimers.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),

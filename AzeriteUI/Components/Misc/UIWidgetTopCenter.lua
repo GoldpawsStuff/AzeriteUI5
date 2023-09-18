@@ -37,6 +37,9 @@ local defaults = { profile = ns:Merge({
 	hideWithTarget =  true
 }, ns.Module.defaults) }
 
+-- Generate module defaults on the fly
+-- to recalculate default values relying on
+-- changing factors like user interface scale.
 UIWidgetTopCenter.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = 14/12 * ns.API.GetEffectiveScale(),

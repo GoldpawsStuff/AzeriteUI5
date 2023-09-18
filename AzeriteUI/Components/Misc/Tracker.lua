@@ -52,6 +52,9 @@ local defaults = { profile = ns:Merge({
 	theme = "Azerite"
 }, ns.Module.defaults) }
 
+-- Generate module defaults on the fly
+-- to recalculate default values relying on
+-- changing factors like user interface scale.
 Tracker.GenerateDefaults = function(self)
 	return defaults
 end

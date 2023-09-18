@@ -55,6 +55,9 @@ local defaults = { profile = ns:Merge({
 	useWrathCrystal = ns.IsWrath
 }, ns.Module.defaults) }
 
+-- Generate module defaults on the fly
+-- to recalculate default values relying on
+-- changing factors like user interface scale.
 PlayerFrameMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),

@@ -35,6 +35,9 @@ local UIWidgetBelowMinimap = ns:NewModule("UIWidgetBelowMinimap", ns.Module, "Li
 
 local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
 
+-- Generate module defaults on the fly
+-- to recalculate default values relying on
+-- changing factors like user interface scale.
 UIWidgetBelowMinimap.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),

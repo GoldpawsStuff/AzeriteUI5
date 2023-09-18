@@ -49,6 +49,9 @@ local defaults = { profile = ns:Merge({
 	useStandardCritterTexture = false
 }, ns.Module.defaults) }
 
+-- Generate module defaults on the fly
+-- to recalculate default values relying on
+-- changing factors like user interface scale.
 TargetFrameMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = ns.API.GetEffectiveScale(),
