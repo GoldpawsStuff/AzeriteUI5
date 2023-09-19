@@ -20,7 +20,6 @@
 	@end-non-debug@-->
 
 	<Include file="LibKeyBound-1.0\lib.xml"/>
-	<Include file="LibPlayerSpells-1.0\lib.xml"/>
 	<Include file="oUF\oUF.xml"/>
 	<Include file="oUF_Plugins\oUF_Plugins.xml"/>
 	<Include file="LibDropDown\embed.xml"/>

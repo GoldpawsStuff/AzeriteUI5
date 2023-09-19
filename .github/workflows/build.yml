@@ -25,7 +25,18 @@ jobs:
         with:
           fetch-depth: 0  # gets git history for changelogs
 
-      - name: Package and release
+      - name: Package and release for Retail
         uses: BigWigsMods/packager@v2
         with:
-          args: -m .pkgmeta
+          args: -g retail -m .pkgmeta
+
+      - name: Package and release for Wrath
+        uses: BigWigsMods/packager@v2
+        with:
+          args: -g wrath -m .pkgmeta-wrath
+
+      - name: Package and release for Classic Era
+        uses: BigWigsMods/packager@v2
+        with:
+          args: -g classic -m .pkgmeta-vanilla
+

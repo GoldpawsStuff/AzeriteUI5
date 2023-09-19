@@ -17,11 +17,11 @@
 	<Include file="UTF8\utf8.xml"/>
 	<Include file="LibSharedMedia-3.0\lib.xml"/>
 	<Include file="LibUIDropDownMenu\LibUIDropDownMenu.xml"/>
+	<Script file="LibHealComm-4.0\LibHealComm-4.0.lua"/>
 	@end-non-debug@-->
 
 	<Include file="LibKeyBound-1.0\lib.xml"/>
 	<Script file="LibHealComm-4.0\LibHealComm-4.0.lua"/>
-	<Include file="LibPlayerSpells-1.0\lib.xml"/>
 	<Include file="oUF_Classic\oUF_Wrath.xml"/>
 	<Include file="oUF_Plugins\oUF_Plugins.xml"/>
 

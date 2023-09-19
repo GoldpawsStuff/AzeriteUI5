@@ -5,8 +5,10 @@ I recommend downloading the UI from either [CurseForge](https://www.curseforge.c
 
 If you choose to download and manually install directly from GitHub, you'll have to install the following libraries as standalones in order for the UI to work:
 - [Ace3](https://www.curseforge.com/wow/addons/ace3)
+- [LibClassicDurations](https://www.curseforge.com/wow/addons/libclassicdurations) (Classic)
+- [LibHealComm-4.0](https://www.curseforge.com/wow/addons/libhealcomm-4-0) (Classic/Wrath)
+- [LibSharedMedia-3.0](https://www.curseforge.com/wow/addons/libsharedmedia-3-0)
 - [LibUIDropDownMenu](https://www.curseforge.com/wow/addons/libuidropdownmenu)
-- [LibSharedMedia](https://www.curseforge.com/wow/addons/libsharedmedia-3-0)
 - [TaintLess](https://www.townlong-yak.com/addons/taintless)
 
 ## FAQ
