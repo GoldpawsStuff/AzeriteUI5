@@ -33,10 +33,14 @@ local GetMedia = ns.API.GetMedia
 
 local UpdateTooltip = function(self)
 	if (GameTooltip:IsForbidden()) then return end
-	if (self.isHarmful) then
-		GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().__owner.unit, self.auraInstanceID)
+	if (not ns.IsRetail) then
+		GameTooltip:SetUnitAura(self:GetParent().__owner.unit, self:GetID(), self.filter)
 	else
-		GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().__owner.unit, self.auraInstanceID)
+		if (self.isHarmful) then
+			GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().__owner.unit, self.auraInstanceID)
+		else
+			GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().__owner.unit, self.auraInstanceID)
+		end
 	end
 end
 
@@ -238,86 +242,6 @@ ns.AuraStyles.ArenaPostUpdateButton = function(element, button, unit, data, posi
 	local color
 	if (button.isHarmful and element.showDebuffType) or (not button.isHarmful and element.showBuffType) or (element.showType) then
 		color = Colors.debuff[data.dispelName] or Colors.debuff.none
-	else
-		color = Colors.verydarkgray
-	end
-	if (color) then
-		button.Border:SetBackdropBorderColor(color[1], color[2], color[3])
-	end
-
-end
-
--- Wrath overrides
-if (ns.IsRetail) then return end
-
-UpdateTooltip = function(self)
-	if (GameTooltip:IsForbidden()) then return end
-	GameTooltip:SetUnitAura(self:GetParent().__owner.unit, self:GetID(), self.filter)
-end
-
-ns.AuraStyles.PlayerPostUpdateButton = function(element, unit, button, index, position, duration, expiration, debuffType, isStealable)
-
-	-- Border Coloring
-	local color
-	if (button.isDebuff and element.showDebuffType) or (not button.isDebuff and element.showBuffType) or (element.showType) then
-		color = Colors.debuff[debuffType] or Colors.debuff.none
-	else
-		color = Colors.verydarkgray -- Colors.aura
-	end
-	if (color) then
-		button.Border:SetBackdropBorderColor(color[1], color[2], color[3])
-		--button.Bar:SetStatusBarColor(color[1], color[2], color[3])
-	end
-
-	-- Icon Coloring
-	if (button.isPlayer or button.isDebuff) then
-		button.Icon:SetDesaturated(false)
-		button.Icon:SetVertexColor(1, 1, 1)
-	else
-		button.Icon:SetDesaturated(true)
-		button.Icon:SetVertexColor(.6, .6, .6)
-	end
-
-end
-
-ns.AuraStyles.TargetPostUpdateButton = function(element, unit, button, index, position, duration, expiration, debuffType, isStealable)
-
-	-- Stealable buffs
-	if(not button.isDebuff and isStealable and element.showStealableBuffs and not UnitIsUnit("player", unit)) then
-	end
-
-	-- Border Coloring
-	local color
-	if (button.isDebuff and element.showDebuffType) or (not button.isDebuff and element.showBuffType) or (element.showType) then
-		color = Colors.debuff[debuffType] or Colors.debuff.none
-	else
-		color = Colors.verydarkgray
-	end
-	if (color) then
-		button.Border:SetBackdropBorderColor(color[1], color[2], color[3])
-	end
-
-	-- Icon Coloring
-	if (button.isPlayer) then
-		button.Icon:SetDesaturated(false)
-		button.Icon:SetVertexColor(1, 1, 1)
-	else
-		button.Icon:SetDesaturated(true)
-		button.Icon:SetVertexColor(.6, .6, .6)
-	end
-
-end
-
-ns.AuraStyles.NameplatePostUpdateButton = function(element, unit, button, index, position, duration, expiration, debuffType, isStealable)
-
-	-- Stealable buffs
-	if(not button.isDebuff and isStealable and element.showStealableBuffs and not UnitIsUnit("player", unit)) then
-	end
-
-	-- Coloring
-	local color
-	if (button.isDebuff and element.showDebuffType) or (not button.isDebuff and element.showBuffType) or (element.showType) then
-		color = Colors.debuff[debuffType] or Colors.debuff.none
 	else
 		color = Colors.verydarkgray
 	end

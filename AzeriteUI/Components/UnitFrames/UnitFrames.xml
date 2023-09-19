@@ -7,6 +7,9 @@
 	<Script file="Auras\Sorting.lua"/>
 	<Script file="Auras\Styling.lua"/>
 	<Script file="Auras\Filters.lua"/>
+	<Script file="Auras\SortingClassic.lua"/>
+	<Script file="Auras\StylingClassic.lua"/>
+	<Script file="Auras\FiltersClassic.lua"/>
 
 	<Script file="Units\Player.lua"/>
 	<Script file="Units\PlayerCastBar.lua"/>
