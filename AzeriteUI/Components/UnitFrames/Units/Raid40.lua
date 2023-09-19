@@ -494,10 +494,6 @@ local style = function(self, unit)
 		self.HealthPrediction.absorbBar = absorb
 	end
 
-	-- Dispellable Debuffs
-	--------------------------------------------
-
-
 	-- Readycheck
 	--------------------------------------------
 	local readyCheckIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 7)
