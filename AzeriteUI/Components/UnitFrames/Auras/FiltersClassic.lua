@@ -71,7 +71,7 @@ ns.AuraFilters.TargetAuraFilter = function(element, unit, button, name, texture,
 		return (not button.noDuration and duration < 301) or (count and count > 1)
 	else
 		if (UnitCanAttack("player", unit)) then
-			return (not button.noDuration and duration < 301) or (count and count > 1)
+			return (not button.noDuration and button.duration < 301) or (count and count > 1)
 		elseif (UnitPlayerControlled(unit)) then
 			return (not button.noDuration) or (count and count > 1)
 		else
@@ -98,7 +98,7 @@ ns.AuraFilters.PartyAuraFilter = function(element, unit, button, name, texture,
 	elseif (button.noDuration) then
 		return
 	elseif (UnitAffectingCombat("player")) then
-		return (duration < 301 or (count and count > 1))
+		return (button.duration < 301 or (count and count > 1))
 	else
 		return (count and count > 1)
 	end
@@ -123,9 +123,9 @@ ns.AuraFilters.NameplateAuraFilter = function(element, unit, button, name, textu
 		return
 	elseif (caster == "player" or caster == "pet" or caster == "vehicle") then
 		if (button.isDebuff) then
-			return (duration < 301) -- Faerie Fire is 5 mins
+			return (button.duration < 301) -- Faerie Fire is 5 mins
 		else
-			return (duration < 31) -- show short buffs, like HoTs
+			return (button.duration < 31) -- show short buffs, like HoTs
 		end
 	end
 end
@@ -148,15 +148,15 @@ ns.AuraFilters.ArenaAuraFilter = function(element, unit, button, name, texture,
 	else
 		if (UnitCanAttack("player", unit)) then
 			if (button.isDebuff) then
-				return (duration < 301)
+				return (button.duration < 301)
 			else
-				return (duration < 31)
+				return (button.duration < 31)
 			end
 		else
 			if (button.isDebuff) then
-				return (duration < 301) or (count and count > 1)
+				return (button.duration < 301) or (count and count > 1)
 			else
-				return (duration < 31) or (count and count > 1)
+				return (button.duration < 31) or (count and count > 1)
 			end
 		end
 	end
