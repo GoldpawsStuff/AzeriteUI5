@@ -4,15 +4,13 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-09-18
+## [Unreleased] 2023-09-19
 ### Added
 - Added options to dim down the actionbuttons when resting or at any time when not engaged in combat or having a current target. They are disabled by default, but available from the front page of the actionbar menu.
 
 ### Changed
 - Started on a rework of the actionbutton library.
-- Added various Ace3 libraries as externals and removed them from the project folder structure.
-- Added TaintLess as an optional dependency to make sure the standalone is loaded first for those using it.
-- Updated the embedded TaintLess.xml.
+- Changed various libraries to externals and removed them from the project folder structure.
 
 ## [5.2.108-RC] 2023-09-11
 ### Added
