@@ -17,17 +17,17 @@
 	<Include file="UTF8\utf8.xml"/>
 	<Include file="LibSharedMedia-3.0\lib.xml"/>
 	<Include file="LibUIDropDownMenu\LibUIDropDownMenu.xml"/>
-	@end-non-debug@-->
-
-	<Include file="LibKeyBound-1.0\lib.xml"/>
-	<Include file="oUF\oUF.xml"/>
-	<Include file="oUF_Plugins\oUF_Plugins.xml"/>
-	<Include file="LibDropDown\embed.xml"/>
 	<Include file="LibEditModeOverride\LibEditModeOverride.xml"/>
+	@end-non-debug@-->
+	<Include file="LibKeyBound-1.0\lib.xml"/>
 
+	<!-- Modified Libraries -->
 	<Script file="LibActionButton-1.0-GE\LibActionButton-1.0-GE.lua"/>
 	<Include file="AceDB-3.0-GE\AceDB-3.0-GE.xml"/>
+	<Include file="oUF\oUF.xml"/>
+	<Include file="oUF_Plugins\oUF_Plugins.xml"/>
 
+	<!-- Custom Libraries -->
 	<Script file="LibMoreEvents-1.0\LibMoreEvents-1.0.lua"/>
 	<Script file="LibFadingFrames-1.0\LibFadingFrames-1.0.lua"/>
 	<Script file="LibOrb-1.0\LibOrb-1.0.lua"/>

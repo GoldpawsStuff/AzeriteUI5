@@ -19,15 +19,16 @@
 	<Include file="LibUIDropDownMenu\LibUIDropDownMenu.xml"/>
 	<Script file="LibHealComm-4.0\LibHealComm-4.0.lua"/>
 	@end-non-debug@-->
-
 	<Include file="LibKeyBound-1.0\lib.xml"/>
 	<Script file="LibHealComm-4.0\LibHealComm-4.0.lua"/>
+
+	<!-- Modified Libraries -->
+	<Include file="AceDB-3.0-GE\AceDB-3.0-GE.xml"/>
+	<Script file="LibActionButton-1.0-GE\LibActionButton-1.0-GE.lua"/>
 	<Include file="oUF_Classic\oUF_Wrath.xml"/>
 	<Include file="oUF_Plugins\oUF_Plugins.xml"/>
 
-	<Include file="AceDB-3.0-GE\AceDB-3.0-GE.xml"/>
-	<Script file="LibActionButton-1.0-GE\LibActionButton-1.0-GE.lua"/>
-
+	<!-- Custom Libraries -->
 	<Script file="LibMoreEvents-1.0\LibMoreEvents-1.0.lua"/>
 	<Script file="LibFadingFrames-1.0\LibFadingFrames-1.0.lua"/>
 	<Script file="LibOrb-1.0\LibOrb-1.0.lua"/>

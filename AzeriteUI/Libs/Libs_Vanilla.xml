@@ -20,18 +20,19 @@
 	<Include file="LibClassicDurations\LibClassicDurations.xml"/>
 	<Script file="LibHealComm-4.0\LibHealComm-4.0.lua"/>
 	@end-non-debug@-->
-
 	<Include file="LibKeyBound-1.0\lib.xml"/>
 	<Script file="LibClassicSpellActionCount-1.0\LibClassicSpellActionCount-1.0.lua"/>
 	<Script file="LibAuraTypes\LibAuraTypes.lua"/>
 	<Script file="LibSpellLocks\LibSpellLocks.lua"/>
 	<Script file="LibClassicCasterino\LibClassicCasterino.lua"/>
+
+	<!-- Modified Libraries -->
+	<Script file="LibActionButton-1.0-GE\LibActionButton-1.0-GE.lua"/>
+	<Include file="AceDB-3.0-GE\AceDB-3.0-GE.xml"/>
 	<Include file="oUF_Classic\oUF_Vanilla.xml"/>
 	<Include file="oUF_Plugins\oUF_Plugins.xml"/>
 
-	<Script file="LibActionButton-1.0-GE\LibActionButton-1.0-GE.lua"/>
-	<Include file="AceDB-3.0-GE\AceDB-3.0-GE.xml"/>
-
+	<!-- Custom Libraries -->
 	<Script file="LibMoreEvents-1.0\LibMoreEvents-1.0.lua"/>
 	<Script file="LibFadingFrames-1.0\LibFadingFrames-1.0.lua"/>
 	<Script file="LibOrb-1.0\LibOrb-1.0.lua"/>
