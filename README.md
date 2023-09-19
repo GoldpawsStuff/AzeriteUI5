@@ -29,5 +29,5 @@ If you choose to download and manually install directly from GitHub, you'll have
 - Paypal: [paypal.me/goldpawsstuff](https://www.paypal.me/goldpawsstuff)
 
 ## Connect
+- X: [@goldpawsstuff](https://x.com/goldpawsstuff)
 - Discord: [discord.gg/RwcSm8V3Dy](https://discord.gg/RwcSm8V3Dy)
-- Twitter: [@goldpawsstuff](https://twitter.com/goldpawsstuff)
