@@ -91,6 +91,7 @@ ns.AuraFilters.PartyAuraFilter = function(element, unit, button, name, texture,
 	button.noDuration = (not duration or duration == 0)
 	button.isPlayer = caster == "player" or caster == "vehicle"
 
+	-- Hide the enormous amounts of self-buffs and procs.
 	if (caster == unit) then
 		return
 	elseif (isBossDebuff) then
