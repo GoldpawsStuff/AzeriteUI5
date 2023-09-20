@@ -28,7 +28,6 @@ externals:
 
 embedded-libraries:
     - ouf
-    - libeditmodeoverride
 
 optional-dependencies:
     - ace3
