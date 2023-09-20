@@ -4,8 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-09-19
+## [Unreleased] 2023-09-20
 ### Added
+- Added an experimental pet happiness display to the pet unit frame in Classic and Wrath.
 - Added options to dim down the actionbuttons when resting or at any time when not engaged in combat or having a current target. They are disabled by default, but available from the front page of the actionbar menu.
 
 ### Changed
