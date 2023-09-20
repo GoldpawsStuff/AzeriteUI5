@@ -82,7 +82,7 @@ local GenerateOptions = function()
 			},
 			showNameAlways = {
 				name = L["Always show unit names."],
-				order = 10,
+				order = 11,
 				type = "toggle", width = "full",
 				set = setter,
 				get = getter
