@@ -21,6 +21,8 @@ externals:
     AzeriteUI/Libs/LibSharedMedia-3.0: https://repos.curseforge.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
     AzeriteUI/Libs/LibUIDropDownMenu: https://repos.wowace.com/wow/libuidropdownmenu/trunk/LibUIDropDownMenu
     AzeriteUI/Libs/LibEditModeOverride: https://github.com/plusmouse/LibEditModeOverride.git
+    AzeriteUI/Libs/LibClassicDurations: https://repos.curseforge.com/wow/libclassicdurations
+    AzeriteUI/Libs/LibHealComm-4.0: https://repos.wowace.com/wow/libhealcomm-4-0
     AzeriteUI/Libs/TaintLess:
         url: https://www.townlong-yak.com/addons.git/taintless
         commit: default

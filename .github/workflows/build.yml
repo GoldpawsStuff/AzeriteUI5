@@ -28,15 +28,4 @@ jobs:
       - name: Package and release for Retail
         uses: BigWigsMods/packager@v2
         with:
-          args: -g retail -m .pkgmeta
-
-      - name: Package and release for Wrath
-        uses: BigWigsMods/packager@v2
-        with:
-          args: -g wrath -m .pkgmeta-wrath
-
-      - name: Package and release for Classic Era
-        uses: BigWigsMods/packager@v2
-        with:
-          args: -g classic -m .pkgmeta-vanilla
-
+          args: -m .pkgmeta
