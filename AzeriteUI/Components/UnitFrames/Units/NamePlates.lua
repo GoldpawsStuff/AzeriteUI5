@@ -382,7 +382,7 @@ local NamePlate_PostUpdatePositions = function(self)
 
 	else
 
-		local hasName = not self.isTarget and (self.isMouseOver or self.isSoftTarget or self.inCombat) or false
+		local hasName = NamePlatesMod.db.profile.showNameAlways or (not self.isTarget and (self.isMouseOver or self.isSoftTarget or self.inCombat)) or false
 		local nameOffset = hasName and (select(2, name:GetFont()) + auras.spacing) or 0
 
 		if (hasName ~= auras.usingNameOffset or auras.usingNameOffset == nil) then
@@ -421,10 +421,15 @@ local NamePlate_PostUpdateHoverElements = function(self)
 		self.Health.Value:Hide()
 		self.Name:Hide()
 	else
+		local showNameAlways = NamePlatesMod.db.profile.showNameAlways
 		if (self.isMouseOver or self.isTarget or self.isSoftTarget or self.inCombat) then
 			if (self.isTarget) then
 				self.Health.Value:Hide()
-				self.Name:Hide()
+				if (showNameAlways) then
+					self.Name:Show()
+				else
+					self.Name:Hide()
+				end
 			else
 				local castbar = self.Castbar
 				if (castbar.casting or castbar.channeling or castbar.empowering) then
@@ -435,8 +440,12 @@ local NamePlate_PostUpdateHoverElements = function(self)
 				self.Name:Show()
 			end
 		else
+			if (showNameAlways) then
+				self.Name:Show()
+			else
+				self.Name:Hide()
+			end
 			self.Health.Value:Hide()
-			self.Name:Hide()
 		end
 	end
 end

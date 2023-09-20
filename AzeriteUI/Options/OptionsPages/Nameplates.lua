@@ -79,6 +79,13 @@ local GenerateOptions = function()
 				hidden = function(info) return not getoption(info,"showAuras") end,
 				set = setter,
 				get = getter
+			},
+			showNameAlways = {
+				name = L["Always show unit names."],
+				order = 10,
+				type = "toggle", width = "full",
+				set = setter,
+				get = getter
 			}
 		}
 	}
