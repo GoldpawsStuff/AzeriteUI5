@@ -32,6 +32,8 @@ local PetFrameMod = ns:NewModule("PetFrame", ns.UnitFrameModule, "LibMoreEvents-
 local unpack = unpack
 local string_gsub = string.gsub
 
+local PetHasHappiness = ((ns.IsClassic or ns.IsWrath) and ns.PlayerClass == "HUNTER")
+
 local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
 
 -- Generate module defaults on the fly
@@ -230,14 +232,46 @@ local TargetHighlight_Update = function(self, event, unit, ...)
 
 end
 
-local UnitFrame_PostUpdate = function(self)
-	TargetHighlight_Update(self)
+local PetHappiness_Update = function(self)
+	local element = self.Health.Happiness
+	local otherElement = self.Health.Value
+
+	local happiness, damagePercentage, loyaltyRate = GetPetHappiness()
+	if (happiness and happiness < 3) then
+		element:SetText(_G["PET_HAPPINESS"..happiness])
+		element:Show()
+
+		otherElement:Hide()
+	else
+		element:Hide()
+
+		otherElement:Show()
+		otherElement:UpdateTag()
+	end
 end
 
 -- Frame Script Handlers
 --------------------------------------------
+local UnitFrame_PostUpdate = function(self, event)
+	if (PetHasHappiness) then
+		PetHappiness_Update(self, event)
+	end
+	TargetHighlight_Update(self, event)
+end
+
 local UnitFrame_OnEvent = function(self, event, unit, ...)
-	UnitFrame_PostUpdate(self)
+	if (event == "PLAYER_ENTERING_WORLD") then
+		UnitFrame_PostUpdate(self, event)
+
+	elseif (event == "PLAYER_TARGET_CHANGED") then
+		TargetHighlight_Update(self, event)
+
+	elseif (event == "PLAYER_FOCUS_CHANGED") then
+		TargetHighlight_Update(self, event)
+
+	elseif (event == "UNIT_HAPPINESS") then
+		PetHappiness_Update(self, event)
+	end
 end
 
 local style = function(self, unit)
@@ -331,13 +365,25 @@ local style = function(self, unit)
 	healthValue:SetJustifyH(db.HealthValueJustifyH)
 	healthValue:SetJustifyV(db.HealthValueJustifyV)
 
-	if (not ns.IsRetail and ns.PlayerClass == "HUNTER") then
-		self:Tag(healthValue, prefix("[*:PetHappinessThenHealth]"))
-	else
-		self:Tag(healthValue, prefix("[*:Health(true)]"))
-	end
+	self:Tag(healthValue, prefix("[*:Health(true)]"))
 
 	self.Health.Value = healthValue
+
+	-- Pet Happiness
+	--------------------------------------------
+	if (PetHasHappiness) then
+		local happiness = health:CreateFontString(nil, "OVERLAY", nil, 1)
+		happiness:SetPoint(unpack(db.HealthValuePosition))
+		happiness:SetFontObject(db.HealthValueFont)
+		happiness:SetTextColor(unpack(db.HealthValueColor))
+		happiness:SetJustifyH(db.HealthValueJustifyH)
+		happiness:SetJustifyV(db.HealthValueJustifyV)
+
+		self.Health.Happiness = happiness
+
+		self:RegisterEvent("UNIT_HAPPINESS", UnitFrame_OnEvent)
+	end
+
 
 	-- Absorb Bar
 	--------------------------------------------
