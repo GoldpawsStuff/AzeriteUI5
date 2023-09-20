@@ -369,9 +369,3 @@ Methods[prefix("*:Level:Prefix")] = function(unit, realUnit)
 	local l = Methods[prefix("*:Level")](unit, realUnit, true)
 	return (l and l ~= T_BOSS) and l.." " or l
 end
-
-Events[prefix("*:PetHappinessThenHealth")] = "UNIT_HAPPINESS"
-Methods[prefix("*:PetHappinessThenHealth")] = function(unit, realUnit)
-	local happiness, damagePercentage, loyaltyRate = GetPetHappiness()
-	return (happiness and happiness < 3) and _G["PET_HAPPINESS"..happiness] or Methods[prefix("*:Health")](unit, realUnit, true)
-end
