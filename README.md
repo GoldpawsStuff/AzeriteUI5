@@ -1,4 +1,4 @@
-AzeriteUI 5.1 is a custom World of Warcraft user interface for Dragonflight, Wrath Classic and Classic Era.
+AzeriteUI 5.2 is a custom World of Warcraft user interface for Dragonflight, Wrath Classic and Classic Era.
 
 ## Downloading & Installing
 I recommend downloading the UI from either [CurseForge](https://www.curseforge.com/wow/addons/azeriteui) or [Wago](https://addons.wago.io/addons/azeriteui), or use their respective download clients which provides the same versions and installs them automatically for you. Be aware that only these download locations provide finished packaged addons with all libraries included.
