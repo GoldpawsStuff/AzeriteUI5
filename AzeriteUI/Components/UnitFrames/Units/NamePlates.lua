@@ -45,6 +45,7 @@ local defaults = { profile = ns:Merge({
 	enabled = true,
 	showAuras = true,
 	showAurasOnTargetOnly = false,
+	showNameAlways = false,
 	scale = 1
 }, ns.Module.defaults) }
 
@@ -1002,7 +1003,7 @@ local callback = function(self, event, unit)
 		end
 
 		if (self.SoftTargetFrame) then
-			self.WidgetContainer:SetParent(ns.Hider)
+			self.SoftTargetFrame:SetParent(ns.Hider)
 		end
 
 		ns.NamePlates[self] = true
