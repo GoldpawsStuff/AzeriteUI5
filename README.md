@@ -7,7 +7,7 @@ If you choose to download and manually install directly from GitHub, you'll have
 - [Ace3](https://www.curseforge.com/wow/addons/ace3)
 - [LibClassicDurations](https://www.curseforge.com/wow/addons/libclassicdurations) (Classic only)
 - [LibHealComm-4.0](https://www.curseforge.com/wow/addons/libhealcomm-4-0) (Classic/Wrath only)
-- [LibMoreEvents-1.0](https://github.com/GoldpawsStuff/LibMoreEvents-1.0) (Not on CurseForge/Wago)
+- [LibMoreEvents-1.0](https://curseforge.com/wow/addons/libmoreevents-1-0)
 - [LibSharedMedia-3.0](https://www.curseforge.com/wow/addons/libsharedmedia-3-0)
 - [LibUIDropDownMenu](https://www.curseforge.com/wow/addons/libuidropdownmenu)
 - [TaintLess](https://www.townlong-yak.com/addons/taintless) (Not on CurseForge/Wago)
