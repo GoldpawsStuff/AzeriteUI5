@@ -18,6 +18,7 @@
 	<Include file="LibSharedMedia-3.0\lib.xml"/>
 	<Include file="LibUIDropDownMenu\LibUIDropDownMenu.xml"/>
 	<Script file="LibHealComm-4.0\LibHealComm-4.0.lua"/>
+	<Script file="LibMoreEvents-1.0\LibMoreEvents-1.0.lua"/>
 	@end-non-debug@-->
 	<Include file="LibKeyBound-1.0\lib.xml"/>
 	<Script file="LibHealComm-4.0\LibHealComm-4.0.lua"/>
@@ -29,7 +30,6 @@
 	<Include file="oUF_Plugins\oUF_Plugins.xml"/>
 
 	<!-- Custom Libraries -->
-	<Script file="LibMoreEvents-1.0\LibMoreEvents-1.0.lua"/>
 	<Script file="LibFadingFrames-1.0\LibFadingFrames-1.0.lua"/>
 	<Script file="LibOrb-1.0\LibOrb-1.0.lua"/>
 	<Script file="LibSmoothBar-1.0\LibSmoothBar-1.0.lua"/>
