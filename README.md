@@ -5,11 +5,12 @@ I recommend downloading the UI from either [CurseForge](https://www.curseforge.c
 
 If you choose to download and manually install directly from GitHub, you'll have to install the following libraries as standalones in order for the UI to work:
 - [Ace3](https://www.curseforge.com/wow/addons/ace3)
-- [LibClassicDurations](https://www.curseforge.com/wow/addons/libclassicdurations) (Classic)
-- [LibHealComm-4.0](https://www.curseforge.com/wow/addons/libhealcomm-4-0) (Classic/Wrath)
+- [LibClassicDurations](https://www.curseforge.com/wow/addons/libclassicdurations) (Classic only)
+- [LibHealComm-4.0](https://www.curseforge.com/wow/addons/libhealcomm-4-0) (Classic/Wrath only)
+- [LibMoreEvents-1.0](https://github.com/GoldpawsStuff/LibMoreEvents-1.0) (Not on CurseForge/Wago)
 - [LibSharedMedia-3.0](https://www.curseforge.com/wow/addons/libsharedmedia-3-0)
 - [LibUIDropDownMenu](https://www.curseforge.com/wow/addons/libuidropdownmenu)
-- [TaintLess](https://www.townlong-yak.com/addons/taintless)
+- [TaintLess](https://www.townlong-yak.com/addons/taintless) (Not on CurseForge/Wago)
 
 ## FAQ
 - **Q:** How can I remove abilities from the action bars?
