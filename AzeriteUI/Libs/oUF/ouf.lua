@@ -369,10 +369,8 @@ local function walkObject(object, unit)
 
 	By default this wraps `C_Ping.GetContextualPingTypeForUnit(UnitGUID(frame.unit))`.
 	--]]
-	if(PingableType_UnitFrameMixin) then
-		object:SetAttribute('ping-receiver', true)
-		Mixin(object, PingableType_UnitFrameMixin)
-	end
+	object:SetAttribute('ping-receiver', true)
+	Mixin(object, PingableType_UnitFrameMixin)
 
 	-- Check if we should leave the main frame blank.
 	if(object:GetAttribute('oUF-onlyProcessChildren')) then
