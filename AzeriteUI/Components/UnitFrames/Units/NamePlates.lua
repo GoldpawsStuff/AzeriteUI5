@@ -371,17 +371,8 @@ local NamePlate_PostUpdatePositions = function(self)
 	local name = self.Name
 	local raidTarget = self.RaidTargetIndicator
 
-	if (self.isPRD) then
-
-		--if (auras.numRows or auras.usingNameOffset ~= nil) then
-		--	auras:ClearAllPoints()
-		--	auras:SetPoint(unpack(db.AurasPosition))
-		--	auras.numRows = nil
-		--	auras.usingNameOffset = nil
-		--end
-
-	else
-
+	-- The PRD has neither name nor auras.
+	if (not self.isPRD) then
 		local hasName = NamePlatesMod.db.profile.showNameAlways or (not self.isTarget and (self.isMouseOver or self.isSoftTarget or self.inCombat)) or false
 		local nameOffset = hasName and (select(2, name:GetFont()) + auras.spacing) or 0
 
@@ -469,6 +460,7 @@ end
 
 -- Callback that handles positions of elements
 -- that change position within their frame.
+-- Called on full updates and settings changes.
 local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 	if (unit and unit ~= self.unit) then return end
 
@@ -1133,7 +1125,7 @@ NamePlatesMod.HookNamePlates = function(self)
 end
 
 NamePlatesMod.UpdateSettings = function(self)
-	for plate in next,ns.NamePlates do
+	for plate in next,ns.ActiveNamePlates do
 		NamePlate_PostUpdateElements(plate, "ForceUpdate")
 	end
 end
