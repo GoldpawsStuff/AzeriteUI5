@@ -23,6 +23,7 @@ externals:
     AzeriteUI/Libs/LibEditModeOverride: https://github.com/plusmouse/LibEditModeOverride.git
     AzeriteUI/Libs/LibClassicDurations: https://repos.curseforge.com/wow/libclassicdurations
     AzeriteUI/Libs/LibHealComm-4.0: https://repos.wowace.com/wow/libhealcomm-4-0
+    AzeriteUI/Libs/LibMoreEvents-1.0: https://github.com/GoldpawsStuff/LibMoreEvents-1.0
     AzeriteUI/Libs/TaintLess:
         url: https://www.townlong-yak.com/addons.git/taintless
         commit: default
