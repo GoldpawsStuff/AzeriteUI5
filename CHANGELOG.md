@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-09-25
+### Added
+- Moved LibMoreEvents-1.0 to externals.
+
 ## [5.2.109-RC] 2023-09-20
 ### Added
 - Added an experimental pet happiness display to the pet unit frame in Classic and Wrath.
