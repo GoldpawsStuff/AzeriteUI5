@@ -87,19 +87,6 @@ local GenerateOptions = function()
 		type = "group",
 		childGroups = "tree",
 		args = {
-			--auraHeader = {
-			--	name = L["Aura Settings"],
-			--	order = 2,
-			--	type = "header",
-			--	hidden = isdisabled
-			--},
-			--auraDesc = {
-			--	name = L["Here you can change settings related to the aura buttons appearing at each unitframe."],
-			--	order = 3,
-			--	type = "description",
-			--	fontSize = "medium",
-			--	hidden = isdisabled
-			--},
 			disableAuraSorting = {
 				name = L["Enable Aura Sorting"],
 				desc = L["When enabled, unitframe auras will be sorted depending on time left and who cast the aura. When disabled, unitframe auras will appear in the order they were applied, like in the default user interface."],
@@ -246,7 +233,6 @@ local GenerateOptions = function()
 		}
 		options.args.party = suboptions
 	end
-
 
 	-- Raid Frames (5)
 	do
