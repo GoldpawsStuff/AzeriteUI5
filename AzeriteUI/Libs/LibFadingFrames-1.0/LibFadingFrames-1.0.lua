@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 13
+local MINOR_VERSION = 14
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -52,21 +52,44 @@ lib.fadeFrameHitRects = lib.fadeFrameHitRects or {}
 lib.hoverFrames = lib.hoverFrames or {}
 lib.hoverCount = lib.hoverCount or { default = 0 }
 lib.gridCounter = lib.gridCounter or 0
+lib.petGridCounter = lib.petGridCounter or 0
 lib.cache = lib.cache or { methods = {}, scrips = {} }
 lib.embeds = lib.embeds or {}
 
+-- GLOBALS: CreateFrame, IsPlayerInWorld
+
 -- Lua API
+local getmetatable = getmetatable
 local next = next
+local pairs = pairs
+local select = select
+local unpack = unpack
 
 -- Frame Metamethods
 local setAlpha = getmetatable(CreateFrame("Frame")).__index.SetAlpha
 
+local isRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
+local isClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
+local isTBC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
+local isWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
+local WoW10 = select(4, GetBuildInfo()) >= 100000
+
 lib.UpdateFadeFrame = function(self, frame)
 
 	local isActionButton = self.fadeFrameType[frame] == "actionbutton"
-	if (isActionButton and (self.inCombat and not (frame.header and frame.header.config and frame.header.config.fadeInCombat) and frame:GetTexture()) or (self.gridCounter >= 1 and not frame.ignoreGridCounterOnHover)) then
-		setAlpha(frame, 1)
-		return
+	local isPetButton = isActionButton and frame.GetAttribute and frame:GetAttribute("type") == "pet"
+
+	if (isPetButton) then
+		if (self.inCombat and not (frame.header and frame.header.config and frame.header.config.fadeInCombat) and frame:GetTexture()) or (self.petGridCounter > 0 and not frame.ignoreGridCounterOnHover and (self.cursorType == "petaction")) then
+			setAlpha(frame, 1)
+			return
+		end
+
+	elseif (isActionButton) then
+		if (self.inCombat and not (frame.header and frame.header.config and frame.header.config.fadeInCombat) and frame:GetTexture()) or (self.gridCounter > 0 and not frame.ignoreGridCounterOnHover and (self.cursorType ~= "petaction" or isRetail)) then
+			setAlpha(frame, 1)
+			return
+		end
 	end
 
 	if (not self.enableFading) then
@@ -102,6 +125,7 @@ end
 
 lib.UpdateFadeFrames = function(self)
 	if (not self.inWorld) then return end
+	self.cursorType = GetCursorInfo()
 	for frame in next,self.fadeFrames do
 		self:UpdateFadeFrame(frame)
 	end
@@ -212,6 +236,8 @@ lib.Enable = function(self)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterEvent("ACTIONBAR_SHOWGRID", "OnEvent")
 	self:RegisterEvent("ACTIONBAR_HIDEGRID", "OnEvent")
+	self:RegisterEvent("PET_BAR_SHOWGRID", "OnEvent")
+	self:RegisterEvent("PET_BAR_HIDEGRID", "OnEvent")
 
 	if (IsPlayerInWorld()) then
 		self:OnEvent("PLAYER_ENTERING_WORLD")
@@ -235,6 +261,8 @@ lib.Disable = function(self)
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:UnregisterEvent("ACTIONBAR_SHOWGRID", "OnEvent")
 	self:UnregisterEvent("ACTIONBAR_HIDEGRID", "OnEvent")
+	self:UnregisterEvent("PET_BAR_SHOWGRID", "OnEvent")
+	self:UnregisterEvent("PET_BAR_HIDEGRID", "OnEvent")
 
 	if (self.checkTimer) then
 		self:CancelTimer(self.checkTimer)
@@ -259,9 +287,11 @@ lib.OnEvent = function(self, event, ...)
 	elseif (event == "PLAYER_REGEN_ENABLED") then
 		self.inCombat = nil
 
+	elseif (event == "CURSOR_CHANGED") then
+		self.cursorType = GetCursorInfo()
+
 	elseif (event == "ACTIONBAR_SHOWGRID") then
 		self.gridCounter = self.gridCounter + 1
-
 		if (self.gridCounter >= 1) then
 			self:UpdateFadeFrames()
 		end
@@ -272,6 +302,25 @@ lib.OnEvent = function(self, event, ...)
 			self.gridCounter = self.gridCounter - 1
 		end
 		if (self.gridCounter == 0) then
+			self:UpdateFadeFrames()
+		end
+		return
+
+	elseif (event == "PET_BAR_SHOWGRID") then
+		self.petGridCounter = self.petGridCounter + 1
+		if (self.petGridCounter >= 1) then
+			self:UpdateFadeFrames()
+		end
+		return
+
+	elseif (event == "PET_BAR_HIDEGRID") then
+		if (self.petGridCounter > 0) then
+			self.petGridCounter = self.petGridCounter - 1
+		end
+		if (isClassic and self.gridCounter > 0) then
+			self.gridCounter = self.gridCounter - 1
+		end
+		if (self.petGridCounter == 0 or (isClassic and self.gridCounter == 0)) then
 			self:UpdateFadeFrames()
 		end
 		return
