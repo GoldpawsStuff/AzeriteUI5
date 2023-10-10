@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-10-10
+### Changed
+- The block of information next to the Minimap containing the clock, zone name, resting status, latency and performance stats now is movable and configurable. Also, it's no longer considered a part of the minimap but an entity of its own. The previous options to configure the time display now lives in their own category in our options menu. This is a work in progress and more options will be added before the next tagged release.
+
+### Fixed
+- Status displays like "Offline" and "Away" should no longer appear on enemy arena frames. They are not needed.
+- The power bars on enemy arena frames should now be hidden when the unit is dead or the info isn't available.
+
 ## [5.2.110-RC] 2023-10-08
 ### Changed
 - Moved LibMoreEvents-1.0 to externals as this is a public library available on GitHub and CurseForge now.
