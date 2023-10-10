@@ -276,32 +276,34 @@ end
 
 local Power_PostUpdate = function(element, unit, cur, min, max)
 
-	local shouldShow = not UnitHasVehicleUI("player") and UnitPowerType(unit) == Enum.PowerType.Mana
+	local shouldShow = UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) -- and not UnitHasVehicleUI("player") and UnitPowerType(unit) == Enum.PowerType.Mana
 
 	if (not shouldShow or cur == 0 or max == 0) then
 		element:SetAlpha(0)
 	else
-		local _,class = UnitClass(unit)
-		if (class == "DRUID" or class == "PALADIN" or class == "PRIEST" or class == "SHAMAN") then
-			if (cur/max < .9) then
-				element:SetAlpha(.75)
-			else
-				element:SetAlpha(0)
-			end
-		elseif (class == "MAGE" or class == "WARLOCK") then
-			if (cur/max < .5) then
-				element:SetAlpha(.75)
-			else
-				element:SetAlpha(0)
-			end
-		else
-			-- The threshold for the "oom" message is .25 (not yet added!)
-			if (cur/max < .25) then
-				element:SetAlpha(.75)
-			else
-				element:SetAlpha(0)
-			end
-		end
+		element:SetAlpha(.75)
+
+		--local _,class = UnitClass(unit)
+		--if (class == "DRUID" or class == "PALADIN" or class == "PRIEST" or class == "SHAMAN") then
+		--	if (cur/max < .9) then
+		--		element:SetAlpha(.75)
+		--	else
+		--		element:SetAlpha(0)
+		--	end
+		--elseif (class == "MAGE" or class == "WARLOCK") then
+		--	if (cur/max < .5) then
+		--		element:SetAlpha(.75)
+		--	else
+		--		element:SetAlpha(0)
+		--	end
+		--else
+		--	-- The threshold for the "oom" message is .25 (not yet added!)
+		--	if (cur/max < .25) then
+		--		element:SetAlpha(.75)
+		--	else
+		--		element:SetAlpha(0)
+		--	end
+		--end
 	end
 end
 
@@ -457,7 +459,7 @@ local style = function(self, unit)
 	healthValue:SetTextColor(unpack(db.HealthValueColor))
 	healthValue:SetJustifyH(db.HealthValueJustifyH)
 	healthValue:SetJustifyV(db.HealthValueJustifyV)
-	self:Tag(healthValue, prefix("[*:Health(true,false,false,true)]"))
+	self:Tag(healthValue, prefix("[*:Health(true,false,true,false)]"))
 
 	self.Health.Value = healthValue
 
@@ -475,7 +477,7 @@ local style = function(self, unit)
 
 	self.Power = power
 	self.Power.Override = ns.API.UpdatePower
-	--self.Power.PostUpdate = Power_PostUpdate
+	self.Power.PostUpdate = Power_PostUpdate
 
 	local powerBackdrop = power:CreateTexture(nil, "BACKGROUND", nil, -5)
 	powerBackdrop:SetPoint(unpack(db.PowerBackdropPosition))
