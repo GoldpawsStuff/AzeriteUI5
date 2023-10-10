@@ -558,19 +558,11 @@ ChatFrames.OnEvent = function(self, event, ...)
 
 				-- Some addons add timers before spamming,
 				-- so we have to run this for a few seconds.
-				local quiettime = GetTime() + 5
+				local quiettime = GetTime() + 5 + 1
 				CreateFrame("Frame"):SetScript("OnUpdate", function(self)
 					if (GetTime() > quiettime) then
 						self:Hide()
 						self:SetScript("OnUpdate", nil)
-
-						--if (ns.db.char.showStartupMessage) then
-						--	local version = ns.Version == "Development" and "Git Version" or ns.Version
-						--	print(string_format("|cff88aaff".."AzeriteUI %s", "|cfff0f0f0"..version.."|r").."|r")
-						--	print("|cfff0f0f0"..L["|cff44cc88/lock|r to toggle movable frames."].."|r")
-						--	print("|cfff0f0f0"..L["|cff44cc88/azerite|r to toggle options menu."].."|r")
-						--end
-
 						return
 					end
 					ChatFrame1:Clear()
