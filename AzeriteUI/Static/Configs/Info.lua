@@ -30,30 +30,26 @@ local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 
-local mapScale = ns.WoW10 and 1 or 198/140
+ns.RegisterConfig("Info", {
 
-ns.RegisterConfig("Minimap", {
-	CompassInset = 14,
-	CompassFont = GetFont(16,true),
-	CompassColor = { Colors.normal[1], Colors.normal[2], Colors.normal[3], .75 },
-	CompassNorthTag = "N",
+	ClockPosition = { "BOTTOMRIGHT", -2, 2 },
+	ClockFont = GetFont(15,true),
+	ClockColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3] },
 
-	CoordinateColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .75 },
-	CoordinateFont = GetFont(12, true),
-	CoordinatePlace = { "BOTTOM", 3, 23 },
+	-- About 8px to the left of the clock.
+	ZoneTextPosition = { "BOTTOMRIGHT", -60 -2, 2 },
+	ZoneTextPositionHalfClock = { "BOTTOMRIGHT", -(60 + 20) -2, 2 },
+	ZoneTextFont = GetFont(15,true),
+	ZoneTextAlpha = .85,
 
-	MailPosition = { "BOTTOM", 0, 30 },
-	MailJustifyH = "CENTER",
-	MailJustifyV = "BOTTOM",
-	MailFont = GetFont(15, true),
-	MailColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .85 },
+	-- About 6px Above the clock, slightly indented towards the left.
+	FrameRatePosition = { "BOTTOMRIGHT", -6 -2, 15 + 6 + 2 },
+	FrameRateFont = GetFont(12,true),
+	FrameRateColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .5 },
 
-	EyePosition = { "CENTER", math.cos((225 / mapScale)*(math.pi/180)) * ((280 / mapScale)/2 + 10), math.sin((225 / mapScale)*(math.pi/180)) * ((280 / mapScale)/2 + 10) },
-	EyeSize = { 64, 64 },
-	EyeTexture = GetMedia("group-finder-eye-green"),
-	EyeTextureColor = { .90, .95, 1 },
-	EyeTextureSize = { 64, 64 },
-	EyeGroupSizePosition = { "BOTTOMRIGHT", 0, 0 },
-	EyeGroupSizeFont = GetFont(15,true),
-	EyeGroupStatusFramePosition = { "TOPRIGHT", QueueStatusMinimapButton, "BOTTOMLEFT", 0, 0 }
+	-- To the left of the framerate, right above the zone text.
+	LatencyPosition = { "BOTTOMRIGHT", -60 -2, 15 + 6 + 2 },
+	LatencyPositionHalfClock = { "BOTTOMRIGHT", -(60 + 20) -2, 15 + 6 + 2 },
+	LatencyFont = GetFont(12,true),
+	LatencyColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .5 }
 })

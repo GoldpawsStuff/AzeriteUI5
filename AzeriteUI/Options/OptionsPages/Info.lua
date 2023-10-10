@@ -29,8 +29,11 @@ local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
 local Options = ns:GetModule("Options")
 
+-- Lua API
+local string_format = string.format
+
 local getmodule = function()
-	local module = ns:GetModule("Minimap", true)
+	local module = ns:GetModule("Info", true)
 	if (module and module:IsEnabled()) then
 		return module
 	end
@@ -61,9 +64,41 @@ end
 local GenerateOptions = function()
 	if (not getmodule()) then return end
 
-	local options
+	local options = {
+		name = L["Time & Info Settings"],
+		type = "group",
+		args = {
+			header = {
+				order = 1,
+				type = "header",
+				name = L["Clock Settings"]
+			},
+			useHalfClock = {
+				name = L["24 Hour Mode"],
+				desc = string_format(L["Enable to use a 24 hour clock, disable to show a 12 hour clock with %s/%s suffixes."], TIMEMANAGER_AM, TIMEMANAGER_PM),
+				order = 10,
+				type = "toggle", width = "full",
+				hidden = isdisabled,
+				set = function(info,val) setter(info, not val) end,
+				get = function(info) return not getter(info) end
+			},
+			useServerTime = {
+				name = L["Use Local Time"],
+				desc = L["Set the clock to your computer's local time, disable to show the server time instead."],
+				order = 11,
+				type = "toggle", width = "full",
+				hidden = isdisabled,
+				set = function(info,val) setter(info, not val) end,
+				get = function(info) return not getter(info) end
+			}
+			-- TODO:
+			-- Information block settings:
+			-- - Text alignment
+			-- - Visible elements
+		}
+	}
 
 	return options
 end
 
-Options:AddGroup(L["Minimap"], GenerateOptions)
+Options:AddGroup(L["Time & Info"], GenerateOptions)

@@ -8,6 +8,7 @@
 	<Script file="Configs\BossUnitFrames.lua"/>
 	<Script file="Configs\ExtraActionButton.lua"/>
 	<Script file="Configs\FocusUnitFrame.lua"/>
+	<Script file="Configs\Info.lua"/>
 	<Script file="Configs\Minimap.lua"/>
 	<Script file="Configs\MirrorTimers.lua"/>
 	<Script file="Configs\NamePlates.lua"/>

@@ -7,6 +7,7 @@
 	<Script file="Containers.lua"/>
 	<Script file="Durability.lua"/>
 	<Script file="ErrorsFrame.lua"/>
+	<Script file="Info.lua"/>
 	<Script file="Minimap.lua"/>
 	<Script file="MirrorTimers.lua"/>
 	<Script file="QuestTimers.lua"/>

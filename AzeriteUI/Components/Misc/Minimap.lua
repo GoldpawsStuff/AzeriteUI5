@@ -38,39 +38,31 @@ local next = next
 local pairs = pairs
 local string_format = string.format
 local string_lower = string.lower
-local string_match = string.match
-local string_upper = string.upper
 local table_insert = table.insert
 local type = type
 local unpack = unpack
 
 -- GLOBALS: AddonCompartmentFrame, GameTimeFrame, MiniMapBattlefieldFrame, MiniMapMailFrame, MiniMapLFGFrame
 -- GLOBALS: C_CraftingOrders, GameTooltip, GameTooltip_SetDefaultAnchor, GarrisonLandingPage_Toggle
--- GLOBALS: GetFramerate, GetNetStats, GetPlayerFacing, GetMinimapZoneText, GetRealZoneText, GetZonePVPInfo
+-- GLOBALS: GetPlayerFacing, GetRealZoneText
 -- GLOBALS: ExpansionLandingPageMinimapButton, GarrisonLandingPageMinimapButton, MinimapZoneTextButton, MiniMapWorldMapButton, TimeManagerClockButton, QueueStatusButton
--- GLOBALS: InCombatLockdown, IsResting, HasNewMail, PlaySound, ToggleCalendar, ToggleDropDownMenu
+-- GLOBALS: InCombatLockdown, IsResting, HasNewMail, PlaySound, ToggleDropDownMenu
 -- GLOBALS: MinimapZoomIn, MinimapZoomOut, Minimap_OnClick
 -- GLOBALS: Minimap, MinimapBackdrop, MinimapCluster, MinimapBorder, MinimapBorderTop, MicroButtonAndBagsBar, MinimapCompassTexture, MiniMapInstanceDifficulty, MiniMapTracking
--- GLOBALS: SOUNDKIT, GAMETIME_TOOLTIP_TOGGLE_CALENDAR, MINIMAP_LABEL, PROFESSIONS_CRAFTING, TIMEMANAGER_TOOLTIP_TITLE, TIMEMANAGER_TOOLTIP_LOCALTIME, TIMEMANAGER_TOOLTIP_REALMTIME
+-- GLOBALS: SOUNDKIT, MINIMAP_LABEL, PROFESSIONS_CRAFTING
 
 -- Addon API
 local Colors = ns.Colors
 local GetMedia = ns.API.GetMedia
-local GetLocalTime = ns.API.GetLocalTime
-local GetServerTime = ns.API.GetServerTime
 local IsAddOnEnabled = ns.API.IsAddOnEnabled
 local UIHider = ns.Hider
 local noop = ns.Noop
 
 -- WoW Strings
-local L_RESTING = TUTORIAL_TITLE30 -- "Resting"
 local L_NEW = NEW -- "New"
 local L_MAIL = MAIL_LABEL -- "Mail"
 local L_HAVE_MAIL = HAVE_MAIL -- "You have unread mail"
 local L_HAVE_MAIL_FROM = HAVE_MAIL_FROM -- "Unread mail from:"
-local L_FPS = string_upper(string_match(FPS_ABBR, "^.")) -- "fps"
-local L_HOME = string_upper(string_match(HOME, "^.")) -- "Home"
-local L_WORLD = string_upper(string_match(WORLD, "^.")) -- "World"
 
 -- Constants
 local TORGHAST_ZONE_ID = 2162
@@ -79,9 +71,7 @@ local mapScale = ns.WoW10 and 1 or 198/140
 
 local defaults = { profile = ns:Merge({
 	enabled = true,
-	theme = "Azerite",
-	useHalfClock = GetCurrentRegionName() == "US",
-	useServerTime = false
+	theme = "Azerite"
 }, ns.Module.defaults) }
 
 MinimapMod.GetScale = function(self)
@@ -97,8 +87,6 @@ MinimapMod.GenerateDefaults = function(self)
 		[1] = "BOTTOMRIGHT",
 		[2] = -40 * (mapScale * ns.API.GetEffectiveScale()),
 		[3] = 40 * (mapScale * ns.API.GetEffectiveScale())
-		--[2] = -(ns.IsRetail and 14 or 40) / (mapScale * ns.API.GetEffectiveScale()),
-		--[3] = (ns.IsRetail and 14 or 40) / (mapScale * ns.API.GetEffectiveScale())
 	}
 	return defaults
 end
@@ -333,14 +321,6 @@ local Skins = {
 
 -- Element Callbacks
 --------------------------------------------
-local getTimeStrings = function(h, m, suffix, useHalfClock, abbreviateSuffix)
-	if (useHalfClock) then
-		return "%.0f:%02.0f |cff888888%s|r", h, m, abbreviateSuffix and string_match(suffix, "^.") or suffix
-	else
-		return "%02.0f:%02.0f", h, m
-	end
-end
-
 local Minimap_OnMouseWheel = function(self, delta)
 	if (delta > 0) then
 		(Minimap.ZoomIn or MinimapZoomIn):Click()
@@ -413,40 +393,6 @@ local Mail_OnLeave = function(self)
 	GameTooltip:Hide()
 end
 
-local Time_UpdateTooltip = function(self)
-	if (GameTooltip:IsForbidden()) then return end
-
-	local useHalfClock = MinimapMod.db.profile.useHalfClock -- the outlandish 12 hour clock the colonials seem to favor so much
-	local lh, lm, lsuffix = GetLocalTime(useHalfClock) -- local computer time
-	local sh, sm, ssuffix = GetServerTime(useHalfClock) -- realm time
-	local r, g, b = unpack(Colors.normal)
-	local rh, gh, bh = unpack(Colors.highlight)
-
-	GameTooltip_SetDefaultAnchor(GameTooltip, self)
-	GameTooltip:AddLine(TIMEMANAGER_TOOLTIP_TITLE, unpack(Colors.title))
-	GameTooltip:AddDoubleLine(TIMEMANAGER_TOOLTIP_LOCALTIME, string_format(getTimeStrings(lh, lm, lsuffix, useHalfClock)), rh, gh, bh, r, g, b)
-	GameTooltip:AddDoubleLine(TIMEMANAGER_TOOLTIP_REALMTIME, string_format(getTimeStrings(sh, sm, ssuffix, useHalfClock)), rh, gh, bh, r, g, b)
-	GameTooltip:AddLine("<"..GAMETIME_TOOLTIP_TOGGLE_CALENDAR..">", unpack(Colors.quest.green))
-	GameTooltip:Show()
-end
-
-local Time_OnEnter = function(self)
-	self.UpdateTooltip = Time_UpdateTooltip
-	self:UpdateTooltip()
-end
-
-local Time_OnLeave = function(self)
-	self.UpdateTooltip = nil
-	if (GameTooltip:IsForbidden()) then return end
-	GameTooltip:Hide()
-end
-
-local Time_OnClick = function(self, mouseButton)
-	if (ToggleCalendar) and (not InCombatLockdown()) then
-		ToggleCalendar()
-	end
-end
-
 -- Element API
 --------------------------------------------
 MinimapMod.UpdateCompass = function(self)
@@ -477,83 +423,6 @@ MinimapMod.UpdateCompass = function(self)
 
 	else
 		compass:SetAlpha(0)
-	end
-end
-
-MinimapMod.UpdatePerformance = function(self)
-
-	local fps = GetFramerate()
-	local _, _, home, world = GetNetStats()
-
-	if (fps and fps > 0) then
-		self.fps:SetFormattedText("|cff888888%.0f %s|r", fps, L_FPS)
-	else
-		self.fps:SetText("")
-	end
-
-	if (home and home > 0 and world and world > 0) then
-		self.latency:SetFormattedText("|cff888888%s|r %.0f - |cff888888%s|r %.0f", L_HOME, home, L_WORLD, world)
-	elseif (world and world > 0) then
-		self.latency:SetFormattedText("|cff888888%s|r %.0f", L_WORLD, world)
-	elseif (home and home > 0) then
-		self.latency:SetFormattedText("|cff888888%s|r %.0f", L_HOME, home)
-	else
-		self.latency:SetText("")
-	end
-
-end
-
-MinimapMod.UpdateClock = function(self)
-	local time = self.time
-	if (not time) then return end
-
-	local db = ns.GetConfig("Minimap")
-
-	if (self.db.profile.useServerTime) then
-		if (self.db.profile.useHalfClock) then
-			time:SetFormattedText("%.0f:%02.0f |cff888888%s|r", GetServerTime(true))
-
-			if (not time.useHalfClock) then
-				time.useHalfClock = true
-				self.zoneName:ClearAllPoints()
-				self.zoneName:SetPoint(unpack(db.ZoneTextPositionHalfClock))
-				self.latency:ClearAllPoints()
-				self.latency:SetPoint(unpack(db.LatencyPositionHalfClock))
-			end
-		else
-			time:SetFormattedText("%02.0f:%02.0f", GetServerTime(false))
-
-			if (time.useHalfClock) then
-				time.useHalfClock = nil
-				self.zoneName:ClearAllPoints()
-				self.zoneName:SetPoint(unpack(db.ZoneTextPosition))
-				self.latency:ClearAllPoints()
-				self.latency:SetPoint(unpack(db.LatencyPosition))
-			end
-		end
-	else
-		if (self.db.profile.useHalfClock) then
-			time:SetFormattedText("%.0f:%02.0f |cff888888%s|r", GetLocalTime(true))
-
-			if (not time.useHalfClock) then
-				time.useHalfClock = true
-				self.zoneName:ClearAllPoints()
-				self.zoneName:SetPoint(unpack(db.ZoneTextPositionHalfClock))
-				self.latency:ClearAllPoints()
-				self.latency:SetPoint(unpack(db.LatencyPositionHalfClock))
-			end
-
-		else
-			time:SetFormattedText("%02.0f:%02.0f", GetLocalTime(false))
-
-			if (time.useHalfClock) then
-				time.useHalfClock = nil
-				self.zoneName:ClearAllPoints()
-				self.zoneName:SetPoint(unpack(db.ZoneTextPosition))
-				self.latency:ClearAllPoints()
-				self.latency:SetPoint(unpack(db.LatencyPosition))
-			end
-		end
 	end
 end
 
@@ -609,19 +478,8 @@ MinimapMod.UpdateMail = function(self)
 
 end
 
-MinimapMod.UpdateResting = function(self)
-	local resting = self.resting
-	if (not resting) then
-		return
-	end
-	if (IsResting()) then
-		resting:Show()
-	else
-		resting:Hide()
-	end
-end
-
 MinimapMod.UpdateTimers = function(self)
+
 	-- In Torghast, map is always locked. Weird.
 	-- *Note that this is only in the tower, not the antechamber.
 	-- *We're resting in the antechamber, and it's a sanctuary. Good indicators.
@@ -629,44 +487,17 @@ MinimapMod.UpdateTimers = function(self)
 	IN_TORGHAST = (not IsResting()) and (GetRealZoneText() == GetRealZoneText(TORGHAST_ZONE_ID))
 
 	self.rotateMinimap = GetCVarBool("rotateMinimap")
+
 	if (self.rotateMinimap) then
 		if (not self.compassTimer) then
 			self.compassTimer = self:ScheduleRepeatingTimer("UpdateCompass", 1/60)
 			self:UpdateCompass()
 		end
+
 	elseif (self.compassTimer) then
 		self:CancelTimer(self.compassTimer)
 		self:UpdateCompass()
 	end
-	if (not self.performanceTimer) then
-		self.performanceTimer = self:ScheduleRepeatingTimer("UpdatePerformance", 1)
-		self:UpdatePerformance()
-	end
-	if (not self.clockTimer) then
-		self.clockTimer = self:ScheduleRepeatingTimer("UpdateClock", 1)
-		self:UpdateClock()
-	end
-end
-
-MinimapMod.UpdateZone = function(self)
-	local zoneName = self.zoneName
-	if (not zoneName) then
-		return
-	end
-	local a = zoneName:GetAlpha() -- needed to preserve alpha after text color changes
-	local minimapZoneName = GetMinimapZoneText()
-	local pvpType = GetZonePVPInfo()
-	if (pvpType) then
-		local color = Colors.zone[pvpType]
-		if (color) then
-			zoneName:SetTextColor(color[1], color[2], color[3], a)
-		else
-			zoneName:SetTextColor(Colors.normal[1], Colors.normal[2], Colors.normal[3], a)
-		end
-	else
-		zoneName:SetTextColor(Colors.normal[1], Colors.normal[2], Colors.normal[3], a)
-	end
-	zoneName:SetText(minimapZoneName)
 end
 
 -- Addon Styling & Initialization
@@ -946,53 +777,6 @@ MinimapMod.CreateCustomElements = function(self)
 
 	self.widgetFrame = frame
 
-	-- Zone Text
-	local zoneName = frame:CreateFontString(nil, "OVERLAY", nil, 1)
-	zoneName:SetFontObject(db.ZoneTextFont)
-	zoneName:SetAlpha(db.ZoneTextAlpha)
-	zoneName:SetPoint(unpack(db.ZoneTextPosition))
-	zoneName:SetJustifyH("CENTER")
-	zoneName:SetJustifyV("MIDDLE")
-
-	self.zoneName = zoneName
-
-	-- Latency Text
-	local latency = frame:CreateFontString(nil, "OVERLAY", nil, 1)
-	latency:SetFontObject(db.LatencyFont)
-	latency:SetTextColor(unpack(db.LatencyColor))
-	latency:SetPoint(unpack(db.LatencyPosition))
-	latency:SetJustifyH("CENTER")
-	latency:SetJustifyV("MIDDLE")
-
-	self.latency = latency
-
-	-- Framerate Text
-	local fps = frame:CreateFontString(nil, "OVERLAY", nil, 1)
-	fps:SetFontObject(db.FrameRateFont)
-	fps:SetTextColor(unpack(db.FrameRateColor))
-	fps:SetPoint(unpack(db.FrameRatePosition))
-	fps:SetJustifyH("CENTER")
-	fps:SetJustifyV("MIDDLE")
-
-	self.fps = fps
-
-	-- Time Text
-	local time = frame:CreateFontString(nil, "OVERLAY", nil, 1)
-	time:SetJustifyH("CENTER")
-	time:SetJustifyV("MIDDLE")
-	time:SetFontObject(db.ClockFont)
-	time:SetTextColor(unpack(db.ClockColor))
-	time:SetPoint(unpack(db.ClockPosition))
-
-	local timeFrame = CreateFrame("Button", nil, frame)
-	timeFrame:SetScript("OnEnter", Time_OnEnter)
-	timeFrame:SetScript("OnLeave", Time_OnLeave)
-	timeFrame:SetScript("OnClick", Time_OnClick)
-	timeFrame:RegisterForClicks("AnyUp")
-	timeFrame:SetAllPoints(time)
-
-	self.time = time
-
 	-- Compass
 	local compass = CreateFrame("Frame", nil, frame)
 	compass:SetFrameLevel(Minimap:GetFrameLevel() + 5)
@@ -1034,17 +818,6 @@ MinimapMod.CreateCustomElements = function(self)
 	mailFrame:SetAllPoints(mail)
 
 	self.mail = mail
-
-	-- Resting Text
-	local resting = frame:CreateFontString(nil, "OVERLAY", nil, 1)
-	resting:SetFontObject(db.ZoneTextFont)
-	resting:SetPoint("RIGHT", self.zoneName, "LEFT", -4, 0)
-	resting:SetJustifyH("CENTER")
-	resting:SetJustifyV("MIDDLE")
-	resting:SetTextColor(unpack(db.ClockColor))
-	resting:SetText("|cff888888(|r"..L_RESTING.."|cff888888)|r")
-
-	self.resting = resting
 
 	local dropdown = LibDD:Create_UIDropDownMenu(ns.Prefix.."MiniMapTrackingDropDown", UIParent)
 	dropdown:SetID(1)
@@ -1095,26 +868,15 @@ MinimapMod.CreateCustomElements = function(self)
 
 	self.dropdown = dropdown
 
-	-- TODO: Remove this once the info block is movable and configurable.
-	if (ns.WoW10) then
-		self:SecureHook(EditModeManagerFrame, "EnterEditMode", "UpdateCustomElements")
-		self:SecureHook(EditModeManagerFrame, "ExitEditMode", "UpdateCustomElements")
-		self:SecureHook(EditModeManagerFrame, "OnAccountSettingChanged", "UpdateCustomElements")
-	end
-
 	self:UpdateCustomElements()
 	self.CreateCustomElements = noop
 
 end
 
 -- Update the visibility of the custom elements
--- TODO: Make this a separate movable, configurable block.
 MinimapMod.UpdateCustomElements = function(self)
 	if (not self.widgetFrame) then return end
-	if (CURRENT_THEME ~= "Azerite") then
-		return self.widgetFrame:Hide()
-	end
-	self.widgetFrame:SetShown(self.anchor:IsInDefaultPosition(60))
+	self.widgetFrame:SetShown(CURRENT_THEME == "Azerite")
 end
 
 MinimapMod.PostUpdatePositionAndScale = function(self)
@@ -1191,12 +953,9 @@ end
 
 MinimapMod.UpdateSettings = function(self)
 	self:SetTheme(self.db.profile.theme)
-	self:UpdateClock()
 	self:UpdateCompass()
 	self:UpdateMail()
-	self:UpdatePerformance()
 	self:UpdateTimers()
-	self:UpdateZone()
 	self:UpdateCustomElements()
 end
 
@@ -1318,14 +1077,15 @@ MinimapMod.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD" or event == "VARIABLES_LOADED") then
 		self:UpdateAnchor()
 		self:UpdateSettings()
-
-	elseif (event == "EDIT_MODE_LAYOUTS_UPDATED") then
-		self:UpdateCustomElements()
 	end
 end
 
 MinimapMod.OnEnable = function(self)
 	LoadAddOn("Blizzard_TimeManager")
+
+	-- Clean out deprecated settings
+	self.db.profile.useHalfClock = nil
+	self.db.profile.useServerTime = nil
 
 	self:InitializeObjectTables()
 
@@ -1353,14 +1113,9 @@ MinimapMod.OnEnable = function(self)
 
 	ns.Module.OnEnable(self)
 
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateResting")
-	self:RegisterEvent("PLAYER_UPDATE_RESTING", "UpdateResting")
-	self:RegisterEvent("VARIABLES_LOADED", "OnEvent")
 	self:RegisterEvent("CVAR_UPDATE", "UpdateTimers")
 	self:RegisterEvent("UPDATE_PENDING_MAIL", "UpdateMail")
-	self:RegisterEvent("ZONE_CHANGED", "UpdateZone")
-	self:RegisterEvent("ZONE_CHANGED_INDOORS", "UpdateZone")
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateZone")
+	self:RegisterEvent("VARIABLES_LOADED", "OnEvent")
 
 	if (ns.WoW10) then
 		self:RegisterEvent("CRAFTINGORDERS_UPDATE_PERSONAL_ORDER_COUNTS", "UpdateMail")
