@@ -35,9 +35,13 @@ local RaidFrame5Mod = ns:NewModule("RaidFrame5", ns.UnitFrameModule, "LibMoreEve
 
 -- Lua API
 local math_abs = math.abs
+local math_max = math.max
+local math_min = math.min
+local math_ceil = math.ceil
 local next = next
 local select = select
 local string_gsub = string.gsub
+local string_upper = string.upper
 local type = type
 local unpack = unpack
 
@@ -322,6 +326,9 @@ end
 local style = function(self, unit)
 
 	local db = ns.GetConfig("Raid5Frames")
+
+	self:SetSize(unpack(db.UnitSize))
+	self:SetFrameLevel(self:GetFrameLevel() + 10)
 
 	-- Apply common scripts and member values.
 	ns.UnitFrame.InitializeUnitFrame(self)
@@ -657,7 +664,7 @@ local style = function(self, unit)
 
 end
 
--- GroupHeader Template
+-- Fake GroupHeader
 ---------------------------------------------------
 local GroupHeader = {}
 
@@ -701,6 +708,165 @@ GroupHeader.UpdateVisibilityDriver = function(self)
 	self.visibility = enabled and visibility
 end
 
+-- Sourced from FrameXML\SecureGroupHeaders.lua
+-- relativePoint, xMultiplier, yMultiplier = getRelativePointAnchor(point)
+-- Given a point return the opposite point and which axes the point depends on.
+local getRelativePointAnchor = function(point)
+	point = string_upper(point)
+	if (point == "TOP") then
+		return "BOTTOM", 0, -1
+	elseif (point == "BOTTOM") then
+		return "TOP", 0, 1
+	elseif (point == "LEFT") then
+		return "RIGHT", 1, 0
+	elseif (point == "RIGHT") then
+		return "LEFT", -1, 0
+	elseif (point == "TOPLEFT") then
+		return "BOTTOMRIGHT", 1, -1
+	elseif (point == "TOPRIGHT") then
+		return "BOTTOMLEFT", -1, -1
+	elseif (point == "BOTTOMLEFT") then
+		return "TOPRIGHT", 1, 1
+	elseif (point == "BOTTOMRIGHT") then
+		return "TOPLEFT", -1, 1
+	else
+		return "CENTER", 0, 0
+	end
+end
+
+-- Sourced from FrameXML\SecureGroupHeaders.lua > configureChildren()
+RaidFrame5Mod.GetCalculatedHeaderSize = function(self, numDisplayed)
+
+	local config = ns.GetConfig("Raid5Frames")
+	local db = self.db.profile
+
+	local header = self:GetUnitFrameOrHeader()
+	local unitButtonWidth = config.UnitSize[1]
+	local unitButtonHeight = config.UnitSize[2]
+	local unitsPerColumn = db.unitsPerColumn
+	local point = db.point or "TOP"
+	local relativePoint, xOffsetMult, yOffsetMult = getRelativePointAnchor(point)
+	local xMultiplier, yMultiplier =  math_abs(xOffsetMult), math_abs(yOffsetMult)
+	local xOffset = db.xOffset or 0
+	local yOffset = db.yOffset or 0
+	local columnSpacing = db.columnSpacing or 0
+
+	local numColumns
+	if (unitsPerColumn and numDisplayed > unitsPerColumn) then
+		numColumns = math_min(math_ceil(numDisplayed/unitsPerColumn), (db.maxColumns or 1))
+	else
+		unitsPerColumn = numDisplayed
+		numColumns = 1
+	end
+
+	local columnAnchorPoint, columnRelPoint, colxMulti, colyMulti
+	if (numColumns > 1) then
+		columnAnchorPoint = db.columnAnchorPoint
+		columnRelPoint, colxMulti, colyMulti = getRelativePointAnchor(columnAnchorPoint)
+	end
+
+	local width, height
+
+	if (numDisplayed > 0) then
+		width = xMultiplier * (unitsPerColumn - 1) * unitButtonWidth + ((unitsPerColumn - 1) * (xOffset * xOffsetMult)) + unitButtonWidth
+		height = yMultiplier * (unitsPerColumn - 1) * unitButtonHeight + ((unitsPerColumn - 1) * (yOffset * yOffsetMult)) + unitButtonHeight
+
+		if (numColumns > 1) then
+			width = width + ((numColumns -1) * math_abs(colxMulti) * (width + columnSpacing))
+			height = height + ((numColumns -1) * math_abs(colyMulti) * (height + columnSpacing))
+		end
+	else
+		local minWidth = db.minWidth or (yMultiplier * unitButtonWidth)
+		local minHeight = db.minHeight or (xMultiplier * unitButtonHeight)
+
+		width = math_max(minWidth, 0.1)
+		height = math_max(minHeight, 0.1)
+	end
+
+	return width, height
+end
+
+-- Sourced from FrameXML\SecureGroupHeaders.lua > configureChildren()
+RaidFrame5Mod.ConfigureChildren = function(self)
+	if (InCombatLockdown()) then return end
+
+	local db = self.db.profile
+	local config = ns.GetConfig("Raid5Frames")
+	local header = self:GetUnitFrameOrHeader()
+	local frame = self:GetFrame()
+
+	local point = db.point or "TOP"
+	local relativePoint, xOffsetMult, yOffsetMult = getRelativePointAnchor(point)
+	local xMultiplier, yMultiplier =  math_abs(xOffsetMult), math_abs(yOffsetMult)
+	local xOffset = db.xOffset or 0
+	local yOffset = db.yOffset or 0
+	local sortDir = db.sortDir or "ASC"
+	local columnSpacing = db.columnSpacing or 0
+	local startingIndex = db.startingIndex or 1
+
+	local unitCount = 5
+
+	local numDisplayed = unitCount - (startingIndex - 1)
+	local unitsPerColumn = db.unitsPerColumn
+	local numColumns
+	if (unitsPerColumn and numDisplayed > unitsPerColumn) then
+		numColumns = math_min(math_ceil(numDisplayed/unitsPerColumn), (db.maxColumns or 1))
+	else
+		unitsPerColumn = numDisplayed
+		numColumns = 1
+	end
+	local loopStart = startingIndex
+	local loopFinish = math_min((startingIndex - 1) + unitsPerColumn * numColumns, unitCount)
+	local step = 1
+
+	numDisplayed = loopFinish - (loopStart - 1)
+
+	if (sortDir == "DESC") then
+		loopStart = unitCount - (startingIndex - 1)
+		loopFinish = loopStart - (numDisplayed - 1)
+		step = -1
+	end
+
+	local columnAnchorPoint, columnRelPoint, colxMulti, colyMulti
+	if (numColumns > 1) then
+		columnAnchorPoint = db.columnAnchorPoint
+		columnRelPoint, colxMulti, colyMulti = getRelativePointAnchor(columnAnchorPoint)
+	end
+
+	local buttonNum = 0
+	local columnNum = 1
+	local columnUnitCount = 0
+	local currentAnchor = header
+	for i = loopStart, loopFinish, step do
+		buttonNum = buttonNum + 1
+		columnUnitCount = columnUnitCount + 1
+		if (columnUnitCount > unitsPerColumn) then
+			columnUnitCount = 1
+			columnNum = columnNum + 1
+		end
+
+		local unitButton = header:GetAttribute("child"..buttonNum)
+		unitButton:ClearAllPoints()
+
+		if (buttonNum == 1) then
+			unitButton:SetPoint(point, currentAnchor, point, 0, 0)
+			if (columnAnchorPoint) then
+				unitButton:SetPoint(columnAnchorPoint, currentAnchor, columnAnchorPoint, 0, 0)
+			end
+
+		elseif (columnUnitCount == 1) then
+			local columnAnchor = header:GetAttribute("child"..(buttonNum - unitsPerColumn))
+			unitButton:SetPoint(columnAnchorPoint, columnAnchor, columnRelPoint, colxMulti * columnSpacing, colyMulti * columnSpacing)
+
+		else
+			unitButton:SetPoint(point, currentAnchor, relativePoint, xMultiplier * xOffset, yMultiplier * yOffset)
+		end
+
+		currentAnchor = unitButton
+	end
+
+	header:SetSize(self:GetCalculatedHeaderSize(numDisplayed))
+end
 
 RaidFrame5Mod.DisableBlizzard = function(self)
 	UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
@@ -712,48 +878,8 @@ RaidFrame5Mod.DisableBlizzard = function(self)
 	CompactRaidFrameManager:SetParent(ns.Hider)
 end
 
-RaidFrame5Mod.OnEvent = function(self, event, ...)
-	if (event == "PLAYER_REGEN_ENABLED") then
-		if (InCombatLockdown()) then return end
-		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-		if (self.needHeaderUpdate) then
-			self.needHeaderUpdate = nil
-			self:UpdateHeader()
-		end
-	end
-end
-
-RaidFrame5Mod.GetHeaderAttributes = function(self)
-	local db = self.db.profile
-
-	return ns.Prefix.."Raid5", nil, nil,
-	"initial-width", ns.GetConfig("Raid5Frames").UnitSize[1],
-	"initial-height", ns.GetConfig("Raid5Frames").UnitSize[2],
-	"oUF-initialConfigFunction", [[
-		local header = self:GetParent();
-		self:SetWidth(header:GetAttribute("initial-width"));
-		self:SetHeight(header:GetAttribute("initial-height"));
-		self:SetFrameLevel(self:GetFrameLevel() + 10);
-	]],
-
-	--'https://wowprogramming.com/docs/secure_template/Group_Headers.html
-	"sortMethod", "INDEX", -- INDEX, NAME -- Member sorting within each group
-	"sortDir", "ASC", -- ASC, DESC
-	"groupFilter", "1,2,3,4,5,6,7,8", -- Group filter
-	"showSolo", false, -- show while non-grouped
-	"showPlayer", true, -- show the player while in a party
-	"showRaid", true, -- show while in a raid group
-	"showParty", true, -- show while in a party
-	"point", db.point, -- Unit anchoring within each column
-	"xOffset", db.xOffset,
-	"yOffset", db.yOffset,
-	"groupBy", db.groupBy, -- ROLE, CLASS, GROUP -- Grouping order and type
-	"groupingOrder", db.groupingOrder,
-	"unitsPerColumn", db.unitsPerColumn, -- Column setup and growth
-	"maxColumns", db.maxColumns,
-	"columnSpacing", db.columnSpacing,
-	"columnAnchorPoint", db.columnAnchorPoint
-
+RaidFrame5Mod.GetHeaderSize = function(self)
+	return self:GetCalculatedHeaderSize(5)
 end
 
 RaidFrame5Mod.GetVisibilityDriver = function(self)
@@ -763,22 +889,69 @@ RaidFrame5Mod.GetVisibilityDriver = function(self)
 	local raid25 = ns:GetModule("RaidFrame25").db.profile.enabled
 	local raid40 = ns:GetModule("RaidFrame40").db.profile.enabled
 
-	if (not partyInRaids and raid5) then
-		if (party) then
-			return true, "[@raid6,exists]hide;[group:raid]show;hide", nil
+	if (ns.IsDevelopmentMode) then
+		if (not partyInRaids and raid5) then
+			if (party) then
+				return true, "show", nil
+			else
+				return true, "show", true
+			end
 		else
-			return true, "[@raid6,exists]hide;[group]show;hide", true
+			return false, "hide", nil
 		end
 	else
-		return false, "hide", nil
+		if (not partyInRaids and raid5) then
+			if (party) then
+				return true, "[@raid6,exists]hide;[group:raid]show;hide", nil
+			else
+				return true, "[@raid6,exists]hide;[group]show;hide", true
+			end
+		else
+			return false, "hide", nil
+		end
 	end
+
 end
 
-RaidFrame5Mod.GetHeaderSize = function(self)
-	local config = ns.GetConfig("Raid5Frames")
-	return
-		config.UnitSize[1]*1 + math_abs(self.db.profile.columnSpacing * 0),
-		config.UnitSize[2]*5 + math_abs(self.db.profile.yOffset * 4)
+RaidFrame5Mod.CreateUnitFrames = function(self)
+
+	local unit, name = "raid", "Raid5"
+
+	oUF:RegisterStyle(ns.Prefix..name, style)
+	oUF:SetActiveStyle(ns.Prefix..name)
+
+	self.frame = CreateFrame("Frame", nil, UIParent)
+	self.frame.content = CreateFrame("Frame", ns.Prefix.."ArenaEnemyFrames", UIParent, "SecureHandlerStateTemplate")
+
+	-- Embed our custom methods
+	for method,func in next,GroupHeader do
+		self.frame.content[method] = func
+	end
+
+	for i = 1,5 do
+		local unitButton
+		if (ns.IsDevelopmentMode) then
+			unitButton = ns.UnitFrame.Spawn("player", ns.Prefix.."UnitFrame"..name..i)
+		else
+			unitButton = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)
+		end
+		self.frame.content:SetFrameRef("child"..i, unitButton)
+		self.frame.content:SetAttribute("child"..i, unitButton)
+	end
+
+	self:UpdateHeader()
+
+	-- Sometimes some elements are wrong or "get stuck" upon exiting the editmode.
+	if (ns.WoW10) then
+		self:SecureHook(EditModeManagerFrame, "ExitEditMode", "UpdateUnits")
+	end
+
+	-- Sometimes when changing group leader, only the group leader is updated,
+	-- leaving other units with a lot of wrong information displayed.
+	-- Should think that GROUP_ROSTER_UPDATE handled this, but it doesn't.
+	-- *Only experienced this is Wrath.But adding it as a general update anyway.
+	self:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateUnits")
+
 end
 
 RaidFrame5Mod.UpdateHeader = function(self)
@@ -791,7 +964,9 @@ RaidFrame5Mod.UpdateHeader = function(self)
 		return
 	end
 
-	header:UpdateVisibilityDriver()
+	local config = ns.GetConfig("Raid5Frames")
+	header:SetAttribute("unitWidth", config.UnitSize[1])
+	header:SetAttribute("unitHeight", config.UnitSize[2])
 
 	for _,attrib in next,{
 		"point","xOffset","yOffset",
@@ -803,6 +978,7 @@ RaidFrame5Mod.UpdateHeader = function(self)
 	end
 
 	self:GetFrame():SetSize(self:GetHeaderSize())
+	self:ConfigureChildren()
 
 	self:UpdateHeaderAnchorPoint() -- update where the group header is anchored to our anchorframe.
 	self:UpdateAnchor() -- the general update does this too, but we need it in case nothing but this function has been called.
@@ -858,45 +1034,34 @@ RaidFrame5Mod.Update = function(self)
 	self:UpdateUnits()
 end
 
-RaidFrame5Mod.CreateUnitFrames = function(self)
+RaidFrame5Mod.OnEvent = function(self, event, ...)
+	if (event == "PLAYER_ENTERING_WORLD") then
+		if (InCombatLockdown()) then
+			self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+			return
+		end
+		self:UpdateHeader()
 
-	local name = "Raid5"
-
-	oUF:RegisterStyle(ns.Prefix..name, style)
-	oUF:SetActiveStyle(ns.Prefix..name)
-
-	self.frame = CreateFrame("Frame", nil, UIParent)
-	self.frame:SetSize(self:GetHeaderSize())
-
-	self.frame.content = oUF:SpawnHeader(self:GetHeaderAttributes())
-	self:UpdateHeaderAnchorPoint()
-
-	-- Embed our custom methods
-	for method,func in next,GroupHeader do
-		self.frame.content[method] = func
+	elseif (event == "PLAYER_REGEN_ENABLED") then
+		if (InCombatLockdown()) then return end
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+		if (self.needHeaderUpdate) then
+			self.needHeaderUpdate = nil
+			self:UpdateHeader()
+		end
 	end
-
-	-- Sometimes some elements are wrong or "get stuck" upon exiting the editmode.
-	if (ns.WoW10) then
-		self:SecureHook(EditModeManagerFrame, "ExitEditMode", "UpdateUnits")
-	end
-
-	-- Sometimes when changing group leader, only the group leader is updated,
-	-- leaving other units with a lot of wrong information displayed.
-	-- Should think that GROUP_ROSTER_UPDATE handled this, but it doesn't.
-	-- *Only experienced this is Wrath.But adding it as a general update anyway.
-	self:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateUnits")
-
 end
 
 RaidFrame5Mod.OnEnable = function(self)
+
 	LoadAddOn("Blizzard_CUFProfiles")
 	LoadAddOn("Blizzard_CompactRaidFrames")
 
-	-- Leave these enabled for now.
 	self:DisableBlizzard()
 	self:CreateUnitFrames()
-	self:CreateAnchor(RAID .. " (5)") --[[PARTYRAID_LABEL RAID_AND_PARTY]]
+	self:CreateAnchor(RAID .. " (5)")
 
 	ns.Module.OnEnable(self)
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 end
