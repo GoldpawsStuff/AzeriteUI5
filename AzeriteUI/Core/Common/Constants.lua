@@ -69,6 +69,11 @@ ns.Private.IsTBC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 ns.Private.IsWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
 ns.Private.WoW10 = version >= 100000
 
+-- Developer Mode constants
+------------------------------------------------------
+ns.Private.IsDevelopmentMode = IsAltKeyDown() and IsControlKeyDown() and IsShiftKeyDown()
+ns.Private.IsVerboseMode = not ns.Private.IsDevelopmentMode and IsShiftKeyDown()
+
 -- Prefix for frame names
 ------------------------------------------------------
 ns.Private.Prefix = string_match(Addon, "^(.*)UI") or Addon
