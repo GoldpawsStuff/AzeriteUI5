@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-10-11
+## [5.2.111-RC] 2023-10-11
+- Updated for WoW Client Patch 3.4.3.
+
 ### Changed
 - The block of information next to the Minimap containing the clock, zone name, resting status, latency and performance stats now is movable and configurable. Also, it's no longer considered a part of the minimap but an entity of its own. The previous options to configure the time display now lives in their own category in our options menu. This is a work in progress and more options will be added before the next tagged release.
 
