@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - The block of information next to the Minimap containing the clock, zone name, resting status, latency and performance stats now is movable and configurable. Also, it's no longer considered a part of the minimap but an entity of its own. The previous options to configure the time display now lives in their own category in our options menu. This is a work in progress and more options will be added before the next tagged release.
 
 ### Fixed
+- Fixed an issue with a library being loaded twice, which caused an error when using GitHub developer versions.
+- General alignment problems with the Raid(5) unitframes should have been sorted out now. They now use the same code and systems as the Enemy Arena unitframes, which they also mirror in looks and layout.
 - Status displays like "Offline" and "Away" should no longer appear on enemy arena frames. They are not needed.
 - The power bars on enemy arena frames should now be hidden when the unit is dead or the info isn't available.
 
