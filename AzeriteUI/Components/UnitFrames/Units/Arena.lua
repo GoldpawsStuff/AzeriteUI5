@@ -91,32 +91,6 @@ local prefix = function(msg)
 	return string_gsub(msg, "*", ns.Prefix)
 end
 
--- Sourced from FrameXML\SecureGroupHeaders.lua
--- relativePoint, xMultiplier, yMultiplier = getRelativePointAnchor(point)
--- Given a point return the opposite point and which axes the point depends on.
-local getRelativePointAnchor = function(point)
-	point = string_upper(point)
-	if (point == "TOP") then
-		return "BOTTOM", 0, -1
-	elseif (point == "BOTTOM") then
-		return "TOP", 0, 1
-	elseif (point == "LEFT") then
-		return "RIGHT", 1, 0
-	elseif (point == "RIGHT") then
-		return "LEFT", -1, 0
-	elseif (point == "TOPLEFT") then
-		return "BOTTOMRIGHT", 1, -1
-	elseif (point == "TOPRIGHT") then
-		return "BOTTOMLEFT", -1, -1
-	elseif (point == "BOTTOMLEFT") then
-		return "TOPRIGHT", 1, 1
-	elseif (point == "BOTTOMRIGHT") then
-		return "TOPLEFT", -1, 1
-	else
-		return "CENTER", 0, 0
-	end
-end
-
 -- Element Callbacks
 --------------------------------------------
 -- Forceupdate health prediction on health updates,
@@ -757,6 +731,33 @@ GroupHeader.IsEnabled = function(self)
 	return self.enabled
 end
 
+-- Sourced from FrameXML\SecureGroupHeaders.lua
+-- relativePoint, xMultiplier, yMultiplier = getRelativePointAnchor(point)
+-- Given a point return the opposite point and which axes the point depends on.
+local getRelativePointAnchor = function(point)
+	point = string_upper(point)
+	if (point == "TOP") then
+		return "BOTTOM", 0, -1
+	elseif (point == "BOTTOM") then
+		return "TOP", 0, 1
+	elseif (point == "LEFT") then
+		return "RIGHT", 1, 0
+	elseif (point == "RIGHT") then
+		return "LEFT", -1, 0
+	elseif (point == "TOPLEFT") then
+		return "BOTTOMRIGHT", 1, -1
+	elseif (point == "TOPRIGHT") then
+		return "BOTTOMLEFT", -1, -1
+	elseif (point == "BOTTOMLEFT") then
+		return "TOPRIGHT", 1, 1
+	elseif (point == "BOTTOMRIGHT") then
+		return "TOPLEFT", -1, 1
+	else
+		return "CENTER", 0, 0
+	end
+end
+
+-- Sourced from FrameXML\SecureGroupHeaders.lua > configureChildren()
 ArenaFrameMod.GetCalculatedHeaderSize = function(self, numDisplayed)
 
 	local config = ns.GetConfig("ArenaFrames")
@@ -808,6 +809,88 @@ ArenaFrameMod.GetCalculatedHeaderSize = function(self, numDisplayed)
 	return width, height
 end
 
+-- Sourced from FrameXML\SecureGroupHeaders.lua > configureChildren()
+ArenaFrameMod.ConfigureChildren = function(self)
+	if (InCombatLockdown()) then return end
+
+	local db = self.db.profile
+	local config = ns.GetConfig("ArenaFrames")
+	local header = self:GetUnitFrameOrHeader()
+	local frame = self:GetFrame()
+
+	local point = db.point or "TOP"
+	local relativePoint, xOffsetMult, yOffsetMult = getRelativePointAnchor(point)
+	local xMultiplier, yMultiplier =  math_abs(xOffsetMult), math_abs(yOffsetMult)
+	local xOffset = db.xOffset or 0
+	local yOffset = db.yOffset or 0
+	local sortDir = db.sortDir or "ASC"
+	local columnSpacing = db.columnSpacing or 0
+	local startingIndex = db.startingIndex or 1
+
+	local unitCount = 5
+
+	local numDisplayed = unitCount - (startingIndex - 1)
+	local unitsPerColumn = db.unitsPerColumn
+	local numColumns
+	if (unitsPerColumn and numDisplayed > unitsPerColumn) then
+		numColumns = math_min(math_ceil(numDisplayed/unitsPerColumn), (db.maxColumns or 1))
+	else
+		unitsPerColumn = numDisplayed
+		numColumns = 1
+	end
+	local loopStart = startingIndex
+	local loopFinish = math_min((startingIndex - 1) + unitsPerColumn * numColumns, unitCount)
+	local step = 1
+
+	numDisplayed = loopFinish - (loopStart - 1)
+
+	if (sortDir == "DESC") then
+		loopStart = unitCount - (startingIndex - 1)
+		loopFinish = loopStart - (numDisplayed - 1)
+		step = -1
+	end
+
+	local columnAnchorPoint, columnRelPoint, colxMulti, colyMulti
+	if (numColumns > 1) then
+		columnAnchorPoint = db.columnAnchorPoint
+		columnRelPoint, colxMulti, colyMulti = getRelativePointAnchor(columnAnchorPoint)
+	end
+
+	local buttonNum = 0
+	local columnNum = 1
+	local columnUnitCount = 0
+	local currentAnchor = header
+	for i = loopStart, loopFinish, step do
+		buttonNum = buttonNum + 1
+		columnUnitCount = columnUnitCount + 1
+		if (columnUnitCount > unitsPerColumn) then
+			columnUnitCount = 1
+			columnNum = columnNum + 1
+		end
+
+		local unitButton = header:GetAttribute("child"..buttonNum)
+		unitButton:ClearAllPoints()
+
+		if (buttonNum == 1) then
+			unitButton:SetPoint(point, currentAnchor, point, 0, 0)
+			if (columnAnchorPoint) then
+				unitButton:SetPoint(columnAnchorPoint, currentAnchor, columnAnchorPoint, 0, 0)
+			end
+
+		elseif (columnUnitCount == 1) then
+			local columnAnchor = header:GetAttribute("child"..(buttonNum - unitsPerColumn))
+			unitButton:SetPoint(columnAnchorPoint, columnAnchor, columnRelPoint, colxMulti * columnSpacing, colyMulti * columnSpacing)
+
+		else
+			unitButton:SetPoint(point, currentAnchor, relativePoint, xMultiplier * xOffset, yMultiplier * yOffset)
+		end
+
+		currentAnchor = unitButton
+	end
+
+	header:SetSize(self:GetCalculatedHeaderSize(numDisplayed))
+end
+
 ArenaFrameMod.GetHeaderSize = function(self)
 	return self:GetCalculatedHeaderSize(5)
 end
@@ -828,24 +911,17 @@ ArenaFrameMod.CreateUnitFrames = function(self)
 	end
 
 	for i = 1,5 do
-		local unitFrame = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)
-		--local unitFrame = ns.UnitFrame.Spawn(i == 1 and "player" or i == 2 and "pet" or "player", ns.Prefix.."UnitFrame"..name..i)
-		self.frame.content:SetFrameRef("child"..i, unitFrame)
-		self.frame.content:SetAttribute("child"..i, unitFrame)
+		local unitButton
+		if (ns.IsDevelopmentMode) then
+			unitButton = ns.UnitFrame.Spawn("player", ns.Prefix.."UnitFrame"..name..i)
+		else
+			unitButton = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)
+		end
+		self.frame.content:SetFrameRef("child"..i, unitButton)
+		self.frame.content:SetAttribute("child"..i, unitButton)
 	end
 
 	self:UpdateHeader()
-	--self:UpdateHeaderAnchorPoint()
-	--self:UpdateLayout()
-
-	-- need to make it update on the fly securely since units can leave in the middle of an arena.
-	--for i in next,Units do
-	--	local listener = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-	--	listener:SetFrameRef("Updater", self.frame.content)
-	--	listener:SetAttribute("_onstate-layout", [[ self:GetFrameRef("Updater"):RunAttribute("UpdateLayout"); ]])
-	--	RegisterStateDriver(listener, "layout", "[@arena"..i..",exists]arena"..i.."on;arena"..i.."off")
-	--end
-
 end
 
 ArenaFrameMod.UpdateHeader = function(self)
@@ -872,7 +948,7 @@ ArenaFrameMod.UpdateHeader = function(self)
 	end
 
 	self.frame:SetSize(self:GetHeaderSize())
-	self:UpdateLayout()
+	self:ConfigureChildren()
 
 	self:UpdateHeaderAnchorPoint() -- update where the group header is anchored to our anchorframe.
 	self:UpdateAnchor() -- the general update does this too, but we need it in case nothing but this function has been called.
@@ -908,95 +984,6 @@ ArenaFrameMod.UpdateHeaderAnchorPoint = function(self)
 	local header = self:GetUnitFrameOrHeader()
 	header:ClearAllPoints()
 	header:SetPoint(point, self:GetFrame(), point)
-end
-
-ArenaFrameMod.UpdateLayout = function(self)
-	if (InCombatLockdown()) then return end
-
-	local db = self.db.profile
-	local config = ns.GetConfig("ArenaFrames")
-	local header = self:GetUnitFrameOrHeader()
-	local frame = self:GetFrame()
-
-	local point = db.point or "TOP" --default anchor point of "TOP"
-	local relativePoint, xOffsetMult, yOffsetMult = getRelativePointAnchor(point)
-	local xMultiplier, yMultiplier =  math_abs(xOffsetMult), math_abs(yOffsetMult)
-	local xOffset = db.xOffset or 0 --default of 0
-	local yOffset = db.yOffset or 0 --default of 0
-	local sortDir = db.sortDir or "ASC" --sort ascending by default
-	local columnSpacing = db.columnSpacing or 0
-	local startingIndex = db.startingIndex or 1
-
-	local unitCount = GetNumArenaOpponentSpecs and GetNumArenaOpponentSpecs() or GetNumArenaOpponents and GetNumArenaOpponents() or 0
-	if (unitCount == 0) then
-		for frame in next,Units do
-			if (UnitExists(frame.unit)) then
-				unitCount = unitCount + 1
-			end
-		end
-	end
-
-	local numDisplayed = unitCount - (startingIndex - 1)
-	local unitsPerColumn = db.unitsPerColumn
-	local numColumns
-	if (unitsPerColumn and numDisplayed > unitsPerColumn) then
-		numColumns = math_min(math_ceil(numDisplayed/unitsPerColumn), (db.maxColumns or 1))
-	else
-		unitsPerColumn = numDisplayed
-		numColumns = 1
-	end
-	local loopStart = startingIndex
-	local loopFinish = math_min((startingIndex - 1) + unitsPerColumn * numColumns, unitCount)
-	local step = 1
-
-	numDisplayed = loopFinish - (loopStart - 1)
-
-	if (sortDir == "DESC") then
-		loopStart = unitCount - (startingIndex - 1)
-		loopFinish = loopStart - (numDisplayed - 1)
-		step = -1
-	end
-
-	local columnAnchorPoint, columnRelPoint, colxMulti, colyMulti
-	if (numColumns > 1) then
-		columnAnchorPoint = db.columnAnchorPoint
-		columnRelPoint, colxMulti, colyMulti = getRelativePointAnchor(columnAnchorPoint)
-	end
-
-	local unitNum = 0
-	local columnNum = 1
-	local columnUnitCount = 0
-	local currentAnchor = header
-
-	for i = loopStart, loopFinish, step do
-		unitNum = unitNum + 1
-		columnUnitCount = columnUnitCount + 1
-		if (columnUnitCount > unitsPerColumn) then
-			columnUnitCount = 1
-			columnNum = columnNum + 1
-		end
-
-		local unitFrame = header:GetAttribute("child"..unitNum)
-		unitFrame:ClearAllPoints()
-
-		if (unitNum == 1) then
-			unitFrame:SetPoint(point, currentAnchor, point, 0, 0)
-			if (columnAnchorPoint) then
-				unitFrame:SetPoint(columnAnchorPoint, currentAnchor, columnAnchorPoint, 0, 0)
-			end
-
-		elseif (columnUnitCount == 1) then
-			local columnAnchor = header:GetAttribute("child"..(unitNum - unitsPerColumn))
-			unitFrame:SetPoint(columnAnchorPoint, columnAnchor, columnRelPoint, colxMulti * columnSpacing, colyMulti * columnSpacing)
-
-		else
-			unitFrame:SetPoint(point, currentAnchor, relativePoint, xMultiplier * xOffset, yMultiplier * yOffset)
-		end
-
-		currentAnchor = unitFrame
-	end
-
-	header:SetSize(self:GetCalculatedHeaderSize(numDisplayed))
 end
 
 ArenaFrameMod.UpdateUnits = function(self)
