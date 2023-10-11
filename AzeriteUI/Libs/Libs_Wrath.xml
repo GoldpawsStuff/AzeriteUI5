@@ -21,7 +21,6 @@
 	<Script file="LibMoreEvents-1.0\LibMoreEvents-1.0.lua"/>
 	@end-non-debug@-->
 	<Include file="LibKeyBound-1.0\lib.xml"/>
-	<Script file="LibHealComm-4.0\LibHealComm-4.0.lua"/>
 
 	<!-- Modified Libraries -->
 	<Include file="AceDB-3.0-GE\AceDB-3.0-GE.xml"/>
