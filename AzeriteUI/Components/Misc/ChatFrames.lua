@@ -554,7 +554,7 @@ ChatFrames.OnEvent = function(self, event, ...)
 			end
 
 			-- Clear the primary chatframe on login/reload.
-			if (not IsShiftKeyDown()) then
+			if (not ns.IsVerboseMode) then
 
 				-- Some addons add timers before spamming,
 				-- so we have to run this for a few seconds.
