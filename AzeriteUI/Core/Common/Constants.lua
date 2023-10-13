@@ -71,8 +71,8 @@ ns.Private.WoW10 = version >= 100000
 
 -- Developer Mode constants
 ------------------------------------------------------
-ns.Private.IsDevelopmentMode = IsAltKeyDown() and IsControlKeyDown() and IsShiftKeyDown()
-ns.Private.IsVerboseMode = not ns.Private.IsDevelopmentMode and IsShiftKeyDown()
+ns.Private.IsInDevelopmentMode = IsAltKeyDown() and IsControlKeyDown() and IsShiftKeyDown()
+ns.Private.IsVerboseMode = not ns.Private.IsInDevelopmentMode and IsShiftKeyDown()
 
 -- Prefix for frame names
 ------------------------------------------------------

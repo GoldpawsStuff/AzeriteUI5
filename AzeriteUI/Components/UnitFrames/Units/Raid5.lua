@@ -889,7 +889,7 @@ RaidFrame5Mod.GetVisibilityDriver = function(self)
 	local raid25 = ns:GetModule("RaidFrame25").db.profile.enabled
 	local raid40 = ns:GetModule("RaidFrame40").db.profile.enabled
 
-	if (ns.IsDevelopmentMode) then
+	if (ns.IsInDevelopmentMode) then
 		if (not partyInRaids and raid5) then
 			if (party) then
 				return true, "show", nil
@@ -930,7 +930,7 @@ RaidFrame5Mod.CreateUnitFrames = function(self)
 
 	for i = 1,5 do
 		local unitButton
-		if (ns.IsDevelopmentMode) then
+		if (ns.IsInDevelopmentMode) then
 			unitButton = ns.UnitFrame.Spawn("player", ns.Prefix.."UnitFrame"..name..i)
 		else
 			unitButton = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)

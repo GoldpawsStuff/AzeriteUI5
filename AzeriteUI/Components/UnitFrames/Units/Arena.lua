@@ -912,7 +912,7 @@ ArenaFrameMod.CreateUnitFrames = function(self)
 
 	for i = 1,5 do
 		local unitButton
-		if (ns.IsDevelopmentMode) then
+		if (ns.IsInDevelopmentMode) then
 			unitButton = ns.UnitFrame.Spawn("player", ns.Prefix.."UnitFrame"..name..i)
 		else
 			unitButton = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)
