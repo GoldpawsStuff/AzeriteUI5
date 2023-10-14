@@ -701,12 +701,11 @@ end
 GroupHeader.UpdateVisibilityDriver = function(self)
 	if (InCombatLockdown()) then return end
 
-	local enabled, visibility, showParty = RaidFrame5Mod:GetVisibilityDriver()
+	local enabled, visibility = RaidFrame5Mod:GetVisibilityDriver()
 
 	UnregisterAttributeDriver(self, "state-visibility")
 	RegisterAttributeDriver(self, "state-visibility", visibility)
 
-	self:SetAttribute("showParty", showParty)
 	self.visibility = enabled and visibility
 end
 
@@ -891,29 +890,26 @@ RaidFrame5Mod.GetVisibilityDriver = function(self)
 	local raid25 = ns:GetModule("RaidFrame25").db.profile.enabled
 	local raid40 = ns:GetModule("RaidFrame40").db.profile.enabled
 
+	-- Development and debugging
 	if (ns.IsInDevelopmentMode) then
 		if (raid5) then
-			if (party) then
-				return true, "show", nil
-			else
-				return true, "show", true
-			end
+			return true, "show"
 		else
-			return false, "hide", nil
+			return false, "hide"
+		end
+	end
+
+	-- Is the raid5 module enabled?
+	if (raid5) then
+		if (party) then
+			-- Party frames are enabled, only show raid5 for 1-5p raid groups.
+			return true, "[@raid6,exists]hide;[group:raid]show;hide"
+		else
+			-- Party frames are disabled, so we show raid5 for all 1-5p groups.
+			return true, "[@raid6,exists]hide;[group]show;hide"
 		end
 	else
-		-- Is the raid5 module enabled?
-		if (raid5) then
-			if (party) then
-				-- Party frames are enabled, only show raid5 for 1-5p raid groups.
-				return true, "[@raid6,exists]hide;[group:raid]show;hide", nil
-			else
-				-- Party frames are disabled, so we show raid5 for all 1-5p groups.
-				return true, "[@raid6,exists]hide;[group]show;hide", true
-			end
-		else
-			return false, "hide", nil
-		end
+		return false, "hide"
 	end
 
 end
