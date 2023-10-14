@@ -1076,7 +1076,7 @@ local checkSoftTarget = function()
 end
 
 NamePlatesMod.CheckForConflicts = function(self)
-	for i,addon in next,{ "Kui_Nameplates", "NamePlateKAI", "Nameplates", "NeatPlates", "Plater", "SimplePlates", "TidyPlates", "TidyPlates_ThreatPlates", "TidyPlatesContinued" } do
+	for i,addon in next,{ "ClassicPlatesPlus", "Kui_Nameplates", "NamePlateKAI", "Nameplates", "NeatPlates", "Plater", "SimplePlates", "TidyPlates", "TidyPlates_ThreatPlates", "TidyPlatesContinued" } do
 		if (ns.API.IsAddOnEnabled(addon)) then
 			return true
 		end
