@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Our nameplates will now auto-disable when the conflicting addon `ClassicPlatesPlus` is enabled.
 
+### Fixed
+- Rewrote the unit- and visibility macro drivers for the Raid(5) unit frames. The frames should hide when disabled again, and properly decide between raid- and party units depending on your settings and the current group type.
+
 ## [5.2.111-RC] 2023-10-11
 - Updated for WoW Client Patch 3.4.3.
 
