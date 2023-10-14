@@ -42,6 +42,8 @@ local next = next
 local select = select
 local string_gsub = string.gsub
 local string_upper = string.upper
+local table_concat = table.concat
+local table_insert = table.insert
 local type = type
 local unpack = unpack
 
@@ -885,12 +887,12 @@ end
 RaidFrame5Mod.GetVisibilityDriver = function(self)
 	local party = ns:GetModule("PartyFrames").db.profile.enabled
 	local partyInRaids = party and ns:GetModule("PartyFrames").db.profile.showInRaids
-	local raid5 = ns:GetModule("RaidFrame5").db.profile.enabled
+	local raid5 = not partyInRaids and ns:GetModule("RaidFrame5").db.profile.enabled
 	local raid25 = ns:GetModule("RaidFrame25").db.profile.enabled
 	local raid40 = ns:GetModule("RaidFrame40").db.profile.enabled
 
 	if (ns.IsInDevelopmentMode) then
-		if (not partyInRaids and raid5) then
+		if (raid5) then
 			if (party) then
 				return true, "show", nil
 			else
@@ -900,10 +902,13 @@ RaidFrame5Mod.GetVisibilityDriver = function(self)
 			return false, "hide", nil
 		end
 	else
-		if (not partyInRaids and raid5) then
+		-- Is the raid5 module enabled?
+		if (raid5) then
 			if (party) then
+				-- Party frames are enabled, only show raid5 for 1-5p raid groups.
 				return true, "[@raid6,exists]hide;[group:raid]show;hide", nil
 			else
+				-- Party frames are disabled, so we show raid5 for all 1-5p groups.
 				return true, "[@raid6,exists]hide;[group]show;hide", true
 			end
 		else
@@ -929,12 +934,44 @@ RaidFrame5Mod.CreateUnitFrames = function(self)
 	end
 
 	for i = 1,5 do
-		local unitButton
-		if (ns.IsInDevelopmentMode) then
-			unitButton = ns.UnitFrame.Spawn("player", ns.Prefix.."UnitFrame"..name..i)
-		else
-			unitButton = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)
+
+		-- The real unit of the frame.
+		local realUnit = ns.IsInDevelopmentMode and "player" or unit..i
+
+		-- Spawn our unit button and parent it to our visibility driver.
+		local unitButton = ns.UnitFrame.Spawn(realUnit, ns.Prefix.."UnitFrame"..name..i)
+		unitButton:SetParent(self.frame.content)
+
+		-- Let's create a magic unit driver for this one.
+		local driver = {}
+
+		local raidUnit, partyUnit = unit..i, "party"..i
+		local raidPetUnit, partyPetUnit = raidUnit.."pet", partyUnit.."pet"
+
+		-- Vehicle toggling
+		if (ns.IsWrath or ns.IsRetail) then
+
+			-- Don't automatically toggle for vehicles, we handle this one.
+			unitButton:SetAttribute("toggleForVehicle", nil)
+
+			-- Group type dependant unit replacements.
+			-- *Our frames should use raid units when available, party otherwise.
+			table_insert(driver, "[vehicleui,group:raid]"..raidPetUnit)
+			table_insert(driver, "[vehicleui,nogroup:raid]"..partyPetUnit)
 		end
+
+		-- Group type dependant units.
+		-- *Our frames should use raid units when available, party otherwise.
+		table_insert(driver, "[group:raid]"..raidUnit)
+		table_insert(driver, "[nogroup:raid]"..partyUnit)
+
+		-- Use a fallback unit.
+		table_insert(driver, realUnit)
+
+		-- Apply our custom unit driver.
+		RegisterAttributeDriver(unitButton, "unit", table_concat(driver, ";"))
+
+		-- Reference the unitbutton on our custom header frame.
 		self.frame.content:SetFrameRef("child"..i, unitButton)
 		self.frame.content:SetAttribute("child"..i, unitButton)
 	end
