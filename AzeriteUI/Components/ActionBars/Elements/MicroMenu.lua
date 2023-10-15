@@ -197,6 +197,12 @@ MicroMenu.SpawnButtons = function(self)
 					if (InCombatLockdown()) then return end
 					TogglePVPFrame()
 				end)
+			elseif (ns.IsWrath and microButton == LFGMicroButton) then
+				button.nocombat = true
+				button:SetScript("OnClick", function(self)
+					if (InCombatLockdown()) then return end
+					PVEFrame_ToggleFrame()
+				end)
 			else
 				button:SetAttribute("type", "macro")
 				button:SetAttribute("click", "macro")
