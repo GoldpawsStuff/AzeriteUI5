@@ -49,8 +49,18 @@ local GetFont = ns.API.GetFont
 local UIHider = ns.Hider
 
 local defaults = { profile = ns:Merge({
-	enabled = true
+	enabled = true,
+	fadeOnInActivity = true, -- blizz default is true
+	timeVisible = 20, -- 120, -- blizz default is 120
+	timeFading = 3
 }, ns.Module.defaults) }
+
+-- Generate module defaults on the fly
+-- to recalculate default values relying on
+-- changing factors like user interface scale.
+ChatFrames.GenerateDefaults = function(self)
+	return defaults
+end
 
 -- Global buttons not unique to any frame
 local GLOBAL_BUTTONS = {
@@ -340,6 +350,7 @@ ChatFrames.StyleFrame = function(self, frame)
 	editBox:SetPoint("TOP", frame, "BOTTOM", 0, -1)
 
 	self:UpdateChatFont(frame)
+	self:UpdateChatFading(frame)
 	self:SecureHook(frame, "SetFont", "UpdateChatFont")
 
 	frame.isSkinned = true
@@ -358,6 +369,14 @@ ChatFrames.UpdateTabAlpha = function(self, frame)
 		tab:SetAlpha(0)
 		tab.noMouseAlpha = 0
 	end
+end
+
+ChatFrames.UpdateChatFading = function(self, frame)
+	if (not frame) then return end
+
+	frame:SetFading(self.db.profile.fadeOnInActivity)
+	frame:SetFadeDuration(self.db.profile.timeVisible)
+	frame:SetTimeVisible(self.db.profile.timeFading)
 end
 
 ChatFrames.UpdateChatFont = function(self, frame)
@@ -496,6 +515,15 @@ end
 ChatFrames.UpdateClutter = function(self, event, ...)
 	self:UpdateDockedChatTabs()
 	self:UpdateButtons(event, ...)
+end
+
+ChatFrames.UpdateSettings = function(self)
+	for _,frameName in pairs(_G.CHAT_FRAMES) do
+		local frame = _G[frameName]
+		if (frame) then
+			self:UpdateChatFading(frame)
+		end
+	end
 end
 
 -- Returns an iterator for the global buttons
