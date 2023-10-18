@@ -78,7 +78,7 @@ local GenerateOptions = function()
 				desc = L["Sets the time visible before initiating the fade."],
 				order = 51,
 				type = "range", width = "full", min = 5, max = 120, step = 1,
-				hidden = function(info) return isdisabled(info) or getoption(info, "fadeOnInActivity") end,
+				hidden = function(info) return isdisabled(info) or not getoption(info, "fadeOnInActivity") end,
 				set = setter,
 				get = getter
 			},
@@ -87,7 +87,7 @@ local GenerateOptions = function()
 				desc = L["Sets the time spent fading before hiding the chat."],
 				order = 51,
 				type = "range", width = "full", min = 1, max = 5, step = 1,
-				hidden = function(info) return isdisabled(info) or getoption(info, "fadeOnInActivity") end,
+				hidden = function(info) return isdisabled(info) or not getoption(info, "fadeOnInActivity") end,
 				set = setter,
 				get = getter
 			}
