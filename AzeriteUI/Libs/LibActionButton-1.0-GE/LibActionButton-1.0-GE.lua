@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 116
+local MINOR_VERSION = 117
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -46,17 +46,21 @@ local WoWClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
 local WoWBCC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 local WoWWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
 
--- Enable MaxDps integration
-local MaxDpsIsEnabled = (function()
+-- Check whether an addon is loadable and set to enabled.
+local IsAddOnEnabled = function(addonName)
 	for i = 1,GetNumAddOns() do
 		local name, _, _, loadable = GetAddOnInfo(i)
-		if (name == "MaxDps") then
+		if (name == addonName) then
 			return (loadable and not(GetAddOnEnableState(UnitName("player"), i) == 0))
 		end
 	end
-end)()
+end
 
-local InitializeMaxDps = MaxDpsIsEnabled
+-- Enable integration with MaxDps(Retail)
+local MaxDpsIsEnabled = WoWRetail and IsAddOnEnabled("MaxDps")
+
+-- Set one-time flags used to prehook methods
+local ShouldInitializeMaxDps = MaxDpsIsEnabled
 
 -- Enable custom flyouts for WoW Retail
 local UseCustomFlyout = WoWRetail
@@ -1325,7 +1329,9 @@ end
 
 function InitializeMaxDpsIntegration()
 
-	if (InitializeMaxDps) then
+	local MaxDps = MaxDps
+
+	if (ShouldInitializeMaxDps) then
 		MaxDps_GetTexture = MaxDps.GetTexture
 		MaxDps_Glow = MaxDps.Glow
 		MaxDps_HideGlow = MaxDps.HideGlow
@@ -1388,7 +1394,7 @@ function InitializeMaxDpsIntegration()
 
 	UpdateButtonGlowEvents(MaxDps)
 
-	InitializeMaxDps = nil
+	ShouldInitializeMaxDps = nil
 end
 
 local _lastFormUpdate = GetTime()
@@ -1585,9 +1591,13 @@ function OnEvent(frame, event, arg1, ...)
 	elseif event == "PLAYER_UPDATE_RESTING" then
 		lib.isresting = IsResting()
 		ForAllButtons(UpdateUsable)
-	elseif event == "ADDON_LOADED" and arg1 == "MaxDps" then
-		lib.eventFrame:UnregisterEvent("ADDON_LOADED")
-		InitializeMaxDpsIntegration()
+	elseif event == "ADDON_LOADED" then
+		if arg1 == "MaxDps" then
+			InitializeMaxDpsIntegration()
+		end
+		if not ShouldInitializeMaxDps then
+			lib.eventFrame:UnregisterEvent("ADDON_LOADED")
+		end
 	end
 end
 
@@ -1829,7 +1839,6 @@ function Update(self)
 	if self.Equipped then
 		if self:IsEquipped() and not self.config.hideElements.equipped then
 			self.Equipped:Show()
-			print("showing equipped border")
 		else
 			self.Equipped:Hide()
 		end
@@ -2161,6 +2170,9 @@ end
 
 function Generic:HideSpellActivation()
 	self.customSpellActivationIsActive = nil
+	if self.CustomSpellActivationAlert then
+		self.CustomSpellActivationAlert:Hide()
+	end
 	if self.queueSpellActivationUpdate then
 		UpdateOverlayGlow(self)
 	end
