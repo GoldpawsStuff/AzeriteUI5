@@ -4,9 +4,12 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-10-17
-### added
+## [5.2.114-RC] 2023-10-18
+### Added
 - Options for chat fading- and duration have been added to our `/azerite` options menu.
+
+### Fixed
+- Fixed an issue where spell activation overlay glows for actionbuttons sometimes would remain visible even after the activation period ended.
 
 ## [5.2.113-RC] 2023-10-15
 ### Fixed
