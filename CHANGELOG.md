@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Options for chat fading- and duration have been added to our `/azerite` options menu.
 
+### Changed
+- Changed unit drivers for the player- and pet frames to custom ones to avoid the frames disappearing for a short moment when entering a vehicle.
+
 ## [5.2.114-RC] 2023-10-18
 ### Fixed
 - Fixed an issue where spell activation overlay glows for actionbuttons sometimes would remain visible even after the activation period ended.
