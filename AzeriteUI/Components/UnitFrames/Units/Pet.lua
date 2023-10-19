@@ -448,12 +448,14 @@ PetFrameMod.CreateUnitFrames = function(self)
 		self.frame.Enable = function(self)
 			enabled = true
 			RegisterAttributeDriver(self, "unit", "[vehicleui]player; pet")
-			self:Show()
+			RegisterAttributeDriver(self, "state-visibility", "[@pet,exists]show;hide")
+			--self:Show()
 		end
 
 		self.frame.Disable = function(self)
 			enabled = false
 			UnregisterAttributeDriver(self, "unit")
+			UnregisterAttributeDriver(self, "state-visibility")
 			self:Hide()
 		end
 
@@ -463,6 +465,12 @@ PetFrameMod.CreateUnitFrames = function(self)
 
 		UnregisterUnitWatch(self.frame)
 		self.frame:SetAttribute("toggleForVehicle", false)
+
+		--if (self.db.profile.enabled) then
+		--	self.frame:Enable()
+		--else
+		--	self.frame:Disable()
+		--end
 
 	--end
 
