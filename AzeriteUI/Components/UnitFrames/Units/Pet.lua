@@ -441,10 +441,30 @@ PetFrameMod.CreateUnitFrames = function(self)
 	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
 
 	-- Vehicle switching is currently broken in Wrath.
-	if (ns.IsWrath) then
+	--if (ns.IsWrath) then
+
+		local enabled = true
+
+		self.frame.Enable = function(self)
+			enabled = true
+			RegisterAttributeDriver(self, "unit", "[vehicleui]player; pet")
+			self:Show()
+		end
+
+		self.frame.Disable = function(self)
+			enabled = false
+			UnregisterAttributeDriver(self, "unit")
+			self:Hide()
+		end
+
+		self.frame.IsEnabled = function(self)
+			return enabled
+		end
+
+		UnregisterUnitWatch(self.frame)
 		self.frame:SetAttribute("toggleForVehicle", false)
-		RegisterAttributeDriver(self.frame, "unit", "[vehicleui] player; pet")
-	end
+
+	--end
 
 end
 
