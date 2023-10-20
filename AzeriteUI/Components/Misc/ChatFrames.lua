@@ -375,8 +375,8 @@ ChatFrames.UpdateChatFading = function(self, frame)
 	if (not frame) then return end
 
 	frame:SetFading(self.db.profile.fadeOnInActivity)
-	frame:SetFadeDuration(self.db.profile.timeVisible)
-	frame:SetTimeVisible(self.db.profile.timeFading)
+	frame:SetFadeDuration(self.db.profile.timeFading)
+	frame:SetTimeVisible(self.db.profile.timeVisible)
 end
 
 ChatFrames.UpdateChatFont = function(self, frame)
@@ -545,6 +545,9 @@ ChatFrames.GetGlobalButtons = function(self)
 	end
 end
 
+local printhandler = getprinthandler()
+setprinthandler(function() end)
+
 ChatFrames.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		local isInitialLogin, isReloadingUi = ...
@@ -586,14 +589,16 @@ ChatFrames.OnEvent = function(self, event, ...)
 
 				-- Some addons add timers before spamming,
 				-- so we have to run this for a few seconds.
-				local quiettime = GetTime() + 5 + 1
+				local quiettime = GetTime() + 10
+
 				CreateFrame("Frame"):SetScript("OnUpdate", function(self)
 					if (GetTime() > quiettime) then
 						self:Hide()
 						self:SetScript("OnUpdate", nil)
+						setprinthandler(printhandler)
 						return
 					end
-					ChatFrame1:Clear()
+					--ChatFrame1:Clear()
 				end)
 			end
 		end
