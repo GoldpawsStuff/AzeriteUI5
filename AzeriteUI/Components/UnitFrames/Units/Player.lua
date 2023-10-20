@@ -236,7 +236,9 @@ end
 local Mana_UpdateVisibility = function(self, event, unit)
 	local element = self.AdditionalPower
 
-	local shouldEnable = not playerIsRetribution and not UnitHasVehicleUI("player") and UnitPowerType(unit) == Enum.PowerType.Mana
+	-- There is a short period when entering vehicles where the player unit does not exist.
+	-- We don't want the mana orb accidentially popping up during this period.
+	local shouldEnable = not playerIsRetribution and UnitExists("player") and not UnitHasVehicleUI("player") and UnitPowerType(unit) == Enum.PowerType.Mana
 	local isEnabled = element.__isEnabled
 
 	if (shouldEnable and not isEnabled) then
