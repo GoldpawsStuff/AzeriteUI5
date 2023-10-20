@@ -5,9 +5,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-10-20
-### Changed
-- Changed how the chat frame is sanitized upon login to allow a few game directed messages through while still generally holding off addon spam.
-
 ### Fixed
 - Fixed an issue with the chat fading settings where visible time and fading time had been mixed up.
 
