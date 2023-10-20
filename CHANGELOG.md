@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-10-20
+### Changed
+- Added an option to toggle enemy arena frame visibility within battlegrounds, where they are used as flag carrier frames by the game.
+
 ### Fixed
 - Fixed an issue with the chat fading settings where visible time and fading time had been mixed up.
 - Fixed an issue where both the mana orb and power crystal were visible at the same time for a short period when entering vehicles.
