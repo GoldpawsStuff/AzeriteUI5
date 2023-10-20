@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased] 2023-10-20
 ### Fixed
 - Fixed an issue with the chat fading settings where visible time and fading time had been mixed up.
+- Fixed an issue where both the mana orb and power crystal were visible at the same time for a short period when entering vehicles.
 
 ## [5.2.115-RC] 2023-10-19
 ### Added
