@@ -545,9 +545,6 @@ ChatFrames.GetGlobalButtons = function(self)
 	end
 end
 
-local printhandler = getprinthandler()
-setprinthandler(function() end)
-
 ChatFrames.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		local isInitialLogin, isReloadingUi = ...
@@ -584,21 +581,15 @@ ChatFrames.OnEvent = function(self, event, ...)
 				QuickJoinToastButton:Hide()
 			end
 
-			-- Clear the primary chatframe on login/reload.
 			if (not ns.IsVerboseMode) then
-
-				-- Some addons add timers before spamming,
-				-- so we have to run this for a few seconds.
 				local quiettime = GetTime() + 10
-
 				CreateFrame("Frame"):SetScript("OnUpdate", function(self)
 					if (GetTime() > quiettime) then
 						self:Hide()
 						self:SetScript("OnUpdate", nil)
-						setprinthandler(printhandler)
 						return
 					end
-					--ChatFrame1:Clear()
+					ChatFrame1:Clear()
 				end)
 			end
 		end
