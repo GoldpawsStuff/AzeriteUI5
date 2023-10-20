@@ -294,6 +294,14 @@ local GenerateOptions = function()
 			desc = L["Toggle whether to fade unit frames of units that are out of range."],
 			order = 11, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
+		suboptions.args.elementHeader = {
+			name = L["Visibility"], order = 19, type = "header", hidden = isdisabled
+		}
+		suboptions.args.showInBattlegrounds = {
+			name = L["Show in Battlegrounds"],
+			desc = L["Toggle whether to show flag carrier frames in Battlegrounds."],
+			order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
 		options.args.arena = suboptions
 	end
 

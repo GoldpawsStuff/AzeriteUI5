@@ -55,6 +55,7 @@ local defaults = { profile = ns:Merge({
 
 	enabled = true,
 	useRangeIndicator = false,
+	showInBattlegrounds = true,
 
 	point = "TOP", -- anchor point of unitframe, group members within column grow opposite
 	xOffset = 0, -- horizontal offset within the same column
@@ -716,6 +717,7 @@ GroupHeader.Enable = function(self)
 	for frame in next,Units do
 		frame:Enable()
 	end
+	self:UpdateVisibilityDriver()
 	self.enabled = true
 end
 
@@ -724,11 +726,23 @@ GroupHeader.Disable = function(self)
 	for frame in next,Units do
 		frame:Disable()
 	end
+	self:UpdateVisibilityDriver()
 	self.enabled = false
 end
 
 GroupHeader.IsEnabled = function(self)
 	return self.enabled
+end
+
+GroupHeader.UpdateVisibilityDriver = function(self)
+	if (InCombatLockdown()) then return end
+
+	local enabled, visibility = ArenaFrameMod:GetVisibilityDriver()
+
+	UnregisterAttributeDriver(self, "state-visibility")
+	RegisterAttributeDriver(self, "state-visibility", visibility)
+
+	self.visibility = enabled and visibility
 end
 
 -- Sourced from FrameXML\SecureGroupHeaders.lua
@@ -891,6 +905,14 @@ ArenaFrameMod.ConfigureChildren = function(self)
 	header:SetSize(self:GetCalculatedHeaderSize(numDisplayed))
 end
 
+ArenaFrameMod.GetVisibilityDriver = function(self)
+	local _, instanceType = IsInInstance()
+	if (instanceType ~= "arena" and not self.db.profile.showInBattlegrounds) then
+		return false, "hide"
+	end
+	return true, "show"
+end
+
 ArenaFrameMod.GetHeaderSize = function(self)
 	return self:GetCalculatedHeaderSize(5)
 end
@@ -933,6 +955,8 @@ ArenaFrameMod.UpdateHeader = function(self)
 		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 		return
 	end
+
+	header:UpdateVisibilityDriver()
 
 	local config = ns.GetConfig("ArenaFrames")
 	header:SetAttribute("unitWidth", config.UnitSize[1])
