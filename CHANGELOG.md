@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-10-21
+## [5.2.116-RC] 2023-10-21
 ### Added
 - Added an option to disable the Retail objectives tracker. *(Experimental)*
 - Added an option to disable the Wrath Classic objectives tracker.
