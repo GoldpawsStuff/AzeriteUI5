@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added an option to toggle enemy arena frame visibility within battlegrounds, where they are used as flag carrier frames by the game.
 
 ### Changed
-- Actionbuttons while now never be dimmed while Dragonriding, regardless of whether you're resting or not.
+- Actionbuttons while now never be dimmed while Dragonriding, in a vehicle, using an override bar or using a temporary shapeshift bar, regardless of whether you're resting or not.
 - The default coloring of aura button border on any unit frame should now be dark gray, not bright orange which appeared on some frames like the arena enemy frames.
 
 ### Fixed
