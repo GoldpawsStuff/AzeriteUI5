@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 117
+local MINOR_VERSION = 118
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -1927,7 +1927,7 @@ function UpdateUsable(self)
 				self.icon:SetDesaturation(0)
 				self.icon:SetVertexColor(1, 1, 1)
 			else
-				if self.header.dimWhenInactive then
+				if self.header.dimWhenInactive and not self.header.isDragonRiding then
 					if self.header.dimWhenResting then
 						if lib.isresting then
 							self.icon:SetDesaturation(1)
