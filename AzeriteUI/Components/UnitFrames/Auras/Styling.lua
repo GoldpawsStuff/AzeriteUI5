@@ -78,7 +78,7 @@ ns.AuraStyles.CreateButton = function(element, position)
 
 	local border = CreateFrame("Frame", nil, aura, ns.BackdropTemplate)
 	border:SetBackdrop({ edgeFile = GetMedia("border-aura"), edgeSize = 12 })
-	border:SetBackdropBorderColor(Colors.aura[1], Colors.aura[2], Colors.aura[3])
+	border:SetBackdropBorderColor(Colors.verydarkgray[1], Colors.verydarkgray[2], Colors.verydarkgray[3])
 	border:SetPoint("TOPLEFT", -6, 6)
 	border:SetPoint("BOTTOMRIGHT", 6, -6)
 	border:SetFrameLevel(aura:GetFrameLevel() + 2)
