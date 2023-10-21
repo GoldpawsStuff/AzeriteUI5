@@ -25,6 +25,11 @@
 --]]
 local _, ns = ...
 
+-- GLOBALS: UIParent, InCombatLockdown
+
+-- Lua API
+local unpack = unpack
+
 -- Frame Metamethods
 local mt = getmetatable(CreateFrame("Frame"))
 local clearAllPoints = mt.__index.ClearAllPoints
