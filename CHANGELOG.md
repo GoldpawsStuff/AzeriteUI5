@@ -12,7 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added an option to toggle enemy arena frame visibility within battlegrounds, where they are used as flag carrier frames by the game.
 
 ### Changed
-- The default coloring of aura buttons on any unit frame should now be dark gray, not bright orange which appeared on some frames like the arena enemy frames.
+- Actionbuttons while now never be dimmed while Dragonriding, regardless of whether you're resting or not.
+- The default coloring of aura button border on any unit frame should now be dark gray, not bright orange which appeared on some frames like the arena enemy frames.
 
 ### Fixed
 - Fixed an issue where the aura buttons of the arena enemy frames in Classic Era and Wrath Classic used the input arguments of the Retail version's post update function, causing an insufferable error spam while in battlegrounds or arenas.

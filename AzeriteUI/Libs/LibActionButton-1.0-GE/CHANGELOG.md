@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.118-Alpha] 2023-10-21
+### Changed
+- Don't dim buttons while Dragonriding.
+
 ## [1.0.117-Alpha] 2023-10-18
 ### Added
 - Added a simplistic SpellActivationOverlay (Classic Era, Wrath) integration.
