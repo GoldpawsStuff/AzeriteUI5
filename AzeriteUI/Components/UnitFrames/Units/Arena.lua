@@ -906,8 +906,8 @@ ArenaFrameMod.ConfigureChildren = function(self)
 end
 
 ArenaFrameMod.GetVisibilityDriver = function(self)
-	local _, instanceType = IsInInstance()
-	if (instanceType ~= "arena" and not self.db.profile.showInBattlegrounds) then
+	local isInInstance, instanceType = IsInInstance()
+	if (not isInInstance or (instanceType ~= "arena" and not self.db.profile.showInBattlegrounds)) then
 		return false, "hide"
 	end
 	return true, "show"
@@ -939,6 +939,7 @@ ArenaFrameMod.CreateUnitFrames = function(self)
 		else
 			unitButton = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)
 		end
+		unitButton:SetParent(self.frame.content)
 		self.frame.content:SetFrameRef("child"..i, unitButton)
 		self.frame.content:SetAttribute("child"..i, unitButton)
 	end
