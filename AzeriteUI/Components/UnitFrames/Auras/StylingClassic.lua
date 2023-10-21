@@ -104,7 +104,7 @@ ns.AuraStyles.NameplatePostUpdateButton = function(element, unit, button, index,
 
 end
 
-ns.AuraStyles.ArenaPostUpdateButton = function(element, button, unit, data, position)
+ns.AuraStyles.ArenaPostUpdateButton = function(element, unit, button, index, position, duration, expiration, debuffType, isStealable)
 
 	-- Stealable buffs
 	if(not button.isDebuff and isStealable and element.showStealableBuffs and not UnitIsUnit("player", unit)) then
