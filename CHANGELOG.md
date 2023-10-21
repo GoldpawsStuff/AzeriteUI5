@@ -4,11 +4,15 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-10-20
-### Changed
+## [Unreleased] 2023-10-21
+### Added
+- Added an option to never expire the tracking of auto-tracked quests in Classic Era.
+- Added an option to disable the Classic Era quest tracker.
+- Added an option to disable the Wrath objectives tracker.
 - Added an option to toggle enemy arena frame visibility within battlegrounds, where they are used as flag carrier frames by the game.
 
 ### Fixed
+- Fixed an issue where the aura buttons of the arena enemy frames in Classic Era and Wrath Classic used the input arguments of the Retail version's post update function, causing an insufferable error spam while in battlegrounds or arenas.
 - Fixed an issue with the chat fading settings where visible time and fading time had been mixed up.
 - Fixed an issue where both the mana orb and power crystal were visible at the same time for a short period when entering vehicles.
 
