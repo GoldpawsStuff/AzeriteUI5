@@ -6,13 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-10-21
 ### Added
-- Added an option to never expire the tracking of auto-tracked quests in Classic Era.
+- Added an option to disable the Retail objectives tracker. *(Experimental)*
+- Added an option to disable the Wrath Classic objectives tracker.
 - Added an option to disable the Classic Era quest tracker.
-- Added an option to disable the Wrath objectives tracker.
+- Added an option to never expire the tracking of auto-tracked quests in Classic Era.
 - Added an option to toggle enemy arena frame visibility within battlegrounds, where they are used as flag carrier frames by the game.
 
 ### Changed
-- Actionbuttons while now never be dimmed while Dragonriding, in a vehicle, using an override bar or using a temporary shapeshift bar, regardless of whether you're resting or not.
+- Actionbuttons while now never be dimmed while dragonriding, in a vehicle, using an override bar or using a temporary shapeshift bar, regardless of whether you're resting or not.
 - The default coloring of aura button border on any unit frame should now be dark gray, not bright orange which appeared on some frames like the arena enemy frames.
 
 ### Fixed
