@@ -627,8 +627,7 @@ Tracker.UpdateSettings = function(self)
 
 		if (not self:IsHooked(ObjectiveTrackerFrame, "Show")) then
 			self:SecureHook(ObjectiveTrackerFrame, "Show", function(this)
-				local db = self.db.profile
-				if (not db.enabled and db.disableBlizzardTracker) then
+				if (self.db.profile.disableBlizzardTracker) then
 					this:Hide()
 				end
 			end)
@@ -636,8 +635,7 @@ Tracker.UpdateSettings = function(self)
 
 		if (not self:IsHooked(ObjectiveTrackerFrame, "SetShown")) then
 			self:SecureHook(ObjectiveTrackerFrame, "SetShown", function(this, show)
-				local db = self.db.profile
-				if (not db.enabled and db.disableBlizzardTracker) then
+				if (self.db.profile.disableBlizzardTracker) then
 					if (show) then
 						this:Hide()
 					end
@@ -661,6 +659,7 @@ end
 Tracker.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD" or event == "SETTINGS_LOADED") then
 		ObjectiveTrackerFrame:SetAlpha(.9)
+		self:UpdateSettings()
 	end
 	if (event == "PLAYER_ENTERING_WORLD") then
 		local isInitialLogin, isReloadingUi = ...
