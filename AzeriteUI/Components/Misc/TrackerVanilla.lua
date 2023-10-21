@@ -29,6 +29,9 @@ if (not ns.IsClassic) then return end
 
 local Tracker = ns:NewModule("Tracker", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
 
+-- GLOBALS: CreateFrame, QuestWatchFrame, QuestWatch_Update
+-- GLOBALS: GetNumQuestLeaderBoards, GetNumQuestWatches, GetQuestIndexForWatch, GetQuestLogLeaderBoard
+
 -- Lua
 local math_min = math.min
 local string_match = string.match
@@ -40,7 +43,12 @@ local unpack = unpack
 local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({
+
+	disableBlizzardTracker = false,
+	questWatchNeverExpire = false
+
+}, ns.Module.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -76,6 +84,8 @@ Tracker.PrepareFrames = function(self)
 
 	-- Re-position after UIParent messes with it.
 	hooksecurefunc(QuestWatchFrame, "SetPoint", function(_,_, anchor)
+		-- Just bail out if the module is disabled.
+		if (not self.db.profile.enabled) then return end
 		if (anchor ~= frame) then
 			self:UpdateTrackerPosition()
 		end
@@ -83,7 +93,13 @@ Tracker.PrepareFrames = function(self)
 
 	-- Just in case some random addon messes with it.
 	hooksecurefunc(QuestWatchFrame, "SetAllPoints", function()
+		-- Just bail out if the module is disabled.
+		if (not self.db.profile.enabled) then return end
 		self:UpdateTrackerPosition()
+	end)
+
+	hooksecurefunc("AutoQuestWatch_Insert", function()
+		self:UpdateTrackedQuests()
 	end)
 
 	local dummyLine = QuestWatchFrame:CreateFontString()
@@ -102,6 +118,10 @@ Tracker.PrepareFrames = function(self)
 
 	-- Hook line styling
 	hooksecurefunc("QuestWatch_Update", function()
+
+		-- Just bail out if the module is disabled.
+		if (not self.db.profile.enabled) then return end
+
 		local questIndex
 		local numObjectives
 		local watchText
@@ -240,8 +260,13 @@ Tracker.PrepareFrames = function(self)
 
 end
 
+Tracker.UpdateTrackedQuests = function(self)
+
+end
+
 Tracker.UpdateTrackerPosition = function(self)
 	if (not self.frame) then return end
+	if (not self.db.profile.enabled) then return end
 
 	QuestWatchFrame:SetParent(self.frame)
 	QuestWatchFrame:SetWidth(config.TrackerWidth)
@@ -249,6 +274,23 @@ Tracker.UpdateTrackerPosition = function(self)
 	QuestWatchFrame:SetAlpha(.9)
 	QuestWatchFrame:ClearAllPoints()
 	QuestWatchFrame:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", 0, 0)
+end
+
+Tracker.UpdateSettings = function(self)
+	if (self.db.profile.disableBlizzardTracker) then
+		QuestWatchFrame:Hide()
+		QuestWatchFrame.Show = function() end
+	else
+		QuestWatchFrame.Show = nil
+		QuestWatchFrame:Show()
+		QuestWatchFrame:SetAlpha(.9)
+		self:UpdateTrackerPosition()
+	end
+	if (self.db.profile.questWatchNeverExpire) then
+		QuestWatchFrame:SetScript("OnUpdate", nil)
+	else
+		QuestWatchFrame:SetScript("OnUpdate", AutoQuestWatch_OnUpdate)
+	end
 end
 
 Tracker.PostAnchorEvent = function(self, event, ...)

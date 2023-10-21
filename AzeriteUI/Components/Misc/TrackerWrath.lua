@@ -29,11 +29,22 @@ if (not ns.IsWrath) then return end
 
 local Tracker = ns:NewModule("Tracker", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
 
+-- GLOBALS: UIParent, CreateFrame, SetCVar, InCombatLockdown
+-- GLOBALS: WatchFrame, WatchFrameItem1, WatchFrameTitle, WatchFrameLinkButtonTemplate_OnClick
+-- GLOBALS: WATCHFRAME_LINKBUTTONS, WATCHFRAME_ACHIEVEMENTLINES, WATCHFRAME_TIMERLINES, WATCHFRAME_QUESTLINES
+
+-- Lua API
+local pairs = pairs
+
 -- Addon API
 local GetFont = ns.API.GetFont
 local UIHider = ns.Hider
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({
+
+	disableBlizzardTracker = false
+
+}, ns.Module.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -195,6 +206,16 @@ Tracker.UpdateWatchFrame = function(self)
 
 	UpdateQuestItemButtons()
 	UpdateWatchFrameLines()
+end
+
+Tracker.UpdateSettings = function(self)
+	if (self.db.profile.disableBlizzardTracker) then
+		WatchFrame:Hide()
+		WatchFrame.Show = function() end
+	else
+		WatchFrame.Show = nil
+		WatchFrame:Show()
+	end
 end
 
 Tracker.PrepareFrames = function(self)

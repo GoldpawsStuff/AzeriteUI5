@@ -49,7 +49,10 @@ local Skins = {
 }
 
 local defaults = { profile = ns:Merge({
-	theme = "Azerite"
+
+	theme = "Azerite",
+	disableBlizzardTracker = false
+
 }, ns.Module.defaults) }
 
 -- Generate module defaults on the fly
@@ -618,6 +621,42 @@ Tracker.PrepareFrames = function(self)
 	ObjectiveTrackerFrame.SetTheme = SetObjectivesTrackerTheme
 
 end
+
+Tracker.UpdateSettings = function(self)
+	if (self.db.profile.disableBlizzardTracker) then
+
+		if (not self:IsHooked(ObjectiveTrackerFrame, "Show")) then
+			self:SecureHook(ObjectiveTrackerFrame, "Show", function(this)
+				local db = self.db.profile
+				if (not db.enabled and db.disableBlizzardTracker) then
+					this:Hide()
+				end
+			end)
+		end
+
+		if (not self:IsHooked(ObjectiveTrackerFrame, "SetShown")) then
+			self:SecureHook(ObjectiveTrackerFrame, "SetShown", function(this, show)
+				local db = self.db.profile
+				if (not db.enabled and db.disableBlizzardTracker) then
+					if (show) then
+						this:Hide()
+					end
+				end
+			end)
+		end
+
+		if (ObjectiveTrackerFrame:IsShown()) then
+			ObjectiveTrackerFrame:Hide()
+		end
+	else
+
+		if (not ObjectiveTrackerFrame:IsShown()) then
+			ObjectiveTrackerFrame:Show()
+		end
+	end
+end
+
+
 
 Tracker.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD" or event == "SETTINGS_LOADED") then
