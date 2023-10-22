@@ -6,7 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-10-22
 ### Changed
-- Updated LAB_GE.
+- Looking into compatibility with SpellActivationOverlay for Classic Era/Wrath Classic.
+
+### Fixed
+- Looking into reported incompatibilities between the Dragonflight Minimap and Immersion, where it doesn't reappear after being hidden by Immersion.
 
 ## [5.2.116-RC] 2023-10-21
 ### Added
