@@ -938,6 +938,10 @@ RaidFrame5Mod.CreateUnitFrames = function(self)
 		local unitButton = ns.UnitFrame.Spawn(realUnit, ns.Prefix.."UnitFrame"..name..i)
 		unitButton:SetParent(self.frame.content)
 
+		-- Reference the unitbutton on our custom header frame.
+		self.frame.content:SetFrameRef("child"..i, unitButton)
+		self.frame.content:SetAttribute("child"..i, unitButton)
+
 		-- Let's create a magic unit driver for this one.
 		local driver = {}
 
@@ -966,10 +970,6 @@ RaidFrame5Mod.CreateUnitFrames = function(self)
 
 		-- Apply our custom unit driver.
 		RegisterAttributeDriver(unitButton, "unit", table_concat(driver, ";"))
-
-		-- Reference the unitbutton on our custom header frame.
-		self.frame.content:SetFrameRef("child"..i, unitButton)
-		self.frame.content:SetAttribute("child"..i, unitButton)
 	end
 
 	self:UpdateHeader()
@@ -1074,6 +1074,7 @@ RaidFrame5Mod.OnEvent = function(self, event, ...)
 			return
 		end
 		self:UpdateHeader()
+		self:UpdateUnits() -- needed?
 
 	elseif (event == "PLAYER_REGEN_ENABLED") then
 		if (InCombatLockdown()) then return end
