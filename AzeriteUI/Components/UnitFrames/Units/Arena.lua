@@ -282,6 +282,11 @@ local Power_PostUpdate = function(element, unit, cur, min, max)
 	end
 end
 
+-- Since we can't retrieve power info in the prep phase, hide it
+local Power_PostUpdateArenaPreparation = function(element, specID)
+	element:SetAlpha(0)
+end
+
 -- Make the portrait look better for offline or invisible units.
 local Portrait_PostUpdate = function(element, unit, hasStateChanged)
 	if (not element.state) then
@@ -453,6 +458,7 @@ local style = function(self, unit)
 	self.Power = power
 	self.Power.Override = ns.API.UpdatePower
 	self.Power.PostUpdate = Power_PostUpdate
+	self.Power.PostUpdateArenaPreparation = Power_PostUpdateArenaPreparation
 
 	local powerBackdrop = power:CreateTexture(nil, "BACKGROUND", nil, -5)
 	powerBackdrop:SetPoint(unpack(db.PowerBackdropPosition))
@@ -694,7 +700,6 @@ local style = function(self, unit)
 	-- Register events to handle additional texture updates.
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", UnitFrame_OnEvent, true)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", UnitFrame_OnEvent, true)
-
 
 end
 
@@ -939,7 +944,9 @@ ArenaFrameMod.CreateUnitFrames = function(self)
 		else
 			unitButton = ns.UnitFrame.Spawn(unit..i, ns.Prefix.."UnitFrame"..name..i)
 		end
+
 		unitButton:SetParent(self.frame.content)
+
 		self.frame.content:SetFrameRef("child"..i, unitButton)
 		self.frame.content:SetAttribute("child"..i, unitButton)
 	end
