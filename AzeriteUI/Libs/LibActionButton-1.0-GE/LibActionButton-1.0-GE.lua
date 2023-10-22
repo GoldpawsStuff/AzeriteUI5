@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 119
+local MINOR_VERSION = 120
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -2217,6 +2217,20 @@ function UpdateOverlayGlow(self)
 	end
 end
 
+function lib:ShowOverlayGlow(button, ...)
+	local r, g, b, a = ...
+	if (r and g and b) then
+		button:SetSpellActivationColor(r, g, b, a)
+	else
+		button:SetSpellActivationColor(1, 1, 1)
+	end
+	button:ShowSpellActivation()
+end
+
+function lib:HideOverlayGlow(button)
+	button:HideSpellActivation()
+end
+
 -----------------------------------------------------------
 --- button spell highlighting
 
@@ -2568,7 +2582,7 @@ Custom.RunCustom               = function(self, unit, button) return self._state
 Custom.GetPassiveCooldownSpellID = function(self) return nil end
 
 --- WoW Classic overrides
-if WoWClassic or WoWBCC or WoWWrath then
+if (WoWClassic or WoWBCC or WoWWrath) then
 	UpdateOverlayGlow = function() end
 end
 
