@@ -543,7 +543,7 @@ local style = function(self, unit)
 	self:SetSize(unpack(config.Size))
 	self:SetHitRectInsets(unpack(config.HitRectInsets))
 	self:SetFrameLevel(self:GetFrameLevel() + 2)
-	self:SetIgnoreParentAlpha(true)
+	--self:SetIgnoreParentAlpha(true)
 
 	-- Overlay for icons and text
 	--------------------------------------------

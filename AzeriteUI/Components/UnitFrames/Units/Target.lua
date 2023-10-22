@@ -611,7 +611,7 @@ local style = function(self, unit, id)
 	self:SetSize(unpack(db.Size))
 	self:SetHitRectInsets(unpack(db.HitRectInsets))
 	self:SetFrameLevel(self:GetFrameLevel() + 2)
-	self:SetIgnoreParentAlpha(true)
+	--self:SetIgnoreParentAlpha(true)
 
 	-- Overlay for icons and text
 	--------------------------------------------
@@ -812,10 +812,13 @@ local style = function(self, unit, id)
 	self.Power.PostUpdate = Power_UpdateVisibility
 	self.Power.UpdateColor = Power_UpdateColor
 
-	local powerBackdrop = power:CreateTexture(nil, "BACKGROUND", nil, -2)
+	local powerBackdropGroup = CreateFrame("Frame", nil, self)
+	powerBackdropGroup:SetAllPoints(power)
+	powerBackdropGroup:SetFrameLevel(power:GetFrameLevel())
+
+	local powerBackdrop = powerBackdropGroup:CreateTexture(nil, "BACKGROUND", nil, -2)
 	powerBackdrop:SetPoint(unpack(db.PowerBackdropPosition))
 	powerBackdrop:SetSize(unpack(db.PowerBackdropSize))
-	powerBackdrop:SetIgnoreParentAlpha(true)
 	powerBackdrop:SetTexture(db.PowerBackdropTexture)
 	powerBackdrop:SetVertexColor(unpack(db.PowerBackdropColor))
 
@@ -823,11 +826,14 @@ local style = function(self, unit, id)
 
 	-- Power Value Text
 	--------------------------------------------
-	local powerValue = power:CreateFontString(nil, "OVERLAY", nil, 1)
+	local powerOverlayGroup = CreateFrame("Frame", nil, self)
+	powerOverlayGroup:SetAllPoints(power)
+	powerOverlayGroup:SetFrameLevel(power:GetFrameLevel() + 1)
+
+	local powerValue = powerOverlayGroup:CreateFontString(nil, "OVERLAY", nil, 1)
 	powerValue:SetPoint(unpack(db.PowerValuePosition))
 	powerValue:SetJustifyH(db.PowerValueJustifyH)
 	powerValue:SetJustifyV(db.PowerValueJustifyV)
-	powerValue:SetIgnoreParentAlpha(true)
 	powerValue:SetFontObject(db.PowerValueFont)
 	powerValue:SetTextColor(unpack(db.PowerValueColor))
 	self:Tag(powerValue, prefix("[*:Power]"))
@@ -984,6 +990,10 @@ local style = function(self, unit, id)
 
 	-- Toggle name size based on ToT frame.
 	ns.RegisterCallback(self, "UnitFrame_ToT_Updated", Name_PostUpdate)
+
+	-- Fix unresponsive alpha on 3D Portrait.
+	hooksecurefunc(UIParent, "SetAlpha", function() self.Portrait:SetAlpha(self:GetEffectiveAlpha()) end)
+	hooksecurefunc(self, "SetAlpha", function() self.Portrait:SetAlpha(self:GetEffectiveAlpha()) end)
 
 end
 
