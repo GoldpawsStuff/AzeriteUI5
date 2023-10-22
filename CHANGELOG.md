@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Looking into compatibility with SpellActivationOverlay for Classic Era/Wrath Classic.
 
 ### Fixed
-- Looking into reported incompatibilities between the Dragonflight Minimap and Immersion, where it doesn't reappear after being hidden by Immersion.
+- The player- and target unitframes now properly fades out along with the rest of the interface when the option to fade the interface has been chosen in the addon Immersion.
 
 ## [5.2.116-RC] 2023-10-21
 ### Added
