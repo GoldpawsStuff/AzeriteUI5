@@ -5,9 +5,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-10-22
-### Changed
-- Looking into compatibility with SpellActivationOverlay for Classic Era/Wrath Classic.
-
 ### Fixed
 - The player- and target unitframes now properly fades out along with the rest of the interface when the option to fade the interface has been chosen in the addon Immersion.
 
