@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.120-Alpha] 2023-10-22
+### Changed
+- Added the public library methods `lib:ShowOverlayGlow(button[, r, g, b[, a]])` and `lib:HideOverlayGlow(button)` to improve compatibility with external addons utilizing our button's overlay glow feature.
+
 ## [1.0.119-Alpha] 2023-10-21
 ### Changed
 - Don't dim buttons while in a vehicle, when using an override bar or when using a temporary shapeshift bar.
