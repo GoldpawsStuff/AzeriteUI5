@@ -164,27 +164,37 @@ ns.UnitFrameModule = ns:Merge({
 
 		local frame = self.frame
 
-		-- Used by boss frames
-		if (frame.units) then
-			for i,unitFrame in next,frame.units do
-				unitFrame:SetScale(config.scale)
-			end
-			return
-		end
-
 		-- Used by group frames
 		local header = self.frame.content
-		if (not header) then return end
+		if (header) then
 
-		header:SetScale(config.scale)
+			header:SetScale(config.scale)
 
-		if (header.units) then
-			for i,unitFrame in next,header.units do
-				unitFrame:SetScale(config.scale)
-			end
-		elseif (header.ForAll) then
-			header:ForAll("SetScale", config.scale)
+			-- Let's attempt to do this.
+			--if (header.units) then
+			--	for i,unitFrame in next,header.units do
+			--		unitFrame:SetScale(config.scale)
+			--	end
+			--elseif (header.ForAll) then
+			--	header:ForAll("SetScale", config.scale)
+			--end
+
+			--return
 		end
+
+
+		-- Used by boss frames
+		if (frame.units) then
+
+			for i,unitFrame in next,frame.units do
+				if (not header or unitFrame:GetParent() ~= header) then
+					unitFrame:SetScale(config.scale)
+				end
+			end
+
+			--return
+		end
+
 	end,
 
 	GetFrame = function(self)
