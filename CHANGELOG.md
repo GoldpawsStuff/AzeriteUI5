@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased] 2023-10-23
 ### Added
 - Added anchoring options to the tooltips. Tooltips shown in the default position can now be shown at the cursor, or totally ignored to be handled by Blizzard and third party addons instead.
+- Added visibility options to the tooltips. General tooltips, unitframe tooltips and actionbar tooltips can now be hidden in combat.
 
 ## [5.2.117-RC] 2023-10-22
 ### Fixed
