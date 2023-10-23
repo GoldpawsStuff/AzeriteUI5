@@ -65,10 +65,15 @@ local GenerateOptions = function()
 		name = L["Tooltip Settings"],
 		type = "group",
 		args = {
+			elementsHeader = {
+				name = L["Elements"],
+				order = 1,
+				type = "header", width = "full"
+			},
 			showItemID = {
 				name = L["Show itemID"],
 				desc = L["Toggle whether to add itemID to item tooltips or not."],
-				order = 1,
+				order = 10,
 				type = "toggle", width = "full",
 				set = setter,
 				get = getter
@@ -76,8 +81,30 @@ local GenerateOptions = function()
 			showSpellID = {
 				name = L["Show spellID"],
 				desc = L["Toggle whether to add spellIDs and auraIDs in tooltips containing actions, spells or auras."],
-				order = 2,
+				order = 11,
 				type = "toggle", width = "full",
+				set = setter,
+				get = getter
+			},
+			anchorHeader = {
+				name = L["Position"],
+				order = 19,
+				type = "header", width = "full"
+			},
+			anchor = {
+				name = L["Enable Anchoring"],
+				desc = L["Control where the tooltips appear when put in the default position. Disable to let blizzard or other addons handle this."],
+				order = 20,
+				type = "toggle", width = "full",
+				set = setter,
+				get = getter
+			},
+			anchorToCursor = {
+				name = L["Anchor to Cursor"],
+				desc = L["Anchor tooltips that normally would appear in the default tooltip location to your cursor instead."],
+				order = 21,
+				type = "toggle", width = "full",
+				disabled = function(info) return not getoption(info, "anchor") end,
 				set = setter,
 				get = getter
 			}

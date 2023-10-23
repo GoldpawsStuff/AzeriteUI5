@@ -43,9 +43,8 @@ local tonumber = tonumber
 local unpack = unpack
 
 -- GLOBALS: C_UnitAuras, CreateFrame, GetMouseFocus, hooksecurefunc
--- GLOBALS: GameTooltip, GameTooltipTextLeft1, GameTooltipStatusBar
--- GLOBALS: UnitIsDeadOrGhost, UnitIsPlayer
--- GLOBALS: UnitAura, UnitClass, UnitExists, UnitEffectiveLevel, UnitHealth, UnitHealthMax, UnitName, UnitRealmRelationship
+-- GLOBALS: GameTooltip, GameTooltipTextLeft1, GameTooltipStatusBar, UIParent
+-- GLOBALS: UnitAura, UnitClass, UnitExists, UnitEffectiveLevel, UnitHealth, UnitHealthMax, UnitName, UnitRealmRelationship, UnitIsDeadOrGhost, UnitIsPlayer
 -- GLOBALS: LE_REALM_RELATION_COALESCED, LE_REALM_RELATION_VIRTUAL, FOREIGN_SERVER_LABEL, INTERACTIVE_SERVER_LABEL
 
 -- Addon API
@@ -71,6 +70,8 @@ end })
 local defaults = { profile = ns:Merge({
 	showItemID = false,
 	showSpellID = false,
+	anchor = true,
+	anchorToCursor = false
 }, ns.Module.defaults) }
 
 -- Generate module defaults on the fly
@@ -458,16 +459,26 @@ end
 
 Tooltips.SetDefaultAnchor = function(self, tooltip, parent)
 	if (not tooltip) or (tooltip:IsForbidden()) then return end
+	if (not self.db.profile.anchor) then return end
 
 	local config = self.db.profile.savedPosition
 
-	local x = string_find(config[1], "LEFT") and 10 or string_find(config[1], "RIGHT") and -10 or 0
-	local y = string_find(config[1], "TOP") and -18 or string_find(config[1], "BOTTOM") and 18 or 0
+	if (self.db.profile.anchorToCursor) then
 
-	tooltip:SetOwner(parent, "ANCHOR_NONE")
-	tooltip:SetScale(config.scale)
-	tooltip:ClearAllPoints()
-	tooltip:SetPoint(config[1], UIParent, config[1], (config[2] + x)/config.scale, (config[3] + y)/config.scale)
+		tooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
+		tooltip:SetScale(config.scale)
+
+	else
+
+		local x = string_find(config[1], "LEFT") and 10 or string_find(config[1], "RIGHT") and -10 or 0
+		local y = string_find(config[1], "TOP") and -18 or string_find(config[1], "BOTTOM") and 18 or 0
+
+		tooltip:SetOwner(parent, "ANCHOR_NONE")
+		tooltip:SetScale(config.scale)
+		tooltip:ClearAllPoints()
+		tooltip:SetPoint(config[1], UIParent, config[1], (config[2] + x)/config.scale, (config[3] + y)/config.scale)
+	end
+
 end
 
 Tooltips.SetUnitColor = function(self, unit)
