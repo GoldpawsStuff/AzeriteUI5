@@ -32,7 +32,7 @@ ns.ActionButton = {}
 
 local onEnter = function(self)
 	local tooltips = ns:GetModule("Tooltips", true)
-	if (tooltips and tooltips:IsEnabled() and tooltips.db.profile.hideInCombat and tooltips.db.profile.hideActionBarTooltipsInCombat) then
+	if (tooltips and tooltips:IsEnabled() and tooltips.db.profile.hideInCombat and tooltips.db.profile.hideActionBarTooltipsInCombat and InCombatLockdown()) then
 		return
 	end
 	if (self.OnEnter) then
