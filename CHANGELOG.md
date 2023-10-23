@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-10-23
+### Added
+- Added anchoring options to the tooltips. Tooltips shown in the default position can now be shown at the cursor, or totally ignored to be handled by Blizzard and third party addons instead.
+
 ## [5.2.117-RC] 2023-10-22
 ### Fixed
 - The player- and target unitframes now properly fades out along with the rest of the interface when the option to fade the interface has been chosen in the addon Immersion.
