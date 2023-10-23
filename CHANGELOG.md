@@ -4,10 +4,16 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-10-23
+## [5.2.118-RC] 2023-10-23
 ### Added
 - Added anchoring options to the tooltips. Tooltips shown in the default position can now be shown at the cursor, or totally ignored to be handled by Blizzard and third party addons instead.
 - Added visibility options to the tooltips. General tooltips, unitframe tooltips and actionbar tooltips can now be hidden in combat.
+
+### Changed
+- Powerbars on enemy arena frames in the arena preperation phase should now be hidden, since this is info we can't access anyway.
+
+### Fixed
+- May or may not have fixed or worsened some scaling problems with group frames.
 
 ## [5.2.117-RC] 2023-10-22
 ### Fixed
