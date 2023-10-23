@@ -90,6 +90,7 @@ end
 
 local onEnter = function(self)
 	self.icon.darken:SetAlpha(0)
+	-- Obey tooltip options if the tooltip module is enabled.
 	local tooltips = ns:GetModule("Tooltips", true)
 	if (tooltips and tooltips:IsEnabled() and tooltips.db.profile.hideInCombat and tooltips.db.profile.hideActionBarTooltipsInCombat and InCombatLockdown()) then
 		return
