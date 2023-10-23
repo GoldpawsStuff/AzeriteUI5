@@ -30,9 +30,36 @@ local LAB = LibStub("LibActionButton-1.0-GE")
 ns.ActionButtons = {}
 ns.ActionButton = {}
 
+local onEnter = function(self)
+	local tooltips = ns:GetModule("Tooltips", true)
+	if (tooltips and tooltips:IsEnabled() and tooltips.db.profile.hideInCombat and tooltips.db.profile.hideActionBarTooltipsInCombat) then
+		return
+	end
+	if (self.OnEnter) then
+		self:OnEnter()
+	end
+end
+
+local onLeave = function(self)
+	if (self.OnLeave) then
+		self:OnLeave()
+	end
+end
+
 ns.ActionButton.Create = function(id, name, header, buttonConfig)
 
 	local button = LAB:CreateButton(id, name, header, buttonConfig)
+
+	if (not button.OnEnter) then
+		button.OnEnter = button:GetScript("OnEnter")
+	end
+
+	if (not button.OnLeave) then
+		button.OnLeave = button:GetScript("OnLeave")
+	end
+
+	button:SetScript("OnEnter", onEnter)
+	button:SetScript("OnLeave", onLeave)
 
 	ns.ActionButtons[button] = true
 

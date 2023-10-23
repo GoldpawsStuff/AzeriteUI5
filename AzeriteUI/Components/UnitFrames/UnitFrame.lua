@@ -63,6 +63,10 @@ local UnitFrame_OnEnter = function(self, ...)
 	if (self.OnEnter) then
 		self:OnEnter(...)
 	end
+	local tooltips = ns:GetModule("Tooltips", true)
+	if (tooltips and tooltips:IsEnabled() and tooltips.db.profile.hideInCombat and tooltips.db.profile.hideUnitFrameTooltipsInCombat) then
+		return
+	end
 	return _G.UnitFrame_OnEnter(self, ...)
 end
 

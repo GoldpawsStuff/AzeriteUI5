@@ -65,15 +65,46 @@ local GenerateOptions = function()
 		name = L["Tooltip Settings"],
 		type = "group",
 		args = {
+			visibilityHeader = {
+				name = L["Visibility"],
+				order = 9,
+				type = "header", width = "full"
+			},
+			hideInCombat = {
+				name = L["Hide in Combat"],
+				desc = L["Hide Tooltips while engaged in combat."],
+				order = 10,
+				type = "toggle", width = "full",
+				set = setter,
+				get = getter
+			},
+			hideActionBarTooltipsInCombat = {
+				name = L["Hide ActionBar Tooltips in Combat"],
+				desc = L["Hide ActionButton Tooltips while engaged in combat."],
+				order = 11,
+				type = "toggle", width = "full",
+				hidden = function(info) return not getoption(info, "hideInCombat") end,
+				set = setter,
+				get = getter
+			},
+			hideUnitFrameTooltipsInCombat = {
+				name = L["Hide UnitFrame Tooltips in Combat"],
+				desc = L["Hide UnitFrame Tooltips while engaged in combat. This refers to stationary unitframes in the user interface and does not affect units in the world."],
+				order = 12,
+				type = "toggle", width = "full",
+				hidden = function(info) return not getoption(info, "hideInCombat") end,
+				set = setter,
+				get = getter
+			},
 			elementsHeader = {
 				name = L["Elements"],
-				order = 1,
+				order = 19,
 				type = "header", width = "full"
 			},
 			showItemID = {
 				name = L["Show itemID"],
 				desc = L["Toggle whether to add itemID to item tooltips or not."],
-				order = 10,
+				order = 20,
 				type = "toggle", width = "full",
 				set = setter,
 				get = getter
@@ -81,20 +112,20 @@ local GenerateOptions = function()
 			showSpellID = {
 				name = L["Show spellID"],
 				desc = L["Toggle whether to add spellIDs and auraIDs in tooltips containing actions, spells or auras."],
-				order = 11,
+				order = 21,
 				type = "toggle", width = "full",
 				set = setter,
 				get = getter
 			},
 			anchorHeader = {
 				name = L["Position"],
-				order = 19,
+				order = 29,
 				type = "header", width = "full"
 			},
 			anchor = {
 				name = L["Enable Anchoring"],
 				desc = L["Control where the tooltips appear when put in the default position. Disable to let blizzard or other addons handle this."],
-				order = 20,
+				order = 30,
 				type = "toggle", width = "full",
 				set = setter,
 				get = getter
@@ -102,7 +133,7 @@ local GenerateOptions = function()
 			anchorToCursor = {
 				name = L["Anchor to Cursor"],
 				desc = L["Anchor tooltips that normally would appear in the default tooltip location to your cursor instead."],
-				order = 21,
+				order = 31,
 				type = "toggle", width = "full",
 				disabled = function(info) return not getoption(info, "anchor") end,
 				set = setter,

@@ -71,7 +71,10 @@ local defaults = { profile = ns:Merge({
 	showItemID = false,
 	showSpellID = false,
 	anchor = true,
-	anchorToCursor = false
+	anchorToCursor = false,
+	hideInCombat = false,
+	hideActionBarTooltipsInCombat = true,
+	hideUnitFrameTooltipsInCombat = true
 }, ns.Module.defaults) }
 
 -- Generate module defaults on the fly
