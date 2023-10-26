@@ -716,6 +716,15 @@ end
 ActionBarMod.OnEnable = function(self)
 
 	self:CreateBars()
+
+	-- Will this fix the positioning bug that occurs more often than not on bar 2 for a lot of users?
+	-- The idea is to avoid parsing bugs of the initial position by ensuring
+	-- that the bars have the same size and layout as previous session.
+	self:UpdatePositionAndScales()
+
+	-- Create the anchors and update settings
+	-- only after all the bars have been created
+	-- and their previous settings restored.
 	self:CreateAnchors()
 	self:UpdateSettings()
 
