@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-10-26
+### Fixed
+- Attempting to fix [#46](https://github.com/GoldpawsStuff/AzeriteUI5/issues/46)
+
 ## [5.2.118-RC] 2023-10-23
 ### Added
 - Added anchoring options to the tooltips. Tooltips shown in the default position can now be shown at the cursor, or totally ignored to be handled by Blizzard and third party addons instead.
