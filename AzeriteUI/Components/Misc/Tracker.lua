@@ -623,6 +623,9 @@ Tracker.PrepareFrames = function(self)
 end
 
 Tracker.UpdateSettings = function(self)
+
+	ObjectiveTrackerFrame:SetTheme(self.db.profile.theme)
+
 	if (self.db.profile.disableBlizzardTracker) then
 
 		if (not self:IsHooked(ObjectiveTrackerFrame, "Show")) then
