@@ -936,6 +936,10 @@ local style = function(self, unit, id)
 		self:RegisterEvent("PLAYER_SOFT_ENEMY_CHANGED", NamePlate_OnEvent, true)
 		self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED", NamePlate_OnEvent, true)
 	end
+
+	-- Make our nameplates obey UIParent alpha and fade out when Immersion says so.
+	hooksecurefunc(UIParent, "SetAlpha", function() self:SetAlpha(UIParent:GetAlpha()) end)
+
 end
 
 local cvars = {
