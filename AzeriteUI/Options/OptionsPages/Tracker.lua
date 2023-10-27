@@ -85,7 +85,9 @@ local GenerateOptions = function()
 				values = {
 					["Azerite"] = "AzeriteUI",
 					["Blizzard"] = "Blizzard"
-				}
+				},
+				set = setter,
+				get = getter
 			}
 		}
 	}
