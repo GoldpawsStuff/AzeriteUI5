@@ -353,6 +353,19 @@ ChatFrames.StyleFrame = function(self, frame)
 	self:UpdateChatFading(frame)
 	self:SecureHook(frame, "SetFont", "UpdateChatFont")
 
+	local setAlpha = frame.SetAlpha
+
+	-- Attempt to fix coins and chat textures not fading by double setting the alpha.
+	-- The bug seems to go away when the textures once have been set to zero alpha.
+	hooksecurefunc(UIParent, "SetAlpha", function()
+		local alpha = UIParent:GetAlpha()
+		if (alpha < .5) then
+			setAlpha(frame, 0)
+		else
+			setAlpha(frame, alpha)
+		end
+	end)
+
 	frame.isSkinned = true
 end
 
