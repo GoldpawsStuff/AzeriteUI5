@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-10-28
+### Fixed
+- Attempted to work around an issue where chat textures refused to fade along with the rest of the UI.
+
 ## [5.2.119-RC] 2023-10-27
 ### Added
 - Added the option to select between the AzeriteUI and Blizzard theme on the Retail Objectives Tracker. This is an experimental feature and subject to bug out when using the Blizard theme.
