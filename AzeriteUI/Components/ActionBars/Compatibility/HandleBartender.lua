@@ -30,6 +30,16 @@ if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return end
 
 local Bartender = ns:NewModule("Bartender", "LibMoreEvents-1.0")
 
+Bartender.HandleBagBar = function(self)
+	local BagBarMod = Bartender4:GetModule("BagBar")
+	if (not BagBarMod) then
+		return
+	end
+	BagBarMod:Disable()
+	BagBarMod:UnhookAll()
+	BagBarMod.Enable = BagBarMod.Disable
+end
+
 -- Disable and unhook Bartender's micro menu module
 -- as this directly conflicts with our own.
 Bartender.HandleMicroMenu = function(self)
@@ -39,6 +49,7 @@ Bartender.HandleMicroMenu = function(self)
 	end
 	MicroMenuMod:Disable()
 	MicroMenuMod:UnhookAll()
+	MicroMenuMod.Enable = MicroMenuMod.Disable
 end
 
 -- Prevent Bartender from transferring keybinds
@@ -81,7 +92,8 @@ Bartender.HandleBartender = function(self, event, addon)
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "HandleBartender")
 	end
 
-	--self:HandleMicroMenu()
+	self:HandleBagBar()
+	--self:HandleMicroMenu() -- we don't use the blizzard micro menu anymore
 	self:HandlePetBattles()
 	self:HandleVehicle()
 
