@@ -470,7 +470,7 @@ ActionBarMod.CreateAnchors = function(self)
 		-- This will be called before anchors are shown
 		anchor.PreUpdate = function(self)
 			local pos = self.bar.config.savedPosition
-			bar.anchor:SetSize(bar:GetSize())
+			bar.anchor:SetSize(self.bar:GetSize())
 			bar.anchor:SetScale(pos.scale)
 			bar.anchor:ClearAllPoints()
 			bar.anchor:SetPoint(pos[1], UIParent, pos[1], pos[2], pos[3])
@@ -485,7 +485,6 @@ ActionBarMod.CreateAnchors = function(self)
 		bar.anchor = anchor
 
 		self.anchors[bar] = anchor
-
 	end
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnAnchorEvent")
