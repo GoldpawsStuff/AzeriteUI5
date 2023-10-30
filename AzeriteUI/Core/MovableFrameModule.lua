@@ -277,10 +277,6 @@ Module.OnInitialize = function(self)
 	end
 
 	self.db = ns.db:RegisterNamespace(self:GetName(), self:GetDefaults())
-	--self:SetEnabledState(self.db.profile.enabled)
-
-	--if (not self.db.profile.enabled) then return end
-
 	self.db.RegisterCallback(self, "OnProfileChanged", "OnRefreshConfig")
 	self.db.RegisterCallback(self, "OnProfileCopied", "OnRefreshConfig")
 	self.db.RegisterCallback(self, "OnProfileReset", "OnRefreshConfig")
