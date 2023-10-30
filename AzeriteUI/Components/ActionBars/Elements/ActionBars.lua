@@ -557,7 +557,7 @@ ActionBarMod.UpdateBars = function(self, event)
 	end
 end
 
-ActionBarMod.UpdateButtonCount = function(self)
+ActionBarMod.UpdateBarButtonCounts = function(self)
 	for i,bar in next,self.bars do
 		for j,button in next,bar.buttons do
 			if j > bar.config.numbuttons then break end
@@ -660,7 +660,7 @@ ActionBarMod.UpdateSettings = function(self, event)
 
 	self:UpdateEnabled()
 	self:UpdateBars()
-	self:UpdateButtonCount()
+	self:UpdateBarButtonCounts()
 	self:UpdateBindings()
 	self:UpdatePositionAndScales()
 	self:UpdateAnchors()
