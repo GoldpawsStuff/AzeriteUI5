@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-10-30
+### Fixed
+- Restructured how various action button states are being tracked and applied in relation to button dimming.
+- Changes to action button dimming settings should now be applied instantly and no longer require a reload or state change first.
+
 ## [5.2.120-RC] 2023-10-29
 ### Fixed
 - Attempted to work around an issue where chat textures refused to fade along with the rest of the UI.
