@@ -31,6 +31,7 @@ local ButtonBar = setmetatable({}, { __index = Bar })
 local ButtonBar_MT = { __index = ButtonBar }
 
 -- Lua API
+local ipairs = ipairs
 local next = next
 local math_abs = math.abs
 local math_ceil = math.ceil
@@ -38,6 +39,7 @@ local math_floor = math.floor
 local math_max = math.max
 local math_min = math.min
 local setmetatable = setmetatable
+local type = type
 
 local defaults = ns:Merge({
 	numbuttons = 0
@@ -79,6 +81,19 @@ ButtonBar.Disable = function(self)
 	if (InCombatLockdown()) then return end
 
 	Bar.Disable(self)
+end
+
+ButtonBar.ForAll = function(self, method, ...)
+	for id,button in next,self.buttons do
+		if (type(method) == "string") then
+			local func = button[method]
+			if (func) then
+				func(button, ...)
+			end
+		elseif (type(method) == "function") then
+			method(button, ...)
+		end
+	end
 end
 
 ButtonBar.UpdateButtons = function(self)

@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 120
+local MINOR_VERSION = 121
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -158,6 +158,8 @@ local DefaultConfig = {
 		border = false,
 		borderIfEmpty = true
 	},
+	dimWhenResting = false,
+	dimWhenInactive = false,
 	keyBoundTarget = false,
 	keyBoundClickButton = "LeftButton",
 	clickOnDown = false,
@@ -315,10 +317,12 @@ function lib:CreateButton(id, name, header, config)
 	-- Store the button in the registry, needed for event and OnUpdate handling
 	ButtonRegistry[button] = true
 
-	-- inherit header's click on down setting
+	-- inherit header's settings
 	if header.config then
 		button.config = config or {}
 		button.config.clickOnDown = header.config.clickOnDown
+		button.config.dimWhenResting = header.config.dimWhenResting
+		button.config.dimWhenInactive = header.config.dimWhenInactive
 	end
 
 	-- setup button configuration
@@ -1797,11 +1801,12 @@ function Generic:UpdateAction(force)
 end
 
 function Update(self)
-	local texture = self:GetTexture()
 
 	-- Using GetTexture instead of HasAction,
 	-- as the latter fires as almost always true in vehicles,
 	-- which seriously messes with our attempts to hide empty buttons.
+	local texture = self:GetTexture()
+
 	if texture then
 		ActiveButtons[self] = true
 		if self._state_type == "action" then
@@ -1853,7 +1858,10 @@ function Update(self)
 
 	-- Zone ability button handling
 	self.zoneAbilityDisabled = false
-	self.icon:SetDesaturated(false)
+
+	-- This conflicts with UpdateUsable now.
+	-- Why is it here?
+	--self.icon:SetDesaturated(false)
 
 	if texture then
 		self.icon:SetTexture(texture)
@@ -1861,6 +1869,7 @@ function Update(self)
 		self.rangeTimer = - 1
 	else
 		self.icon:Hide()
+		self.icon:SetDesaturation(0)
 		self.cooldown:Hide()
 		self.rangeTimer = nil
 		if self.HotKey:GetText() == RANGE_INDICATOR then
@@ -1913,42 +1922,54 @@ end
 
 function UpdateUsable(self)
 
-	if UnitIsDeadOrGhost("player") or (IsMounted() and not self.header.isDragonRiding) then
+	-- Turn off the bars when dead, ghost or mounted (except when Dragonriding)
+	if UnitIsDeadOrGhost("player") or (IsMounted() and not self.isDragonRiding) then
 		self.icon:SetDesaturation(1)
 		self.icon:SetVertexColor(unpack(self.config.colors.disabled))
 
+	-- Properly colorize out of range buttons
 	elseif self.outOfRange then
 		self.icon:SetDesaturation(1)
 		self.icon:SetVertexColor(unpack(self.config.colors.range))
 	else
+
 		local isUsable, notEnoughMana = self:IsUsable()
 		if isUsable then
-			if self.isMouseOver or lib.hastarget or lib.incombat then
+			-- Light up when dimming is disabled, when moused over, when in combat,
+			-- when a target is selected, when Dragonriding or when having any other
+			-- type of non-character bar change active.
+			if not self.config.dimWhenInactive or lib.hastarget or lib.incombat or self.isMouseOver or self.isDragonRiding or self.hasVehicleBar or self.hasOverrideBar or self.hasTempShapeshiftBar or self.hasPossessBar then
 				self.icon:SetDesaturation(0)
 				self.icon:SetVertexColor(1, 1, 1)
 			else
-				if self.header.dimWhenInactive and not self.header.isDragonRiding and not UnitHasVehicleUI("player") and not HasOverrideActionBar() and not HasTempShapeshiftActionBar() then
-					if self.header.dimWhenResting then
-						if lib.isresting then
-							self.icon:SetDesaturation(1)
-							self.icon:SetVertexColor(unpack(self.config.colors.disabled))
-						else
-							self.icon:SetDesaturation(0)
-							self.icon:SetVertexColor(1, 1, 1)
-						end
-					else
+				-- Check if we should only dim when resting, and if we're resting.
+				if self.config.dimWhenResting then
+					if lib.isresting then
 						self.icon:SetDesaturation(1)
 						self.icon:SetVertexColor(unpack(self.config.colors.disabled))
+					else
+						self.icon:SetDesaturation(0)
+						self.icon:SetVertexColor(1, 1, 1)
 					end
 				else
-					self.icon:SetDesaturation(0)
-					self.icon:SetVertexColor(1, 1, 1)
+					self.icon:SetDesaturation(1)
+					self.icon:SetVertexColor(unpack(self.config.colors.disabled))
 				end
 			end
+
+		-- Properly colorize buttons lacking resources to use
 		elseif notEnoughMana then
 			self.icon:SetDesaturation(1)
-			self.icon:SetVertexColor(unpack(self.config.colors.mana))
+
+			-- Only apply lack of resource coloring when in an unsafe situation or not dimming.
+			if not self.config.dimWhenInactive or lib.hastarget or lib.incombat or self.isMouseOver or self.isDragonRiding or self.hasVehicleBar or self.hasOverrideBar or self.hasTempShapeshiftBar or self.hasPossessBar then
+				self.icon:SetVertexColor(unpack(self.config.colors.mana))
+			else
+				self.icon:SetVertexColor(unpack(self.config.colors.disabled))
+			end
+
 		else
+			-- Any other situation is unusable, so turn them off.
 			self.icon:SetDesaturation(1)
 			self.icon:SetVertexColor(unpack(self.config.colors.disabled))
 		end

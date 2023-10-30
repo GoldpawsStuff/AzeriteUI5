@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.121-Alpha] 2023-10-22
+### Changed
+- Moved `dimWhenResting` and `dimWhenInactive` to button config.
+
 ## [1.0.120-Alpha] 2023-10-22
 ### Changed
 - Added the public library methods `lib:ShowOverlayGlow(button[, r, g, b[, a]])` and `lib:HideOverlayGlow(button)` to improve compatibility with external addons utilizing our button's overlay glow feature.

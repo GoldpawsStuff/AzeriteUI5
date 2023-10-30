@@ -138,25 +138,47 @@ ns.ActionBar.Create = function(self, id, config, name)
 	]])
 
 	bar:SetAttribute("_onstate-page", [[
-		-- Store the dragonriding state as a member value in lua
-		-- before actual page changes and button updates.
-		self:CallMethod("UpdateDragonRiding", newstate == "dragon" and true or false);
+
+		local hasVehicleBar, hasOverrideBar, hasTempShapeshiftBar, hasPossessBar, isDragonRiding;
+
 		if (newstate == "possess" or newstate == "dragon" or newstate == "11") then
+
 			if HasVehicleActionBar() then
-				newstate = GetVehicleBarIndex()
+				newstate = GetVehicleBarIndex();
+				hasVehicleBar = true;
+
 			elseif HasOverrideActionBar() then
-				newstate = GetOverrideBarIndex()
+				newstate = GetOverrideBarIndex();
+				hasOverrideBar = true;
+
 			elseif HasTempShapeshiftActionBar() then
-				newstate = GetTempShapeshiftBarIndex()
+				newstate = GetTempShapeshiftBarIndex();
+				hasTempShapeshiftBar = true;
+
 			elseif HasBonusActionBar() then
-				newstate = GetBonusBarIndex()
+				newstate = GetBonusBarIndex();
+				if (GetBonusBarOffset() == 5) then
+					hasPossessBar = true;
+					if (IsMounted()) then
+						isDragonRiding = true;
+					end
+				end
 			else
-				newstate = nil
+				newstate = nil;
 			end
-			if not newstate then
-				newstate = 12
+			if (not newstate) then
+				newstate = 12;
 			end
 		end
+
+		self:SetAttribute("isdragonriding", isDragonRiding);
+		self:SetAttribute("hasvehiclebar", hasVehicleBar);
+		self:SetAttribute("hasoverridebar", hasOverrideBar);
+		self:SetAttribute("hastempshapeshiftbar", hasTempShapeshiftBar);
+		self:SetAttribute("haspossessbar", hasPossessBar);
+
+		self:CallMethod("UpdateButtonDimming");
+
 		self:SetAttribute("state", newstate);
 		control:ChildUpdate("state", newstate);
 	]])
@@ -169,6 +191,24 @@ ns.ActionBar.Create = function(self, id, config, name)
 	bar:UpdateVisibilityDriver()
 
 	return bar
+end
+
+ActionBar.UpdateButtonDimming = function(self)
+
+	self.isDragonRiding = self:GetAttribute("isdragonriding")
+	self.hasVehicleBar = self:GetAttribute("hasvehiclebar")
+	self.hasOverrideBar = self:GetAttribute("hasoverridebar")
+	self.hasTempShapeshiftBar = self:GetAttribute("hastempshapeshiftbar")
+	self.hasPossessBar = self:GetAttribute("haspossessbar")
+
+	for id,button in next,self.buttons do
+		button.isDragonRiding = self.isDragonRiding
+		button.hasVehicleBar = self.hasVehicleBar
+		button.hasOverrideBar = self.hasOverrideBar
+		button.hasTempShapeshiftBar = self.hasTempShapeshiftBar
+		button.hasPossessBar = self.hasPossessBar
+	end
+
 end
 
 ActionBar.CreateButton = function(self, buttonConfig)
@@ -191,12 +231,20 @@ ActionBar.CreateButton = function(self, buttonConfig)
 		button:SetState(18, "custom", exitButton)
 	end
 
-	local keyBoundTarget = string_format(BINDTEMPLATE_BY_ID[self.id], button.id)
-	button.keyBoundTarget = keyBoundTarget
+	button.isDragonRiding = self.isDragonRiding
+	button.hasVehicleBar = self.hasVehicleBar
+	button.hasOverrideBar = self.hasOverrideBar
+	button.hasTempShapeshiftBar = self.hasTempShapeshiftBar
+	button.hasPossessBar = self.hasPossessBar
 
 	local buttonConfig = buttonConfig or button.config or {}
-	buttonConfig.keyBoundTarget = keyBoundTarget
 	buttonConfig.clickOnDown = self.config.clickOnDown
+	buttonConfig.dimWhenResting = self.config.dimWhenResting
+	buttonConfig.dimWhenInactive = self.config.dimWhenInactive
+
+	local keyBoundTarget = string_format(BINDTEMPLATE_BY_ID[self.id], button.id)
+	button.keyBoundTarget = keyBoundTarget
+	buttonConfig.keyBoundTarget = keyBoundTarget
 
 	button:UpdateConfig(buttonConfig)
 end
@@ -397,8 +445,4 @@ ActionBar.UpdateVisibilityDriver = function(self)
 	UnregisterStateDriver(self, "vis")
 	self:SetAttribute("state-vis", "0")
 	RegisterStateDriver(self, "vis", visdriver or "hide")
-end
-
-ActionBar.UpdateDragonRiding = function(self, isDragonRiding)
-	self.isDragonRiding = isDragonRiding
 end

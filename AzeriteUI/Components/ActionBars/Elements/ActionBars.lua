@@ -34,6 +34,7 @@ local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "LibFadingF
 
 -- Lua API
 local next = next
+local pairs = pairs
 local string_format = string.format
 local tonumber = tonumber
 local unpack = unpack
@@ -643,8 +644,18 @@ ActionBarMod.UpdateSettings = function(self, event)
 	-- We do not grant user access to these settings per bar.
 	for i,bar in next,self.bars do
 		bar.config.clickOnDown = self.db.profile.clickOnDown
-		bar.dimWhenResting = self.db.profile.dimWhenResting
-		bar.dimWhenInactive = self.db.profile.dimWhenInactive
+		bar.config.dimWhenResting = self.db.profile.dimWhenResting
+		bar.config.dimWhenInactive = self.db.profile.dimWhenInactive
+
+		-- Copy select settings into each button's config table.
+		for id,button in pairs(bar.buttons) do
+			button.config.clickOnDown = bar.config.clickOnDown
+			button.config.dimWhenResting = bar.config.dimWhenResting
+			button.config.dimWhenInactive = bar.config.dimWhenInactive
+
+			-- Update config and trigger a full button update.
+			button:UpdateConfig(button.config)
+		end
 	end
 
 	self:UpdateEnabled()
