@@ -336,7 +336,7 @@ StanceBar.Update = function(self)
 	if (InCombatLockdown()) then return end
 
 	self:UpdateButtonConfig()
-	self:UpdateButtons()
+	self:UpdateButtonCount()
 	self:UpdateButtonLayout()
 	self:UpdateBindings()
 	self:UpdateFading()
@@ -346,7 +346,7 @@ StanceBar.Update = function(self)
 	end
 end
 
-StanceBar.UpdateButtons = function(self)
+StanceBar.UpdateButtonCount = function(self)
 	if (InCombatLockdown()) then return end
 
 	local numStances = GetNumShapeshiftForms()
@@ -615,7 +615,7 @@ StanceBarMod.OnEvent = function(self, event, ...)
 	elseif (event == "PLAYER_REGEN_ENABLED") then
 		if (self.needupdate and not InCombatLockdown()) then
 			self.needupdate = nil
-			self.bar:UpdateButtons()
+			self.bar:UpdateButtonCount()
 		end
 
 	elseif (event == "UPDATE_BINDINGS") then
@@ -628,7 +628,7 @@ StanceBarMod.OnEvent = function(self, event, ...)
 				button:Update()
 			end
 		else
-			self.bar:UpdateButtons()
+			self.bar:UpdateButtonCount()
 			for id,button in next,self.bar.buttons do
 				button:Update()
 			end

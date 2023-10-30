@@ -340,7 +340,7 @@ PetBar.Update = function(self)
 	if (InCombatLockdown()) then return end
 
 	self:UpdateButtonConfig()
-	self:UpdateButtons()
+	self:UpdateButtonCount()
 	self:UpdateButtonLayout()
 	self:UpdateVisibilityDriver()
 	self:UpdateBindings()

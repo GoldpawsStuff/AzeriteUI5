@@ -187,7 +187,7 @@ ns.ActionBar.Create = function(self, id, config, name)
 		bar:CreateButton()
 	end
 
-	bar:UpdateButtons()
+	bar:UpdateButtonCount()
 	bar:UpdateVisibilityDriver()
 
 	return bar
@@ -263,7 +263,7 @@ ActionBar.Update = function(self)
 	if (InCombatLockdown()) then return end
 
 	self:UpdateButtonConfig()
-	self:UpdateButtons()
+	self:UpdateButtonCount()
 	self:UpdateButtonLayout()
 	self:UpdateStateDriver()
 	self:UpdateVisibilityDriver()
@@ -328,8 +328,8 @@ ActionBar.UpdateAnchor = function(self)
 	end
 end
 
-ActionBar.UpdateButtons = function(self)
-	ButtonBar.UpdateButtons(self)
+ActionBar.UpdateButtonCount = function(self)
+	ButtonBar.UpdateButtonCount(self)
 end
 
 ActionBar.UpdateButtonLayout = function(self)

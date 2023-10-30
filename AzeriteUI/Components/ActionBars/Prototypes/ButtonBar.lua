@@ -96,7 +96,7 @@ ButtonBar.ForAll = function(self, method, ...)
 	end
 end
 
-ButtonBar.UpdateButtons = function(self)
+ButtonBar.UpdateButtonCount = function(self)
 	if (InCombatLockdown()) then return end
 
 	local buttons = self.buttons
