@@ -613,10 +613,10 @@ end
 ActionBarMod.UpdateEnabled = function(self, event)
 	if (not next(self.bars)) then return end
 	if (InCombatLockdown()) then
-		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateBars")
+		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateEnabled")
 	end
 	if (event == "PLAYER_REGEN_ENABLED") then
-		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "UpdateBars")
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "UpdateEnabled")
 	end
 	for id,bar in next,self.bars do
 		if (bar.config.enabled) then
@@ -632,7 +632,7 @@ ActionBarMod.UpdateSettings = function(self, event)
 		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "UpdateSettings")
 	end
 	if (event == "PLAYER_REGEN_ENABLED") then
-		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "UpdateBars")
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "UpdateSettings")
 	end
 
 	-- Follow the global click on down settings in WoW10 and above.
