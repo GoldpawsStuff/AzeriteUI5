@@ -429,7 +429,6 @@ ActionBarMod.CreateBars = function(self)
 		config.clickOnDown = self.db.profile.clickOnDown
 
 		local bar = ns.ActionBar:Create(BAR_TO_ID[i], config, ns.Prefix.."ActionBar"..i)
-		--bar:Show() -- bar must be initially visible for button mask to be properly removed. weird.
 		bar.buttonWidth, bar.buttonHeight = unpack(ns.GetConfig("ActionButton").ButtonSize)
 		bar.defaults = defaults.profile.bars[i]
 
@@ -451,22 +450,33 @@ ActionBarMod.CreateAnchors = function(self)
 
 	for i,bar in next,self.bars do
 
-		local bar = bar
-		local config = defaults.profile.bars[i]
+		local defaultPos = defaults.profile.bars[i].savedPosition
+		local pos = self.db.profile.bars[i].savedPosition
 
 		local anchor = ns:GetModule("MovableFramesManager"):RequestAnchor()
-		anchor:SetScalable(true)
-		anchor:SetSize(2,2)
-		anchor:SetPoint(config.savedPosition[1], config.savedPosition[2], config.savedPosition[3])
-		anchor:SetScale(config.savedPosition.scale)
 		anchor:SetTitle(self:GenerateBarDisplayName(i))
+		anchor:SetScalable(true)
 
-		anchor:SetDefaultScale(ns.API.GetEffectiveScale())
+		-- Set defaults explicitly
+		anchor:SetDefaultScale(defaultPos.scale)
+		anchor:SetDefaultPosition(defaultPos[1], defaultPos[2], defaultPos[3])
 
-		anchor.PreUpdate = function()
-			self:UpdateAnchors()
+		-- Size & position according to saved settings
+		anchor:SetSize(bar:GetSize()) -- assume this exists
+		anchor:SetScale(pos.scale)
+		anchor:SetPoint(pos[1], pos[2], pos[3])
+
+		-- Update anchor according to current bar layout
+		-- This will be called before anchors are shown
+		anchor.PreUpdate = function(self)
+			local pos = self.bar.config.savedPosition
+			bar.anchor:SetSize(bar:GetSize())
+			bar.anchor:SetScale(pos.scale)
+			bar.anchor:ClearAllPoints()
+			bar.anchor:SetPoint(pos[1], UIParent, pos[1], pos[2], pos[3])
 		end
 
+		-- Color the anchor according to anchor type
 		local r, g, b = unpack(Colors.anchor.actionbars)
 		anchor.Overlay:SetBackdropColor(r, g, b, .75)
 		anchor.Overlay:SetBackdropBorderColor(r, g, b, 1)
@@ -477,6 +487,17 @@ ActionBarMod.CreateAnchors = function(self)
 		self.anchors[bar] = anchor
 
 	end
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnAnchorEvent")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnAnchorEvent")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnAnchorEvent")
+
+	ns.RegisterCallback(self, "MFM_PositionUpdated", "OnAnchorEvent")
+	ns.RegisterCallback(self, "MFM_AnchorShown", "OnAnchorEvent")
+	ns.RegisterCallback(self, "MFM_ScaleUpdated", "OnAnchorEvent")
+	ns.RegisterCallback(self, "MFM_Dragging", "OnAnchorEvent")
+	ns.RegisterCallback(self, "MFM_UIScaleChanged", "OnAnchorEvent")
+
 end
 
 ActionBarMod.CreatePetBattleController = function(self)
@@ -728,7 +749,7 @@ ActionBarMod.OnEnable = function(self)
 
 	self:CreateBars()
 
-	-- Will this fix the positioning bug that occurs more often than not on bar 2 for a lot of users?
+	-- Will this fix the positioning bug that occurs more often than not on bar 2 for a lot of users? No.
 	-- The idea is to avoid parsing bugs of the initial position by ensuring
 	-- that the bars have the same size and layout as previous session.
 	self:UpdatePositionAndScales()
@@ -737,7 +758,6 @@ ActionBarMod.OnEnable = function(self)
 	-- only after all the bars have been created
 	-- and their previous settings restored.
 	self:CreateAnchors()
-	self:UpdateSettings()
 
 	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
 	self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
@@ -746,15 +766,7 @@ ActionBarMod.OnEnable = function(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateSettings")
 	self:RegisterEvent("UPDATE_BINDINGS", "UpdateBindings")
 
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnAnchorEvent")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnAnchorEvent")
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnAnchorEvent")
-
-	ns.RegisterCallback(self, "MFM_PositionUpdated", "OnAnchorEvent")
-	ns.RegisterCallback(self, "MFM_AnchorShown", "OnAnchorEvent")
-	ns.RegisterCallback(self, "MFM_ScaleUpdated", "OnAnchorEvent")
-	ns.RegisterCallback(self, "MFM_Dragging", "OnAnchorEvent")
-	ns.RegisterCallback(self, "MFM_UIScaleChanged", "OnAnchorEvent")
+	self:UpdateSettings()
 
 end
 

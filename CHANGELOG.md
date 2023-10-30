@@ -6,8 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-10-30
 ### Fixed
-- Restructured how various action button states are being tracked and applied in relation to button dimming.
-- Changes to action button dimming settings should now be applied instantly and no longer require a reload or state change first.
+- Changed how action bar defaults are stored. Resetting to default positions may or may not work better now.
+- Restructured how various action button states are being tracked and applied in relation to button dimming. Changes to action button dimming settings should now be applied instantly and no longer require a reload or state change first.
 
 ## [5.2.120-RC] 2023-10-29
 ### Fixed
