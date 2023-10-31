@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 121
+local MINOR_VERSION = 122
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -2238,8 +2238,13 @@ function UpdateOverlayGlow(self)
 	end
 end
 
-function lib:ShowOverlayGlow(button, ...)
-	local r, g, b, a = ...
+function lib.ShowOverlayGlow(...)
+	local self, button, r, g, b, a
+	if (... == lib) then
+		self, button, r, g, b, a = ...
+	else
+		self, button, r, g, b, a = lib, ...
+	end
 	if (r and g and b) then
 		button:SetSpellActivationColor(r, g, b, a)
 	else
@@ -2248,7 +2253,13 @@ function lib:ShowOverlayGlow(button, ...)
 	button:ShowSpellActivation()
 end
 
-function lib:HideOverlayGlow(button)
+function lib.HideOverlayGlow(...)
+	local self, button
+	if (... == lib) then
+		self, button = ...
+	else
+		self, button = lib, ...
+	end
 	button:HideSpellActivation()
 end
 

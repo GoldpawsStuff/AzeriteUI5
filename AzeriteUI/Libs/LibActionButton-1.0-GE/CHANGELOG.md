@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.0.121-Alpha] 2023-10-22
+## [1.0.122-Alpha] 2023-10-31
+### Fixed
+- Fixed how the public methods `lib:ShowOverlayGlow(button[, r, g, b[, a]])` and `lib:HideOverlayGlow(button)` handles input arguments to work better with SpellActivationOverlay.
+
+## [1.0.121-Alpha] 2023-10-30
 ### Changed
 - Moved `dimWhenResting` and `dimWhenInactive` to button config.
 
