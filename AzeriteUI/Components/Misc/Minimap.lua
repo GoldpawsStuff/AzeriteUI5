@@ -85,8 +85,8 @@ MinimapMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = mapScale * ns.API.GetEffectiveScale(),
 		[1] = "BOTTOMRIGHT",
-		[2] = -40 * (mapScale * ns.API.GetEffectiveScale()),
-		[3] = 40 * (mapScale * ns.API.GetEffectiveScale())
+		[2] = -(40 - ((ns.IsWrath or ns.IsClassic) and 10 or 0)) * (mapScale * ns.API.GetEffectiveScale()),
+		[3] = (40 - ((ns.IsWrath or ns.IsClassic) and 10 or 0)) * (mapScale * ns.API.GetEffectiveScale())
 	}
 	return defaults
 end
@@ -912,7 +912,7 @@ MinimapMod.UpdateAnchor = function(self)
 	local config = self.db.profile.savedPosition
 	if (config) then
 		local w,h = self.frame:GetSize()
-		self.anchor:SetSize(w + (16*2)/config.scale, h + (16*2)/config.scale)
+		self.anchor:SetSize(w + (16*2*ns.API.GetEffectiveScale())/config.scale, h + (16*2*ns.API.GetEffectiveScale())/config.scale)
 		self.anchor:SetScale(config.scale)
 		self.anchor:ClearAllPoints()
 		self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
@@ -938,8 +938,8 @@ MinimapMod.UpdatePositionAndScale = function(self)
 
 		local string_find = string.find
 
-		local x = string_find(config[1], "LEFT") and 16 or string_find(config[1], "RIGHT") and -16 or 0
-		local y = string_find(config[1], "TOP") and -16 or string_find(config[1], "BOTTOM") and 16 or 0
+		local x = string_find(config[1], "LEFT") and 16*ns.API.GetEffectiveScale() or string_find(config[1], "RIGHT") and -16*ns.API.GetEffectiveScale() or 0
+		local y = string_find(config[1], "TOP") and -16*ns.API.GetEffectiveScale() or string_find(config[1], "BOTTOM") and 16*ns.API.GetEffectiveScale() or 0
 
 		self.frame:SetScale(config.scale)
 		self.frame:ClearAllPoints()
