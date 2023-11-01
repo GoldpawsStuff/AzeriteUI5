@@ -26,7 +26,7 @@
 local _, ns = ...
 local oUF = ns.oUF
 
-local CastBarMod = ns:NewModule("PlayerCastBarFrame", ns.Module, "LibMoreEvents-1.0")
+local CastBarMod = ns:NewModule("PlayerCastBarFrame", ns.UnitFrameModule, "LibMoreEvents-1.0")
 
 -- GLOBALS: GetNetStats, PlayerCastingBarFrame, PetCastingBarFrame
 
@@ -211,6 +211,9 @@ CastBarMod.UpdateVisibility = function(self, event, ...)
 	else
 		self.frame:Enable()
 	end
+end
+
+CastBarMod.Update = function(self)
 end
 
 CastBarMod.OnEnable = function(self)

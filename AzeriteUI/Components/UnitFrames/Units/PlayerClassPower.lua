@@ -28,7 +28,7 @@ local oUF = ns.oUF
 
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
-local ClassPowerMod = ns:NewModule("PlayerClassPowerFrame", ns.Module, "LibMoreEvents-1.0")
+local ClassPowerMod = ns:NewModule("PlayerClassPowerFrame", ns.UnitFrameModule, "LibMoreEvents-1.0")
 
 -- Lua API
 local next = next
@@ -399,6 +399,10 @@ ClassPowerMod.GetLabel = function(self)
 		elseif (ns.PlayerClass == "DEATHKNIGHT") then
 			return L["Runes"]
 		end
+	elseif (ns.IsWrath) then
+		if (ns.PlayerClass == "DEATHKNIGHT") then
+			return L["Runes"]
+		end
 	end
 	return L["Combo Points"]
 end
@@ -407,6 +411,9 @@ ClassPowerMod.PostUpdateAnchor = function(self)
 	if (not self.anchor) then return end
 
 	self.anchor:SetTitle(self:GetLabel())
+end
+
+ClassPowerMod.Update = function(self)
 end
 
 ClassPowerMod.OnEnable = function(self)
