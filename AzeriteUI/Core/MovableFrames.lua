@@ -332,7 +332,8 @@ Anchor.IsInDefaultPosition = function(self, diff)
 	local anchorData = AnchorData[self]
 	if (not anchorData.defaultPosition) then return end
 	local point, x, y = getPosition(self)
-	local point2, x2, y2 = unpack(anchorData.defaultPosition)
+	local point2, x2, y2 = self:GetParsedDefaultPosition() -- unpack(anchorData.defaultPosition)
+
 	return compare(anchorData.scale, anchorData.defaultScale) and compare(point, x, y, point2, x2, y2, diff)
 end
 
@@ -377,7 +378,7 @@ Anchor.ResetToDefault = function(self)
 	local anchorData = AnchorData[self]
 	if (not anchorData.defaultPosition) then return end
 
-	local point, x, y = unpack(anchorData.defaultPosition)
+	local point, x, y = self:GetParsedDefaultPosition() -- unpack(anchorData.defaultPosition)
 
 	anchorData.currentPosition = { point, x, y }
 	anchorData.lastPosition = { point, x, y }
@@ -391,6 +392,8 @@ end
 
 Anchor.UpdateText = function(self)
 	local anchorData = AnchorData[self]
+
+	if (not anchorData.currentPosition) then return end
 
 	local msg
 	if (self:IsScalable()) then
@@ -477,7 +480,11 @@ end
 -- Anchor Getters
 --------------------------------------
 Anchor.GetPosition = function(self)
-	return AnchorData[self].currentPosition[1], AnchorData[self].currentPosition[2], AnchorData[self].currentPosition[3]
+	local anchorData = AnchorData[self]
+
+	if (not anchorData.currentPosition) then return end
+
+	return anchorData.currentPosition[1], anchorData.currentPosition[2], anchorData.currentPosition[3]
 end
 
 Anchor.GetScale = function(self)
@@ -488,9 +495,30 @@ Anchor.GetDefaultScale = function(self, scale)
 	return AnchorData[self].defaultScale
 end
 
-Anchor.GetDefaultPosition = function(self, point, x, y)
+Anchor.GetDefaultPosition = function(self)
 	return AnchorData[self].defaultPosition[1], AnchorData[self].defaultPosition[2], AnchorData[self].defaultPosition[3]
 end
+
+local dummy = CreateFrame("Frame", nil, UIParent)
+dummy:Hide()
+
+Anchor.GetParsedDefaultPosition = function(self)
+	local anchorData = AnchorData[self]
+	local point, x, y = unpack(anchorData.defaultPosition)
+
+	dummy:Show()
+	dummy:ClearAllPoints()
+	dummy:SetPoint(point, x, y)
+	dummy:SetSize(self:GetSize())
+
+	point, x, y = getPosition(dummy)
+
+	dummy:Hide()
+
+	return point, x, y
+end
+
+
 
 -- Anchor Setters
 --------------------------------------
