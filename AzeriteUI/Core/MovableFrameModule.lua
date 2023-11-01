@@ -68,8 +68,8 @@ Module.CreateAnchor = function(self, label, watchVariables, colorGroup)
 	if (defaults.profile.savedPosition) then
 		anchor:SetPoint(unpack(defaults.profile.savedPosition))
 		anchor:SetScale(defaults.profile.savedPosition.scale)
-		anchor:SetDefaultScale(ns.API.GetEffectiveScale())
 		anchor:SetDefaultPosition(unpack(defaults.profile.savedPosition))
+		anchor:SetDefaultScale(ns.API.GetEffectiveScale())
 		anchor:SetTitle(label)
 	end
 

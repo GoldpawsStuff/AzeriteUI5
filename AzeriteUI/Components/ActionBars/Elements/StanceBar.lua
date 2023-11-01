@@ -473,16 +473,17 @@ StanceBarMod.CreateAnchor = function(self)
 	if (self.anchor) then return end
 	if (not self.bar) then return end
 
-	local defaults = self:GetDefaults()
-	local config = defaults.profile
+	local defaults = self:GetDefaults().profile
+	local config = self.db.profile
 
 	local anchor = ns:GetModule("MovableFramesManager"):RequestAnchor()
 	anchor:SetScalable(true)
-	anchor:SetSize(2,2)
+	anchor:SetDefaultScale(ns.API.GetEffectiveScale())
+	anchor:SetDefaultPosition(defaults.savedPosition[1], defaults.savedPosition[2], defaults.savedPosition[3])
+	anchor:SetSize(self.bar:GetSize())
 	anchor:SetPoint(config.savedPosition[1], config.savedPosition[2], config.savedPosition[3])
 	anchor:SetScale(config.savedPosition.scale)
 	anchor:SetTitle(L["Stance Bar"])
-	anchor:SetDefaultScale(ns.API.GetEffectiveScale())
 
 	anchor.PreUpdate = function()
 		self:UpdateAnchor()

@@ -454,7 +454,6 @@ ActionBarMod.CreateAnchors = function(self)
 		local pos = self.db.profile.bars[i].savedPosition
 
 		local anchor = ns:GetModule("MovableFramesManager"):RequestAnchor()
-		anchor:SetTitle(self:GenerateBarDisplayName(i))
 		anchor:SetScalable(true)
 
 		-- Set defaults explicitly
@@ -463,17 +462,18 @@ ActionBarMod.CreateAnchors = function(self)
 
 		-- Size & position according to saved settings
 		anchor:SetSize(bar:GetSize()) -- assume this exists
-		anchor:SetScale(pos.scale)
 		anchor:SetPoint(pos[1], pos[2], pos[3])
+		anchor:SetScale(pos.scale)
+		anchor:SetTitle(self:GenerateBarDisplayName(i))
 
 		-- Update anchor according to current bar layout
 		-- This will be called before anchors are shown
 		anchor.PreUpdate = function(self)
 			local pos = self.bar.config.savedPosition
-			bar.anchor:SetSize(self.bar:GetSize())
-			bar.anchor:SetScale(pos.scale)
-			bar.anchor:ClearAllPoints()
-			bar.anchor:SetPoint(pos[1], UIParent, pos[1], pos[2], pos[3])
+			anchor:SetSize(self.bar:GetSize())
+			anchor:SetScale(pos.scale)
+			anchor:ClearAllPoints()
+			anchor:SetPoint(pos[1], UIParent, pos[1], pos[2], pos[3])
 		end
 
 		-- Color the anchor according to anchor type
