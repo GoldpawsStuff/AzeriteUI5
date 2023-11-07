@@ -17,9 +17,9 @@
 	<Include file="UTF8\utf8.xml"/>
 	<Include file="LibSharedMedia-3.0\lib.xml"/>
 	<Include file="LibUIDropDownMenu\LibUIDropDownMenu.xml"/>
-	<Include file="LibEditModeOverride\LibEditModeOverride.xml"/>
 	<Script file="LibMoreEvents-1.0\LibMoreEvents-1.0.lua"/>
 	@end-non-debug@-->
+	<Include file="LibEditModeOverride\LibEditModeOverride.xml"/>
 	<Include file="LibKeyBound-1.0\lib.xml"/>
 
 	<!-- Modified Libraries -->
