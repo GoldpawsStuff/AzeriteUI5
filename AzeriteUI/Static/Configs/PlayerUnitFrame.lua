@@ -165,18 +165,31 @@ ns.RegisterConfig("PlayerFrame", {
 
 	-- Orb and Crystal Colors
 	-----------------------------------------
-	ManaOrbColor = { 135/255, 125/255, 255/255 },
-	PowerBarColors = {
-		ENERGY = { 0/255, 208/255, 176/255 },
-		FOCUS = { 116/255, 156/255, 255/255 },
+	-- Note that we specifically avoid red colors
+	-- as this would clash horribly with our health bar.
+	PowerOrbColors = {
+		ENERGY = { 255/255, 208/255, 125/255 }, -- Automatic regen, fast, starts at max
+		FOCUS = { 116/255, 156/255, 255/255 }, -- Dynamic regen, fast, starts low
 		LUNAR_POWER = { 116/255, 156/255, 255/255 },
 		MAELSTROM = { 116/255, 156/255, 255/255 },
 		RUNIC_POWER = { 116/255, 156/255, 255/255 },
-		FURY = { 156/255, 116/255, 255/255 },
+		FURY = { 156/255, 116/255, 255/255 }, -- Dynamic regen, slow, starts at zero
 		INSANITY = { 156/255, 116/255, 255/255 },
 		PAIN = { 156/255, 116/255, 255/255 },
 		RAGE = { 156/255, 116/255, 255/255 },
-		MANA = { 101/255, 93/255, 191/255 }
+		MANA = { 135/255, 125/255, 255/255 } -- Fantasy archetype
+	},
+	PowerBarColors = {
+		ENERGY = { 0/255, 208/255, 176/255 }, -- Automatic regen, fast, starts at max
+		FOCUS = { 116/255, 156/255, 255/255 }, -- Dynamic regen, fast, starts low
+		LUNAR_POWER = { 116/255, 156/255, 255/255 },
+		MAELSTROM = { 116/255, 156/255, 255/255 },
+		RUNIC_POWER = { 116/255, 156/255, 255/255 },
+		FURY = { 156/255, 116/255, 255/255 }, -- Dynamic regen, slow, starts at zero
+		INSANITY = { 156/255, 116/255, 255/255 },
+		PAIN = { 156/255, 116/255, 255/255 },
+		RAGE = { 156/255, 116/255, 255/255 },
+		MANA = { 101/255, 93/255, 191/255 } -- Fantasy archetype
 	},
 
 	-- Level Specific Settings
