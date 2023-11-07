@@ -52,6 +52,7 @@ local defaults = { profile = ns:Merge({
 	showAuras = true,
 	showCastbar = true,
 	aurasBelowFrame = false,
+	alwaysUseCrystal = false,
 	useWrathCrystal = ns.IsWrath
 }, ns.Module.defaults) }
 
@@ -238,7 +239,7 @@ local Mana_UpdateVisibility = function(self, event, unit)
 
 	-- There is a short period when entering vehicles where the player unit does not exist.
 	-- We don't want the mana orb accidentially popping up during this period.
-	local shouldEnable = not playerIsRetribution and UnitExists("player") and not UnitHasVehicleUI("player") and UnitPowerType(unit) == Enum.PowerType.Mana
+	local shouldEnable = not playerIsRetribution and not PlayerFrameMod.db.profile.alwaysUseCrystal and UnitExists("player") and not UnitHasVehicleUI("player") and UnitPowerType(unit) == Enum.PowerType.Mana
 	local isEnabled = element.__isEnabled
 
 	if (shouldEnable and not isEnabled) then
@@ -288,7 +289,7 @@ end
 
 -- Hide power crystal when mana is the primary resource.
 local Power_UpdateVisibility = function(element, unit, cur, min, max)
-	if (playerIsRetribution) then
+	if (playerIsRetribution or PlayerFrameMod.db.profile.alwaysUseCrystal) then
 		element:Show()
 	else
 		local powerType = UnitPowerType(unit)
@@ -300,7 +301,7 @@ local Power_UpdateVisibility = function(element, unit, cur, min, max)
 	end
 end
 
--- Use custom colors for our power crystal. Does not apply to Wrath.
+-- Use custom colors for our power crystal. Does not apply to the Wrath crystal.
 local Power_PostUpdateColor = function(element, unit, r, g, b)
 	local config = ns.GetConfig("PlayerFrame")
 
@@ -452,7 +453,7 @@ local UnitFrame_UpdateTextures = function(self)
 	else
 		mana:SetStatusBarTexture(db.ManaOrbTexture)
 	end
-	mana:SetStatusBarColor(unpack(config.ManaOrbColor))
+	mana:SetStatusBarColor(unpack(config.PowerOrbColors.MANA))
 
 	local manaBackdrop = self.AdditionalPower.Backdrop
 	manaBackdrop:ClearAllPoints()
@@ -543,7 +544,6 @@ local style = function(self, unit)
 	self:SetSize(unpack(config.Size))
 	self:SetHitRectInsets(unpack(config.HitRectInsets))
 	self:SetFrameLevel(self:GetFrameLevel() + 2)
-	--self:SetIgnoreParentAlpha(true)
 
 	-- Overlay for icons and text
 	--------------------------------------------
@@ -950,9 +950,13 @@ PlayerFrameMod.Update = function(self)
 		self.frame.Power:SetStatusBarColor(1,1,1,1)
 	else
 		self.frame.Power.PostUpdateColor = Power_PostUpdateColor
-		if (self.frame:IsElementEnabled("Power")) then
-			self.frame.Power:ForceUpdate()
-		end
+	end
+
+	if (self.frame:IsElementEnabled("Power")) then
+		self.Power:ForceUpdate()
+	end
+	if (self.frame:IsElementEnabled("AdditionalPower")) then
+		self.AdditionalPower:ForceUpdate()
 	end
 
 	self.frame:PostUpdate()

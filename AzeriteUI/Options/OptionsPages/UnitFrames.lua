@@ -117,10 +117,15 @@ local GenerateOptions = function()
 			desc = L["Toggle whether to show overlay castbars on this unit frame."],
 			order = 30, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
+		suboptions.args.alwaysUseCrystal = {
+			name = L["Always use Power Crystal"],
+			desc = L["Choose whether to always show a power crystal or dynamically switch to the orb for mana users."],
+			order = 40, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
 		suboptions.args.useWrathCrystal = {
 			name = L["Use Ice Crystal"],
 			desc = L["Toggle whether to show the ice power crystal or the regular power crystal colored by resource type."],
-			order = 40, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+			order = 45, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
 		options.args.player = suboptions
 	end
