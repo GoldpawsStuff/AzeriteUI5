@@ -4,8 +4,14 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-11-07
+## [5.2.125-RC] 2023-11-07
 - Updated for WoW Client Patch 10.2.0.
+
+### Added
+- Added an option to always use the player unit frame power crystal, even for mana.
+
+### Fixed
+- We're now manually embedding LibEditModeOverride again, as the external version is outdated and causes startup bugs.
 
 ## [5.2.124-RC] 2023-11-01
 ### Fixed
