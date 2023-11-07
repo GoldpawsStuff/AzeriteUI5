@@ -953,10 +953,10 @@ PlayerFrameMod.Update = function(self)
 	end
 
 	if (self.frame:IsElementEnabled("Power")) then
-		self.Power:ForceUpdate()
+		self.frame.Power:ForceUpdate()
 	end
 	if (self.frame:IsElementEnabled("AdditionalPower")) then
-		self.AdditionalPower:ForceUpdate()
+		self.frame.AdditionalPower:ForceUpdate()
 	end
 
 	self.frame:PostUpdate()
