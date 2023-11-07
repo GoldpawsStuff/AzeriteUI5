@@ -1,4 +1,4 @@
-## Interface: 100107
+## Interface: 100200
 ## IconTexture: Interface\Addons\AzeriteUI\Assets\power-crystal-ice-icon.tga
 
 ## Title: |cff4488bbAzerite|r |cfffafafaUI|r |cffcccccc5.2|r
