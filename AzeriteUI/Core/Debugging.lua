@@ -24,7 +24,7 @@
 
 --]]
 local _, ns = ...
-local Debugging = ns:NewModule("Debugging", "AceConsole-3.0")
+local Debugging = ns:NewModule("Debugging", "LibMoreEvents-1.0", "AceConsole-3.0")
 
 -- GLOBALS: EnableAddOn, GetAddOnInfo
 
@@ -182,6 +182,20 @@ Debugging.EnableBlizzardAddOns = function(self)
 	end
 end
 
+Debugging.EnableScriptErrors = function(self)
+	SetCVar("scriptErrors", 1)
+end
+
+Debugging.OnEvent = function(self, event, ...)
+	self:EnableScriptErrors()
+end
+
 Debugging.OnInitialize = function(self)
 	self:RegisterChatCommand("enableblizzard", "EnableBlizzardAddOns")
+	if (ns.WoW10) then
+		self:RegisterEvent("SETTINGS_LOADED", "OnEvent")
+	end
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
+	self:RegisterEvent("VARIABLES_LOADED", "OnEvent")
+	self:EnableScriptErrors()
 end
