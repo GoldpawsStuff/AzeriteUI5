@@ -24,7 +24,8 @@
 
 --]]
 local _, ns = ...
-if (not ns.IsRetail) then return end
+
+if (not ns.WoW10) then return end
 
 local Tracker = ns:NewModule("Tracker", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0")
 
