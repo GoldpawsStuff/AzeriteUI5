@@ -125,7 +125,9 @@ BlizzardABDisabler.HideBlizzard = function(self)
 	MainMenuBar:UnregisterEvent("ACTIONBAR_HIDEGRID")
 
 	ActionBarController:UnregisterAllEvents()
-	ActionBarController:RegisterEvent("SETTINGS_LOADED") -- needed to update paging
+	if (ns.WoW10) then
+		ActionBarController:RegisterEvent("SETTINGS_LOADED") -- needed to update paging
+	end
 	if (ns.IsRetail) then
 		ActionBarController:RegisterEvent("UPDATE_EXTRA_ACTIONBAR") -- needed to update extrabuttons
 	end

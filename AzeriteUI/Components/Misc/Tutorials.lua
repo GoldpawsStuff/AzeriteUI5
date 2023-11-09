@@ -87,9 +87,8 @@ BlizzTutorials.OnEvent = function(self, event, ...)
 end
 
 BlizzTutorials.OnInitialize = function(self)
-	if (ns.IsClassic or ns.IsTBC) then
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	else
+	if (ns.WoW10) then
 		self:RegisterEvent("SETTINGS_LOADED", "OnEvent")
 	end
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 end
