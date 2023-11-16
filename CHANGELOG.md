@@ -4,9 +4,12 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-11-09
+## [5.2.126-RC] 2023-11-16
 ### Changed
 - The console variable `scriptErrors` will now forcefully be set to `1` as these reports exist for a reason.
+
+### Fixed
+- May or may not have fixed a nameplate related error that some users were experiencing.
 
 ## [5.2.125-RC] 2023-11-07
 - Updated for WoW Client Patch 10.2.0.
