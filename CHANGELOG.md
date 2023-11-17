@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-11-17
+## [5.2.127-RC] 2023-11-17
+- Updated for WoW Client Patch 1.15.0.
+
 ### Fixed
 - Added a more secure workaround for a nameplate related error that I find it impossible to reproduce.
 - Added a general fix to work around `UnitInRange` and `IsItemInRange` being protected and blocked in combat in WoW Retail build 52188.
