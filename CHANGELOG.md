@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-11-17
+### Fixed
+- Added a more secure workaround for a nameplate related error that I find it impossible to reproduce.
+- Added a general fix to work around `UnitInRange` and `IsItemInRange` being protected and blocked in combat in WoW Retail build 52188.
+
 ## [5.2.126-RC] 2023-11-16
 ### Changed
 - The console variable `scriptErrors` will now forcefully be set to `1` as these reports exist for a reason.
