@@ -367,7 +367,7 @@ end
 local NamePlate_PostUpdatePositions = function(self)
 	local db = ns.GetConfig("NamePlates")
 
-	local aurasEnabled = self:IsElementEnabled("Auras")
+	--local aurasEnabled = self:IsElementEnabled("Auras")
 	local auras = self.Auras
 	local name = self.Name
 	local raidTarget = self.RaidTargetIndicator
@@ -388,8 +388,13 @@ local NamePlate_PostUpdatePositions = function(self)
 			end
 		end
 
-		--local numAuras = (not ns.IsRetail) and (auras.visibleBuffs + auras.visibleDebuffs) or (#auras.sortedBuffs + #auras.sortedDebuffs)
-		local numAuras = aurasEnabled and ((not ns.IsRetail) and (auras.visibleBuffs + auras.visibleDebuffs) or (#auras.sortedBuffs + #auras.sortedDebuffs)) or 0
+		local numAuras = 0
+		if (ns.IsRetail) then
+			numAuras = auras.sortedBuffs and auras.sortedDebuffs and (#auras.sortedBuffs + #auras.sortedDebuffs) or 0
+		else
+			numAuras = auras.visibleBuffs and auras.visibleDebuffs and (auras.visibleBuffs + auras.visibleDebuffs) or 0
+		end
+
 		local numRows = (numAuras > 0) and (math_floor(numAuras / auras.numPerRow)) or 0
 
 		if (numRows ~= auras.numRows or hasName ~= auras.usingNameOffset or auras.usingNameOffset == nil) then
