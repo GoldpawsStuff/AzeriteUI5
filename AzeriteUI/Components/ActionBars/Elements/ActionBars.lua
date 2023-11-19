@@ -49,9 +49,6 @@ local RegisterCooldown = ns.Widgets.RegisterCooldown
 local UIHider = ns.Hider
 local noop = ns.Noop
 
--- Constants
-local _COMBAT, _TARGET, _DIM_WHEN_RESTING, _DIM_WHEN_INACTIVE, _RESTING
-
 -- Return blizzard barID by barnum.
 local BAR_TO_ID = {
 	[1] = 1,
@@ -438,6 +435,14 @@ ActionBarMod.CreateBars = function(self)
 		end
 
 		self.bars[i] = bar
+	end
+
+	-- Make the flyouts remain visible when called from faded bars.
+	-- *Note that the LAB10GE flyout handler does not exist
+	-- before at least one action button has been created using it.
+	local flyoutHandler = ns.WoW10 and LAB10GEFlyoutHandlerFrame or SpellFlyout
+	if (flyoutHandler) then
+		flyoutHandler:SetIgnoreParentAlpha(true)
 	end
 
 end
