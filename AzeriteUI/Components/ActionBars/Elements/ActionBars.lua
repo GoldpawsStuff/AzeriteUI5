@@ -49,7 +49,7 @@ local RegisterCooldown = ns.Widgets.RegisterCooldown
 local UIHider = ns.Hider
 local noop = ns.Noop
 
--- Return blizzard barID by barnum.
+-- Return blizzard barID by from own bar numbers.
 local BAR_TO_ID = {
 	[1] = 1,
 	[2] = BOTTOMLEFT_ACTIONBAR_PAGE,
@@ -63,6 +63,7 @@ if (ns.IsRetail) then
 	BAR_TO_ID[8] = MULTIBAR_7_ACTIONBAR_PAGE
 end
 
+-- Return our bar number from blizzard barID.
 local ID_TO_BAR = {}
 for i,j in next,BAR_TO_ID do ID_TO_BAR[j] = i end
 
@@ -328,7 +329,7 @@ local style = function(self)
 	self.IconBorder:SetTexture(db.ButtonBorderTexture)
 	self.IconBorder:SetVertexColor(unpack(db.ButtonBorderColor))
 
-	-- Spell Activation / MaxDps
+	-- Blizzard Spell Activation / MaxDps (addon) / SpellActivationOverlay (addon for Wrath/Classic Era)
 	self.CustomSpellActivationAlert = self.OverlayFrame:CreateTexture(nil, "ARTWORK", nil, -7)
 	self.CustomSpellActivationAlert:SetSize(unpack(db.ButtonSpellHighlightSize))
 	self.CustomSpellActivationAlert:SetPoint(unpack(db.ButtonSpellHighlightPosition))
@@ -502,35 +503,6 @@ ActionBarMod.CreateAnchors = function(self)
 	ns.RegisterCallback(self, "MFM_Dragging", "OnAnchorEvent")
 	ns.RegisterCallback(self, "MFM_UIScaleChanged", "OnAnchorEvent")
 
-end
-
-ActionBarMod.CreatePetBattleController = function(self)
-	if (self.petBattleController) then return end
-	if (not self.bars[1]) then return end
-
-	local petBattleController = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-	petBattleController:SetAttribute("_onstate-petbattle", string_format([[
-		if (newstate == "petbattle") then
-			b = b or table.new();
-			b[1], b[2], b[3], b[4], b[5], b[6] = "%s", "%s", "%s", "%s", "%s", "%s";
-			for i = 1,6 do
-				local button, vbutton = "CLICK "..b[i]..":LeftButton", "ACTIONBUTTON"..i
-				for k=1,select("#", GetBindingKey(button)) do
-					local key = select(k, GetBindingKey(button))
-					self:SetBinding(true, key, vbutton)
-				end
-				-- do the same for the default UIs bindings
-				for k=1,select("#", GetBindingKey(vbutton)) do
-					local key = select(k, GetBindingKey(vbutton))
-					self:SetBinding(true, key, vbutton)
-				end
-			end
-		else
-			self:ClearBindings()
-		end
-	]], (function(b) local t={}; for i=1,6 do t[i]=b[i]:GetName() end; return unpack(t) end)(self.bars[1].buttons)))
-
-	self.petBattleController = petBattleController
 end
 
 ActionBarMod.GenerateBarDisplayName = function(self, id)
