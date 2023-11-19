@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-11-19
+### Fixed
+- Fixed issues related to the tooltip statusbar display for walls, gates and similar objects.
+- Fixed issues related to health absorb displays in Retail 10.2 in oUF.
+
 ## [5.2.127-RC] 2023-11-17
 - Updated for WoW Client Patch 1.15.0.
 
