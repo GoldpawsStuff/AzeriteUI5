@@ -240,6 +240,7 @@ Tooltips.StyleStatusBar = function(self)
 			local backdrop = Backdrops[tooltip]
 			if (backdrop) then
 				backdrop:SetPoint("BOTTOM", 0, backdrop.offsetBottom + backdrop.offsetBarBottom)
+				Tooltips:OnValueChanged() -- Force an update to the bar's health value and color.
 			end
 		end
 	end)
@@ -262,47 +263,79 @@ Tooltips.StyleStatusBar = function(self)
 end
 
 Tooltips.SetHealthValue = function(self, unit)
-	if (UnitIsDeadOrGhost(unit)) then
+
+	-- It could be a wall or gate that does not count as a unit,
+	-- so we need to check for the existence as well as it's alive status.
+	if (UnitExists(unit) and UnitIsDeadOrGhost(unit)) then
 		if (GameTooltip.StatusBar:IsShown()) then
 			GameTooltip.StatusBar:Hide()
 		end
 	else
-		local msg
-		local min,max = UnitHealth(unit), UnitHealthMax(unit)
-		if (min and max) then
+
+		local msg, min, max
+
+		if (unit) then
+			local min, max = UnitHealth(unit), UnitHealthMax(unit)
 			if (min == max) then
 				msg = string_format("%s", AbbreviateNumberBalanced(min))
 			else
 				msg = string_format("%s / %s", AbbreviateNumber(min), AbbreviateNumber(max))
 			end
 		else
-			msg = NOT_APPLICABLE
+			local min,_,max = GameTooltip.StatusBar:GetValue(), GameTooltip.StatusBar:GetMinMaxValues()
+			if (max > 100) then
+				if (min == max) then
+					msg = string_format("%s", AbbreviateNumberBalanced(min))
+				else
+					msg = string_format("%s / %s", AbbreviateNumber(min), AbbreviateNumber(max))
+				end
+			else
+				msg = string_format("%.0f%%", min/max*100)
+			end
+			--msg = NOT_APPLICABLE
 		end
+
 		GameTooltip.StatusBar.Text:SetText(msg)
+
 		if (not GameTooltip.StatusBar.Text:IsShown()) then
 			GameTooltip.StatusBar.Text:Show()
 		end
+
 		if (not GameTooltip.StatusBar:IsShown()) then
 			GameTooltip.StatusBar:Show()
 		end
 	end
 end
 
+Tooltips.SetStatusBarColor = function(self, unit)
+	local color = unit and GetUnitColor(unit)
+	if (color) then
+		GameTooltip.StatusBar:SetStatusBarColor(color[1], color[2], color[3])
+	else
+		local r, g, b = GameTooltipTextLeft1:GetTextColor()
+		GameTooltip.StatusBar:SetStatusBarColor(r, g, b)
+	end
+end
+
 Tooltips.OnValueChanged = function(self)
 	local unit = select(2, GameTooltip.StatusBar:GetParent():GetUnit())
+
 	if (not unit) then
 		local GMF = GetMouseFocus()
 		if (GMF and GMF.GetAttribute and GMF:GetAttribute("unit")) then
 			unit = GMF:GetAttribute("unit")
 		end
 	end
-	if (not unit) then
-		if (GameTooltip.StatusBar:IsShown()) then
-			GameTooltip.StatusBar:Hide()
-		end
-		return
-	end
+
+	--if (not unit) then
+	--	if (GameTooltip.StatusBar:IsShown()) then
+	--		GameTooltip.StatusBar:Hide()
+	--	end
+	--	return
+	--end
+
 	self:SetHealthValue(unit)
+	self:SetStatusBarColor(unit)
 end
 
 Tooltips.OnTooltipCleared = function(self, tooltip)
@@ -484,17 +517,10 @@ Tooltips.SetDefaultAnchor = function(self, tooltip, parent)
 
 end
 
-Tooltips.SetUnitColor = function(self, unit)
-	local color = GetUnitColor(unit) or Colors.reaction[5]
-	if (color) then
-		GameTooltip.StatusBar:SetStatusBarColor(color[1], color[2], color[3])
-	end
-end
-
 Tooltips.SetHooks = function(self)
 
 	self:SecureHook("SharedTooltip_SetBackdropStyle", "SetBackdropStyle")
-	self:SecureHook("GameTooltip_UnitColor", "SetUnitColor")
+	self:SecureHook("GameTooltip_UnitColor", "SetStatusBarColor")
 	self:SecureHook("GameTooltip_ShowCompareItem", "OnCompareItemShow")
 	self:SecureHook("GameTooltip_SetDefaultAnchor", "SetDefaultAnchor")
 
