@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-11-20
+### Fixed
+- Turning off arena prep frames in solo shuffles until we can figure out what makes them bug out.
+
 ## [5.2.129-RC] 2023-11-20
 ### Fixed
 - Actionbuttons should no longer fade out when a flyout bar is visible.

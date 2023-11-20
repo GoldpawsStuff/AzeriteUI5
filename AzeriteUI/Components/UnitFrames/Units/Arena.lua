@@ -336,6 +336,15 @@ local UnitFrame_PostUpdate = function(self)
 end
 
 local UnitFrame_OnEvent = function(self, event, unit, ...)
+	if (event == "PLAYER_ENTERING_WORLD") then
+
+		if (ns.WoW10) then
+			-- Turn off prep frames for solo shuffles
+			-- until we can figure out what makes the auras bug out.
+			self:SetAttribute("oUF-enableArenaPrep", IsActiveBattlefieldArena() and not C_PvP.IsSoloShuffle())
+		end
+	end
+
 	UnitFrame_PostUpdate(self)
 end
 
