@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 14
+local MINOR_VERSION = 16
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -56,7 +56,7 @@ lib.petGridCounter = lib.petGridCounter or 0
 lib.cache = lib.cache or { methods = {}, scrips = {} }
 lib.embeds = lib.embeds or {}
 
--- GLOBALS: CreateFrame, IsPlayerInWorld
+-- GLOBALS: CreateFrame, IsPlayerInWorld, LAB10GEFlyoutHandlerFrame, SpellFlyout
 
 -- Lua API
 local getmetatable = getmetatable
@@ -86,7 +86,7 @@ lib.UpdateFadeFrame = function(self, frame)
 		end
 
 	elseif (isActionButton) then
-		if (self.inCombat and not (frame.header and frame.header.config and frame.header.config.fadeInCombat) and frame:GetTexture()) or (self.gridCounter > 0 and not frame.ignoreGridCounterOnHover and (self.cursorType ~= "petaction" or isRetail)) then
+		if (self.flyoutShown) or (self.inCombat and not (frame.header and frame.header.config and frame.header.config.fadeInCombat) and frame:GetTexture()) or (self.gridCounter > 0 and not frame.ignoreGridCounterOnHover and (self.cursorType ~= "petaction" or isRetail)) then
 			setAlpha(frame, 1)
 			return
 		end
@@ -163,6 +163,12 @@ lib.CheckFadeFrames = function(self)
 	end
 end
 
+lib.UpdateFlyout = function(self)
+	if (not self.flyoutHandler) then return end
+	self.flyoutShown = self.flyoutHandler:IsShown()
+	self:UpdateFadeFrames()
+end
+
 lib.RegisterFrameForFading = function(self, frame, fadeGroup, ...)
 	if (lib.fadeFrames[frame]) then
 		return
@@ -175,6 +181,17 @@ lib.RegisterFrameForFading = function(self, frame, fadeGroup, ...)
 	-- Not the best check ever, but it'll have to do for now.
 	if (frame:GetObjectType() == "CheckButton") and (frame.HasAction) then
 		lib.fadeFrameType[frame] = "actionbutton"
+
+		-- Keep track of the flyout handlers.
+		if (not self.flyoutHandler) then
+			local flyoutHandler = WoW10 and LAB10GEFlyoutHandlerFrame or SpellFlyout
+
+			self:HookScript(flyoutHandler, "OnShow", "UpdateFlyout")
+			self:HookScript(flyoutHandler, "OnHide", "UpdateFlyout")
+
+			self.flyoutHandler = flyoutHandler
+		end
+
 	end
 
 	-- Might be spammy, but I prefer not to replace frame methods.
