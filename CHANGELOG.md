@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-11-20
+### Fixed
+- Actionbuttons should no longer fade out when a flyout bar is visible.
+- Problems with keybinds not functioning in pet battles have been fixed.
+
 ## [5.2.128-RC] 2023-11-19
 ### Fixed
 - Fixed issues related to the tooltip statusbar display for walls, gates and similar objects.
