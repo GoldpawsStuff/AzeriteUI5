@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 16
+local MINOR_VERSION = 17
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -185,11 +185,12 @@ lib.RegisterFrameForFading = function(self, frame, fadeGroup, ...)
 		-- Keep track of the flyout handlers.
 		if (not self.flyoutHandler) then
 			local flyoutHandler = WoW10 and LAB10GEFlyoutHandlerFrame or SpellFlyout
+			if (flyoutHandler) then
+				self:HookScript(flyoutHandler, "OnShow", "UpdateFlyout")
+				self:HookScript(flyoutHandler, "OnHide", "UpdateFlyout")
 
-			self:HookScript(flyoutHandler, "OnShow", "UpdateFlyout")
-			self:HookScript(flyoutHandler, "OnHide", "UpdateFlyout")
-
-			self.flyoutHandler = flyoutHandler
+				self.flyoutHandler = flyoutHandler
+			end
 		end
 
 	end
