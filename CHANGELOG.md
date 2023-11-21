@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.131-RC] 2023-11-20
+### Fixed
+- The fading frames library will no longer break the frame fading on logon in Wrath and Classic Era.
+
 ## [5.2.130-RC] 2023-11-20
 ### Fixed
 - Turning off arena prep frames in solo shuffles until we can figure out what makes them bug out.
