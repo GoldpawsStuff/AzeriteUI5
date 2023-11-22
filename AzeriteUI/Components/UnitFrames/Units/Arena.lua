@@ -956,6 +956,10 @@ ArenaFrameMod.CreateUnitFrames = function(self)
 
 		unitButton:SetParent(self.frame.content)
 
+		-- This severely bugs out in the prep phase in shuffles,
+		-- so we're going to disable it and enable on demand.
+		unitButton:DisableElement("Auras")
+
 		self.frame.content:SetFrameRef("child"..i, unitButton)
 		self.frame.content:SetAttribute("child"..i, unitButton)
 	end
@@ -1029,6 +1033,7 @@ end
 
 ArenaFrameMod.UpdateUnits = function(self)
 	if (not self:GetFrame()) then return end
+
 	for frame in next,Units do
 		if (self.db.profile.useRangeIndicator) then
 			frame:EnableElement("Range")
@@ -1036,6 +1041,7 @@ ArenaFrameMod.UpdateUnits = function(self)
 			frame:DisableElement("Range")
 			frame:SetAlpha(1)
 		end
+
 		frame:UpdateAllElements("RefreshUnit")
 	end
 end
@@ -1051,18 +1057,47 @@ ArenaFrameMod.OnEvent = function(self, event, ...)
 			self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 			return
 		end
+
 		self:UpdateHeader()
+
+	elseif (event == "ARENA_OPPONENT_UPDATE") then
+
+		-- Enable and forceupdate auras when the opponent unit exists.
+		local unit, updateReason = ...
+		for frame in next,Units do
+			if (frame.unit == unit and not frame:IsElementEnabled("Auras")) then
+				frame:EnableElement("Auras")
+				frame.Auras:ForceUpdate()
+			end
+		end
 
 	elseif (event == "PLAYER_ENTERING_WORLD") then
 		if (InCombatLockdown()) then
 			self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 			return
 		end
+
+		-- Disable the element upon entering world
+		-- to avoid shuffle prep phase bugging out.
+		for frame in next,Units do
+			frame:DisableElement("Auras")
+		end
+
 		self:UpdateHeader()
+
+	elseif (event == "PLAYER_LEAVING_WORLD") then
+
+		-- Disable the element upon leaving world
+		-- to avoid shuffle prep phase bugging out.
+		for frame in next,Units do
+			frame:DisableElement("Auras")
+		end
 
 	elseif (event == "PLAYER_REGEN_ENABLED") then
 		if (InCombatLockdown()) then return end
+
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+
 		if (self.needHeaderUpdate) then
 			self.needHeaderUpdate = nil
 			self:UpdateHeader()
