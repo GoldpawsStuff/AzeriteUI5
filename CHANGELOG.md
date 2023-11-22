@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-11-22
+### Changed
+- To avoid issues with the arena enemy aura elements bugging out in the arena solo shuffle prep phase we're disabling the aura element until an arena opponent actually exists and can be queried.
+
 ## [5.2.131-RC] 2023-11-20
 ### Fixed
 - The fading frames library will no longer break the frame fading on logon in Wrath and Classic Era.
