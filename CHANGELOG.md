@@ -5,7 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-11-22
+### Added
+- You can now choose tooltip theme in the `/azerite` options menu. Currently only two themes are available, the old blocky `Azerite` theme and a new, simplified version of the traditional blizzard tooltip called `Classic`.
+
 ### Changed
+- The default tooltip theme is now the blizzard looking `Classic` theme. You can change this in the `/azerite` options menu.
 - To avoid issues with the arena enemy aura elements bugging out in the arena solo shuffle prep phase we're disabling the aura element until an arena opponent actually exists and can be queried.
 
 ## [5.2.131-RC] 2023-11-20
