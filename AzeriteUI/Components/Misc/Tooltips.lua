@@ -574,6 +574,10 @@ Tooltips.UpdateAnchor = function(self)
 	self.anchor:SetPoint(config[1], UIParent, config[1], config[2], config[3])
 end
 
+Tooltips.UpdateSettings = function(self)
+	self:UpdateTooltipThemes()
+end
+
 Tooltips.PostUpdatePositionAndScale = function(self)
 	GameTooltip:SetScale(self.db.profile.savedPosition.scale * ns.API.GetEffectiveScale())
 end
@@ -585,7 +589,6 @@ Tooltips.OnEnable = function(self)
 		GameTooltipDefaultContainer.ClearHighlight = ns.Noop
 	end
 
-	self:UpdateStatusBarTheme()
 	self:UpdateTooltipThemes()
 	self:SetHooks()
 
