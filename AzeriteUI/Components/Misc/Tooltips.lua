@@ -32,7 +32,8 @@ local Tooltips = ns:NewModule("Tooltips", ns.Module, "LibMoreEvents-1.0", "AceHo
 -- Lua API
 local _G = _G
 local ipairs = ipairs
-local pairs = pairs
+local next = next
+local rawget = rawget
 local rawset = rawset
 local select = select
 local setmetatable = setmetatable
@@ -46,6 +47,7 @@ local unpack = unpack
 -- GLOBALS: GameTooltip, GameTooltipTextLeft1, GameTooltipStatusBar, UIParent
 -- GLOBALS: UnitAura, UnitClass, UnitExists, UnitEffectiveLevel, UnitHealth, UnitHealthMax, UnitName, UnitRealmRelationship, UnitIsDeadOrGhost, UnitIsPlayer
 -- GLOBALS: LE_REALM_RELATION_COALESCED, LE_REALM_RELATION_VIRTUAL, FOREIGN_SERVER_LABEL, INTERACTIVE_SERVER_LABEL
+-- GLOGALS: NarciGameTooltip
 
 -- Addon API
 local Colors = ns.Colors
@@ -68,6 +70,7 @@ local Backdrops = setmetatable({}, { __index = function(t,k)
 end })
 
 local defaults = { profile = ns:Merge({
+	theme = "Classic",
 	showItemID = false,
 	showSpellID = false,
 	anchor = true,
@@ -90,118 +93,171 @@ Tooltips.GenerateDefaults = function(self)
 	return defaults
 end
 
-Tooltips.SetBackdropStyle = function(self, tooltip)
+Tooltips.UpdateBackdropTheme = function(self, tooltip)
 	if (not tooltip) or (tooltip.IsEmbedded) or (tooltip:IsForbidden()) then return end
 
-	tooltip:DisableDrawLayer("BACKGROUND")
-	tooltip:DisableDrawLayer("BORDER")
+	-- Only do this once.
+	if (not rawget(Backdrops, tooltip)) then
+		tooltip:DisableDrawLayer("BACKGROUND")
+		tooltip:DisableDrawLayer("BORDER")
 
-	-- Don't want or need the extra padding here,
-	-- as our current borders do not require them.
-	if (tooltip == NarciGameTooltip) then
+		-- Don't want or need the extra padding here,
+		-- as our current borders do not require them.
+		if (NarciGameTooltip and tooltip == NarciGameTooltip) then
 
-		-- Note that the WorldMap uses this to fit extra embedded stuff in,
-		-- so we can't randomly just remove it from all tooltips, or stuff will break.
-		-- Currently the only one we know of that needs tweaking, is the aforementioned.
-		if (tooltip.SetPadding) then
-			tooltip:SetPadding(0, 0, 0, 0)
+			-- Note that the WorldMap uses this to fit extra embedded stuff in,
+			-- so we can't randomly just remove it from all tooltips, or stuff will break.
+			-- Currently the only one we know of that needs tweaking, is the aforementioned.
+			if (tooltip.SetPadding) then
+				tooltip:SetPadding(0, 0, 0, 0)
 
-			-- Don't replace method. In case editmode.
-			hooksecurefunc(tooltip, "SetPadding", function(self, ...)
-				local padding = 0
-				for i = 1, select("#", ...) do
-					padding = padding + tonumber((select(i, ...))) or 0
+				if (not self:IsHooked(tooltip, "SetPadding")) then
+					-- Use a local copy to avoid hook looping.
+					local setPadding = tooltip.SetPadding
+
+					self:SecureHook(tooltip, "SetPadding", function(self, ...)
+						--local padding = 0
+						--for i = 1, select("#", ...) do
+						--	padding = padding + tonumber((select(i, ...))) or 0
+						--end
+						--if (padding < .1) then
+						--	return
+						--end
+						setPadding(self, 0, 0, 0, 0)
+					end)
 				end
-				if (padding < .1) then
-					return
-				end
-				self:SetPadding(0, 0, 0, 0)
-			end)
+			end
 		end
-	end
 
-	-- Glorious 9.1.5 crap
-	-- They decided to move the entire backdrop into its own hashed frame.
-	-- We like this, because it makes it easier to kill. Kill. Kill. Kill. Kill.
-	if (tooltip.NineSlice) then
-		tooltip.NineSlice:SetParent(UIHider)
-	end
+		-- Glorious 9.1.5 crap
+		-- They decided to move the entire backdrop into its own hashed frame.
+		-- We like this, because it makes it easier to kill. Kill. Kill. Kill. Kill.
+		if (tooltip.NineSlice) then
+			tooltip.NineSlice:SetParent(UIHider)
+		end
 
-	-- Textures in the combat pet tooltips
-	for _,texName in ipairs({
-		"BorderTopLeft",
-		"BorderTopRight",
-		"BorderBottomRight",
-		"BorderBottomLeft",
-		"BorderTop",
-		"BorderRight",
-		"BorderBottom",
-		"BorderLeft",
-		"Background"
-	}) do
-		local region = self[texName]
-		if (region) then
-			region:SetTexture(nil)
-			local drawLayer = region:GetDrawLayer()
-			if (drawLayer) then
-				tooltip:DisableDrawLayer(drawLayer)
+		-- Textures in the combat pet tooltips
+		for _,texName in ipairs({
+			"BorderTopLeft",
+			"BorderTopRight",
+			"BorderBottomRight",
+			"BorderBottomLeft",
+			"BorderTop",
+			"BorderRight",
+			"BorderBottom",
+			"BorderLeft",
+			"Background"
+		}) do
+			local region = self[texName]
+			if (region) then
+				region:SetTexture(nil)
+				local drawLayer = region:GetDrawLayer()
+				if (drawLayer) then
+					tooltip:DisableDrawLayer(drawLayer)
+				end
+			end
+		end
+
+		-- Region names sourced from SharedXML\NineSlice.lua
+		-- *Majority of this, if not all, was moved into frame.NineSlice in 9.1.5
+		for _,pieceName in ipairs({
+			"TopLeftCorner",
+			"TopRightCorner",
+			"BottomLeftCorner",
+			"BottomRightCorner",
+			"TopEdge",
+			"BottomEdge",
+			"LeftEdge",
+			"RightEdge",
+			"Center"
+		}) do
+			local region = tooltip[pieceName]
+			if (region) then
+				region:SetTexture(nil)
+				local drawLayer = region:GetDrawLayer()
+				if (drawLayer) then
+					tooltip:DisableDrawLayer(drawLayer)
+				end
 			end
 		end
 	end
 
-	-- Region names sourced from SharedXML\NineSlice.lua
-	-- *Majority of this, if not all, was moved into frame.NineSlice in 9.1.5
-	for _,pieceName in ipairs({
-		"TopLeftCorner",
-		"TopRightCorner",
-		"BottomLeftCorner",
-		"BottomRightCorner",
-		"TopEdge",
-		"BottomEdge",
-		"LeftEdge",
-		"RightEdge",
-		"Center"
-	}) do
-		local region = tooltip[pieceName]
-		if (region) then
-			region:SetTexture(nil)
-			local drawLayer = region:GetDrawLayer()
-			if (drawLayer) then
-				tooltip:DisableDrawLayer(drawLayer)
-			end
-		end
-	end
+	local db = ns.GetConfig("Tooltips").themes[self.db.profile.theme].backdropStyle
 
+	-- Store some values locally for faster updates.
 	local backdrop = Backdrops[tooltip]
-	backdrop.offsetLeft = -10
-	backdrop.offsetRight = 10
-	backdrop.offsetTop = 18
-	backdrop.offsetBottom = -18
-	backdrop.offsetBar = 0
-	backdrop.offsetBarBottom = -6
+	backdrop.offsetLeft = db.offsetLeft
+	backdrop.offsetRight = db.offsetRight
+	backdrop.offsetTop = db.offsetTop
+	backdrop.offsetBottom = db.offsetBottom
+	backdrop.offsetBar = db.offsetBar
+	backdrop.offsetBarBottom = db.offsetBarBottom
+
+	-- Setup the backdrop theme.
 	backdrop:SetBackdrop(nil)
-	backdrop:SetBackdrop({
-		bgFile = [[Interface\Tooltips\UI-Tooltip-Background]],
-		edgeSize = 32, edgeFile = GetMedia("border-tooltip"),
-		tile = true,
-		insets = { left = 8, right = 8, top = 16, bottom = 16 }
-	})
+	backdrop:SetBackdrop(db.backdrop)
 	backdrop:ClearAllPoints()
-	backdrop:SetPoint( "LEFT", backdrop.offsetLeft, 0 )
-	backdrop:SetPoint( "RIGHT", backdrop.offsetRight, 0 )
-	backdrop:SetPoint( "TOP", 0, backdrop.offsetTop )
-	backdrop:SetPoint( "BOTTOM", 0, backdrop.offsetBottom )
-	backdrop:SetBackdropColor(.05, .05, .05, .95)
+	backdrop:SetPoint("LEFT", backdrop.offsetLeft, 0)
+	backdrop:SetPoint("RIGHT", backdrop.offsetRight, 0)
+	backdrop:SetPoint("TOP", 0, backdrop.offsetTop)
+	backdrop:SetPoint("BOTTOM", 0, backdrop.offsetBottom)
+	backdrop:SetBackdropColor(unpack(db.backdropColor))
+	backdrop:SetBackdropBorderColor(unpack(db.backdropBorderColor))
 
 end
 
-Tooltips.StyleTooltips = function(self, event, ...)
+Tooltips.UpdateStatusBarTheme = function(self)
 
-	if (event == "PLAYER_ENTERING_WORLD") then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD", "StyleTooltips")
+	local db = ns.GetConfig("Tooltips").themes[self.db.profile.theme].barStyle
+
+	GameTooltip.StatusBar = GameTooltipStatusBar
+
+	local bar = GameTooltip.StatusBar
+	bar:SetScript("OnValueChanged", nil)
+	bar:SetStatusBarTexture(db.texture)
+	bar:ClearAllPoints()
+	bar:SetPoint("BOTTOMLEFT", bar:GetParent(), "BOTTOMLEFT", db.offsetLeft, db.offsetBottom)
+	bar:SetPoint("BOTTOMRIGHT", bar:GetParent(), "BOTTOMRIGHT", -db.offsetRight, db.offsetBottom)
+	bar:SetHeight(db.height)
+
+	if (not self:IsHooked(bar, "OnShow")) then
+		bar:HookScript("OnShow", function(self)
+			local tooltip = self:GetParent()
+			if (tooltip) then
+				local backdrop = rawget(Backdrops, tooltip)
+				if (backdrop) then
+					backdrop:SetPoint("BOTTOM", 0, backdrop.offsetBottom + backdrop.offsetBarBottom)
+					Tooltips:OnValueChanged() -- Force an update to the bar's health value and color.
+				end
+			end
+		end)
 	end
 
-	for _,tooltip in pairs({
+	if (not self:IsHooked(bar, "OnHide")) then
+		bar:HookScript("OnHide", function(self)
+			local tooltip = self:GetParent()
+			if (tooltip) then
+				local backdrop = rawget(Backdrops, tooltip)
+				if (backdrop) then
+					backdrop:SetPoint("BOTTOM", 0, backdrop.offsetBottom)
+				end
+			end
+		end)
+	end
+
+	bar.Text = bar.Text or GameTooltip.StatusBar:CreateFontString(nil, "OVERLAY")
+	bar.Text:SetPoint(unpack(db.valuePosition))
+	bar.Text:SetFontObject(db.valueFont)
+	bar.Text:SetTextColor(unpack(db.valueColor))
+
+end
+
+Tooltips.UpdateTooltipThemes = function(self, event, ...)
+	if (event == "PLAYER_ENTERING_WORLD") then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD", "UpdateTooltipThemes")
+	end
+
+	for _,tooltip in next,{
 		_G.ItemRefTooltip,
 		_G.ItemRefShoppingTooltip1,
 		_G.ItemRefShoppingTooltip2,
@@ -216,50 +272,11 @@ Tooltips.StyleTooltips = function(self, event, ...)
 		_G.QuestScrollFrame and _G.QuestScrollFrame.StoryTooltip,
 		_G.QuestScrollFrame and _G.QuestScrollFrame.CampaignTooltip,
 		_G.NarciGameTooltip
-	}) do
-		if (tooltip) then
-			self:SetBackdropStyle(tooltip)
-		end
+	} do
+		self:UpdateBackdropTheme(tooltip)
 	end
 
-end
-
-Tooltips.StyleStatusBar = function(self)
-
-	GameTooltip.StatusBar = GameTooltipStatusBar
-	GameTooltip.StatusBar:SetScript("OnValueChanged", nil)
-	GameTooltip.StatusBar:SetStatusBarTexture(GetMedia("bar-progress"))
-	GameTooltip.StatusBar:ClearAllPoints()
-	GameTooltip.StatusBar:SetPoint("BOTTOMLEFT", GameTooltip.StatusBar:GetParent(), "BOTTOMLEFT", -1, -4)
-	GameTooltip.StatusBar:SetPoint("BOTTOMRIGHT", GameTooltip.StatusBar:GetParent(), "BOTTOMRIGHT", 1, -4)
-	GameTooltip.StatusBar:SetHeight(4)
-
-	GameTooltip.StatusBar:HookScript("OnShow", function(self)
-		local tooltip = self:GetParent()
-		if (tooltip) then
-			local backdrop = Backdrops[tooltip]
-			if (backdrop) then
-				backdrop:SetPoint("BOTTOM", 0, backdrop.offsetBottom + backdrop.offsetBarBottom)
-				Tooltips:OnValueChanged() -- Force an update to the bar's health value and color.
-			end
-		end
-	end)
-
-	GameTooltip.StatusBar:HookScript("OnHide", function(self)
-		local tooltip = self:GetParent()
-		if (tooltip) then
-			local backdrop = Backdrops[tooltip]
-			if (backdrop) then
-				backdrop:SetPoint("BOTTOM", 0, backdrop.offsetBottom)
-			end
-		end
-	end)
-
-	GameTooltip.StatusBar.Text = GameTooltip.StatusBar:CreateFontString(nil, "OVERLAY")
-	GameTooltip.StatusBar.Text:SetPoint("CENTER", 0, 0)
-	GameTooltip.StatusBar.Text:SetFontObject(GetFont(13,true))
-	GameTooltip.StatusBar.Text:SetTextColor(unpack(Colors.offwhite))
-
+	self:UpdateStatusBarTheme()
 end
 
 Tooltips.SetHealthValue = function(self, unit)
@@ -519,7 +536,7 @@ end
 
 Tooltips.SetHooks = function(self)
 
-	self:SecureHook("SharedTooltip_SetBackdropStyle", "SetBackdropStyle")
+	self:SecureHook("SharedTooltip_SetBackdropStyle", "UpdateBackdropTheme")
 	self:SecureHook("GameTooltip_UnitColor", "SetStatusBarColor")
 	self:SecureHook("GameTooltip_ShowCompareItem", "OnCompareItemShow")
 	self:SecureHook("GameTooltip_SetDefaultAnchor", "SetDefaultAnchor")
@@ -568,13 +585,13 @@ Tooltips.OnEnable = function(self)
 		GameTooltipDefaultContainer.ClearHighlight = ns.Noop
 	end
 
-	self:StyleStatusBar()
-	self:StyleTooltips()
+	self:UpdateStatusBarTheme()
+	self:UpdateTooltipThemes()
 	self:SetHooks()
 
 	self:CreateAnchor(L["Tooltips"])
 
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "StyleTooltips")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateTooltipThemes")
 
 	ns.Module.OnEnable(self)
 end

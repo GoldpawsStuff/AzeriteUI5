@@ -23,6 +23,7 @@
 	<Script file="Configs\StanceButton.lua"/>
 	<Script file="Configs\StatusBars.lua"/>
 	<Script file="Configs\TargetUnitFrame.lua"/>
+	<Script file="Configs\Tooltips.lua"/>
 	<Script file="Configs\ToTUnitFrame.lua"/>
 	<Script file="Configs\VehicleExitButton.lua"/>
 

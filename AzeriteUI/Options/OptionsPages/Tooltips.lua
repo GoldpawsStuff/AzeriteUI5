@@ -65,6 +65,23 @@ local GenerateOptions = function()
 		name = L["Tooltip Settings"],
 		type = "group",
 		args = {
+			themeHeader = {
+				name = L["Style"],
+				order = 1,
+				type = "header", width = "full"
+			},
+			theme = {
+				name = L["Set Tooltip Theme (Experimental)"],
+				desc = L["Chooses theme for the Tooltips."],
+				order = 2,
+				type = "select", style = "dropdown",
+				values = {
+					["Azerite"] = "Azerite",
+					["Classic"] = "Classic"
+				},
+				set = setter,
+				get = getter
+			},
 			visibilityHeader = {
 				name = L["Visibility"],
 				order = 9,
