@@ -96,7 +96,7 @@ end
 
 local IsWinterVeil = function()
 	local year = tonumber(date("%Y"))
-	return dateInRange(2,12,year-1,9,1,year) or dateInRange(9,12,year,9,1,year+1)
+	return dateInRange(1,12,year-1,9,1,year) or dateInRange(1,12,year,9,1,year+1)
 end
 
 local IsLoveFestival = function()

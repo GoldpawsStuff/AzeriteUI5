@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-11-24
+### Changed
+- Fixed inconsistencies in date back-end.
+
 ## [5.2.132-RC] 2023-11-22
 ### Added
 - You can now choose tooltip theme in the `/azerite` options menu. Currently only two themes are available, the old blocky `Azerite` theme and a new, simplified version of the traditional blizzard tooltip called `Classic`.
