@@ -323,6 +323,45 @@ local GenerateOptions = function()
 		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("PlayerClassPowerFrame")
 		suboptions.name = function(info) return ns:GetModule("PlayerClassPowerFrame"):GetLabel() end
 		suboptions.order = 210
+		suboptions.args.showComboPoints = {
+			name = L["Show Combo Points"],
+			desc = L["Toggle whether to show Combo Points."],
+			order = 11, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+		if (ns.IsWrath or ns.IsRetail) then
+			suboptions.args.showRunes = {
+				name = L["Show Runes (Death Knight)"],
+				desc = L["Toggle whether to show Death Knight Runes."],
+				order = 12, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+			}
+			if (ns.IsRetail) then
+				suboptions.args.showArcaneCharges = {
+					name = L["Show Arcane Charges (Mage)"],
+					desc = L["Toggle whether to show Mage Arcane Charges."],
+					order = 11, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+				}
+				suboptions.args.showChi = {
+					name = L["Show Chi (Monk)"],
+					desc = L["Toggle whether to show Monk Chi."],
+					order = 11, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+				}
+				suboptions.args.showHolyPower = {
+					name = L["Show Holy Power (Paladin)"],
+					desc = L["Toggle whether to show Paladin Holy Power."],
+					order = 11, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+				}
+				suboptions.args.showSoulShards = {
+					name = L["Show Soul Shards (Warlock)"],
+					desc = L["Toggle whether to show Warlock Soul Shards."],
+					order = 11, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+				}
+				suboptions.args.showStagger = {
+					name = L["Show Stagger (Monk)"],
+					desc = L["Toggle whether to show Monk Stagger."],
+					order = 11, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+				}
+			end
+		end
 		options.args.classpower = suboptions
 	end
 
