@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - The default tooltip theme is now the blizzard looking `Classic` theme. You can change this in the `/azerite` options menu.
 - To avoid issues with the arena enemy aura elements bugging out in the arena solo shuffle prep phase we're disabling the aura element until an arena opponent actually exists and can be queried.
 
+## [Unreleased] 2023-11-29
+### Fixed
+- Soul Shards should be listed as such when in `/lock` mode, and not as "Combo Points" as were happening for Retail Demonology and Affliction Warlocks.
+
 ## [5.2.131-RC] 2023-11-20
 ### Fixed
 - The fading frames library will no longer break the frame fading on logon in Wrath and Classic Era.
