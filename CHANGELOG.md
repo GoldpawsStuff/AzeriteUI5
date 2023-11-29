@@ -17,8 +17,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - To avoid issues with the arena enemy aura elements bugging out in the arena solo shuffle prep phase we're disabling the aura element until an arena opponent actually exists and can be queried.
 
 ## [Unreleased] 2023-11-29
+### Changed
+- Added options to toggle specific class powers in the `/azerite` options menu without the need to create separate options profiles for separate characters.
+
 ### Fixed
-- Soul Shards should be listed as such when in `/lock` mode, and not as "Combo Points" as were happening for Retail Demonology and Affliction Warlocks.
+- All class powers (including Runes and Stagger) are now simply listed as "Class Power" in both the `/azerite` options menu and in `/lock` mode.
 
 ## [5.2.131-RC] 2023-11-20
 ### Fixed
