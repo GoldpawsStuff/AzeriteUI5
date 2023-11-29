@@ -42,7 +42,15 @@ local noop = ns.Noop
 -- Constants
 local playerClass = ns.PlayerClass
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({
+	showComboPoints = true,
+	showArcaneCharges = ns.IsRetail or nil,
+	showChi = ns.IsRetail or nil,
+	showHolyPower = ns.IsRetail or nil,
+	showRunes = ns.IsWrath or ns.IsRetail or nil,
+	showSoulShards = ns.IsRetail or nil,
+	showStagger = ns.IsRetail or nil
+}, ns.Module.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -376,33 +384,33 @@ ClassPowerMod.CreateUnitFrames = function(self)
 end
 
 ClassPowerMod.GetLabel = function(self)
-	if (ns.IsRetail) then
-		if (ns.PlayerClass == "MAGE") then
-			if (GetSpecialization() == (SPEC_MAGE_ARCANE or 3)) then
-				return L["Arcane Charges"]
-			end
-		elseif (ns.PlayerClass == "MONK") then
-			local spec = GetSpecialization()
-			if (spec == (SPEC_MONK_WINDWALKER or 3)) then
-				return L["Chi"]
-			elseif (spec == (SPEC_MONK_BREWMASTER or 1)) then
-				return L["Stagger"]
-			end
-		elseif (ns.PlayerClass == "PALADIN") then
-			return L["Holy Power"]
-		elseif (ns.PlayerClass == "WARLOCK") then
-			return L["Soul Shards"]
-		elseif (ns.PlayerClass == "EVOKER") then
-			return L["Essence"]
-		elseif (ns.PlayerClass == "DEATHKNIGHT") then
-			return L["Runes"]
-		end
-	elseif (ns.IsWrath) then
-		if (ns.PlayerClass == "DEATHKNIGHT") then
-			return L["Runes"]
-		end
-	end
-	return L["Combo Points"]
+	--if (ns.IsRetail) then
+	--	if (ns.PlayerClass == "MAGE") then
+	--		if (GetSpecialization() == (SPEC_MAGE_ARCANE or 3)) then
+	--			return L["Arcane Charges"]
+	--		end
+	--	elseif (ns.PlayerClass == "MONK") then
+	--		local spec = GetSpecialization()
+	--		if (spec == (SPEC_MONK_WINDWALKER or 3)) then
+	--			return L["Chi"]
+	--		elseif (spec == (SPEC_MONK_BREWMASTER or 1)) then
+	--			return L["Stagger"]
+	--		end
+	--	elseif (ns.PlayerClass == "PALADIN") then
+	--		return L["Holy Power"]
+	--	elseif (ns.PlayerClass == "WARLOCK") then
+	--		return L["Soul Shards"]
+	--	elseif (ns.PlayerClass == "EVOKER") then
+	--		return L["Essence"]
+	--	elseif (ns.PlayerClass == "DEATHKNIGHT") then
+	--		return L["Runes"]
+	--	end
+	--elseif (ns.IsWrath) then
+	--	if (ns.PlayerClass == "DEATHKNIGHT") then
+	--		return L["Runes"]
+	--	end
+	--end
+	return ns.IsClassic and L["Combo Points"] or L["Class Power"]
 end
 
 ClassPowerMod.PostUpdateAnchor = function(self)
