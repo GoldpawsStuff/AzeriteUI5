@@ -16,12 +16,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - The default tooltip theme is now the blizzard looking `Classic` theme. You can change this in the `/azerite` options menu.
 - To avoid issues with the arena enemy aura elements bugging out in the arena solo shuffle prep phase we're disabling the aura element until an arena opponent actually exists and can be queried.
 
-## [5.2.132-RC] 2023-11-29
+## [5.2.133-RC] 2023-11-29
 ### Changed
 - Added options to toggle specific class powers in the `/azerite` options menu without the need to create separate options profiles for separate characters.
 
 ### Fixed
 - All class powers (including Runes and Stagger) are now simply listed as "Class Power" in both the `/azerite` options menu and in `/lock` mode.
+
+## [5.2.132-RC] 2023-11-22
+### Added
+- You can now choose tooltip theme in the /azerite options menu. Currently only two themes are available, the old blocky Azerite theme and a new, simplified version of the traditional blizzard tooltip called Classic.
+
+### Changed
+- The default tooltip theme is now the blizzard looking Classic theme. You can change this in the /azerite options menu.
+- To avoid issues with the arena enemy aura elements bugging out in the arena solo shuffle prep phase we're disabling the aura element until an arena opponent actually exists and can be queried.
 
 ## [5.2.131-RC] 2023-11-20
 ### Fixed
