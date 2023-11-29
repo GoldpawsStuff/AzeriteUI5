@@ -15,6 +15,12 @@ If you choose to download and manually install directly from GitHub, you'll have
 ## FAQ
 - **Q:** How can I remove abilities from the action bars?
 - **A:** Hold down `Alt`+`Ctrl`+`Shift` and drag with the left mouse button.
+---
+- **Q:** How can I access the expansion/garrison/order hall page?
+- **A:** Click the middle mouse button on the Minimap.
+---
+- **Q:** How can I access the in-game event calendar?
+- **A:** Click on the clock next to the Minimap.
 
 ## Configuring the UI
 - **/azerite** - Toggles the options menu.
