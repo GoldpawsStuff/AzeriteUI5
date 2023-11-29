@@ -102,7 +102,7 @@ end
 
 -- Update classpower layout and textures.
 -- *also used for one-time setup of stagger and runes.
-local ClassPower_PostUpdate = function(element, cur, max)
+local ClassPower_PostUpdate = function(element, cur, max, hasMaxChanged, powerType)
 	if (not cur or not max) then
 		return
 	end
@@ -120,6 +120,18 @@ local ClassPower_PostUpdate = function(element, cur, max)
 
 	if (not style) then
 		return element:Hide()
+	end
+
+	local db = ClassPowerMod.db.profile
+
+	if (ns.IsRetail) then
+		if (playerClass == "MAGE" and powerType == "ARCANE_CHARGES" and not db.showArcaneCharges)
+		or (playerClass == "MONK" and powerType == "CHI" and not db.showChi)
+		or (playerClass == "PALADIN" and powerType == "HOLY_POWER" and not db.showHolyPower)
+		or (playerClass == "WARLOCK" and powerType == "SOUL_SHARDS" and not db.showSoulShards)
+		or (powerType == "COMBO_POINTS" and not db.showComboPoints) then
+			return element:Hide()
+		end
 	end
 
 	if (not element:IsShown()) then
@@ -420,6 +432,27 @@ ClassPowerMod.PostUpdateAnchor = function(self)
 end
 
 ClassPowerMod.Update = function(self)
+
+	if (ns.IsWrath or ns.IsRetail) and (playerClass == "DEATHKNIGHT") then
+		if (self.db.profile.showRunes) then
+			self.frame:EnableElement("Runes")
+			self.frame.Auras:ForceUpdate()
+		else
+			self.frame:DisableElement("Runes")
+		end
+	end
+
+	if (ns.IsRetail and playerClass == "MONK") then
+		if (self.db.profile.showStagger) then
+			self.frame:EnableElement("Stagger")
+			self.frame.Auras:ForceUpdate()
+		else
+			self.frame:DisableElement("Stagger")
+		end
+	end
+
+	self.frame.ClassPower:ForceUpdate()
+
 end
 
 ClassPowerMod.OnEnable = function(self)
