@@ -391,9 +391,7 @@ ClassPowerMod.GetLabel = function(self)
 		elseif (ns.PlayerClass == "PALADIN") then
 			return L["Holy Power"]
 		elseif (ns.PlayerClass == "WARLOCK") then
-			if (GetSpecialization() == (SPEC_WARLOCK_DESTRUCTION or 3)) then
-				return L["Soul Shards"]
-			end
+			return L["Soul Shards"]
 		elseif (ns.PlayerClass == "EVOKER") then
 			return L["Essence"]
 		elseif (ns.PlayerClass == "DEATHKNIGHT") then
