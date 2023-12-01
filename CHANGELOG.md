@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.2.133-RC] 2023-12-01
+## [5.2.134-RC] 2023-12-01
 ### Fixed
 - Fixed inconsistencies in date back-end.
 - Fixed an issue that would cause stance buttons in Retail to bug out when they were set to fade out.
