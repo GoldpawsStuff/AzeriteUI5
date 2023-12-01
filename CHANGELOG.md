@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-11-24
+## [Unreleased] 2023-12-01
 ### Changed
 - Fixed inconsistencies in date back-end.
+- Fixed an issue where the time tooltip incorrectly would give the impression that a calendar existed in Classic Era and Season of Discovery.
 
 ## [5.2.132-RC] 2023-11-22
 ### Added
