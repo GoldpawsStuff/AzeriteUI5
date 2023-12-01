@@ -27,15 +27,14 @@ local _, ns = ...
 
 local KeyBound = LibStub("LibKeyBound-1.0", true)
 
--- GLOBALS: CreateFrame, CooldownFrame_Set, InCombatLockdown
--- GLOBALS: GetBindingKey, ClearOverrideBindings, SetOverrideBindingClick
--- GLOBALS: GetNumShapeshiftForms, GetShapeshiftFormInfo, GetShapeshiftFormCooldown
+-- GLOBALS: CreateFrame, CooldownFrame_Set
+-- GLOBALS: GetBindingKey, GetShapeshiftFormInfo, GetShapeshiftFormCooldown
 
 -- Lua API
+local next = next
 local setmetatable = setmetatable
 
-local StanceButton = CreateFrame("CheckButton")
-local StanceButton_MT = { __index = StanceButton }
+local StanceButton = {}
 
 -- Default button config
 local defaults = {
@@ -65,18 +64,26 @@ ns.StanceButton.defaults = defaults
 
 ns.StanceButton.Create = function(id, name, header, buttonConfig)
 
-	local button = setmetatable(CreateFrame("CheckButton", name, header, "StanceButtonTemplate"), StanceButton_MT)
-	button:SetID(id)
+	local button = CreateFrame("CheckButton", name, header, "StanceButtonTemplate")
 	button.id = id
 	button.parent = header
 	button.showgrid = 0
 	button.config = buttonConfig or ns:Copy(defaults)
 
+	-- Retail has a new mixin that overrides some of our meta methods,
+	-- so we're doing hard embedding now instead.
+	for method,func in next,StanceButton do
+		button[method] = func
+	end
+
+	-- Reference the objects by member properties, not global names.
 	button.icon = _G[button:GetName() .. "Icon"]
 	button.cooldown = _G[button:GetName() .. "Cooldown"]
 	button.hotkey = _G[button:GetName() .. "HotKey"]
 	button.normalTexture = button:GetNormalTexture()
 	button.normalTexture:SetTexture("")
+
+	button:SetID(id)
 
 	ns.StanceButtons[button] = true
 
@@ -132,6 +139,10 @@ StanceButton.UpdateHotkeys = function(self)
 end
 
 StanceButton.GetHotkey = function(self)
-	local key = GetBindingKey(format("SHAPESHIFTBUTTON%d", self:GetID())) or GetBindingKey("CLICK "..self:GetName()..":LeftButton")
+	local key = GetBindingKey(string_format("SHAPESHIFTBUTTON%d", self:GetID())) or GetBindingKey("CLICK "..self:GetName()..":LeftButton")
 	return key and KeyBound:ToShortKey(key)
+end
+
+StanceButton.GetTexture = function(self)
+	return (GetShapeshiftFormInfo(self:GetID()))
 end
