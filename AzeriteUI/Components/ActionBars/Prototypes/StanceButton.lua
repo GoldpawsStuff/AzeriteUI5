@@ -32,7 +32,7 @@ local KeyBound = LibStub("LibKeyBound-1.0", true)
 
 -- Lua API
 local next = next
-local setmetatable = setmetatable
+local string_format = string.format
 
 local StanceButton = {}
 
