@@ -5,8 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-12-01
-### Changed
+### Fixed
 - Fixed inconsistencies in date back-end.
+- Fixed an issue that would cause stance buttons in Retail to bug out when they were set to fade out.
 - Fixed an issue where the time tooltip incorrectly would give the impression that a calendar existed in Classic Era and Season of Discovery.
 
 ## [5.2.132-RC] 2023-11-22
