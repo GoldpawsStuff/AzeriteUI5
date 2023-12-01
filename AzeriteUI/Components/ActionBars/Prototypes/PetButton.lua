@@ -30,11 +30,10 @@ local KeyBound = LibStub("LibKeyBound-1.0", true)
 -- Lua API
 local next = next
 local select = select
-local setmetatable = setmetatable
 local string_format = string.format
 
 -- GLOBALS: AutoCastShine_AutoCastStop, AutoCastShine_AutoCastStart
--- GLOBALS: IsModifiedClick, GetBindingKey, GetBindingText, SetBinding
+-- GLOBALS: IsModifiedClick, GetBindingKey, GetBindingText
 -- GLOBALS: PickupPetAction, GetPetActionInfo, GetPetActionsUsable, GetPetActionCooldown
 -- GLOBALS: CreateFrame, CooldownFrame_Set, InCombatLockdown, SetDesaturation
 -- GLOBALS: GameTooltip, GameTooltip_SetDefaultAnchor
