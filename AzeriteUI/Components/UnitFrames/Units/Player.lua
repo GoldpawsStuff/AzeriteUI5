@@ -426,7 +426,7 @@ local UnitFrame_UpdateTextures = function(self)
 	power:ClearAllPoints()
 	power:SetPoint(unpack(db.PowerBarPosition))
 	power:SetSize(unpack(db.PowerBarSize))
-	power:SetStatusBarTexture(PlayerFrameMod.db.profile.useWrathCrystal and db.PowerBarTextureWrath or db.PowerBarTexture)
+	power:SetStatusBarTexture((PlayerFrameMod.db.profile.useWrathCrystal or ns.API.IsWinterVeil()) and db.PowerBarTextureWrath or db.PowerBarTexture)
 	power:SetTexCoord(unpack(db.PowerBarTexCoord))
 	power:SetOrientation(db.PowerBarOrientation)
 	power:SetSparkMap(db.PowerBarSparkMap)
@@ -435,7 +435,7 @@ local UnitFrame_UpdateTextures = function(self)
 	powerBackdrop:ClearAllPoints()
 	powerBackdrop:SetPoint(unpack(db.PowerBackdropPosition))
 	powerBackdrop:SetSize(unpack(db.PowerBackdropSize))
-	powerBackdrop:SetTexture(PlayerFrameMod.db.profile.useWrathCrystal and db.PowerBackdropTextureWrath or db.PowerBackdropTexture)
+	powerBackdrop:SetTexture((PlayerFrameMod.db.profile.useWrathCrystal or ns.API.IsWinterVeil()) and db.PowerBackdropTextureWrath or db.PowerBackdropTexture)
 
 	local powerCase = self.Power.Case
 	powerCase:ClearAllPoints()
@@ -671,7 +671,7 @@ local style = function(self, unit)
 	self.Power = power
 	self.Power.Override = ns.API.UpdatePower
 	self.Power.PostUpdate = Power_UpdateVisibility
-	self.Power.PostUpdateColor = not PlayerFrameMod.db.profile.useWrathCrystal and Power_PostUpdateColor
+	self.Power.PostUpdateColor = not (PlayerFrameMod.db.profile.useWrathCrystal or ns.API.IsWinterVeil()) and Power_PostUpdateColor
 
 	local powerBackdrop = power:CreateTexture(nil, "BACKGROUND", nil, -2)
 	local powerCase = power:CreateTexture(nil, "ARTWORK", nil, 2)
@@ -901,31 +901,26 @@ PlayerFrameMod.CreateUnitFrames = function(self)
 
 	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
 
-	-- Vehicle switching is currently broken in Wrath.
-	--if (self.IsWrath) then
+	local enabled = true
 
-		local enabled = true
+	self.frame.Enable = function(self)
+		enabled = true
+		RegisterAttributeDriver(self, "unit", "[vehicleui]vehicle; player")
+		self:Show()
+	end
 
-		self.frame.Enable = function(self)
-			enabled = true
-			RegisterAttributeDriver(self, "unit", "[vehicleui]vehicle; player")
-			self:Show()
-		end
+	self.frame.Disable = function(self)
+		enabled = false
+		UnregisterAttributeDriver(self, "unit")
+		self:Hide()
+	end
 
-		self.frame.Disable = function(self)
-			enabled = false
-			UnregisterAttributeDriver(self, "unit")
-			self:Hide()
-		end
+	self.frame.IsEnabled = function(self)
+		return enabled
+	end
 
-		self.frame.IsEnabled = function(self)
-			return enabled
-		end
-
-		UnregisterUnitWatch(self.frame)
-		self.frame:SetAttribute("toggleForVehicle", false)
-
-	--end
+	UnregisterUnitWatch(self.frame)
+	self.frame:SetAttribute("toggleForVehicle", false)
 
 end
 
@@ -945,7 +940,7 @@ PlayerFrameMod.Update = function(self)
 		self.frame:DisableElement("Castbar")
 	end
 
-	if (self.db.profile.useWrathCrystal) then
+	if (self.db.profile.useWrathCrystal or ns.API.IsWinterVeil()) then
 		self.frame.Power.PostUpdateColor = nil
 		self.frame.Power:SetStatusBarColor(1,1,1,1)
 	else
