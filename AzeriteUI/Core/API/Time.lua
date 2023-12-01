@@ -94,14 +94,16 @@ local GetTime = function(useStandardTime, useServerTime)
     end
 end
 
+-- Update for Winter Veil 2023-2024
 local IsWinterVeil = function()
 	local year = tonumber(date("%Y"))
-	return dateInRange(1,12,year-1,9,1,year) or dateInRange(1,12,year,9,1,year+1)
+	return dateInRange(16,12,2023,2,1,2024) or dateInRange(16,12,year-1,2,1,year) or dateInRange(16,12,year,2,1,year+1)
 end
 
+-- Updated for Love is in the Air 2024
 local IsLoveFestival = function()
 	local year = tonumber(date("%Y"))
-	return dateInRange(5,2,year,25,2,year)
+	return dateInRange(5,2,2024,19,2,2024) or dateInRange(5,2,year,25,2,year)
 end
 
 -- Global API
