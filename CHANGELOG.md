@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.135-RC] 2023-12-02
+### Fixed
+- Fixed a class power related issue that was causing bugs for Monks and Death Knights.
+
 ## [5.2.134-RC] 2023-12-01
 ### Fixed
 - Fixed inconsistencies in date back-end.
