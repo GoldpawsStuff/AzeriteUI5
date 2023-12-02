@@ -436,7 +436,7 @@ ClassPowerMod.Update = function(self)
 	if (ns.IsWrath or ns.IsRetail) and (playerClass == "DEATHKNIGHT") then
 		if (self.db.profile.showRunes) then
 			self.frame:EnableElement("Runes")
-			self.frame.Auras:ForceUpdate()
+			self.frame.Runes:ForceUpdate()
 		else
 			self.frame:DisableElement("Runes")
 		end
@@ -445,7 +445,7 @@ ClassPowerMod.Update = function(self)
 	if (ns.IsRetail and playerClass == "MONK") then
 		if (self.db.profile.showStagger) then
 			self.frame:EnableElement("Stagger")
-			self.frame.Auras:ForceUpdate()
+			self.frame.Stagger:ForceUpdate()
 		else
 			self.frame:DisableElement("Stagger")
 		end
