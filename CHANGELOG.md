@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-12-02
+### Changed
+- The previous system where power bars in group frames where visible depending on class and amount of power left has been removed. The new system always hides non-mana power bars but always shows mana bars regardless of amount left, and for raid(5) and arena enemy frames all power bars are always shown.
+
+### Fixed
+- Stance-/shapeshift buttons that spawn during combat from having leveled and learned a new spell should now both appear and be styled with actual icons and graphics once combat ends.
+
 ## [5.2.135-RC] 2023-12-02
 ### Fixed
 - Fixed a class power related issue that was causing bugs for Monks and Death Knights.
