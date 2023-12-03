@@ -299,7 +299,8 @@ Anchor.Create = function(self)
 		defaultScale = ns.API.GetEffectiveScale(),
 		minScale = .25,
 		maxScale = 2.5,
-		scaleStep = .1
+		scaleStep = .1,
+		colorGroup = "general"
 	}
 
 	anchor:Enable()
@@ -518,6 +519,9 @@ Anchor.GetParsedDefaultPosition = function(self)
 	return point, x, y
 end
 
+Anchor.GetColorGroup = function(self)
+	return AnchorData[self].colorGroup or "general"
+end
 
 
 -- Anchor Setters
@@ -642,6 +646,16 @@ end
 Anchor.SetTitle = function(self, title)
 	self.Title:SetText(title)
 end
+
+Anchor.SetColorGroup = function(self, colorGroup)
+
+	AnchorData[self].colorGroup = colorGroup and Colors.anchor[colorGroup] and colorGroup or "general"
+
+	local r, g, b = unpack(Colors.anchor[AnchorData[self].colorGroup])
+	self.Overlay:SetBackdropColor(r, g, b, .75)
+	self.Overlay:SetBackdropBorderColor(r, g, b, 1)
+end
+
 
 -- Anchor Script Handlers
 --------------------------------------
@@ -870,8 +884,12 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 	local Options = ns:GetModule("Options", true)
 	if (not Options) then return end
 
-	local isdisabled = function(info)
+	local noselection = function(info)
 		return not CURRENT
+	end
+
+	local hasselection = function(info)
+		return CURRENT
 	end
 
 	local getter = function(info)
@@ -938,6 +956,12 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 	end
 
 	local options, orderoffset = Options:GenerateProfileMenu()
+	orderoffset = orderoffset + 30
+
+	-- Frame listings
+
+
+	--orderoffset = orderoffset + 30
 
 	-- EditMode integration
 	if (EMP) then
@@ -1001,21 +1025,21 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		name = L["Help"],
 		order = orderoffset + 89,
 		type = "header",
-		hidden = function(info) return not isdisabled(info) end
+		hidden = hasselection
 	}
 	options.args.guideText1 = {
 		name = colorize(L["<Left-Click> an anchor to select it and raise it."]),
 		order = orderoffset + 90,
 		type = "description",
 		fontSize = "medium",
-		hidden = function(info) return not isdisabled(info) end
+		hidden = hasselection
 	}
 	options.args.guideText2 = {
 		name = colorize(L["<Right-Click> an anchor to deselect it and/or lower it."]),
 		order = orderoffset + 91,
 		type = "description",
 		fontSize = "medium",
-		hidden = function(info) return not isdisabled(info) end
+		hidden = hasselection
 	}
 
 	-- Frame positioning & scaling.
@@ -1025,20 +1049,20 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		end,
 		order = orderoffset + 100,
 		type = "header",
-		hidden = isdisabled
+		hidden = noselection
 	}
 	options.args.positionDesc = {
 		name = L["Fine-tune the position."],
 		order = orderoffset + 101,
 		type = "description",
 		fontSize = "medium",
-		hidden = isdisabled
+		hidden = noselection
 	}
 	options.args.point = {
 		name = L["Anchor Point"],
 		desc = L["Sets the anchor point."],
 		order = orderoffset + 110,
-		hidden = isdisabled,
+		hidden = noselection,
 		type = "select", style = "dropdown",
 		values = {
 			["TOPLEFT"] = L["Top-Left Corner"],
@@ -1055,14 +1079,14 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		get = getter
 	}
 	options.args.pointSpace = {
-		name = "", order = orderoffset + 111, type = "description", hidden = isdisabled
+		name = "", order = orderoffset + 111, type = "description", hidden = noselection
 	}
 	options.args.offsetX = {
 		name = L["X Offset"],
 		desc = L["Sets the horizontal offset from your chosen anchor point. Positive values means right, negative values means left."],
 		order = orderoffset + 120,
 		type = "input",
-		hidden = isdisabled,
+		hidden = noselection,
 		validate = validate,
 		set = setter,
 		get = getter
@@ -1072,7 +1096,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		desc = L["Sets the vertical offset from your chosen anchor point. Positive values means up, negative values means down."],
 		order = orderoffset + 130,
 		type = "input",
-		hidden = isdisabled,
+		hidden = noselection,
 		validate = validate,
 		set = setter,
 		get = getter
@@ -1082,7 +1106,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		desc = L["Sets the relative scale of this element. Default scale is set to match the ideal size."],
 		order = orderoffset + 140,
 		type = "range", width = "full", min = 0.25 * 100, max = 2.5 * 100, step = 0.1, bigStep = 1,
-		hidden = isdisabled,
+		hidden = noselection,
 		validate = validate,
 		set = function(info,val)
 			setter(info,tostring(val/100))

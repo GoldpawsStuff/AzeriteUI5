@@ -74,12 +74,7 @@ Module.CreateAnchor = function(self, label, watchVariables, colorGroup)
 	end
 
 	if (colorGroup) then
-		local color = ns.Colors.anchor[colorGroup]
-		if (color) then
-			local r, g, b = unpack(color)
-			anchor.Overlay:SetBackdropColor(r, g, b, .75)
-			anchor.Overlay:SetBackdropBorderColor(r, g, b, 1)
-		end
+		anchor:SetColorGroup(colorGroup)
 	end
 
 	anchor.PreUpdate = function()
@@ -94,7 +89,7 @@ Module.CreateAnchor = function(self, label, watchVariables, colorGroup)
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnAnchorEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnAnchorEvent")
 
-	if (self.watchVariables) then
+	if (watchVariables) then
 		self:RegisterEvent("VARIABLES_LOADED", "OnAnchorEvent")
 	end
 
