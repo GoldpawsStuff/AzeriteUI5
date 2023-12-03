@@ -521,9 +521,7 @@ ActionBarMod.CreateAnchors = function(self)
 		end
 
 		-- Color the anchor according to anchor type
-		local r, g, b = unpack(Colors.anchor.actionbars)
-		anchor.Overlay:SetBackdropColor(r, g, b, .75)
-		anchor.Overlay:SetBackdropBorderColor(r, g, b, 1)
+		anchor:SetColorGroup("actionbars")
 
 		anchor.bar = bar
 		bar.anchor = anchor

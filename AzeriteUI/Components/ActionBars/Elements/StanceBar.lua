@@ -490,9 +490,8 @@ StanceBarMod.CreateAnchor = function(self)
 		self:UpdateAnchor()
 	end
 
-	local r, g, b = unpack(Colors.anchor.actionbars)
-	anchor.Overlay:SetBackdropColor(r, g, b, .75)
-	anchor.Overlay:SetBackdropBorderColor(r, g, b, 1)
+	-- Color the anchor according to anchor type
+	anchor:SetColorGroup("actionbars")
 
 	self.anchor = anchor
 end
