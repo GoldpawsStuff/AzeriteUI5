@@ -243,10 +243,14 @@ end
 
 -- Hide power crystal when no power exists.
 local Power_UpdateVisibility = function(element, unit, cur, min, max)
-	if (UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) or max == 0 or min == 0) then
+	if (UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) or max == 0 or cur == 0) then
 		element:Hide()
+		element.Backdrop:Hide()
+		element.Value:Hide()
 	else
 		element:Show()
+		element.Backdrop:Show()
+		element.Value:Show()
 	end
 end
 
