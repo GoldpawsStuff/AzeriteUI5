@@ -618,6 +618,9 @@ StanceBarMod.OnEvent = function(self, event, ...)
 		if (self.needupdate and not InCombatLockdown()) then
 			self.needupdate = nil
 			self.bar:UpdateButtonCount()
+			for id,button in next,self.bar.buttons do
+				button:Update()
+			end
 		end
 
 	elseif (event == "UPDATE_BINDINGS") then
