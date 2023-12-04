@@ -1002,7 +1002,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 			val:OnClick("LeftButton")
 		end,
 		get = function(info)
-			return CURRENT and CURRENT.Title:GetText() or L["Select a Frame"]
+			return CURRENT and CURRENT.Title:GetText() or L["Nothing Selected"]
 		end
 	}
 	orderoffset = orderoffset + 10
