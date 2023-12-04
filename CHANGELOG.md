@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-12-04
+## [5.2.136-RC] 2023-12-04
 ### Added
 - Added an option to stop tracking to the Classic Era minimap tracking menu.
 - Added a selection dropdown to `/lock` listing all the movable frames. All movable frames are listed here and you can select them regardless of whether their anchor currently is within the bounds of the screen or not.
