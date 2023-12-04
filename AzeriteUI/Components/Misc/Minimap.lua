@@ -827,7 +827,7 @@ MinimapMod.CreateCustomElements = function(self)
 	if (ns.IsClassic) then
 		self.ShowMinimapTrackingMenu = function(self)
 			local hasTracking
-			local trackingMenu = { { text = TRACKING or "Select Tracking", isTitle = true } }
+			local trackingMenu = { { text = TRACKING or "Select Tracking", isTitle = true, notCheckable = true } }
 			for _,spellID in ipairs({
 				1494, --Track Beasts
 				19883, --Track Humanoids
@@ -846,16 +846,24 @@ MinimapMod.CreateCustomElements = function(self)
 			}) do
 				if (IsPlayerSpell(spellID)) then
 					hasTracking = true
+					local tracking = GetTrackingTexture()
 					local spellName = GetSpellInfo(spellID)
 					local spellTexture = GetSpellTexture(spellID)
 					table_insert(trackingMenu, {
 						text = spellName,
 						icon = spellTexture,
-						func = function() CastSpellByID(spellID) end
+						checked = tracking == spellTexture,
+						func = function() CastSpellByID(spellID) end,
+
 					})
 				end
 			end
 			if (hasTracking) then
+				table_insert(trackingMenu, {
+					text = OBJECTIVES_STOP_TRACKING,
+					notCheckable = true,
+					func = function() CancelTrackingBuff() end
+				})
 				EasyMenu(trackingMenu, dropdown, "cursor", 0 , 0, "MENU")
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "SFX")
 			end
