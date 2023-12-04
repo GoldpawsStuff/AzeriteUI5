@@ -4,11 +4,15 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-12-03
+## [Unreleased] 2023-12-04
+### Added
+- Added an option to stop tracking to the Classic Era minimap tracking menu.
+
 ### Changed
 - The previous system where power bars in group frames where visible depending on class and amount of power left has been removed. The new system always hides non-mana power bars but always shows mana bars regardless of amount left, and for raid(5) and arena enemy frames all power bars are always shown.
 
 ### Fixed
+- The Classic Era tracking menu now shows what you currently are tracking, if anything at all.
 - The power crystal backdrop on the target unit frame is now hidden for units that currently have no power.
 - Stance-/shapeshift buttons that spawn during combat from having leveled and learned a new spell should now both appear and be styled with actual icons and graphics once combat ends.
 
