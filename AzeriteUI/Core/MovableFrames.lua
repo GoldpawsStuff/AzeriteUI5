@@ -958,10 +958,54 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 	local options, orderoffset = Options:GenerateProfileMenu()
 	orderoffset = orderoffset + 30
 
-	-- Frame listings
-
-
-	--orderoffset = orderoffset + 30
+	-- Frame listing & selection
+	options.args.frameSelectionHeader = {
+		name = L["Current Frame"],
+		order = orderoffset + 10,
+		type = "header",
+	}
+	options.args.frameSelection = {
+		name = L["Select Frame"],
+		order = orderoffset + 11,
+		type = "select", style = "dropdown",
+		-- Create a table of currently enabled anchors,
+		-- use their titles as display names.
+		values = function(info)
+			local values = {}
+			for anchor in next,AnchorData do
+				if (anchor:IsEnabled()) then
+					local title = anchor.Title:GetText()
+					if (title and title ~= "") then
+						values[anchor] = title
+					end
+				end
+			end
+			return values
+		end,
+		-- Create a sorted table of the frame display names.
+		sorting = function(info)
+			local sorted = {}
+			for anchor in next,AnchorData do
+				if (anchor:IsEnabled()) then
+					local title = anchor.Title:GetText()
+					if (title and title ~= "") then
+						table_insert(sorted, anchor)
+					end
+				end
+			end
+			table_sort(sorted, function(a,b)
+				return a.Title:GetText() < b.Title:GetText()
+			end)
+			return sorted
+		end,
+		set = function(info, val)
+			val:OnClick("LeftButton")
+		end,
+		get = function(info)
+			return CURRENT and CURRENT.Title:GetText() or L["Select a Frame"]
+		end
+	}
+	orderoffset = orderoffset + 10
 
 	-- EditMode integration
 	if (EMP) then
