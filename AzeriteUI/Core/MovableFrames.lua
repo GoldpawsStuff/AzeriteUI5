@@ -958,11 +958,14 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 	local options, orderoffset = Options:GenerateProfileMenu()
 	orderoffset = orderoffset + 30
 
-	-- Frame listing & selection
+	-- Frame positioning & scaling.
 	options.args.frameSelectionHeader = {
-		name = L["Current Frame"],
+		name = function(info)
+			return CURRENT and CURRENT.Title:GetText() or L["Current Frame"]
+		end,
 		order = orderoffset + 10,
 		type = "header",
+		--hidden = noselection
 	}
 	options.args.frameSelection = {
 		name = L["Select Frame"],
@@ -971,7 +974,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		-- Create a table of currently enabled anchors,
 		-- use their titles as display names.
 		values = function(info)
-			local values = {}
+			local values = { [false] = L["Nothing Selected"] }
 			for anchor in next,AnchorData do
 				if (anchor:IsEnabled()) then
 					local title = anchor.Title:GetText()
@@ -996,16 +999,23 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 			table_sort(sorted, function(a,b)
 				return a.Title:GetText() < b.Title:GetText()
 			end)
+			table_insert(sorted, false)
 			return sorted
 		end,
 		set = function(info, val)
-			val:OnClick("LeftButton")
+			if (val) then
+				val:OnClick("LeftButton")
+			end
 		end,
 		get = function(info)
-			return CURRENT and CURRENT.Title:GetText() or L["Nothing Selected"]
+			if (CURRENT) then
+				return CURRENT
+			else
+				return false
+			end
 		end
 	}
-	orderoffset = orderoffset + 10
+	orderoffset = orderoffset + 20
 
 	-- EditMode integration
 	if (EMP) then
@@ -1086,15 +1096,6 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		hidden = hasselection
 	}
 
-	-- Frame positioning & scaling.
-	options.args.positionHeader = {
-		name = function(info)
-			return CURRENT and CURRENT.Title:GetText() or L["Position"]
-		end,
-		order = orderoffset + 100,
-		type = "header",
-		hidden = noselection
-	}
 	options.args.positionDesc = {
 		name = L["Fine-tune the position."],
 		order = orderoffset + 101,
@@ -1325,7 +1326,7 @@ MovableFramesManager.OnInitialize = function(self)
 	app:Hide()
 	app:SetStatusTable({
 		width = 440,
-		height = 450,
+		height = 500,
 		left = 160,
 		top = UIParent:GetTop() / 2 + 100
 	})
