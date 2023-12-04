@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased] 2023-12-04
 ### Added
 - Added an option to stop tracking to the Classic Era minimap tracking menu.
+- Added a selection dropdown to `/lock` listing all the movable frames. All movable frames are listed here and you can select them regardless of whether their anchor currently is within the bounds of the screen or not.
 
 ### Changed
 - The previous system where power bars in group frames where visible depending on class and amount of power left has been removed. The new system always hides non-mana power bars but always shows mana bars regardless of amount left, and for raid(5) and arena enemy frames all power bars are always shown.
