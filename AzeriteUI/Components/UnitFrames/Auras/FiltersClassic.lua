@@ -99,9 +99,13 @@ ns.AuraFilters.PartyAuraFilter = function(element, unit, button, name, texture,
 	elseif (button.noDuration) then
 		return
 	elseif (UnitAffectingCombat("player")) then
-		return (button.duration < 301 or (count and count > 1))
+		return ((button.duration < 301) or (button.timeLeft < 31) or (count and count > 1))
 	else
-		return (count and count > 1)
+		if (button.isDebuff) then
+			return ((button.duration > 0) or (count and count > 1))
+		elseif (button.isPlayer and canApply) then
+			return (button.timeLeft < 31) or (count and count > 1)
+		end
 	end
 end
 
