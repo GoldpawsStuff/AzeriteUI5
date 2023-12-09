@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.137-RC] 2023-12-09
+### Changed
+- Changed the party aura filters to show more of the buffs you have cast on your party members. Also changed it to show longer duration auras that are about to run out, like Blessings in Classic Era and WotLK.
+
 ## [5.2.136-RC] 2023-12-04
 ### Added
 - Added an option to stop tracking to the Classic Era minimap tracking menu.
