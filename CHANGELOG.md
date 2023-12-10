@@ -4,9 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-12-10
+## [5.2.138-RC] 2023-12-10
 ### Added
-- Added the first draft of our slightly configurable Explorer Mode. This is a feature that allows you to fade out various frames while in "safe" situations. Selecting a target, entering combat, having low mana or less than full health are all examples of "unsafe" situations that instantly will make all the selected objects visible.
+- Added the first draft of our slightly configurable Explorer Mode. This is a feature that allows you to fade out various frames while in "safe" situations. Selecting a target, entering combat, having low mana or less than full health are all examples of "unsafe" situations that instantly will make all the selected objects visible. Explorer Mode is for the time being disabled by default, to avoid confusing current users. You can find it in the `/azerite` options menu!
 
 ## [5.2.137-RC] 2023-12-09
 ### Changed
