@@ -73,6 +73,10 @@ local config = {
 	FontObjectTitle = GetFont(15, true)
 }
 
+Tracker.GetFrame = function(self)
+	return QuestWatchFrame
+end
+
 Tracker.PrepareFrames = function(self)
 
 	 local frame = CreateFrame("Frame", nil, UIParent)

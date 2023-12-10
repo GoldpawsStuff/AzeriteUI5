@@ -582,6 +582,10 @@ Tracker.SetObjectivesTrackerTheme = function(self, input)
 	ObjectiveTrackerFrame:SetTheme((self:GetArgs(string.lower(input))))
 end
 
+Tracker.GetFrame = function(self)
+	return ObjectiveTrackerFrame
+end
+
 Tracker.PrepareFrames = function(self)
 
 	self:SecureHook("ObjectiveTracker_Update", UpdateObjectiveTracker)
@@ -657,8 +661,6 @@ Tracker.UpdateSettings = function(self)
 		end
 	end
 end
-
-
 
 Tracker.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD" or event == "SETTINGS_LOADED") then

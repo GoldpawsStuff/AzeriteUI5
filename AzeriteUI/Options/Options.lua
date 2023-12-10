@@ -225,12 +225,6 @@ Options.GenerateOptionsMenu = function(self)
 			type = "header",
 			order = orderoffset + 1
 		}
-		--options.args.editmodedesc = {
-		--	name = L[""],
-		--	type = "description",
-		-- fontSize = "medium",
-		--	order = orderoffset + 2
-		--}
 		options.args.autoLoadEditModeLayout = {
 			name = L["Automatically load an Edit Mode layout."],
 			type = "toggle", width = "full",
@@ -272,6 +266,13 @@ Options.GenerateOptionsMenu = function(self)
 			end,
 			order = orderoffset + 4
 		}
+		options.args.editmodespacer = {
+			name = "",
+			type = "description",
+			fontSize = "medium",
+			order = orderoffset + 5
+		}
+
 		orderoffset = orderoffset + 10
 	end
 

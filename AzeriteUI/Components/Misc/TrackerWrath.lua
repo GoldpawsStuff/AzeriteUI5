@@ -218,6 +218,10 @@ Tracker.UpdateSettings = function(self)
 	end
 end
 
+Tracker.GetFrame = function(self)
+	return WatchFrame
+end
+
 Tracker.PrepareFrames = function(self)
 
 	local frame = CreateFrame("Frame", ns.Prefix.."WatchFrameAnchor", UIParent)

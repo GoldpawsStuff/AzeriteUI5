@@ -42,6 +42,7 @@
 	<Script file="MovableFrameModule.lua"/>
 	<Script file="FixBlizzardBugs.lua"/>
 	<Script file="FixFlavorDifferences.lua"/>
+	<Script file="ExplorerMode.lua"/>
 	<Script file="Development.lua"/>
 	<Script file="Debugging.lua"/>
 	<Script file="Experimental.lua"/>
