@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-12-11
+## [5.2.139-RC] 2023-12-11
 ### Changed
 - Fading frames now fade in and out smoothly, like they did in older versions of AzeriteUI before Dragonflight and the editmode forced a full rewrite. I wrote this system in my custom fade library back-end, so no changes were required to anything else. My frames simply need to register or unregister for fading, and the magic happens. So when and if we wish to add more optional elements to our Explorer Mode in the future, that will be easy.
 
