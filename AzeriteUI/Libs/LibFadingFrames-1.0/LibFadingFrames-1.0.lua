@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 17
+local MINOR_VERSION = 19
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -46,8 +46,11 @@ LibMoreEvents:Embed(lib)
 AceTimer:Embed(lib)
 AceHook:Embed(lib)
 
-lib.fadeFrames = lib.fadeFrames or {}
-lib.fadeFrameType = lib.fadeFrameType or {}
+lib.frame = lib.frame or CreateFrame("Frame", nil, UIParent)
+lib.fadeFrames = lib.fadeFrames or {} -- lib.fadeFrames[frame] = fadeGroup
+lib.fadeFrameType = lib.fadeFrameType or {} -- lib.fadeFrameType[frame] = "type" (e.g "actionbutton")
+lib.fadeFrameCurrentAlpha = lib.fadeFrameCurrentAlpha or {} -- lib.fadeFrameCurrentAlpha[frame] = alpha
+lib.fadeFrameTargetAlpha = lib.fadeFrameTargetAlpha or {} -- lib.fadeFrameTargetAlpha[frame] = alpha
 lib.fadeFrameHitRects = lib.fadeFrameHitRects or {}
 lib.hoverFrames = lib.hoverFrames or {}
 lib.hoverCount = lib.hoverCount or { default = 0 }
@@ -60,19 +63,95 @@ lib.embeds = lib.embeds or {}
 
 -- Lua API
 local getmetatable = getmetatable
+local math_floor = math.floor
 local next = next
 local pairs = pairs
 local select = select
 local unpack = unpack
-
--- Frame Metamethods
-local setAlpha = getmetatable(CreateFrame("Frame")).__index.SetAlpha
 
 local isRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 local isClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
 local isTBC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 local isWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
 local WoW10 = select(4, GetBuildInfo()) >= 100000
+
+local fadeThrottle = .02
+local fadeInDuration = .1
+local fadeOutDuration = .35
+local fadeHoldDuration = 0
+
+-- Frame Metamethods
+local setAlpha = getmetatable(CreateFrame("Frame")).__index.SetAlpha
+local getAlpha = getmetatable(CreateFrame("Frame")).__index.GetAlpha
+
+-- Alpha getter fixing the inconsistent blizzard return values
+local getCurrentAlpha = function(frame)
+	return lib.fadeFrameCurrentAlpha[frame] or math_floor((getAlpha(frame) * 100) + .5) / 100
+end
+
+-- Alpha setter that also stores the alpha in our local registry
+local setCurrentAlpha = function(frame, alpha)
+	setAlpha(frame, alpha)
+	lib.fadeFrameCurrentAlpha[frame] = alpha
+end
+
+local requestAlpha = function(frame, targetAlpha)
+	if (getCurrentAlpha(frame) ~= targetAlpha) then
+		if (not next(lib.fadeFrameTargetAlpha)) then
+			if (not lib.fadeTimer) then
+				lib.fadeTimer = lib:ScheduleRepeatingTimer("UpdateCurrentlyFadingFrames", fadeThrottle)
+			end
+		end
+		lib.fadeFrameTargetAlpha[frame] = targetAlpha
+	else
+		lib.fadeFrameTargetAlpha[frame] = nil
+	end
+end
+
+lib.UpdateCurrentlyFadingFrames = function(self)
+	for frame,targetAlpha in next,self.fadeFrameTargetAlpha do
+		local currentAlpha = getCurrentAlpha(frame)
+
+		-- If we're fading out
+		if (currentAlpha > targetAlpha) then
+
+			-- Is there room to change the alpha?
+			if (currentAlpha - fadeThrottle/fadeOutDuration > targetAlpha) then
+				setCurrentAlpha(frame, currentAlpha - fadeThrottle/fadeOutDuration)
+			else
+
+				-- The fade is finished.
+				setCurrentAlpha(frame, targetAlpha)
+				self.fadeFrameTargetAlpha[frame] = nil
+			end
+
+		-- If we're fading in
+		elseif (currentAlpha < targetAlpha) then
+
+			-- Is there room to change the alpha?
+			if (currentAlpha + fadeThrottle/fadeInDuration < targetAlpha) then
+				setCurrentAlpha(frame, currentAlpha + fadeThrottle/fadeInDuration)
+			else
+
+				-- The fade is finished.
+				setCurrentAlpha(frame, targetAlpha)
+				self.fadeFrameTargetAlpha[frame] = nil
+			end
+		else
+			setCurrentAlpha(frame, targetAlpha)
+			self.fadeFrameTargetAlpha[frame] = nil
+		end
+
+	end
+
+	-- Kill off this timer if nothing is still fading.
+	if (not next(self.fadeFrameTargetAlpha)) then
+		if (self.fadeTimer) then
+			self:CancelTimer(self.fadeTimer)
+			self.fadeTimer = nil
+		end
+	end
+end
 
 lib.UpdateFadeFrame = function(self, frame)
 
@@ -81,13 +160,13 @@ lib.UpdateFadeFrame = function(self, frame)
 
 	if (isPetButton) then
 		if (self.inCombat and not (frame.header and frame.header.config and frame.header.config.fadeInCombat) and frame:GetTexture()) or (self.petGridCounter > 0 and not frame.ignoreGridCounterOnHover and (self.cursorType == "petaction")) then
-			setAlpha(frame, 1)
+			requestAlpha(frame, 1)
 			return
 		end
 
 	elseif (isActionButton) then
 		if (self.flyoutShown) or (self.inCombat and not (frame.header and frame.header.config and frame.header.config.fadeInCombat) and frame:GetTexture()) or (self.gridCounter > 0 and not frame.ignoreGridCounterOnHover and (self.cursorType ~= "petaction" or isRetail)) then
-			setAlpha(frame, 1)
+			requestAlpha(frame, 1)
 			return
 		end
 	end
@@ -96,12 +175,12 @@ lib.UpdateFadeFrame = function(self, frame)
 		if (isActionButton) then
 			-- The frame has an action or grid set to visible.
 			if (frame:GetTexture()) or (frame.config and frame.config.showGrid) or (frame.parent and frame.parent.config.showGrid) then
-				setAlpha(frame, 1)
+				requestAlpha(frame, 1)
 			else
-				setAlpha(frame, 0)
+				requestAlpha(frame, 0)
 			end
 		else
-			setAlpha(frame, 1)
+			requestAlpha(frame, 1)
 		end
 	else
 		-- The group is visible.
@@ -109,16 +188,16 @@ lib.UpdateFadeFrame = function(self, frame)
 			if (isActionButton) then
 				-- The frame has an action or grid set to visible.
 				if (frame:GetTexture()) or (frame.config and frame.config.showGrid) or (frame.parent and frame.parent.config.showGrid) then
-					setAlpha(frame, 1)
+					requestAlpha(frame, 1)
 				else
-					setAlpha(frame, 0)
+					requestAlpha(frame, 0)
 				end
 			else
-				setAlpha(frame, 1)
+				requestAlpha(frame, 1)
 			end
 		else
 			-- Group is hidden, hide this.
-			setAlpha(frame, 0)
+			requestAlpha(frame, 0)
 		end
 	end
 end
@@ -222,7 +301,7 @@ end
 lib.UnregisterFrameForFading = function(self, frame, noAlphaChange)
 	if (not lib.fadeFrames[frame]) then
 		if (not noAlphaChange) then
-			setAlpha(frame, 1)
+			requestAlpha(frame, 1)
 		end
 		return
 	end
@@ -234,7 +313,7 @@ lib.UnregisterFrameForFading = function(self, frame, noAlphaChange)
 	lib.fadeFrameHitRects[frame] = nil
 
 	if (not noAlphaChange) then
-		setAlpha(frame, 1)
+		requestAlpha(frame, 1)
 	end
 
 	if (not next(lib.fadeFrames)) then
