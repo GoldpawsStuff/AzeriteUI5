@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 21
+local MINOR_VERSION = 22
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -109,7 +109,19 @@ local requestAlpha = function(frame, targetAlpha)
 	lib.fadeFrameTargetAlpha[frame] = targetAlpha
 end
 
+-- Our fade frame unregistration sets alpha back to full opacity,
+-- this conflicts with how actionbuttons work so we're faking events to fix it.
+local updateLAB = function()
+	local LAB = LibStub("LibActionButton-1.0-GE", true)
+	local OnEvent = LAB and LAB.eventFrame:GetScript("OnEvent")
+	if (OnEvent) then
+		OnEvent(LAB, "ACTIONBAR_SHOWGRID")
+		OnEvent(LAB, "ACTIONBAR_HIDEGRID")
+	end
+end
+
 lib.UpdateCurrentlyFadingFrames = function(self)
+
 	for frame,targetAlpha in next,self.fadeFrameTargetAlpha do
 		local currentAlpha = getCurrentAlpha(frame)
 
@@ -124,6 +136,12 @@ lib.UpdateCurrentlyFadingFrames = function(self)
 				-- The fade is finished.
 				setCurrentAlpha(frame, targetAlpha)
 				self.fadeFrameTargetAlpha[frame] = nil
+
+				if (self.fadeFrameType[frame] == "actionbutton") then
+					frame:UpdateConfig(frame.config)
+					updateLAB()
+				end
+
 			end
 
 		-- If we're fading in
@@ -137,10 +155,23 @@ lib.UpdateCurrentlyFadingFrames = function(self)
 				-- The fade is finished.
 				setCurrentAlpha(frame, targetAlpha)
 				self.fadeFrameTargetAlpha[frame] = nil
+
+				if (self.fadeFrameType[frame] == "actionbutton") then
+					frame:UpdateConfig(frame.config)
+					updateLAB()
+				end
+
 			end
 		else
+
 			setCurrentAlpha(frame, targetAlpha)
 			self.fadeFrameTargetAlpha[frame] = nil
+
+			if (self.fadeFrameType[frame] == "actionbutton") then
+				frame:UpdateConfig(frame.config)
+				updateLAB()
+			end
+
 		end
 
 	end
@@ -276,7 +307,8 @@ lib.RegisterFrameForFading = function(self, frame, fadeGroup, ...)
 	end
 
 	-- Might be spammy, but I prefer not to replace frame methods.
-	lib:SecureHook(frame, "SetAlpha", "UpdateFadeFrame")
+	--lib:SecureHook(frame, "SetAlpha", "UpdateFadeFrame")
+	frame.SetAlpha = function() end
 
 	if (not lib.hoverCount[fadeGroup]) then
 		lib.hoverCount[fadeGroup] = 0
@@ -302,19 +334,36 @@ end
 lib.UnregisterFrameForFading = function(self, frame, noAlphaChange)
 	if (not lib.fadeFrames[frame]) then
 		if (not noAlphaChange) then
-			requestAlpha(frame, 1)
+			if (lib.fadeFrameType[frame] == "actionbutton") then
+				frame:UpdateConfig(frame.config)
+				updateLAB()
+			else
+				requestAlpha(frame, 1)
+			end
+		elseif (lib.fadeFrameType[frame] == "actionbutton") then
+			frame:UpdateConfig(frame.config)
+			updateLAB()
 		end
 		return
 	end
 
-	lib:Unhook(frame, "SetAlpha", "UpdateFadeFrame")
+	--lib:Unhook(frame, "SetAlpha", "UpdateFadeFrame")
+	frame.SetAlpha = nil
 
 	lib.fadeFrames[frame] = nil
 	lib.fadeFrameType[frame] = nil
 	lib.fadeFrameHitRects[frame] = nil
 
 	if (not noAlphaChange) then
-		requestAlpha(frame, 1)
+		if (lib.fadeFrameType[frame] == "actionbutton") then
+			frame:UpdateConfig(frame.config)
+			updateLAB()
+		else
+			requestAlpha(frame, 1)
+		end
+	elseif (lib.fadeFrameType[frame] == "actionbutton") then
+		frame:UpdateConfig(frame.config)
+		updateLAB()
 	end
 
 	if (not next(lib.fadeFrames)) then

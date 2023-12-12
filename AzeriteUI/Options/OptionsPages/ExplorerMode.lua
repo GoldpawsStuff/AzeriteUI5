@@ -73,19 +73,10 @@ end
 local GenerateOptions = function()
 	if (not getmodule()) then return end
 
-	local updateFading = function()
-	end
-
 	local options = {
 		name = L["Explorer Mode"],
 		type = "group",
 		args = {
-			--explorermodeheader = {
-			--	name = L["Explorer Mode"],
-			--	desc = "",
-			--	type = "header",
-			--	order = 10
-			--},
 			explorerermodedesc = {
 				name = L["The Explorer Mode is a collection of settings that affect primarily the actionbars and player unit frame,allowing them to fade out in various situations to get a more immersive experience."],
 				type = "description",

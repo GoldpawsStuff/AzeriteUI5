@@ -687,7 +687,7 @@ ActionBarMod.UpdateSettings = function(self, event)
 			button.config.dimWhenInactive = bar.config.dimWhenInactive
 
 			-- Update config and trigger a full button update.
-			button:UpdateConfig(button.config)
+			button:UpdateConfig(button.config) -- pass its config, or it'll reset!
 		end
 	end
 

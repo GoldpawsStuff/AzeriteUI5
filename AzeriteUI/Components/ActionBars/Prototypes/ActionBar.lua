@@ -288,22 +288,26 @@ ActionBar.UpdateFading = function(self)
 			LFF:RegisterFrameForFading(buttons[id], config.fadeAlone and self:GetName() or "actionbuttons", unpack(config.hitrects))
 		end
 
+		if (config.fadeFrom and config.fadeFrom > 1) then
+			for id = 1, config.fadeFrom-1 do
+				local button = buttons[id]
+
+				-- Update config and trigger a full button update.
+				button:UpdateConfig(button.config) -- pass its config, or it'll reset!
+			end
+		end
+
 	else
 
 		-- Unregister all fading.
 		for id, button in next,buttons do
 			LFF:UnregisterFrameForFading(buttons[id])
+
+			-- Update config and trigger a full button update.
+			button:UpdateConfig(button.config) -- pass its config, or it'll reset!
 		end
 	end
 
-	-- Our fade frame unregistration sets alpha back to full opacity,
-	-- this conflicts with how actionbuttons work so we're faking events to fix it.
-	local LAB = LibStub("LibActionButton-1.0-GE")
-	local OnEvent = LAB.eventFrame:GetScript("OnEvent")
-	if (OnEvent) then
-		OnEvent(LAB, "ACTIONBAR_SHOWGRID")
-		OnEvent(LAB, "ACTIONBAR_HIDEGRID")
-	end
 end
 
 ActionBar.UpdatePosition = function(self)

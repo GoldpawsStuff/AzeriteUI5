@@ -97,8 +97,11 @@ ExplorerMode.UpdateSettings = function(self)
 				-- Unregister the bar for fading, does not affect button fading.
 				LFF:UnregisterFrameForFading(bar)
 			end
+
 			-- Update the bar's button fading.
-			bar:UpdateFading()
+			if (db.enableBarFading) then
+				bar:UpdateFading() -- this is where it bugs out?
+			end
 		end
 	end
 
@@ -447,5 +450,5 @@ ExplorerMode.OnEnable = function(self)
 		self:RegisterUnitEvent("UNIT_EXITING_VEHICLE", "OnEvent", "player")
 	end
 
-	ns.RegisterCallback(self, "ActionBarSettings_Changed", "UpdateSettings")
+	--ns.RegisterCallback(self, "ActionBarSettings_Changed", "UpdateSettings")
 end

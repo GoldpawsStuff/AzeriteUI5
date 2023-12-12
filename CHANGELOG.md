@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.141-RC] 2023-12-12
+### Fixed
+- Fixed the weird action button flickering and C stack overflow that would occur for empty slots on bars not currently included in the regular actionbar fading system.
+
 ## [5.2.140-RC] 2023-12-12
 ### Added
 - Added the pet- and focus unit frames to Explorer Mode.
