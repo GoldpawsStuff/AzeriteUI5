@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.140-RC] 2023-12-12
+### Added
+- Added the pet- and focus unit frames to Explorer Mode.
+- Added a multitude of options to the `/azerite` options menu to tweak when Explorer Mode exists.
+
+### Changed
+- The `/azerite` options menu now has a slightly changed category sorting in the category selection on the left side of the menu. Some categories are considered higher priority and will be listed before the other categories. Hopefully this will make it easier to navigate in the menu and faster to find new features.
+- Actionbars that are set to fully fade out with all their buttons and fade separately from other actionbars will no longer force the Explorer Mode to exit. Hovering over them will shown only them and nothing else.
+
+### Removed
+- Options related to the focus frame in Explorer Mode has been removed from Classic Era, as the focus unit frame does not exist there.
+
 ## [5.2.139-RC] 2023-12-11
 ### Changed
 - Fading frames now fade in and out smoothly, like they did in older versions of AzeriteUI before Dragonflight and the editmode forced a full rewrite. I wrote this system in my custom fade library back-end, so no changes were required to anything else. My frames simply need to register or unregister for fading, and the magic happens. So when and if we wish to add more optional elements to our Explorer Mode in the future, that will be easy.

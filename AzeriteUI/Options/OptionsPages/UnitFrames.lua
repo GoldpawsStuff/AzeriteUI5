@@ -368,4 +368,4 @@ local GenerateOptions = function()
 	return options
 end
 
-Options:AddGroup(L["Unit Frames"], GenerateOptions)
+Options:AddGroup(L["Unit Frames"], GenerateOptions, -8000)

@@ -101,4 +101,4 @@ local GenerateOptions = function()
 	return options
 end
 
-Options:AddGroup(L["Time & Info"], GenerateOptions)
+Options:AddGroup(L["Time & Info"], GenerateOptions, 10000)

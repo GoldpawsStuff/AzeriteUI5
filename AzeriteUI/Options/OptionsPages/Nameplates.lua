@@ -93,4 +93,4 @@ local GenerateOptions = function()
 	return options
 end
 
-Options:AddGroup(L["Nameplates"], GenerateOptions)
+Options:AddGroup(L["Nameplates"], GenerateOptions, -7000)

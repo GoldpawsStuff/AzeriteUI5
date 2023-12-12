@@ -51,6 +51,7 @@ local setter = function(info,val)
 	local db = getmodule().db.profile.bars[id]
 	db[info[#info]] = val
 	getmodule():UpdateSettings()
+	ns:Fire("ActionBarSettings_Changed")
 end
 
 local getter = function(info)
@@ -76,6 +77,7 @@ local setoption = function(info,option,val)
 	local db = getmodule().db.profile.bars[id]
 	db[option] = val
 	getmodule():UpdateSettings()
+	ns:Fire("ActionBarSettings_Changed")
 end
 
 local getoption = function(info,option)
@@ -632,4 +634,4 @@ local GenerateOptions = function()
 	return options
 end
 
-Options:AddGroup(L["Action Bars"], GenerateOptions)
+Options:AddGroup(L["Action Bars"], GenerateOptions, -9000)

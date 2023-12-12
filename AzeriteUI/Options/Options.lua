@@ -188,12 +188,12 @@ Options.OpenOptionsMenu = function(self)
 	end
 end
 
-Options.AddGroup = function(self, name, group)
+Options.AddGroup = function(self, name, group, priority)
 	if (not self.objects) then
 		self.objects = {}
 	end
 	if (group) then
-		self.objects[#self.objects + 1] = { name = name, group = group }
+		self.objects[#self.objects + 1] = { name = name, group = group, priority = priority }
 	end
 end
 
@@ -211,8 +211,14 @@ Options.GenerateOptionsMenu = function(self)
 		end
 	end
 
-	-- Sort groups by localized name.
-	table_sort(self.objects, function(a,b) return a.group.name < b.group.name end)
+	-- Sort groups by priority, then localized name.
+	table_sort(self.objects, function(a,b)
+		if ((a.priority or 0) == (b.priority or 0)) then
+			return a.group.name < b.group.name
+		else
+			return (a.priority or 0) < (b.priority or 0)
+		end
+	end)
 
 	-- Generate the options table.
 	local options, orderoffset = self:GenerateProfileMenu()
@@ -326,6 +332,7 @@ Options.OnEnable = function(self)
 	self:RegisterChatCommand("azerite", "OpenOptionsMenu")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_TALENT_UPDATE", "OnEvent")
+	ns.RegisterCallback(self, "OptionsNeedRefresh", "Refresh")
 	if (ns.IsRetail) then
 		self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
 	end
@@ -336,6 +343,7 @@ Options.OnDisable = function(self)
 	self:UnregisterChatCommand("azerite")
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:UnregisterEvent("PLAYER_TALENT_UPDATE", "OnEvent")
+	ns.UnregisterCallback(self, "OptionsNeedRefresh")
 	if (ns.IsRetail) then
 		self:UnregisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
 	end

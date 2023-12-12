@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 19
+local MINOR_VERSION = 21
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -96,16 +96,17 @@ local setCurrentAlpha = function(frame, alpha)
 end
 
 local requestAlpha = function(frame, targetAlpha)
-	if (getCurrentAlpha(frame) ~= targetAlpha) then
-		if (not next(lib.fadeFrameTargetAlpha)) then
-			if (not lib.fadeTimer) then
-				lib.fadeTimer = lib:ScheduleRepeatingTimer("UpdateCurrentlyFadingFrames", fadeThrottle)
-			end
+	-- Always do this, even if alpha goal is reached.
+	-- There's a minor bug in blizzard's frame alpha code where upon showing
+	-- a frame its children can be rendered fully visible even if their alpha is set to zero.
+	-- Adding an extra check on the next frame update will
+	-- update the alpha correctly after the parent has changed its.
+	if (not next(lib.fadeFrameTargetAlpha)) then
+		if (not lib.fadeTimer) then
+			lib.fadeTimer = lib:ScheduleRepeatingTimer("UpdateCurrentlyFadingFrames", fadeThrottle)
 		end
-		lib.fadeFrameTargetAlpha[frame] = targetAlpha
-	else
-		lib.fadeFrameTargetAlpha[frame] = nil
 	end
+	lib.fadeFrameTargetAlpha[frame] = targetAlpha
 end
 
 lib.UpdateCurrentlyFadingFrames = function(self)

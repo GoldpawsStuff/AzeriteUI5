@@ -24,7 +24,7 @@
 
 --]]
 local Addon, ns = ...
-local ExplorerMode = ns:NewModule("ExplorerMode", ns.Module, "LibMoreEvents-1.0") --
+local ExplorerMode = ns:NewModule("ExplorerMode", ns.Module, "LibMoreEvents-1.0")
 
 local LFF = LibStub("LibFadingFrames-1.0")
 
@@ -39,12 +39,34 @@ local POWER_TYPE_MANA = Enum.PowerType.Mana
 local _,playerClass = UnitClass("player")
 local playerLevel = UnitLevel("player")
 
+-- Default settings, don't modify these.
 local defaults = { profile = ns:Merge({
 	enabled = false,
+
+	-- These options are kind of backwards,
+	-- as they set when to EXIT the Explorer Mode.
+	fadeInCombat = false,
+	fadeInGroups = false,
+	fadeInInstances = false,
+	fadeWithFriendlyTarget = false,
+	fadeWithHostileTarget = false,
+	fadeWithFocusTarget = false,
+	fadeInVehicles = false,
+	fadeWithLowMana = false,
+		fadeThresholdMana = .75,
+		fadeThresholdManaInForms = .5,
+		fadeThresholdEnergy = .5,
+	fadeWithLowHealth = false,
+		fadeThresholdHealth = .9,
+
+	-- Which elements to fade out
+	-- while in Explorer Mode.
 	fadeActionBars = true,
 	fadePetBar = true,
 	fadeStanceBar = true,
 	fadePlayerFrame = true,
+	fadePetFrame = true,
+	fadeFocusFrame = true,
 	fadeTracker = true,
 	fadeChatFrames = true
 
@@ -56,32 +78,27 @@ end
 
 ExplorerMode.UpdateSettings = function(self)
 
-	if self.inCombat
-	or self.hasTarget
-	--or self.hasFocus
-	or (self.inGroup and self.disableGroupFade)
-	or self.hasOverride
-	or self.hasPossess
-	or self.inVehicle
-	or (self.inInstance and self.disableInstanceFade)
-	or self.lowHealth
-	or self.lowPower
-	or self.busyCursor
-	or self.badAura then
-		self.FORCED = true
-	else
-		self.FORCED = nil
-	end
+	self.FORCED = self:CheckForForcedState()
 
+	-- Action Bars
+	--------------------------------------------
 	local ActionBars = ns:GetModule("ActionBars", true)
 	if (ActionBars) then
 		local fade = not self.FORCED and ActionBars:IsEnabled() and self.db.profile.enabled and self.db.profile.fadeActionBars
 		for id,bar in next,ActionBars.bars do
-			if (fade) then
+			-- Exempt bars that are fully set to fade
+			-- in their own actionbar settings.
+			local db = bar.config
+			local fullyFaded = db.enableBarFading and db.fadeAlone and db.fadeFrom == 1
+			if (fade and not fullyFaded) then
+				-- Register the bar for fading
 				LFF:RegisterFrameForFading(bar, self:GetName())
 			else
+				-- Unregister the bar for fading, does not affect button fading.
 				LFF:UnregisterFrameForFading(bar)
 			end
+			-- Update the bar's button fading.
+			bar:UpdateFading()
 		end
 	end
 
@@ -90,7 +107,9 @@ ExplorerMode.UpdateSettings = function(self)
 		local fade = not self.FORCED and PetBar:IsEnabled() and self.db.profile.enabled and self.db.profile.fadePetBar
 		local petBar = PetBar.bar
 		if (petBar) then
-			if (fade) then
+			local db = petBar.config
+			local fullyFaded = db.enableBarFading and db.fadeAlone and db.fadeFrom == 1
+			if (fade and not fullyFaded) then
 				LFF:RegisterFrameForFading(petBar, self:GetName())
 			else
 				LFF:UnregisterFrameForFading(petBar)
@@ -103,7 +122,9 @@ ExplorerMode.UpdateSettings = function(self)
 		local fade = not self.FORCED and StanceBar:IsEnabled() and self.db.profile.enabled and self.db.profile.fadeStanceBar
 		local stanceBar = StanceBar.bar
 		if (stanceBar) then
-			if (fade) then
+			local db = stanceBar.config
+			local fullyFaded = db.enableBarFading and db.fadeAlone and db.fadeFrom == 1
+			if (fade and not fullyFaded) then
 				LFF:RegisterFrameForFading(stanceBar, self:GetName())
 			else
 				LFF:UnregisterFrameForFading(stanceBar)
@@ -111,6 +132,8 @@ ExplorerMode.UpdateSettings = function(self)
 		end
 	end
 
+	-- Unit Frames
+	--------------------------------------------
 	local PlayerFrame = ns:GetModule("PlayerFrame", true)
 	if (PlayerFrame) then
 		local fade = not self.FORCED and PlayerFrame:IsEnabled() and self.db.profile.enabled and self.db.profile.fadePlayerFrame
@@ -124,6 +147,34 @@ ExplorerMode.UpdateSettings = function(self)
 		end
 	end
 
+	local PetFrame = ns:GetModule("PetFrame", true)
+	if (PetFrame) then
+		local fade = not self.FORCED and PetFrame:IsEnabled() and self.db.profile.enabled and self.db.profile.fadePetFrame
+		local petFrame = PetFrame:GetFrame()
+		if (petFrame) then
+			if (fade) then
+				LFF:RegisterFrameForFading(petFrame, self:GetName())
+			else
+				LFF:UnregisterFrameForFading(petFrame)
+			end
+		end
+	end
+
+	local FocusFrame = ns:GetModule("FocusFrame", true)
+	if (FocusFrame) then
+		local fade = not self.FORCED and FocusFrame:IsEnabled() and self.db.profile.enabled and self.db.profile.fadeFocusFrame
+		local focusFrame = FocusFrame:GetFrame()
+		if (focusFrame) then
+			if (fade) then
+				LFF:RegisterFrameForFading(focusFrame, self:GetName())
+			else
+				LFF:UnregisterFrameForFading(focusFrame)
+			end
+		end
+	end
+
+	-- Objectives Tracker
+	--------------------------------------------
 	local Tracker = ns:GetModule("Tracker", true)
 	if (Tracker) then
 		local fade = not self.FORCED and Tracker:IsEnabled() and self.db.profile.enabled and self.db.profile.fadeTracker
@@ -137,6 +188,8 @@ ExplorerMode.UpdateSettings = function(self)
 		end
 	end
 
+	-- Chat Windows
+	--------------------------------------------
 	local fadeChat = not self.FORCED and self.db.profile.enabled and self.db.profile.fadeChatFrames
 	for _,frameName in pairs(_G.CHAT_FRAMES) do
 		local chatFrame = _G[frameName]
@@ -149,6 +202,27 @@ ExplorerMode.UpdateSettings = function(self)
 		end
 	end
 
+end
+
+ExplorerMode.CheckForForcedState = function(self)
+	local db = self.db.profile
+
+	if (self.inCombat and not db.fadeInCombat)
+	or (self.hasTarget and ((not db.fadeWithHostileTarget and self.hasAttackableTarget) or (not db.fadeWithFriendlyTarget and not self.hasAttackableTarget)))
+	or (self.hasFocus and not db.fadeWithFocusTarget)
+	or (self.inGroup and not db.fadeInGroups)
+	or (self.hasOverride and not db.fadeInVehicles)
+	or (self.hasPossess and not db.fadeInVehicles)
+	or (self.inVehicle and not db.fadeInVehicles)
+	or (self.inInstance and not db.fadeInInstances)
+	or (self.lowHealth and not db.fadeWithLowMana)
+	or (self.lowPower and not db.fadeWithLowHealth)
+	--or (self.badAura)
+	or (self.busyCursor) then
+		return true
+	end
+
+	return nil
 end
 
 ExplorerMode.CheckCursor = function(self)
@@ -170,11 +244,10 @@ ExplorerMode.CheckCursor = function(self)
 	self.busyCursor = nil
 end
 
-
 ExplorerMode.CheckHealth = function(self)
 	local min = UnitHealth("player") or 0
 	local max = UnitHealthMax("player") or 0
-	if (max > 0) and (min/max < .9) then
+	if (max > 0) and (min/max < self.db.profile.fadeThresholdHealth) then
 		self.lowHealth = true
 		return
 	end
@@ -186,21 +259,21 @@ ExplorerMode.CheckPower = function(self)
 	if (powerType == "MANA") then
 		local min = UnitPower("player") or 0
 		local max = UnitPowerMax("player") or 0
-		if (max > 0) and (min/max < .75) then
+		if (max > 0) and (min/max < self.db.profile.fadeThresholdMana) then
 			self.lowPower = true
 			return
 		end
 	elseif (powerType == "ENERGY" or powerType == "FOCUS") then
 		local min = UnitPower("player") or 0
 		local max = UnitPowerMax("player") or 0
-		if (max > 0) and (min/max < .5) then
+		if (max > 0) and (min/max < self.db.profile.fadeThresholdEnergy) then
 			self.lowPower = true
 			return
 		end
 		if (playerClass == "DRUID") then
 			min = UnitPower("player", POWER_TYPE_MANA) or 0
 			max = UnitPowerMax("player", POWER_TYPE_MANA) or 0
-			if (max > 0) and (min/max < .5) then
+			if (max > 0) and (min/max < self.db.profile.fadeThresholdManaInForms) then
 				self.lowPower = true
 				return
 			end
@@ -210,7 +283,9 @@ ExplorerMode.CheckPower = function(self)
 end
 
 ExplorerMode.CheckVehicle = function(self)
-	--if (UnitInVehicle("player") or HasVehicleActionBar()) then
+	-- Only check for vehicle bars where you have actions,
+	-- ignore vehicles you're just riding in like the
+	-- alliance/horde chopper mounts where you're a passenger.
 	if (HasVehicleActionBar()) then
 		self.inVehicle = true
 		return
@@ -235,15 +310,17 @@ ExplorerMode.CheckPossess = function(self)
 end
 
 ExplorerMode.CheckTarget = function(self)
-	if UnitExists("target") then
+	if (UnitExists("target")) then
 		self.hasTarget = true
+		self.hasAttackableTarget = UnitCanAttack("player", "target")
 		return
 	end
 	self.hasTarget = nil
+	self.hasAttackableTarget = nil
 end
 
-ExplorerMode.CheckFocus	 = function(self)
-	if UnitExists("focus") then
+ExplorerMode.CheckFocus = function(self)
+	if (UnitExists("focus")) then
 		self.hasFocus = true
 		return
 	end
@@ -251,7 +328,7 @@ ExplorerMode.CheckFocus	 = function(self)
 end
 
 ExplorerMode.CheckGroup = function(self)
-	if IsInGroup() then
+	if (IsInGroup()) then
 		self.inGroup = true
 		return
 	end
@@ -259,13 +336,12 @@ ExplorerMode.CheckGroup = function(self)
 end
 
 ExplorerMode.CheckInstance = function(self)
-	if IsInInstance() then
+	if (IsInInstance()) then
 		self.inInstance = true
 		return
 	end
 	self.inInstance = nil
 end
-
 
 ExplorerMode.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
@@ -371,4 +447,5 @@ ExplorerMode.OnEnable = function(self)
 		self:RegisterUnitEvent("UNIT_EXITING_VEHICLE", "OnEvent", "player")
 	end
 
+	ns.RegisterCallback(self, "ActionBarSettings_Changed", "UpdateSettings")
 end
