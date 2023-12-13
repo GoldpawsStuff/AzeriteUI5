@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Did yet another bug haul over empty actionbar slots that kept popping up when disabling bar fading.
+- Fixed a bug related to the unit frame healprediction element in the Classics.
 
 ## [5.2.143-RC] 2023-12-13
 ### Changed
