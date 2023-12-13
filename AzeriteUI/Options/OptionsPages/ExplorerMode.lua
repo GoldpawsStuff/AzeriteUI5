@@ -194,8 +194,8 @@ local GenerateOptions = function()
 				name = L["While having a dead target"],
 				desc = "",
 				type = "toggle", width = "full",
-				set = setterReverse, get = getterReverse, disabled = isdisabled,
-				hidden = function(info) return isdisabled(info) or (getoption(info, "fadeWithFriendlyTarget") or getoption(info, "fadeWithHostileTarget")) end,
+				set = setterReverse, get = getterReverse, disabled = function(info) return isdisabled(info) or (getoption(info, "fadeWithFriendlyTarget") and getoption(info, "fadeWithHostileTarget")) end,
+				hidden = isdisabled,
 				order = 46
 			},
 			fadeWithFocusTarget = (ns.IsRetail or ns.IsWrath) and {
