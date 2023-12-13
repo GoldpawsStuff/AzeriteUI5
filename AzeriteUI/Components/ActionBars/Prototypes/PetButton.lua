@@ -120,6 +120,10 @@ PetButton.UpdateConfig = function(self, buttonConfig)
 	self:Update()
 end
 
+PetButton.UpdateAction = function(self)
+	self:Update()
+end
+
 PetButton.Update = function(self)
 	local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID = GetPetActionInfo(self.id)
 

@@ -95,6 +95,10 @@ StanceButton.UpdateConfig = function(self, buttonConfig)
 	self:Update()
 end
 
+StanceButton.UpdateAction = function(self)
+	self:Update()
+end
+
 StanceButton.Update = function(self)
 	if (not self:IsShown()) then return end
 

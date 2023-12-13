@@ -180,6 +180,10 @@ BlizzardABDisabler.HideBlizzard = function(self)
 
 end
 
+BlizzardABDisabler.OnInitialize = function(self)
+	if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return self:Disable() end
+end
+
 BlizzardABDisabler.OnEnable = function(self)
 	self:HideBlizzard()
 end

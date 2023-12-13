@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 22
+local MINOR_VERSION = 23
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -138,7 +138,8 @@ lib.UpdateCurrentlyFadingFrames = function(self)
 				self.fadeFrameTargetAlpha[frame] = nil
 
 				if (self.fadeFrameType[frame] == "actionbutton") then
-					frame:UpdateConfig(frame.config)
+					--frame:UpdateConfig(frame.config)
+					frame:UpdateAction()
 					updateLAB()
 				end
 
@@ -157,7 +158,8 @@ lib.UpdateCurrentlyFadingFrames = function(self)
 				self.fadeFrameTargetAlpha[frame] = nil
 
 				if (self.fadeFrameType[frame] == "actionbutton") then
-					frame:UpdateConfig(frame.config)
+					--frame:UpdateConfig(frame.config)
+					frame:UpdateAction()
 					updateLAB()
 				end
 
@@ -168,7 +170,8 @@ lib.UpdateCurrentlyFadingFrames = function(self)
 			self.fadeFrameTargetAlpha[frame] = nil
 
 			if (self.fadeFrameType[frame] == "actionbutton") then
-				frame:UpdateConfig(frame.config)
+				--frame:UpdateConfig(frame.config)
+				frame:UpdateAction()
 				updateLAB()
 			end
 
@@ -335,13 +338,15 @@ lib.UnregisterFrameForFading = function(self, frame, noAlphaChange)
 	if (not lib.fadeFrames[frame]) then
 		if (not noAlphaChange) then
 			if (lib.fadeFrameType[frame] == "actionbutton") then
-				frame:UpdateConfig(frame.config)
+				--frame:UpdateConfig(frame.config)
+				frame:UpdateAction()
 				updateLAB()
 			else
 				requestAlpha(frame, 1)
 			end
 		elseif (lib.fadeFrameType[frame] == "actionbutton") then
-			frame:UpdateConfig(frame.config)
+			--frame:UpdateConfig(frame.config)
+			frame:UpdateAction()
 			updateLAB()
 		end
 		return
@@ -356,13 +361,15 @@ lib.UnregisterFrameForFading = function(self, frame, noAlphaChange)
 
 	if (not noAlphaChange) then
 		if (lib.fadeFrameType[frame] == "actionbutton") then
-			frame:UpdateConfig(frame.config)
+			--frame:UpdateConfig(frame.config)
+			frame:UpdateAction()
 			updateLAB()
 		else
 			requestAlpha(frame, 1)
 		end
 	elseif (lib.fadeFrameType[frame] == "actionbutton") then
-		frame:UpdateConfig(frame.config)
+		--frame:UpdateConfig(frame.config)
+		frame:UpdateAction()
 		updateLAB()
 	end
 

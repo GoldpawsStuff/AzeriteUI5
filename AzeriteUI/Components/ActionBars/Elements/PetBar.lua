@@ -781,5 +781,7 @@ PetBarMod.OnEnable = function(self)
 end
 
 PetBarMod.OnInitialize = function(self)
+	if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return self:Disable() end
+
 	self.db = ns.db:RegisterNamespace(self:GetName(), self:GetDefaults())
 end

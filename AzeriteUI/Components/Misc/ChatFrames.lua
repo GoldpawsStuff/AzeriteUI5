@@ -610,6 +610,8 @@ ChatFrames.OnEvent = function(self, event, ...)
 end
 
 ChatFrames.OnInitialize = function(self)
+	if (ns.API.IsAddOnEnabled("Prat-3.0") or ns.API.IsAddOnEnabled("ls_Glass")) then return self:Disable() end
+
 	self.db = ns.db:RegisterNamespace(self:GetName(), defaults)
 
 	-- Add a command to clear all chat frames.

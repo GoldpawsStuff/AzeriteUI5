@@ -596,7 +596,8 @@ ActionBarMod.UpdateBarButtonCounts = function(self)
 			if j > bar.config.numbuttons then break end
 			-- Updating the config will trigger a full button update,
 			-- even though this method isn't directly exposed.
-			button:UpdateConfig(button.config) -- pass its config, or it'll reset!
+			--button:UpdateConfig(button.config) -- pass its config, or it'll reset!
+			button:UpdateAction()
 		end
 	end
 end
@@ -687,7 +688,8 @@ ActionBarMod.UpdateSettings = function(self, event)
 			button.config.dimWhenInactive = bar.config.dimWhenInactive
 
 			-- Update config and trigger a full button update.
-			button:UpdateConfig(button.config) -- pass its config, or it'll reset!
+			--button:UpdateConfig(button.config) -- pass its config, or it'll reset!
+			button:UpdateAction()
 		end
 	end
 
@@ -783,6 +785,8 @@ ActionBarMod.OnEnable = function(self)
 end
 
 ActionBarMod.OnInitialize = function(self)
+	if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return self:Disable() end
+
 	self.db = ns.db:RegisterNamespace(self:GetName(), self:GetDefaults())
 
 	if (ns.WoW10) then

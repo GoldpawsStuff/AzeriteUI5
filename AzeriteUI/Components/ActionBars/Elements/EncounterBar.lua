@@ -130,6 +130,12 @@ EncounterBar.PrepareFrames = function(self)
 	self:SecureHook(_G.EncounterBar, "SetPoint", "OnPositionAndScaleChange")
 end
 
+EncounterBar.OnInitialize = function(self)
+	if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return self:Disable() end
+
+	ns.Module.OnInitialize(self)
+end
+
 EncounterBar.OnEnable = function(self)
 
 	self:PrepareFrames()

@@ -77,5 +77,8 @@ ConsolePort.HandleConsolePort = function(self, event, addon)
 end
 
 ConsolePort.OnInitialize = function(self)
+	if (not ns.API.IsAddOnEnabled("ConsolePort")) then return self:Disable() end
+	if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return self:Disable() end
+
 	self:HandleConsolePort()
 end

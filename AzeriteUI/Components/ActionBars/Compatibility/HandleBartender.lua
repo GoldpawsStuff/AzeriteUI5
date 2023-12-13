@@ -24,8 +24,8 @@
 
 --]]
 local _, ns = ...
-if (not ns.API.IsAddOnEnabled("Bartender4")) then return end
 
+if (not ns.API.IsAddOnEnabled("Bartender4")) then return end
 if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return end
 
 local Bartender = ns:NewModule("Bartender", "LibMoreEvents-1.0")
@@ -103,5 +103,8 @@ Bartender.HandleBartender = function(self, event, addon)
 end
 
 Bartender.OnInitialize = function(self)
+	if (not ns.API.IsAddOnEnabled("Bartender4")) then return self:Disable() end
+	if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return self:Disable() end
+
 	self:HandleBartender()
 end

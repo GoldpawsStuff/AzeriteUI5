@@ -256,6 +256,8 @@ ExtraButtons.UpdateBindings = function(self)
 end
 
 ExtraButtons.OnInitialize = function(self)
+	if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return self:Disable() end
+
 	self:SecureHook(ZoneAbilityFrame, "UpdateDisplayedZoneAbilities", "UpdateZoneButtons")
 end
 
