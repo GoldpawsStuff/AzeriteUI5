@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 23
+local MINOR_VERSION = 25
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -75,6 +75,7 @@ local isTBC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 local isWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
 local WoW10 = select(4, GetBuildInfo()) >= 100000
 
+-- General fade settings.
 local fadeThrottle = .02
 local fadeInDuration = .1
 local fadeOutDuration = .35
@@ -109,6 +110,15 @@ local requestAlpha = function(frame, targetAlpha)
 	lib.fadeFrameTargetAlpha[frame] = targetAlpha
 end
 
+-- Not all action buttons have their full update method exposed,
+-- so we're using a method that can trigger it and not taint.
+local updateButton = function(frame)
+	local update = frame.Update or frame.UpdateAction
+	if (update) then
+		return update(frame)
+	end
+end
+
 -- Our fade frame unregistration sets alpha back to full opacity,
 -- this conflicts with how actionbuttons work so we're faking events to fix it.
 local updateLAB = function()
@@ -122,7 +132,11 @@ end
 
 lib.UpdateCurrentlyFadingFrames = function(self)
 
+	-- Iterate frames that hasn't yet been verified
+	-- to have reached their target opacity.
 	for frame,targetAlpha in next,self.fadeFrameTargetAlpha do
+
+		-- Retrieve a rounded, two decimal vale of the current alpha.
 		local currentAlpha = getCurrentAlpha(frame)
 
 		-- If we're fading out
@@ -138,8 +152,7 @@ lib.UpdateCurrentlyFadingFrames = function(self)
 				self.fadeFrameTargetAlpha[frame] = nil
 
 				if (self.fadeFrameType[frame] == "actionbutton") then
-					--frame:UpdateConfig(frame.config)
-					frame:UpdateAction()
+					updateButton(frame)
 					updateLAB()
 				end
 
@@ -158,20 +171,22 @@ lib.UpdateCurrentlyFadingFrames = function(self)
 				self.fadeFrameTargetAlpha[frame] = nil
 
 				if (self.fadeFrameType[frame] == "actionbutton") then
-					--frame:UpdateConfig(frame.config)
-					frame:UpdateAction()
+					updateButton(frame)
 					updateLAB()
 				end
 
 			end
 		else
 
+			-- This is not redundant.
+			-- When both parent and child has a fader,
+			-- the child can get stuck at max opacity after changing the parent,
+			-- and setting the child on the next frame cycle through this will fix it.
 			setCurrentAlpha(frame, targetAlpha)
 			self.fadeFrameTargetAlpha[frame] = nil
 
 			if (self.fadeFrameType[frame] == "actionbutton") then
-				--frame:UpdateConfig(frame.config)
-				frame:UpdateAction()
+				updateButton(frame)
 				updateLAB()
 			end
 
@@ -309,7 +324,8 @@ lib.RegisterFrameForFading = function(self, frame, fadeGroup, ...)
 
 	end
 
-	-- Might be spammy, but I prefer not to replace frame methods.
+	-- Hooking proved to create a lot of problems,
+	-- it is ultimately better in this scenario to replace.
 	--lib:SecureHook(frame, "SetAlpha", "UpdateFadeFrame")
 	frame.SetAlpha = function() end
 
@@ -338,15 +354,13 @@ lib.UnregisterFrameForFading = function(self, frame, noAlphaChange)
 	if (not lib.fadeFrames[frame]) then
 		if (not noAlphaChange) then
 			if (lib.fadeFrameType[frame] == "actionbutton") then
-				--frame:UpdateConfig(frame.config)
-				frame:UpdateAction()
+				updateButton(frame)
 				updateLAB()
 			else
 				requestAlpha(frame, 1)
 			end
 		elseif (lib.fadeFrameType[frame] == "actionbutton") then
-			--frame:UpdateConfig(frame.config)
-			frame:UpdateAction()
+			updateButton(frame)
 			updateLAB()
 		end
 		return
@@ -361,15 +375,13 @@ lib.UnregisterFrameForFading = function(self, frame, noAlphaChange)
 
 	if (not noAlphaChange) then
 		if (lib.fadeFrameType[frame] == "actionbutton") then
-			--frame:UpdateConfig(frame.config)
-			frame:UpdateAction()
+			updateButton(frame)
 			updateLAB()
 		else
 			requestAlpha(frame, 1)
 		end
 	elseif (lib.fadeFrameType[frame] == "actionbutton") then
-		--frame:UpdateConfig(frame.config)
-		frame:UpdateAction()
+		updateButton(frame)
 		updateLAB()
 	end
 
