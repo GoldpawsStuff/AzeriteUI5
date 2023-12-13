@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.123-Alpha] 2023-12-13
+### Added
+- Added a `button:ForceUpdate()` method to manually trigger a full button update.
+
 ## [1.0.122-Alpha] 2023-10-31
 ### Fixed
 - Fixed how the public methods `lib:ShowOverlayGlow(button[, r, g, b[, a]])` and `lib:HideOverlayGlow(button)` handles input arguments to work better with SpellActivationOverlay.
