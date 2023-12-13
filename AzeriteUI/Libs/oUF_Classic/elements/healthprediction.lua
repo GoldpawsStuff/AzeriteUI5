@@ -224,32 +224,52 @@ local function HealComm_Create(self, element)
 	return update, modified
 end
 
+local function SetUseHealComm(element, state)
+	if not HealComm then return end
+
+	if state then
+		local frame = element.__owner
+		if not frame.HealComm_Update then
+			frame.HealComm_Update, frame.HealComm_Modified = HealComm_Create(frame, element)
+		end
+
+		HealComm.RegisterCallback(element, 'HealComm_HealStarted', frame.HealComm_Update)
+		HealComm.RegisterCallback(element, 'HealComm_HealUpdated', frame.HealComm_Update)
+		HealComm.RegisterCallback(element, 'HealComm_HealDelayed', frame.HealComm_Update)
+		HealComm.RegisterCallback(element, 'HealComm_HealStopped', frame.HealComm_Update)
+		HealComm.RegisterCallback(element, 'HealComm_ModifierChanged', frame.HealComm_Modified)
+		HealComm.RegisterCallback(element, 'HealComm_GUIDDisappeared', frame.HealComm_Modified)
+	else
+		HealComm.UnregisterCallback(element, 'HealComm_HealStarted')
+		HealComm.UnregisterCallback(element, 'HealComm_HealUpdated')
+		HealComm.UnregisterCallback(element, 'HealComm_HealDelayed')
+		HealComm.UnregisterCallback(element, 'HealComm_HealStopped')
+		HealComm.UnregisterCallback(element, 'HealComm_ModifierChanged')
+		HealComm.UnregisterCallback(element, 'HealComm_GUIDDisappeared')
+	end
+end
+
 local function Enable(self)
 	local element = self.HealthPrediction
 	if(element) then
 		element.__owner = self
 		element.ForceUpdate = ForceUpdate
+		element.SetUseHealComm = SetUseHealComm
 
-		self:RegisterEvent('UNIT_MAXHEALTH', Path)
-		self:RegisterEvent('UNIT_HEAL_PREDICTION', Path)
+		self:RegisterEvent(self, 'UNIT_MAXHEALTH', Path)
+		self:RegisterEvent(self, 'UNIT_HEAL_PREDICTION', Path)
+
+		if(oUF.isClassic) then
+			self:RegisterEvent(self, 'UNIT_HEALTH_FREQUENT', Path)
+		else
+			self:RegisterEvent(self, 'UNIT_HEALTH', Path)
+		end
 
 		if(oUF.isRetail) then
-			self:RegisterEvent('UNIT_HEALTH', Path)
-			self:RegisterEvent('UNIT_ABSORB_AMOUNT_CHANGED', Path)
-			self:RegisterEvent('UNIT_HEAL_ABSORB_AMOUNT_CHANGED', Path)
+			self:RegisterEvent(self, 'UNIT_ABSORB_AMOUNT_CHANGED', Path)
+			self:RegisterEvent(self, 'UNIT_HEAL_ABSORB_AMOUNT_CHANGED', Path)
 		else
-			if(not self.HealComm_Update) then
-				self.HealComm_Update, self.HealComm_Modified = HealComm_Create(self, element)
-			end
-
-			HealComm.RegisterCallback(element, 'HealComm_HealStarted', self.HealComm_Update)
-			HealComm.RegisterCallback(element, 'HealComm_HealUpdated', self.HealComm_Update)
-			HealComm.RegisterCallback(element, 'HealComm_HealDelayed', self.HealComm_Update)
-			HealComm.RegisterCallback(element, 'HealComm_HealStopped', self.HealComm_Update)
-			HealComm.RegisterCallback(element, 'HealComm_ModifierChanged', self.HealComm_Modified)
-			HealComm.RegisterCallback(element, 'HealComm_GUIDDisappeared', self.HealComm_Modified)
-
-			self:RegisterEvent('UNIT_HEALTH_FREQUENT', Path)
+			element:SetUseHealComm(true)
 		end
 
 		if(not element.maxOverflow) then
@@ -325,22 +345,20 @@ local function Disable(self)
 			element.overHealAbsorb:Hide()
 		end
 
-		self:UnregisterEvent('UNIT_MAXHEALTH', Path)
-		self:UnregisterEvent('UNIT_HEAL_PREDICTION', Path)
+		self:UnregisterEvent(self, 'UNIT_MAXHEALTH', Path)
+		self:UnregisterEvent(self, 'UNIT_HEAL_PREDICTION', Path)
+
+		if(oUF.isClassic) then
+			self:UnregisterEvent(self, 'UNIT_HEALTH_FREQUENT', Path)
+		else
+			self:UnregisterEvent(self, 'UNIT_HEALTH', Path)
+		end
 
 		if(oUF.isRetail) then
-			self:UnregisterEvent('UNIT_HEALTH', Path)
-			self:UnregisterEvent('UNIT_ABSORB_AMOUNT_CHANGED', Path)
-			self:UnregisterEvent('UNIT_HEAL_ABSORB_AMOUNT_CHANGED', Path)
+			self:UnregisterEvent(self, 'UNIT_ABSORB_AMOUNT_CHANGED', Path)
+			self:UnregisterEvent(self, 'UNIT_HEAL_ABSORB_AMOUNT_CHANGED', Path)
 		else
-			HealComm.UnregisterCallback(element, 'HealComm_HealStarted')
-			HealComm.UnregisterCallback(element, 'HealComm_HealUpdated')
-			HealComm.UnregisterCallback(element, 'HealComm_HealDelayed')
-			HealComm.UnregisterCallback(element, 'HealComm_HealStopped')
-			HealComm.UnregisterCallback(element, 'HealComm_ModifierChanged')
-			HealComm.UnregisterCallback(element, 'HealComm_GUIDDisappeared')
-
-			self:UnregisterEvent('UNIT_HEALTH_FREQUENT', Path)
+			element:SetUseHealComm(false)
 		end
 	end
 end
