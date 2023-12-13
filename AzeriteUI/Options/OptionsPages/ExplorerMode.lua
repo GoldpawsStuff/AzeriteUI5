@@ -94,28 +94,28 @@ local GenerateOptions = function()
 				name = L["When to exit Explorer Mode"],
 				desc = "",
 				type = "header",
-				disabled = isdisabled,
+				disabled = isdisabled, hidden = isdisabled,
 				order = 20
 			},
 			explorermodesituationsdesc = {
 				name = L["Here you can select which situations should be considered unsafe and exit the Explorer Mode."],
 				type = "description",
 				fontSize = "medium",
-				disabled = isdisabled,
+				disabled = isdisabled, hidden = isdisabled,
 				order = 21
 			},
 			fadeInCombat = {
 				name = L["While engaged in combat"],
 				desc = "",
 				type = "toggle", width = "full",
-				set = setterReverse, get = getterReverse, disabled = isdisabled,
+				set = setterReverse, get = getterReverse, disabled = isdisabled, hidden = isdisabled,
 				order = 22
 			},
 			fadeWithLowHealth = {
 				name = L["While having low health"],
 				desc = "",
 				type = "toggle", width = "full",
-				set = setterReverse, get = getterReverse, disabled = isdisabled,
+				set = setterReverse, get = getterReverse, disabled = isdisabled, hidden = isdisabled,
 				order = 23
 			},
 			fadeThresholdHealth = {
@@ -131,7 +131,7 @@ local GenerateOptions = function()
 				name = L["While having low mana"],
 				desc = "",
 				type = "toggle", width = "full",
-				set = setterReverse, get = getterReverse, disabled = isdisabled,
+				set = setterReverse, get = getterReverse, disabled = isdisabled, hidden = isdisabled,
 				order = 25
 			},
 			fadeThresholdMana = {
@@ -166,104 +166,113 @@ local GenerateOptions = function()
 				name = L["While in a group"],
 				desc = "",
 				type = "toggle", width = "full",
-				set = setterReverse, get = getterReverse, disabled = isdisabled,
+				set = setterReverse, get = getterReverse, disabled = isdisabled, hidden = isdisabled,
 				order = 30
 			},
 			fadeInInstances = {
 				name = L["While in an instance"],
 				desc = "",
 				type = "toggle", width = "full",
-				set = setterReverse, get = getterReverse, disabled = isdisabled,
-				order = 32
+				set = setterReverse, get = getterReverse, disabled = isdisabled, hidden = isdisabled,
+				order = 35
 			},
 			fadeWithFriendlyTarget = {
 				name = L["While having a friendly target"],
 				desc = "",
 				type = "toggle", width = "full",
-				set = setterReverse, get = getterReverse, disabled = isdisabled,
-				order = 33
+				set = setterReverse, get = getterReverse, disabled = isdisabled, hidden = isdisabled,
+				order = 40
 			},
 			fadeWithHostileTarget = {
 				name = L["While having a hostile target"],
 				desc = "",
 				type = "toggle", width = "full",
+				set = setterReverse, get = getterReverse, disabled = isdisabled, hidden = isdisabled,
+				order = 45
+			},
+			fadeWithDeadTarget = {
+				name = L["While having a dead target"],
+				desc = "",
+				type = "toggle", width = "full",
 				set = setterReverse, get = getterReverse, disabled = isdisabled,
-				order = 34
+				hidden = function(info) return isdisabled(info) or (not getoption(info, "fadeWithFriendlyTarget") and not getoption(info, "fadeWithHostileTarget")) end,
+				order = 46
 			},
 			fadeWithFocusTarget = (ns.IsRetail or ns.IsWrath) and {
 				name = L["While having a focus target"],
 				desc = "",
 				type = "toggle", width = "full",
-				set = setterReverse, get = getterReverse, disabled = isdisabled,
-				order = 35
+				set = setterReverse, get = getterReverse, disabled = isdisabled, hidden = isdisabled,
+				order = 50
 			} or nil,
 			fadeInVehicles = (ns.IsRetail or ns.IsWrath) and {
 				name = L["While having any sort of replacement actionbar"],
 				desc = L["Exits Explorer Mode when in vehicles, when possessing a unit or any other situation that would replace your character's action bar with a temporary one."],
 				type = "toggle", width = "full",
-				set = setterReverse, get = getterReverse, disabled = isdisabled,
-				order = 36
+				set = setterReverse, get = getterReverse, disabled = isdisabled, hidden = isdisabled,
+				order = 55
 			} or nil,
 			explorermodeframeheader = {
 				name = L["Elements to Fade"],
 				desc = "",
 				type = "header",
+				hidden = isdisabled,
 				order = 100
 			},
 			fadeActionBars = {
 				name = L["Fade ActionBars"],
 				desc = "",
 				type = "toggle", width = "full",
-				set = setter, get = getter, disabled = isdisabled,
+				set = setter, get = getter, disabled = isdisabled, hidden = isdisabled,
 				order = 130
 			},
 			fadePetBar = {
 				name = L["Fade PetBar"],
 				desc = "",
 				type = "toggle", width = "full",
-				set = setter, get = getter, disabled = isdisabled,
+				set = setter, get = getter, disabled = isdisabled, hidden = isdisabled,
 				order = 131
 			},
 			fadeStanceBar = {
 				name = L["Fade StanceBar"],
 				desc = "",
 				type = "toggle", width = "full",
-				set = setter, get = getter, disabled = isdisabled,
+				set = setter, get = getter, disabled = isdisabled, hidden = isdisabled,
 				order = 132
 			},
 			fadePlayerFrame = {
 				name = L["Fade Player unit frame"],
 				desc = "",
 				type = "toggle", width = "full",
-				set = setter, get = getter, disabled = isdisabled,
+				set = setter, get = getter, disabled = isdisabled, hidden = isdisabled,
 				order = 140
 			},
 			fadePetFrame = {
 				name = L["Fade Pet unit frame"],
 				desc = "",
 				type = "toggle", width = "full",
-				set = setter, get = getter, disabled = isdisabled,
+				set = setter, get = getter, disabled = isdisabled, hidden = isdisabled,
 				order = 141
 			},
 			fadeFocusFrame = (ns.IsRetail or ns.IsWrath) and {
 				name = L["Fade Focus unit frame"],
 				desc = "",
 				type = "toggle", width = "full",
-				set = setter, get = getter, disabled = isdisabled,
+				set = setter, get = getter, disabled = isdisabled, hidden = isdisabled,
 				order = 142
 			} or nil,
 			fadeTracker = {
 				name = L["Fade Objectives Tracker"],
 				desc = "",
 				type = "toggle", width = "full",
-				set = setter, get = getter, disabled = isdisabled,
+				set = setter, get = getter, disabled = isdisabled, hidden = isdisabled,
 				order = 150
 			},
 			fadeChatFrames = {
 				name = L["Fade Chat Windows"],
 				desc = "",
 				type = "toggle", width = "full",
-				set = setter, get = getter, disabled = isdisabled,
+				set = setter, get = getter, disabled = isdisabled, hidden = isdisabled,
 				order = 160
 			}
 		}

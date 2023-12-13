@@ -50,6 +50,7 @@ local defaults = { profile = ns:Merge({
 	fadeInInstances = false,
 	fadeWithFriendlyTarget = false,
 	fadeWithHostileTarget = false,
+	fadeWithDeadTarget = true,
 	fadeWithFocusTarget = false,
 	fadeInVehicles = false,
 	fadeWithLowMana = false,
@@ -212,9 +213,29 @@ end
 ExplorerMode.CheckForForcedState = function(self)
 	local db = self.db.profile
 
-	if (self.inCombat and not db.fadeInCombat)
-	or (self.hasTarget and ((not db.fadeWithHostileTarget and self.hasAttackableTarget) or (not db.fadeWithFriendlyTarget and not self.hasAttackableTarget)))
-	or (self.hasFocus and not db.fadeWithFocusTarget)
+	if (self.inCombat and not db.fadeInCombat) then
+		return true
+	end
+
+	-- Check for the various targeting options.
+	if (self.hasTarget) then
+
+		-- Only check for hostile/friendly targets if the target is living
+		-- and the option to keep faded with dead targets isn't selected.
+		if not(self.hasDeadTarget and db.fadeWithDeadTarget) then
+
+			-- Hostile target and no hostile target fade selected.
+			if (self.hasAttackableTarget and not db.fadeWithHostileTarget) then
+				return true
+
+			-- Non-attackable target an no friendly fade selected.
+			elseif (not self.hasAttackableTarget and not db.fadeWithFriendlyTarget) then
+				return true
+			end
+		end
+	end
+
+	if (self.hasFocus and not db.fadeWithFocusTarget)
 	or (self.inGroup and not db.fadeInGroups)
 	or (self.hasOverride and not db.fadeInVehicles)
 	or (self.hasPossess and not db.fadeInVehicles)
@@ -318,10 +339,12 @@ ExplorerMode.CheckTarget = function(self)
 	if (UnitExists("target")) then
 		self.hasTarget = true
 		self.hasAttackableTarget = UnitCanAttack("player", "target")
+		self.hasDeadTarget = UnitIsDeadOrGhost("target")
 		return
 	end
 	self.hasTarget = nil
 	self.hasAttackableTarget = nil
+	self.hasDeadTarget = nil
 end
 
 ExplorerMode.CheckFocus = function(self)
