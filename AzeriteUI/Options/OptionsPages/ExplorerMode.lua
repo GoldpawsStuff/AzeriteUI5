@@ -195,7 +195,7 @@ local GenerateOptions = function()
 				desc = "",
 				type = "toggle", width = "full",
 				set = setterReverse, get = getterReverse, disabled = isdisabled,
-				hidden = function(info) return isdisabled(info) or (not getoption(info, "fadeWithFriendlyTarget") and not getoption(info, "fadeWithHostileTarget")) end,
+				hidden = function(info) return isdisabled(info) or (getoption(info, "fadeWithFriendlyTarget") or getoption(info, "fadeWithHostileTarget")) end,
 				order = 46
 			},
 			fadeWithFocusTarget = (ns.IsRetail or ns.IsWrath) and {
