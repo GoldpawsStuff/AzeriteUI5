@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 28
+local MINOR_VERSION = 29
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -95,11 +95,27 @@ local fadeHoldDuration = 0
 local setAlpha = getmetatable(CreateFrame("Frame")).__index.SetAlpha
 local getAlpha = getmetatable(CreateFrame("Frame")).__index.GetAlpha
 
+-- Check if a frame is of the type actionbutton.
+local isButton = function(frame)
+	return frame and FadeFrameType[frame] == "actionbutton"
+end
+
+-- Check if a frame is a pet actionbutton.
+local isPetButton = function(frame)
+	return frame and FadeFrameType[frame] == "actionbutton" and frame.GetAttribute and frame:GetAttribute("type") == "pet"
+end
+
+-- Check if a frame is an empty action button set to have no visible slot.
+local isEmptyButton = function(frame)
+	return (frame and FadeFrameType[frame] == "actionbutton" and not frame:GetTexture() and not (frame.config and frame.config.showGrid))
+end
+
 -- Alpha getter fixing the inconsistent blizzard return values
 local getCurrentAlpha = function(frame)
 
-	-- Keep emtpy slots faded, regardless of actual values.
-	if (FadeFrameType[frame] == "actionbutton" and not frame:GetTexture() and not (frame.config and frame.config.showGrid)) then
+	-- Report empty slots as transparent,
+	-- regardless of actual values.
+	if (isEmptyButton(frame)) then
 		return 0
 	end
 
@@ -109,16 +125,20 @@ end
 -- Alpha setter that also stores the alpha in our local registry
 local setCurrentAlpha = function(frame, alpha)
 
-	-- Keep emtpy slots faded, regardless of actual stored value.
-	if (FadeFrameType[frame] == "actionbutton" and not frame:GetTexture() and not (frame.config and frame.config.showGrid)) then
+	-- Keep empty slots faded,
+	-- regardless of actual opacity.
+	if (isEmptyButton(frame)) then
 		setAlpha(frame, 0)
 	else
 		setAlpha(frame, alpha)
 	end
 
+	-- Store the desired value,
+	-- even for empty slots.
 	FadeFrameCurrentAlpha[frame] = alpha
 end
 
+-- Request an alpha change, trigger fade animation.
 local requestAlpha = function(frame, targetAlpha)
 
 	-- Always do this, even if alpha goal is reached.
@@ -132,39 +152,22 @@ local requestAlpha = function(frame, targetAlpha)
 		end
 	end
 
+	-- Store the requested target alpha,
+	-- this is what tells the fade timer to fade.
 	FadeFrameTargetAlpha[frame] = targetAlpha
 end
 
-local isEmptyButton = function(frame)
-	return (FadeFrameType[frame] == "actionbutton" and not frame:GetTexture() and not (frame.config and frame.config.showGrid))
-end
-
--- Not all action buttons have their full update method exposed,
--- so we're using a method that can trigger it and not taint.
-local updateButton = function(frame)
-
-	-- Keep emtpy slots faded, regardless of actual settings.
-	if (isEmptyButton(frame)) then
-		setAlpha(frame, 0)
-	end
-
-	--local update = frame.ForceUpdate or frame.Update
-	--if (update) then
-	--	return update(frame)
-	--end
-end
-
+-- Update: No longer needed, keeping it for reference for a while.
 -- Our fade frame unregistration sets alpha back to full opacity,
 -- this conflicts with how actionbuttons work so we're faking events to fix it.
-local updateLAB = function()
-	do return end
-	local LAB = LibStub("LibActionButton-1.0-GE", true)
-	local OnEvent = LAB and LAB.eventFrame:GetScript("OnEvent")
-	if (OnEvent) then
-		OnEvent(LAB, "ACTIONBAR_SHOWGRID")
-		OnEvent(LAB, "ACTIONBAR_HIDEGRID")
-	end
-end
+--local updateLAB = function()
+--	local LAB = LibStub("LibActionButton-1.0-GE", true)
+--	local OnEvent = LAB and LAB.eventFrame:GetScript("OnEvent")
+--	if (OnEvent) then
+--		OnEvent(LAB, "ACTIONBAR_SHOWGRID")
+--		OnEvent(LAB, "ACTIONBAR_HIDEGRID")
+--	end
+--end
 
 lib.UpdateCurrentlyFadingFrames = function()
 
@@ -241,9 +244,9 @@ end
 
 lib.UpdateFadeFrame = function(self, frame)
 
-	local isActionButton = FadeFrameType[frame] == "actionbutton"
-	local isEmpty = isEmptyButton(frame)
-	local isPetButton = isActionButton and frame.GetAttribute and frame:GetAttribute("type") == "pet"
+	local isActionButton = isButton(frame)
+	local isEmpty = isActionButton and isEmptyButton(frame)
+	local isPetButton = isActionButton and isPetButton(frame)
 
 	if (isPetButton) then
 		if (lib.inCombat and not (frame.header and frame.header.config and frame.header.config.fadeInCombat) and not isEmpty) or (lib.petGridCounter > 0 and not frame.ignoreGridCounterOnHover and (lib.cursorType == "petaction")) then
@@ -260,6 +263,7 @@ lib.UpdateFadeFrame = function(self, frame)
 
 	if (not lib.enableFading) then
 		if (isActionButton) then
+
 			-- The frame has an action or grid set to visible.
 			if (not isEmpty) or (frame.config and frame.config.showGrid) or (frame.parent and frame.parent.config.showGrid) then
 				requestAlpha(frame, 1)
@@ -273,6 +277,7 @@ lib.UpdateFadeFrame = function(self, frame)
 		-- The group is visible.
 		if (HoverCount[FadeFrames[frame]] > 0) then
 			if (isActionButton) then
+
 				-- The frame has an action or grid set to visible.
 				if (not isEmpty) or (frame.config and frame.config.showGrid) or (frame.parent and frame.parent.config.showGrid) then
 					requestAlpha(frame, 1)
@@ -370,12 +375,17 @@ lib.RegisterFrameForFading = function(self, frame, fadeGroup, ...)
 	-- it is ultimately better in this scenario to replace.
 	--lib:SecureHook(frame, "SetAlpha", "UpdateFadeFrame")
 	if (FadeFrameType[frame] == "actionbutton") then
+
+		-- Keeping a one-way dummy function here so that
+		-- the actionbutton library can hide empty slots instantly.
 		frame.SetAlpha = function(frame, alpha)
-			if (FadeFrameType[frame] == "actionbutton" and not frame:GetTexture() and not (frame.config and frame.config.showGrid)) then
+			if (isEmptyButton(frame)) then
 				setAlpha(frame, 0)
 			end
 		end
 	else
+		-- Nooping this method for all other frames,
+		-- giving the fade library full control over the opacity.
 		frame.SetAlpha = function() end
 	end
 
@@ -405,6 +415,7 @@ lib.UnregisterFrameForFading = function(self, frame)
 		return
 	end
 
+	-- Retrieve button status before we reset registry entries.
 	local isEmpty = isEmptyButton(frame)
 
 	--lib:Unhook(frame, "SetAlpha", "UpdateFadeFrame")
@@ -414,9 +425,12 @@ lib.UnregisterFrameForFading = function(self, frame)
 	FadeFrameType[frame] = nil
 	FadeFrameHitRects[frame] = nil
 
+	-- Keep empty actionbutton slots
+	-- fully transparent if setting implies it.
 	if (isEmpty) then
 		setAlpha(frame, 0)
 	else
+		-- Return other frames to full opacity.
 		requestAlpha(frame, 1)
 	end
 
