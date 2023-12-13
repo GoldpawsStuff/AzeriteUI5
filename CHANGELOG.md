@@ -4,10 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-12-13
+## [5.2.143-RC] 2023-12-13
 ### Changed
 - Cleaned up the code about the turbulent last few days.
 - Slightly changed a part of the Classics back-end.
+- Removed a lot of ambiguity and room for misuse in the LibFadingFrames-1.0 back-end.
 
 ## [5.2.142-RC] 2023-12-13
 ### Fixed
