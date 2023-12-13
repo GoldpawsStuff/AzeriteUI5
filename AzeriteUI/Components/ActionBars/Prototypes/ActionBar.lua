@@ -292,8 +292,7 @@ ActionBar.UpdateFading = function(self)
 			for id = 1, config.fadeFrom-1 do
 				local button = buttons[id]
 
-				-- Update config and trigger a full button update.
-				--button:UpdateConfig(button.config) -- pass its config, or it'll reset!
+				-- Update action to trigger full update
 				button:UpdateAction()
 			end
 		end
@@ -304,8 +303,7 @@ ActionBar.UpdateFading = function(self)
 		for id, button in next,buttons do
 			LFF:UnregisterFrameForFading(buttons[id])
 
-			-- Update config and trigger a full button update.
-			--button:UpdateConfig(button.config) -- pass its config, or it'll reset!
+			-- Update action to trigger full update
 			button:UpdateAction()
 		end
 	end
