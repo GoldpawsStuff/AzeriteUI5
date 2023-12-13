@@ -86,11 +86,13 @@ ExplorerMode.UpdateSettings = function(self)
 	if (ActionBars) then
 		local fade = not self.FORCED and ActionBars:IsEnabled() and self.db.profile.enabled and self.db.profile.fadeActionBars
 		for id,bar in next,ActionBars.bars do
+
 			-- Exempt bars that are fully set to fade
 			-- in their own actionbar settings.
 			local db = bar.config
 			local fullyFaded = db.enableBarFading and db.fadeAlone and db.fadeFrom == 1
 			if (fade and not fullyFaded) then
+
 				-- Register the bar for fading
 				LFF:RegisterFrameForFading(bar, self:GetName())
 			else
@@ -100,7 +102,7 @@ ExplorerMode.UpdateSettings = function(self)
 
 			-- Update the bar's button fading.
 			if (db.enableBarFading) then
-				bar:UpdateFading() -- this is where it bugs out?
+				bar:UpdateFading() -- is this still needed?
 			end
 		end
 	end
