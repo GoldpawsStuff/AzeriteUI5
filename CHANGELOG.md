@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Made the Explorer Mode options menu more dynamic, hiding options we can't currently access.
 
+### Fixed
+- Did yet another bug haul over empty actionbar slots that kept popping up when disabling bar fading.
+
 ## [5.2.143-RC] 2023-12-13
 ### Changed
 - Cleaned up the code about the turbulent last few days.
