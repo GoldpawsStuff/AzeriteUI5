@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased] 2023-12-13
 ### Changed
 - Cleaned up the code about the turbulent last few days.
-- Slightly changed a part of the classic only back-end.
+- Slightly changed a part of the classic-only back-end.
 
 ## [5.2.142-RC] 2023-12-13
 ### Fixed
