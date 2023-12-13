@@ -594,8 +594,7 @@ ActionBarMod.UpdateBarButtonCounts = function(self)
 	for i,bar in next,self.bars do
 		for j,button in next,bar.buttons do
 			if j > bar.config.numbuttons then break end
-			-- Update action to trigger full update
-			button:UpdateAction()
+			button:ForceUpdate()
 		end
 	end
 end
@@ -684,9 +683,7 @@ ActionBarMod.UpdateSettings = function(self, event)
 			button.config.clickOnDown = bar.config.clickOnDown
 			button.config.dimWhenResting = bar.config.dimWhenResting
 			button.config.dimWhenInactive = bar.config.dimWhenInactive
-
-			-- Update action to trigger full update
-			button:UpdateAction()
+			button:ForceUpdate()
 		end
 	end
 

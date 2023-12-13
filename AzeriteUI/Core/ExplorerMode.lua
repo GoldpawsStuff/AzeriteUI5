@@ -475,5 +475,7 @@ ExplorerMode.OnEnable = function(self)
 		self:RegisterUnitEvent("UNIT_EXITING_VEHICLE", "OnEvent", "player")
 	end
 
-	--ns.RegisterCallback(self, "ActionBarSettings_Changed", "UpdateSettings")
+	-- This is needed to put actionbars that were exempt from Explorer Mode fading
+	-- back into it when their own full fading has been disabled.
+	ns.RegisterCallback(self, "ActionBarSettings_Changed", "UpdateSettings")
 end

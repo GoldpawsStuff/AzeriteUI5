@@ -288,23 +288,19 @@ ActionBar.UpdateFading = function(self)
 			LFF:RegisterFrameForFading(buttons[id], config.fadeAlone and self:GetName() or "actionbuttons", unpack(config.hitrects))
 		end
 
-		if (config.fadeFrom and config.fadeFrom > 1) then
-			for id = 1, config.fadeFrom-1 do
-				local button = buttons[id]
-
-				-- Update action to trigger full update
-				button:UpdateAction()
-			end
-		end
+		--if (config.fadeFrom and config.fadeFrom > 1) then
+			--for id = 1, config.fadeFrom-1 do
+			--	local button = buttons[id]
+			--	button:ForceUpdate()
+			--end
+		--end
 
 	else
 
 		-- Unregister all fading.
 		for id, button in next,buttons do
 			LFF:UnregisterFrameForFading(buttons[id])
-
-			-- Update action to trigger full update
-			button:UpdateAction()
+			--button:ForceUpdate()
 		end
 	end
 

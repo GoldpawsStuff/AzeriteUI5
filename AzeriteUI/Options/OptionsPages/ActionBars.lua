@@ -51,6 +51,8 @@ local setter = function(info,val)
 	local db = getmodule().db.profile.bars[id]
 	db[info[#info]] = val
 	getmodule():UpdateSettings()
+	-- This is needed to put actionbars that were exempt from Explorer Mode fading
+	-- back into it when their own full fading has been disabled.
 	ns:Fire("ActionBarSettings_Changed")
 end
 
@@ -77,6 +79,8 @@ local setoption = function(info,option,val)
 	local db = getmodule().db.profile.bars[id]
 	db[option] = val
 	getmodule():UpdateSettings()
+	-- This is needed to put actionbars that were exempt from Explorer Mode fading
+	-- back into it when their own full fading has been disabled.
 	ns:Fire("ActionBarSettings_Changed")
 end
 
