@@ -4,9 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-12-13
+## [5.2.144-RC] 2023-12-13
 ### Added
-- Added the Explorer Mode option to keep the user interface faded while targeting something dead.
+- Added the Explorer Mode option to keep the user interface faded while targeting something dead. This option is only enabled if either or both options for exiting the Explorer Mode while targeting something is selected.
 
 ### Changed
 - Made the Explorer Mode options menu more dynamic, hiding options we can't currently access.
