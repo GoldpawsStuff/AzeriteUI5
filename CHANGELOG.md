@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-12-13
+### Added
+- Added the Explorer Mode option to keep the user interface faded while targeting something dead.
+
+### Changed
+- Made the Explorer Mode options menu more dynamic, hiding options we can't currently access.
+
 ## [5.2.143-RC] 2023-12-13
 ### Changed
 - Cleaned up the code about the turbulent last few days.
