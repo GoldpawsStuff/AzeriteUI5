@@ -91,7 +91,7 @@ ns.AuraFilters.PartyAuraFilter = function(button, unit, data)
 			return true
 		else
 			if (not button.isHarmful and button.isPlayer and data.canApplyAura) then
-				return (data.timeLeft < 31) or (data.applications > 1)
+				return (button.timeLeft < 31) or (data.applications > 1)
 			end
 		end
 	end
