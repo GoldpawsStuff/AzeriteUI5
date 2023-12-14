@@ -4,12 +4,13 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-12-14
+## [5.2.145-RC] 2023-12-14
 ### Added
 - Added an optional initial delay to the Explorer Mode on login, reloads, other zoning screens and after combat ends. As default there is only a delay on the very first login on a character, but all of the mentioned situations can be modified in the `/azerite` options menu.
 
 ### Fixed
-- Changed to Caboyd's fork of LibHealComm-4.0 with support for SoD runes.
+- Now using Caboyd's fork of LibHealComm-4.0 with support for SoD runes.
+- Fixed wrong upvalue used in the party member aura filter function which were causing an avalanche of bugs and a crippling framerate drop.
 
 ## [5.2.144-RC] 2023-12-13
 ### Added
