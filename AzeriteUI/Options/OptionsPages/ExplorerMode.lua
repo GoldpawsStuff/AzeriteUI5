@@ -78,17 +78,60 @@ local GenerateOptions = function()
 		type = "group",
 		args = {
 			explorerermodedesc = {
-				name = L["The Explorer Mode is a collection of settings that affect primarily the actionbars and player unit frame,allowing them to fade out in various situations to get a more immersive experience."],
+				name = L["The Explorer Mode is a collection of settings that affect primarily the actionbars and player unit frame,allowing them to fade out in various situations to get a more immersive experience."].."\n ",
 				type = "description",
 				fontSize = "medium",
-				order = 11
+				order = 1
 			},
 			enabled = {
 				name = L["Enable Explorer Mode"],
 				desc = L["Enables the immersive Explorer Mode"],
 				type = "toggle", width = "full",
 				set = setter, get = getter,
-				order = 15
+				order = 2
+			},
+			explorermodedelayspacer = {
+				name = "\n ", type = "description", fontSize = "medium", hidden = isdisabled,
+				order = 9
+			},
+			explorermodedelayheader = {
+				name = "When to start Explorer Mode",
+				desc = "",
+				type = "header",
+				disabled = isdisabled, hidden = isdisabled,
+				order = 10
+			},
+			explorerermodedelaydesc = {
+				name = "You can choose to have a delay before the Explorer Mode starts after loading screens.".."\n ",
+				type = "description",
+				fontSize = "medium",
+				disabled = isdisabled, hidden = isdisabled,
+				order = 11
+			},
+			delayOnLogin = {
+				name = "After logging into the game",
+				desc = "",
+				order = 15,
+				type = "range", width = "full", min = 0, max = 15, step = 1,
+				set = setter, get = getter, hidden = isdisabled,
+			},
+			delayOnReload = {
+				name = "After reloading the user interface",
+				desc = "",
+				order = 16,
+				type = "range", width = "full", min = 0, max = 15, step = 1,
+				set = setter, get = getter, hidden = isdisabled,
+			},
+			delayOnZoning = {
+				name = "After all other loading screens",
+				desc = "",
+				order = 17,
+				type = "range", width = "full", min = 0, max = 15, step = 1,
+				set = setter, get = getter, hidden = isdisabled,
+			},
+			explorermodesituationsspacer = {
+				name = "\n ", type = "description", fontSize = "medium", hidden = isdisabled,
+				order = 19
 			},
 			explorermodesituationsheader = {
 				name = L["When to exit Explorer Mode"],
@@ -98,7 +141,7 @@ local GenerateOptions = function()
 				order = 20
 			},
 			explorermodesituationsdesc = {
-				name = L["Here you can select which situations should be considered unsafe and exit the Explorer Mode."],
+				name = L["Here you can select which situations should be considered unsafe and exit the Explorer Mode."].."\n ",
 				type = "description",
 				fontSize = "medium",
 				disabled = isdisabled, hidden = isdisabled,
@@ -127,47 +170,67 @@ local GenerateOptions = function()
 				set = function(info,value) setter(info,value/100) end,
 				get = function(info) return getter(info)*100 end
 			},
+			fadeThresholdHealthspacer = {
+				name = "\n ", type = "description", fontSize = "medium",
+				hidden = function(info) return isdisabled(info) or getoption(info, "fadeWithLowHealth") end,
+				order = 25
+			},
 			fadeWithLowMana = {
 				name = L["While having low mana"],
 				desc = "",
 				type = "toggle", width = "full",
 				set = setterReverse, get = getterReverse, disabled = isdisabled, hidden = isdisabled,
-				order = 25
+				order = 26
 			},
 			fadeThresholdMana = {
 				name = L["Set the Low Mana threshold"],
 				desc = L["Sets the threshold in a percentage of maximum mana for when the Explorer Mode will exit."],
-				order = 26,
+				order = 27,
 				type = "range", width = "full", min = 30, max = 90, step = 5,
 				hidden = function(info) return isdisabled(info) or getoption(info, "fadeWithLowMana") end,
 				set = function(info,value) setter(info,value/100) end,
 				get = function(info) return getter(info)*100 end
 			},
+			fadeThresholdManaspacer = {
+				name = "\n ", type = "description", fontSize = "medium",
+				hidden = function(info) return isdisabled(info) or getoption(info, "fadeWithLowMana") end,
+				order = 28
+			},
 			fadeThresholdManaInForms = {
 				name = L["Set the Low Mana while in a Druid from threshold"],
 				desc = L["Sets the threshold in a percentage of maximum mana for when the Explorer Mode will exit when in a Druid shapeshift form not currently having mana as the primary resource."],
-				order = 27,
+				order = 29,
 				type = "range", width = "full", min = 30, max = 90, step = 5,
 				disabled = function(info) return (playerClass ~= "DRUID") end,
 				hidden = function(info) return isdisabled(info) or getoption(info, "fadeWithLowMana") end,
 				set = function(info,value) setter(info,value/100) end,
 				get = function(info) return getter(info)*100 end
 			},
+			fadeThresholdManaInFormsspacer = {
+				name = "\n ", type = "description", fontSize = "medium",
+				hidden = function(info) return isdisabled(info) or getoption(info, "fadeWithLowMana") end,
+				order = 30
+			},
 			fadeThresholdEnergy = {
 				name = L["Set the Low Energy/Focus threshold"],
 				desc = L["Sets the threshold in a percentage of maximum energy or focus for when the Explorer Mode will exit."],
-				order = 28,
+				order = 31,
 				type = "range", width = "full", min = 30, max = 90, step = 5,
 				hidden = function(info) return isdisabled(info) or getoption(info, "fadeWithLowMana") end,
 				set = function(info,value) setter(info,value/100) end,
 				get = function(info) return getter(info)*100 end
+			},
+			fadeThresholdEnergyspacer = {
+				name = "\n ", type = "description", fontSize = "medium",
+				hidden = function(info) return isdisabled(info) or getoption(info, "fadeWithLowMana") end,
+				order = 30
 			},
 			fadeInGroups = {
 				name = L["While in a group"],
 				desc = "",
 				type = "toggle", width = "full",
 				set = setterReverse, get = getterReverse, disabled = isdisabled, hidden = isdisabled,
-				order = 30
+				order = 33
 			},
 			fadeInInstances = {
 				name = L["While in an instance"],
@@ -212,6 +275,10 @@ local GenerateOptions = function()
 				set = setterReverse, get = getterReverse, disabled = isdisabled, hidden = isdisabled,
 				order = 55
 			} or nil,
+			elementsspacer = {
+				name = "\n ", type = "description", fontSize = "medium", hidden = isdisabled,
+				order = 99
+			},
 			explorermodeframeheader = {
 				name = L["Elements to Fade"],
 				desc = "",

@@ -24,7 +24,7 @@
 
 --]]
 local Addon, ns = ...
-local ExplorerMode = ns:NewModule("ExplorerMode", ns.Module, "LibMoreEvents-1.0")
+local ExplorerMode = ns:NewModule("ExplorerMode", ns.Module, "LibMoreEvents-1.0", "AceTimer-3.0")
 
 local LFF = LibStub("LibFadingFrames-1.0")
 
@@ -42,6 +42,12 @@ local playerLevel = UnitLevel("player")
 -- Default settings, don't modify these.
 local defaults = { profile = ns:Merge({
 	enabled = false,
+
+	-- How long to wait before initiating
+	-- Explorer Mode after a loading screen.
+	delayOnLogin = 15,
+	delayOnReload = 0,
+	delayOnZoning = 0,
 
 	-- These options are kind of backwards,
 	-- as they set when to EXIT the Explorer Mode.
@@ -213,6 +219,10 @@ end
 ExplorerMode.CheckForForcedState = function(self)
 	local db = self.db.profile
 
+	if (self.delayTimer) then
+		return true
+	end
+
 	if (self.inCombat and not db.fadeInCombat) then
 		return true
 	end
@@ -371,9 +381,52 @@ ExplorerMode.CheckInstance = function(self)
 	self.inInstance = nil
 end
 
+ExplorerMode.EndDelay = function(self)
+	if (self.delayTimer) then
+		self:CancelTimer(self.delayTimer)
+		self.delayTimer = nil
+	end
+
+	LFF:SetFadeOutDuration(nil)
+
+	self:UpdateSettings()
+end
+
 ExplorerMode.OnEvent = function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		local isInitialLogin, isReloadingUi = ...
+
+		-- Kill off remnant timers
+		-- from pure loading screens.
+		if (self.delayTimer) then
+			self:CancelTimer(self.delayTimer)
+			self.delayTimer = nil
+		end
+
+		local db = self.db.profile
+
+		-- Initiate a delay according to settings.
+		if (isInitialLogin) then
+			if (db.delayOnLogin > 0) then
+				self.delayTimer = self:ScheduleTimer("EndDelay", db.delayOnLogin)
+			end
+		elseif (isReloadingUi) then
+			if (db.delayOnReload > 0) then
+				self.delayTimer = self:ScheduleTimer("EndDelay", db.delayOnReload)
+			end
+		else
+			if (db.delayOnZoning > 0) then
+				self.delayTimer = self:ScheduleTimer("EndDelay", db.delayOnZoning)
+			end
+		end
+
+		LFF:SetFadeOutDuration(0)
+
+		if (self.delayTimer) then
+			LFF:SetFadeOutDuration(nil)
+		else
+			LFF:SetFadeOutDuration(0)
+		end
 
 		self.inCombat = InCombatLockdown()
 

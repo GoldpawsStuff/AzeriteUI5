@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 29
+local MINOR_VERSION = 33
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -56,8 +56,18 @@ lib.hoverFrames = lib.hoverFrames or {} -- hoverFrames[frame] = "fadeGroup"
 lib.hoverCount = lib.hoverCount or { default = 0 } -- hoverCount[groupName] = count
 lib.gridCounter = lib.gridCounter or 0
 lib.petGridCounter = lib.petGridCounter or 0
---lib.cache = lib.cache or { methods = {}, scrips = {} }
 lib.embeds = lib.embeds or {}
+
+-- General fade settings.
+local fadeThrottle = .02
+local fadeInDuration = .1
+local fadeOutDuration = .35
+local fadeHoldDuration = 0
+
+lib.fadeThrottle = fadeThrottle
+lib.fadeInDuration = fadeInDuration
+lib.fadeOutDuration = fadeOutDuration
+lib.fadeHoldDuration = fadeHoldDuration
 
 -- speed!
 local FadeFrames = lib.fadeFrames
@@ -84,12 +94,6 @@ local isClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
 local isTBC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 local isWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
 local WoW10 = select(4, GetBuildInfo()) >= 100000
-
--- General fade settings.
-local fadeThrottle = .02
-local fadeInDuration = .1
-local fadeOutDuration = .35
-local fadeHoldDuration = 0
 
 -- Frame Metamethods
 local setAlpha = getmetatable(CreateFrame("Frame")).__index.SetAlpha
@@ -182,38 +186,28 @@ lib.UpdateCurrentlyFadingFrames = function()
 		if (currentAlpha > targetAlpha) then
 
 			-- Is there room to change the alpha?
-			if (currentAlpha - fadeThrottle/fadeOutDuration > targetAlpha) then
-				setCurrentAlpha(frame, currentAlpha - fadeThrottle/fadeOutDuration)
+			if (currentAlpha - fadeThrottle/lib.fadeOutDuration > targetAlpha) then
+				setCurrentAlpha(frame, currentAlpha - fadeThrottle/lib.fadeOutDuration)
 			else
 
 				-- The fade is finished.
 				setCurrentAlpha(frame, targetAlpha)
 
 				FadeFrameTargetAlpha[frame] = nil
-
-				--if (isEmptyButton(frame)) then
-				--	setAlpha(frame, 0)
-				--end
-
 			end
 
 		-- If we're fading in
 		elseif (currentAlpha < targetAlpha) then
 
 			-- Is there room to change the alpha?
-			if (currentAlpha + fadeThrottle/fadeInDuration < targetAlpha) then
-				setCurrentAlpha(frame, currentAlpha + fadeThrottle/fadeInDuration)
+			if (currentAlpha + fadeThrottle/lib.fadeInDuration < targetAlpha) then
+				setCurrentAlpha(frame, currentAlpha + fadeThrottle/lib.fadeInDuration)
 			else
 
 				-- The fade is finished.
 				setCurrentAlpha(frame, targetAlpha)
 
 				FadeFrameTargetAlpha[frame] = nil
-
-				--if (isEmptyButton(frame)) then
-				--	setAlpha(frame, 0)
-				--end
-
 			end
 		else
 
@@ -224,11 +218,6 @@ lib.UpdateCurrentlyFadingFrames = function()
 			setCurrentAlpha(frame, targetAlpha)
 
 			FadeFrameTargetAlpha[frame] = nil
-
-			--if (isEmptyButton(frame)) then
-			--	setAlpha(frame, 0)
-			--end
-
 		end
 
 	end
@@ -344,6 +333,14 @@ lib.UpdateFlyout = function()
 	lib.flyoutShown = lib.flyoutHandler:IsShown()
 
 	lib:UpdateFadeFrames()
+end
+
+lib.SetFadeInDuration = function(self, duration)
+	lib.fadeInDuration = tonumber(duration) or fadeInDuration
+end
+
+lib.SetFadeOutDuration = function(self, duration)
+	lib.fadeOutDuration = tonumber(duration) or fadeOutDuration
 end
 
 lib.RegisterFrameForFading = function(self, frame, fadeGroup, ...)
@@ -547,6 +544,8 @@ lib.OnEvent = function(self, event, ...)
 end
 
 local mixins = {
+	SetFadeInDuration = true,
+	SetFadeOutDuration = true,
 	RegisterFrameForFading = true,
 	UnregisterFrameForFading = true
 }
