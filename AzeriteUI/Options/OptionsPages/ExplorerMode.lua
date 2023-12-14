@@ -123,9 +123,16 @@ local GenerateOptions = function()
 				set = setter, get = getter, hidden = isdisabled,
 			},
 			delayOnZoning = {
-				name = "After all other loading screens",
+				name = "After other loading screens",
 				desc = "",
 				order = 17,
+				type = "range", width = "full", min = 0, max = 15, step = 1,
+				set = setter, get = getter, hidden = isdisabled,
+			},
+			delayOnCombatEnd = {
+				name = "After combat ends",
+				desc = "",
+				order = 18,
 				type = "range", width = "full", min = 0, max = 15, step = 1,
 				set = setter, get = getter, hidden = isdisabled,
 			},

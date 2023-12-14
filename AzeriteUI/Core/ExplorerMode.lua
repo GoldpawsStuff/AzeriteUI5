@@ -48,6 +48,7 @@ local defaults = { profile = ns:Merge({
 	delayOnLogin = 15,
 	delayOnReload = 0,
 	delayOnZoning = 0,
+	delayOnCombatEnd = 0,
 
 	-- These options are kind of backwards,
 	-- as they set when to EXIT the Explorer Mode.
@@ -381,15 +382,28 @@ ExplorerMode.CheckInstance = function(self)
 	self.inInstance = nil
 end
 
-ExplorerMode.EndDelay = function(self)
+ExplorerMode.OnTimedForcedStateEnd = function(self)
 	if (self.delayTimer) then
 		self:CancelTimer(self.delayTimer)
 		self.delayTimer = nil
 	end
 
-	LFF:SetFadeOutDuration(nil)
+	-- Restore the library's default fade out duration.
+	if (self.restoreFadeOutDuration) then
+		LFF:SetFadeOutDuration(nil)
+		self.restoreFadeOutDuration = nil
+	end
 
 	self:UpdateSettings()
+end
+
+ExplorerMode.SetTimedForcedState = function(self, duration)
+	if (self.delayTimer) then
+		self:CancelTimer(self.delayTimer)
+		self.delayTimer = nil
+	end
+
+	self.delayTimer = self:ScheduleTimer("OnTimedForcedStateEnd", duration)
 end
 
 ExplorerMode.OnEvent = function(self, event, ...)
@@ -408,24 +422,29 @@ ExplorerMode.OnEvent = function(self, event, ...)
 		-- Initiate a delay according to settings.
 		if (isInitialLogin) then
 			if (db.delayOnLogin > 0) then
-				self.delayTimer = self:ScheduleTimer("EndDelay", db.delayOnLogin)
+				self.hasLoadingScreenDelay = true
+				self:SetTimedForcedState(db.delayOnLogin)
 			end
 		elseif (isReloadingUi) then
 			if (db.delayOnReload > 0) then
-				self.delayTimer = self:ScheduleTimer("EndDelay", db.delayOnReload)
+				self.hasLoadingScreenDelay = true
+				self:SetTimedForcedState(db.delayOnReload)
 			end
 		else
 			if (db.delayOnZoning > 0) then
-				self.delayTimer = self:ScheduleTimer("EndDelay", db.delayOnZoning)
+				self.hasLoadingScreenDelay = true
+				self:SetTimedForcedState(db.delayOnZoning)
 			end
 		end
 
-		LFF:SetFadeOutDuration(0)
-
 		if (self.delayTimer) then
+			-- Restore the library's default fade out duration.
 			LFF:SetFadeOutDuration(nil)
 		else
+			-- Hack to bypass the initial fadeout.
+			-- Without it we'll have half a second of frame visibility.
 			LFF:SetFadeOutDuration(0)
+			self.restoreFadeOutDuration = true
 		end
 
 		self.inCombat = InCombatLockdown()
@@ -462,6 +481,10 @@ ExplorerMode.OnEvent = function(self, event, ...)
 
 	elseif (event == "PLAYER_REGEN_ENABLED") then
 		self.inCombat = false
+
+		if (self.db.profile.delayOnCombatEnd > 0) then
+			self:SetTimedForcedState(self.db.profile.delayOnCombatEnd)
+		end
 
 	elseif (event == "PLAYER_TARGET_CHANGED") then
 		self:CheckTarget()
