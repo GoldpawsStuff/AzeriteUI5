@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-12-14
+### Added
+- Added an optional initial delay to the Explorer Mode on login, reloads and other zoning screens. As default there is only a delay on the very first login on a character, but this can be modified in the `/azerite` options menu.
+
 ### Fixed
 - Changed to Caboyd's fork of LibHealComm-4.0 with support for SoD runes.
 
