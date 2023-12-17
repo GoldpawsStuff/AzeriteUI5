@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 33
+local MINOR_VERSION = 35
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -110,8 +110,26 @@ local isPetButton = function(frame)
 end
 
 -- Check if a frame is an empty action button set to have no visible slot.
-local isEmptyButton = function(frame)
-	return (frame and FadeFrameType[frame] == "actionbutton" and not frame:GetTexture() and not (frame.config and frame.config.showGrid))
+-- This will return false when you hold an item on the cursor that fit the slot.
+local isTransparentButton = function(frame)
+	if (not frame) then return end
+
+	local isEmpty = isButton(frame) and not frame:GetTexture() and not (frame.config and frame.config.showGrid)
+	if (isEmpty) then
+		if (CursorHasSpell() or CursorHasItem()) then
+			return false
+		end
+		local cursor =  GetCursorInfo() -- money, merchant
+		if (cursor == "spell")
+		or (cursor == "macro")
+		or (cursor == "mount")
+		or (cursor == "item")
+		or (cursor == "petaction" and (isPetButton(frame) or isRetail)) then
+			return false
+		end
+		return true
+	end
+	return false
 end
 
 -- Alpha getter fixing the inconsistent blizzard return values
@@ -119,7 +137,7 @@ local getCurrentAlpha = function(frame)
 
 	-- Report empty slots as transparent,
 	-- regardless of actual values.
-	if (isEmptyButton(frame)) then
+	if (isTransparentButton(frame)) then
 		return 0
 	end
 
@@ -131,7 +149,7 @@ local setCurrentAlpha = function(frame, alpha)
 
 	-- Keep empty slots faded,
 	-- regardless of actual opacity.
-	if (isEmptyButton(frame)) then
+	if (isTransparentButton(frame)) then
 		setAlpha(frame, 0)
 	else
 		setAlpha(frame, alpha)
@@ -234,17 +252,20 @@ end
 lib.UpdateFadeFrame = function(self, frame)
 
 	local isActionButton = isButton(frame)
-	local isEmpty = isActionButton and isEmptyButton(frame)
+	local isEmpty = isActionButton and isTransparentButton(frame)
 	local isPetButton = isActionButton and isPetButton(frame)
 
 	if (isPetButton) then
-		if (lib.inCombat and not (frame.header and frame.header.config and frame.header.config.fadeInCombat) and not isEmpty) or (lib.petGridCounter > 0 and not frame.ignoreGridCounterOnHover and (lib.cursorType == "petaction")) then
+		if (lib.inCombat and not (frame.header and frame.header.config and frame.header.config.fadeInCombat) and not isEmpty)
+		or (lib.petGridCounter > 0 and not frame.ignoreGridCounterOnHover and (lib.cursorType == "petaction")) then
 			requestAlpha(frame, 1)
 			return
 		end
 
 	elseif (isActionButton) then
-		if (lib.flyoutShown) or (lib.inCombat and not (frame.header and frame.header.config and frame.header.config.fadeInCombat) and not isEmpty) or (lib.gridCounter > 0 and not frame.ignoreGridCounterOnHover and (lib.cursorType ~= "petaction" or isRetail)) then
+		if (lib.flyoutShown)
+		or (not isEmpty and lib.inCombat and not(frame.header and frame.header.config and frame.header.config.fadeInCombat)) or (lib.gridCounter > 0 and not frame.ignoreGridCounterOnHover and (lib.cursorType ~= "petaction" or isRetail))
+		then
 			requestAlpha(frame, 1)
 			return
 		end
@@ -376,7 +397,7 @@ lib.RegisterFrameForFading = function(self, frame, fadeGroup, ...)
 		-- Keeping a one-way dummy function here so that
 		-- the actionbutton library can hide empty slots instantly.
 		frame.SetAlpha = function(frame, alpha)
-			if (isEmptyButton(frame)) then
+			if (isTransparentButton(frame)) then
 				setAlpha(frame, 0)
 			end
 		end
@@ -413,7 +434,7 @@ lib.UnregisterFrameForFading = function(self, frame)
 	end
 
 	-- Retrieve button status before we reset registry entries.
-	local isEmpty = isEmptyButton(frame)
+	local isEmpty = isTransparentButton(frame)
 
 	--lib:Unhook(frame, "SetAlpha", "UpdateFadeFrame")
 	frame.SetAlpha = nil
@@ -499,9 +520,6 @@ lib.OnEvent = function(self, event, ...)
 	elseif (event == "PLAYER_REGEN_ENABLED") then
 		lib.inCombat = nil
 
-	elseif (event == "CURSOR_CHANGED") then
-		lib.cursorType = GetCursorInfo()
-
 	elseif (event == "ACTIONBAR_SHOWGRID") then
 		lib.gridCounter = lib.gridCounter + 1
 
@@ -540,6 +558,7 @@ lib.OnEvent = function(self, event, ...)
 		end
 		return
 	end
+
 	lib:UpdateFadeFrames()
 end
 
