@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-12-17
+### Changed
+- Attempting to update actionbutton back-end to return the spellID of pure macro buttons to fix some issues with MaxDps. Work in progress.
+
 ## [5.2.147-RC] 2023-12-17
 ### Added
 - Added the player class power frame to Explorer Mode and added the relevant options for it.
