@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.124-Alpha] 2023-12-17
+### Added
+- Attempted to map `GetMacroSpell` to `Macro:GetSpellId()` for better results with MaxDps.
+
+### Changed
+- Improved the logic in the MaxDps prehooks.
+
 ## [1.0.123-Alpha] 2023-12-13
 ### Added
 - Added a `button:ForceUpdate()` method to manually trigger a full button update.

@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 123
+local MINOR_VERSION = 124
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -1340,6 +1340,9 @@ function InitializeMaxDpsIntegration()
 		MaxDps_Glow = MaxDps.Glow
 		MaxDps_HideGlow = MaxDps.HideGlow
 		MaxDps_UpdateButtonGlow = MaxDps.UpdateButtonGlow
+
+		-- Only ever do this once.
+		ShouldInitializeMaxDps = nil
 	end
 
 	local function UpdateButtonGlowEvents(self)
@@ -1352,26 +1355,27 @@ function InitializeMaxDpsIntegration()
 		end
 	end
 
+	-- Call the original method,
+	-- but override the event registrations.
 	local function UpdateButtonGlow(self, ...)
 		MaxDps_UpdateButtonGlow(self, ...)
 		UpdateButtonGlowEvents(self, ...)
 	end
 
 	local function Glow(self, button, id, texture, type, color)
+		-- Use original method for buttons from other LABs.
 		if not ButtonRegistry[button] then
 			return MaxDps_Glow(self, button, id, texture, type, color)
 		end
 
-		if type and not color then
-			if type == "normal" then
-				button:SetSpellActivationColor(1, 1, 1)
-			elseif type == "cooldown" then
-				button:SetSpellActivationColor(190/255, 119/255, 238/255)
-			else
-				button:SetSpellActivationColor(249/255, 188/255, 65/255)
-			end
-		else
+		if color then
 			button:SetSpellActivationColor(color.r, color.g, color.b, color.a)
+		elseif type == "normal" then
+			button:SetSpellActivationColor(1, 1, 1)
+		elseif type == "cooldown" then
+			button:SetSpellActivationColor(190/255, 119/255, 238/255)
+		else
+			button:SetSpellActivationColor(249/255, 188/255, 65/255)
 		end
 
 		button:ShowSpellActivation()
@@ -1380,6 +1384,7 @@ function InitializeMaxDpsIntegration()
 	end
 
 	local function HideGlow(self, button, id)
+		-- Use original method for buttons from other LABs.
 		if not ButtonRegistry[button] then
 			return MaxDps_HideGlow(self, button, id)
 		end
@@ -1397,8 +1402,6 @@ function InitializeMaxDpsIntegration()
 	MaxDps:RegisterLibActionButton(MAJOR_VERSION)
 
 	UpdateButtonGlowEvents(MaxDps)
-
-	ShouldInitializeMaxDps = nil
 end
 
 local _lastFormUpdate = GetTime()
@@ -2594,7 +2597,14 @@ Macro.IsUsable                = function(self) return nil end
 Macro.IsConsumableOrStackable = function(self) return nil end
 Macro.IsUnitInRange           = function(self, unit) return nil end
 Macro.SetTooltip              = function(self) return nil end
-Macro.GetSpellId              = function(self) return nil end
+Macro.GetSpellId              = function(self)
+	local actionType, id, _subType = GetActionInfo(self._state_action)
+	if actionType == "spell" then
+		return id
+	elseif actionType == "macro" then
+		return (GetMacroSpell(id))
+	end
+end
 Macro.GetPassiveCooldownSpellID = function(self) return nil end
 
 -----------------------------------------------------------
