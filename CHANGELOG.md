@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.146-RC] 2023-12-17
+### Added
+- Added first draft of a new unitframe element that will show dispellable debuffs, boss debuffs and a possible custom list of auras to track. In development, feedback will be prioritized.
+- Started writing aura lists for Classic, Wrath and Dragonflight for use with our aura filters.
+
+### Fixed
+- Actionbars will now once more become visible when you place an item, spell, macro or mount on the cursor. The Explorer Mode will also temporarily exit.
+
 ## [5.2.145-RC] 2023-12-14
 ### Added
 - Added an optional initial delay to the Explorer Mode on login, reloads, other zoning screens and after combat ends. As default there is only a delay on the very first login on a character, but all of the mentioned situations can be modified in the `/azerite` options menu.
