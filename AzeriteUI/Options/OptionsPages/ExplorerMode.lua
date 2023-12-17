@@ -319,6 +319,13 @@ local GenerateOptions = function()
 				desc = "",
 				type = "toggle", width = "full",
 				set = setter, get = getter, disabled = isdisabled, hidden = isdisabled,
+				order = 139
+			},
+			fadePlayerClassPower = {
+				name = L["Fade Player Class Power frame"],
+				desc = "",
+				type = "toggle", width = "full",
+				set = setter, get = getter, disabled = isdisabled, hidden = isdisabled,
 				order = 140
 			},
 			fadePetFrame = {

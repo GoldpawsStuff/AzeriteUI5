@@ -73,6 +73,7 @@ local defaults = { profile = ns:Merge({
 	fadePetBar = true,
 	fadeStanceBar = true,
 	fadePlayerFrame = true,
+	fadePlayerClassPower = true,
 	fadePetFrame = true,
 	fadeFocusFrame = true,
 	fadeTracker = true,
@@ -156,6 +157,19 @@ ExplorerMode.UpdateSettings = function(self)
 				LFF:RegisterFrameForFading(playerFrame, self:GetName())
 			else
 				LFF:UnregisterFrameForFading(playerFrame)
+			end
+		end
+	end
+
+	local PlayerClassPowerFrame = ns:GetModule("PlayerClassPowerFrame", true)
+	if (PlayerClassPowerFrame) then
+		local fade = not self.FORCED and PlayerClassPowerFrame:IsEnabled() and self.db.profile.enabled and self.db.profile.fadePlayerClassPower
+		local playerClassPowerFrame = PlayerClassPowerFrame:GetFrame()
+		if (playerClassPowerFrame) then
+			if (fade) then
+				LFF:RegisterFrameForFading(playerClassPowerFrame, self:GetName())
+			else
+				LFF:UnregisterFrameForFading(playerClassPowerFrame)
 			end
 		end
 	end
