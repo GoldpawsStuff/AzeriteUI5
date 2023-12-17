@@ -24,6 +24,9 @@
 
 --]]
 local _, ns = ...
+
+if (not ns.IsRetail) then return end
+
 ns.AuraStyles = ns.AuraStyles or {}
 
 -- Addon API
@@ -31,16 +34,15 @@ local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 
+-- Local Functions
+--------------------------------------------------
 local UpdateTooltip = function(self)
 	if (GameTooltip:IsForbidden()) then return end
-	if (not ns.IsRetail) then
-		GameTooltip:SetUnitAura(self:GetParent().__owner.unit, self:GetID(), self.filter)
+
+	if (self.isHarmful) then
+		GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().__owner.unit, self.auraInstanceID)
 	else
-		if (self.isHarmful) then
-			GameTooltip:SetUnitDebuffByAuraInstanceID(self:GetParent().__owner.unit, self.auraInstanceID)
-		else
-			GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().__owner.unit, self.auraInstanceID)
-		end
+		GameTooltip:SetUnitBuffByAuraInstanceID(self:GetParent().__owner.unit, self.auraInstanceID)
 	end
 end
 
@@ -67,6 +69,8 @@ local OnClick = function(self, button, down)
 	end
 end
 
+-- Aura Creation
+--------------------------------------------------
 ns.AuraStyles.CreateButton = function(element, position)
 	local aura = CreateFrame("Button", element:GetDebugName() .. "Button" .. position, element)
 	aura:RegisterForClicks("RightButtonUp")
@@ -138,6 +142,8 @@ ns.AuraStyles.CreateButtonWithBar = function(element, position)
 	return aura
 end
 
+-- Aura PostUpdates
+--------------------------------------------------
 ns.AuraStyles.PlayerPostUpdateButton = function(element, button, unit, data, position)
 
 	-- Border Coloring

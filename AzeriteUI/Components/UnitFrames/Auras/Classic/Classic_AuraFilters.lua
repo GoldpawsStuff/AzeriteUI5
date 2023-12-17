@@ -25,7 +25,7 @@
 --]]
 local _, ns = ...
 
-if (ns.IsRetail) then return end
+if (not ns.IsClassic) then return end
 
 ns.AuraFilters = ns.AuraFilters or {}
 

@@ -25,7 +25,7 @@
 --]]
 local _, ns = ...
 
-if (ns.IsRetail) then return end
+if (not ns.IsWrath) then return end
 
 ns.AuraSorts = ns.AuraSorts or {}
 

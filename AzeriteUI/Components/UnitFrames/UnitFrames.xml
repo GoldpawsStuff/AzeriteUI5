@@ -4,12 +4,20 @@
 	<Script file="Functions.lua"/>
 	<Script file="Tags.lua"/>
 
-	<Script file="Auras\Sorting.lua"/>
-	<Script file="Auras\Styling.lua"/>
-	<Script file="Auras\Filters.lua"/>
-	<Script file="Auras\SortingClassic.lua"/>
-	<Script file="Auras\StylingClassic.lua"/>
-	<Script file="Auras\FiltersClassic.lua"/>
+	<Script file="Auras\AuraData.lua"/>
+	<Script file="Auras\AuraFilters.lua"/>
+	<Script file="Auras\AuraSorting.lua"/>
+	<Script file="Auras\AuraStyling.lua"/>
+
+	<Script file="Auras\Classic\Classic_AuraData.lua"/>
+	<Script file="Auras\Classic\Classic_AuraFilters.lua"/>
+	<Script file="Auras\Classic\Classic_AuraSorting.lua"/>
+	<Script file="Auras\Classic\Classic_AuraStyling.lua"/>
+
+	<Script file="Auras\Wrath\Wrath_AuraData.lua"/>
+	<Script file="Auras\Wrath\Wrath_AuraFilters.lua"/>
+	<Script file="Auras\Wrath\Wrath_AuraSorting.lua"/>
+	<Script file="Auras\Wrath\Wrath_AuraStyling.lua"/>
 
 	<Script file="Units\Player.lua"/>
 	<Script file="Units\PlayerCastBar.lua"/>
