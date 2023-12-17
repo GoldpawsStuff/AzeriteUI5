@@ -91,6 +91,7 @@ local function Enable(self, unit)
 	local element = self.SpecIcon
 	if(element) then
 		element.__owner = self
+		element.ForceUpdate = ForceUpdate
 
 		self:RegisterEvent('ARENA_OPPONENT_UPDATE', Path, true)
 		self:RegisterEvent('PLAYER_ENTERING_WORLD', Path, true)
