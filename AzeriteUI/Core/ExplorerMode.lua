@@ -486,6 +486,9 @@ ExplorerMode.OnEvent = function(self, event, ...)
 			self:SetTimedForcedState(self.db.profile.delayOnCombatEnd)
 		end
 
+	elseif (event == "CURSOR_CHANGED") then
+		self:CheckCursor()
+
 	elseif (event == "PLAYER_TARGET_CHANGED") then
 		self:CheckTarget()
 
@@ -527,6 +530,7 @@ end
 
 ExplorerMode.OnEnable = function(self)
 
+	self:RegisterEvent("CURSOR_CHANGED", "OnEvent")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "OnEvent")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_LEAVING_WORLD", "OnEvent")
