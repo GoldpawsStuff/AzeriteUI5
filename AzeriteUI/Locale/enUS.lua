@@ -101,6 +101,7 @@ L["Fade Focus unit frame"] = true
 L["Fade Objectives Tracker"] = true
 L["Fade Pet unit frame"] = true
 L["Fade PetBar"] = true
+L["Fade Player Class Power frame"] = true
 L["Fade Player unit frame"] = true
 L["Fade StanceBar"] = true
 L["First ZigZag Button"] = true
