@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
 	<Script file="oUF_CombatFeedback.lua"/>
+	<Script file="oUF_PriorityDebuff.lua"/>
 	<Script file="oUF_SpecIcons.lua"/>
 	<Script file="oUF_Trinket.lua"/>
 
