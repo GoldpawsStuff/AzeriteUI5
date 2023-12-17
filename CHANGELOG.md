@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-12-17
+### Added
+- Added the player class power frame to Explorer Mode and added the relevant options for it.
+
 ## [5.2.146-RC] 2023-12-17
 ### Added
 - Added first draft of a new unitframe element that will show dispellable debuffs, boss debuffs and a possible custom list of auras to track. In development, feedback will be prioritized.
