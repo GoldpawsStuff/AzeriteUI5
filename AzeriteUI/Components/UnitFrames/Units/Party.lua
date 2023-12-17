@@ -28,9 +28,6 @@ local oUF = ns.oUF
 
 local PartyFrameMod = ns:NewModule("PartyFrames", ns.UnitFrameModule, "LibMoreEvents-1.0", "AceHook-3.0")
 
--- GLOBALS: InCombatLockdown, RegisterAttributeDriver, UnregisterAttributeDriver
--- GLOBALS: UnitGroupRolesAssigned, UnitGUID, UnitIsUnit, SetPortraitTexture
-
 -- Lua API
 local math_abs = math.abs
 local math_pi = math_pi
@@ -40,6 +37,14 @@ local string_gsub = string.gsub
 local string_split = string.split
 local type = type
 local unpack = unpack
+
+-- GLOBALS: InCombatLockdown, RegisterAttributeDriver, UnregisterAttributeDriver
+-- GLOBALS: UnitGroupRolesAssigned, UnitGUID, UnitIsUnit, SetPortraitTexture
+
+-- Addon API
+local Colors = ns.Colors
+local GetMedia = ns.API.GetMedia
+local GetFont = ns.API.GetFont
 
 local Units = {}
 
@@ -309,6 +314,14 @@ local Portrait_PostUpdate = function(element, unit, hasStateChanged)
 	end
 end
 
+-- Update the border color of priority debuffs.
+local PriorityDebuff_PostUpdate = function(element, event, isVisible, name, icon, count, debuffType, duration, expirationTime, spellID, isBoss, isCustom)
+	if (isVisible) then
+		local color = debuffType and Colors.debuff[debuffType] or Colors.debuff.none
+		element.border:SetBackdropBorderColor(color[1], color[2], color[3])
+	end
+end
+
 -- Update targeting highlight outline
 local TargetHighlight_Update = function(self, event, unit, ...)
 	if (unit and unit ~= self.unit) then return end
@@ -506,6 +519,36 @@ local style = function(self, unit)
 	portraitBorder:SetVertexColor(unpack(db.PortraitBorderColor))
 
 	self.Portrait.Border = portraitBorder
+
+	-- Priority Debuff
+	--------------------------------------------
+	local priorityDebuff = CreateFrame("Frame", nil, overlay)
+	priorityDebuff:SetSize(40,40)
+	priorityDebuff:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
+	priorityDebuff.forceShow = nil
+
+	local priorityDebuffIcon = priorityDebuff:CreateTexture(nil, "BACKGROUND", nil, 1)
+	priorityDebuffIcon:SetPoint("CENTER")
+	priorityDebuffIcon:SetSize(priorityDebuff:GetSize())
+	priorityDebuffIcon:SetMask(GetMedia("actionbutton-mask-square"))
+	priorityDebuff.icon = priorityDebuffIcon
+
+	local priorityDebuffBorder = CreateFrame("Frame", nil, priorityDebuff, ns.BackdropTemplate)
+	priorityDebuffBorder:SetBackdrop({ edgeFile = GetMedia("border-aura"), edgeSize = 12 })
+	priorityDebuffBorder:SetBackdropBorderColor(Colors.verydarkgray[1], Colors.verydarkgray[2], Colors.verydarkgray[3])
+	priorityDebuffBorder:SetPoint("TOPLEFT", -4, 4)
+	priorityDebuffBorder:SetPoint("BOTTOMRIGHT", 4, -4)
+	priorityDebuffBorder:SetFrameLevel(priorityDebuff:GetFrameLevel() + 2)
+	priorityDebuff.border = priorityDebuffBorder
+
+	local priorityDebuffCount = priorityDebuff.border:CreateFontString(nil, "OVERLAY")
+	priorityDebuffCount:SetFontObject(GetFont(14, true))
+	priorityDebuffCount:SetTextColor(Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3])
+	priorityDebuffCount:SetPoint("BOTTOMRIGHT", priorityDebuff, "BOTTOMRIGHT", -2, 3)
+	priorityDebuff.count = priorityDebuffCount
+
+	self.PriorityDebuff = priorityDebuff
+	self.PriorityDebuff.PostUpdate = PriorityDebuff_PostUpdate
 
 	-- Absorb Bar (Retail)
 	--------------------------------------------
@@ -735,7 +778,9 @@ PartyFrameMod.GetVisibilityDriver = function(self)
 	local raid40 = ns:GetModule("RaidFrame40").db.profile.enabled
 
 	if (party) then
-		if (self.db.profile.showInRaids or not(raid5 or raid25 or raid40)) then
+		if (self.frame:GetAttribute("showSolo")) then -- only for testing purposed, don't set it!
+			return true, "show", false
+		elseif (self.db.profile.showInRaids or not(raid5 or raid25 or raid40)) then
 			return true, "[group]show;hide", true
 		else
 			return true, "[group:party,nogroup:raid]show;hide", nil

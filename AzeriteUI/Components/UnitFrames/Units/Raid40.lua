@@ -305,6 +305,14 @@ local TargetHighlight_Update = function(self, event, unit, ...)
 	end
 end
 
+-- Update the border color of priority debuffs.
+local PriorityDebuff_PostUpdate = function(element, event, isVisible, name, icon, count, debuffType, duration, expirationTime, spellID, isBoss, isCustom)
+	if (isVisible) then
+		local color = debuffType and Colors.debuff[debuffType] or Colors.debuff.none
+		element.border:SetBackdropBorderColor(color[1], color[2], color[3])
+	end
+end
+
 local UnitFrame_PostUpdate = function(self)
 	TargetHighlight_Update(self)
 end
@@ -448,6 +456,36 @@ local style = function(self, unit)
 	powerBackdrop:SetVertexColor(unpack(db.PowerBackdropColor))
 
 	self.Power.Backdrop = powerBackdrop
+
+	-- Priority Debuff
+	--------------------------------------------
+	local priorityDebuff = CreateFrame("Frame", nil, overlay)
+	priorityDebuff:SetSize(40,40)
+	priorityDebuff:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
+	priorityDebuff.forceShow = nil
+
+	local priorityDebuffIcon = priorityDebuff:CreateTexture(nil, "BACKGROUND", nil, 1)
+	priorityDebuffIcon:SetPoint("CENTER")
+	priorityDebuffIcon:SetSize(priorityDebuff:GetSize())
+	priorityDebuffIcon:SetMask(GetMedia("actionbutton-mask-square"))
+	priorityDebuff.icon = priorityDebuffIcon
+
+	local priorityDebuffBorder = CreateFrame("Frame", nil, priorityDebuff, ns.BackdropTemplate)
+	priorityDebuffBorder:SetBackdrop({ edgeFile = GetMedia("border-aura"), edgeSize = 12 })
+	priorityDebuffBorder:SetBackdropBorderColor(Colors.verydarkgray[1], Colors.verydarkgray[2], Colors.verydarkgray[3])
+	priorityDebuffBorder:SetPoint("TOPLEFT", -4, 4)
+	priorityDebuffBorder:SetPoint("BOTTOMRIGHT", 4, -4)
+	priorityDebuffBorder:SetFrameLevel(priorityDebuff:GetFrameLevel() + 2)
+	priorityDebuff.border = priorityDebuffBorder
+
+	local priorityDebuffCount = priorityDebuff.border:CreateFontString(nil, "OVERLAY")
+	priorityDebuffCount:SetFontObject(GetFont(14, true))
+	priorityDebuffCount:SetTextColor(Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3])
+	priorityDebuffCount:SetPoint("BOTTOMRIGHT", priorityDebuff, "BOTTOMRIGHT", -2, 3)
+	priorityDebuff.count = priorityDebuffCount
+
+	self.PriorityDebuff = priorityDebuff
+	self.PriorityDebuff.PostUpdate = PriorityDebuff_PostUpdate
 
 	-- Absorb Bar (Retail)
 	--------------------------------------------
