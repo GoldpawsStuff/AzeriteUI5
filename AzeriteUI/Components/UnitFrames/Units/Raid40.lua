@@ -41,6 +41,11 @@ local string_gsub = string.gsub
 local type = type
 local unpack = unpack
 
+-- Addon API
+local Colors = ns.Colors
+local GetMedia = ns.API.GetMedia
+local GetFont = ns.API.GetFont
+
 local Units = {}
 
 local defaults = { profile = ns:Merge({
