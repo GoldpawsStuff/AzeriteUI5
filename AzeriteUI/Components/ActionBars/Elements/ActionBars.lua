@@ -476,14 +476,6 @@ ActionBarMod.CreateBars = function(self)
 		end
 	end
 
-	-- Make the flyouts remain visible when called from faded bars.
-	-- *Note that the LAB10GE flyout handler does not exist
-	-- before at least one action button has been created using it.
-	--local flyoutHandler = ns.WoW10 and LAB10GEFlyoutHandlerFrame or SpellFlyout
-	--if (flyoutHandler) then
-	--	flyoutHandler:SetIgnoreParentAlpha(true)
-	--end
-
 end
 
 ActionBarMod.CreateAnchors = function(self)
