@@ -194,7 +194,7 @@ local DispelTypesByClass = {
 local function UpdateTooltip(element)
 	if(GameTooltip:IsForbidden()) then return end
 
-	GameTooltip:SetUnitAura(element:GetParent().__owner.unit, element.spellID, 'HARMFUL')
+	GameTooltip:SetUnitAura(element.__owner.unit, element.spellID, 'HARMFUL')
 end
 
 local function onEnter(self)
@@ -203,7 +203,7 @@ local function onEnter(self)
 	-- Avoid parenting GameTooltip to frames with anchoring restrictions,
 	-- otherwise it'll inherit said restrictions which will cause issues with
 	-- its further positioning, clamping, etc
-	GameTooltip:SetOwner(self, self:GetParent().__restricted and 'ANCHOR_CURSOR' or self:GetParent().tooltipAnchor)
+	GameTooltip:SetOwner(self, 'ANCHOR_CURSOR')
 
 	self:UpdateTooltip()
 end
@@ -317,6 +317,14 @@ local function Update(self, event, unit)
 			end
 		end
 
+	end
+
+	-- Just for testing purposes. Tukz' idea.
+	if(element.forceShow) then
+		priority = 10000
+		spellID = 47540
+		name, _, icon = GetSpellInfo(spellID)
+		count, debuffType, duration, expirationTime = 5, "Magic", 0, 60
 	end
 
 	if(priority > 0) then
