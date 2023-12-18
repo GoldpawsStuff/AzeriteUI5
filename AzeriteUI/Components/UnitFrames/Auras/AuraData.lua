@@ -459,289 +459,290 @@ Add(403695, "DEBUFF_HARM") 				-- Wake of Ashes (Truth's Wake)
 
 -- Priest
 --------------------------------------------------
-Add(373447, "BUFF_HELP") -- Translucent Image (Fade)
-Add(   605, "CC") -- Mind Control
-Add(  8122, "CC") -- Psychic Scream
-Add(  9484, "CC") -- Shackle Undead
-Add( 10060, "BUFF_HARM") -- Power Infusion
-Add( 15487, "CC") -- Silence
-Add( 33206, "BUFF_HELP") -- Pain Suppression
-Add( 47536, "BUFF_HELP") -- Rapture
-Add( 47585, "BUFF_HELP") -- Dispersion
-Add( 47788, "BUFF_HELP") -- Guardian Spirit
-Add( 64044, "CC") -- Psychic Horror
-Add( 64843, "BUFF_HELP") -- Divine Hymn
-Add( 81782, "BUFF_HELP") -- Power Word: Barrier
-Add(271466, "BUFF_HELP", 81782) -- Luminous Barrier
-Add( 87204, "CC") -- Sin and Punishment
-Add(194249, "BUFF_HARM") -- Voidform
-Add(391109, "BUFF_HARM") -- Dark Ascension
-Add(232707, "BUFF_HELP") -- Ray of Hope (Holy PvP Talent)
-Add(197862, "BUFF_HELP") -- Archangel (Disc PvP Talent)
-Add(197871, "BUFF_HARM") -- Dark Archangel (Disc PvP Talent) - on the priest
-Add(197874, "BUFF_HARM", 197871) -- Dark Archangel (Disc PvP Talent) - on others
-Add(200183, "BUFF_HELP") -- Apotheosis
-Add(200196, "CC") -- Holy Word: Chastise
-Add(200200, "CC", 200196) -- Holy Word: Chastise (Stun)
-Add(205369, "CC") -- Mind Bomb (Countdown)
-Add(226943, "CC", 205369) -- Mind Bomb (Disorient)
-Add(213610, "IMMUNITY_SPELL") -- Holy Ward
---Add( 27827, "BUFF_HELP") -- Spirit of Redemption
-Add(215769, "BUFF_HELP") -- Spirit of Redemption (Spirit of the Redeemer Holy PvP Talent)
-Add(211336, "BUFF_HELP") -- Archbishop Benedictus' Restitution (Resurrection Buff)
-Add(211319, "BUFF_OTHER") -- Archbishop Benedictus' Restitution (Debuff)
-Add(289655, "BUFF_HELP") -- Holy Word: Concentration
-Add(322431, "BUFF_HARM") -- Thoughtsteal (Buff)
-Add(322459, "DEBUFF_HARM") -- Thoughtstolen (Shaman)
-Add(322464, "DEBUFF_HARM", 322459) -- Thoughtstolen (Mage)
-Add(322442, "DEBUFF_HARM", 322459) -- Thoughtstolen (Druid)
-Add(322462, "DEBUFF_HARM", 322459) -- Thoughtstolen (Priest - Holy)
-Add(322457, "DEBUFF_HARM", 322459) -- Thoughtstolen (Paladin)
-Add(322463, "DEBUFF_HARM", 322459) -- Thoughtstolen (Warlock)
-Add(322461, "DEBUFF_HARM", 322459) -- Thoughtstolen (Priest - Discipline)
-Add(322458, "DEBUFF_HARM", 322459) -- Thoughtstolen (Monk)
-Add(322460, "DEBUFF_HARM", 322459) -- Thoughtstolen (Priest - Shadow)
-Add(394902, "DEBUFF_HARM", 322459) -- Thoughtstolen (Evoker)
-Add(375901, "DEBUFF_HARM") -- Mindgames
-Add(329543, "BUFF_HELP") -- Divine Ascension (down)
-Add(328530, "IMMUNITY", 329543) -- Divine Ascension (up)
-Add(335467, "DEBUFF_HARM") -- Devouring Plague
-Add( 34914, "DEBUFF_HARM") -- Vampiric Touch
-Add(   453, "BUFF_OTHER") -- Mind Soothe
-Add( 15286, "BUFF_HELP") -- Vampiric Embrace
-Add( 19236, "BUFF_HELP") -- Desperate Prayer
-Add(111759, "BUFF_OTHER") -- Levitate
-Add(322105, "BUFF_HARM") -- Shadow Covenant
-Add( 65081, "BUFF_SPEED_BOOST") -- Body and Soul
-Add(121557, "BUFF_SPEED_BOOST") -- Angelic Feather
-Add(199845, "DEBUFF_HARM") -- Psyflay (Psyfiend) debuff
-Add(214621, "DEBUFF_HARM") -- Schism
-Add(358861, "CC") -- Void Volley: Horrify (Shadow PvP Talent)
-Add(114404, "ROOT") -- Void Tendrils
-Add(408558, "IMMUNITY") -- Phase Shift
-Add(421453, "IMMUNITY") -- Ultimate Penitence
+Add(121557, "BUFF_SPEED_BOOST") 		-- Angelic Feather
+Add(200183, "BUFF_HELP") 				-- Apotheosis
+Add(197862, "BUFF_HELP") 				-- Archangel (Disc PvP Talent)
+Add(211336, "BUFF_HELP") 				-- Archbishop Benedictus' Restitution (Resurrection Buff)
+Add(211319, "BUFF_OTHER") 				-- Archbishop Benedictus' Restitution (Debuff)
+Add( 65081, "BUFF_SPEED_BOOST") 		-- Body and Soul
+Add(197871, "BUFF_HARM") 				-- Dark Archangel (Disc PvP Talent) - on the priest
+Add(197874, "BUFF_HARM", 197871) 		-- Dark Archangel (Disc PvP Talent) - on others
+Add(391109, "BUFF_HARM") 				-- Dark Ascension
+Add( 19236, "BUFF_HELP") 				-- Desperate Prayer
+Add(335467, "DEBUFF_HARM") 				-- Devouring Plague
+Add( 47585, "BUFF_HELP") 				-- Dispersion
+Add(329543, "BUFF_HELP") 				-- Divine Ascension (down)
+Add(328530, "IMMUNITY", 329543) 		-- Divine Ascension (up)
+Add( 64843, "BUFF_HELP") 				-- Divine Hymn
+Add( 47788, "BUFF_HELP") 				-- Guardian Spirit
+Add(213610, "IMMUNITY_SPELL") 			-- Holy Ward
+Add(200196, "CC") 						-- Holy Word: Chastise
+Add(200200, "CC", 200196) 				-- Holy Word: Chastise (Stun)
+Add(289655, "BUFF_HELP") 				-- Holy Word: Concentration
+Add(111759, "BUFF_OTHER") 				-- Levitate
+Add(271466, "BUFF_HELP", 81782) 		-- Luminous Barrier
+Add(375901, "DEBUFF_HARM") 				-- Mindgames
+Add(205369, "CC") 						-- Mind Bomb (Countdown)
+Add(226943, "CC", 205369) 				-- Mind Bomb (Disorient)
+Add(   605, "CC") 						-- Mind Control
+Add(   453, "BUFF_OTHER") 				-- Mind Soothe
+Add( 33206, "BUFF_HELP") 				-- Pain Suppression
+Add(408558, "IMMUNITY") 				-- Phase Shift
+Add( 10060, "BUFF_HARM") 				-- Power Infusion
+Add( 81782, "BUFF_HELP") 				-- Power Word: Barrier
+Add( 64044, "CC") 						-- Psychic Horror
+Add(  8122, "CC") 						-- Psychic Scream
+Add(199845, "DEBUFF_HARM") 				-- Psyflay (Psyfiend) debuff
+Add( 47536, "BUFF_HELP") 				-- Rapture
+Add(232707, "BUFF_HELP") 				-- Ray of Hope (Holy PvP Talent)
+Add(  9484, "CC") 						-- Shackle Undead
+Add(322105, "BUFF_HARM") 				-- Shadow Covenant
+Add(214621, "DEBUFF_HARM") 				-- Schism
+Add( 15487, "CC") 						-- Silence
+Add( 87204, "CC") 						-- Sin and Punishment
+--Add( 27827, "BUFF_HELP") 				-- Spirit of Redemption
+Add(215769, "BUFF_HELP") 				-- Spirit of Redemption (Spirit of the Redeemer Holy PvP Talent)
+Add(322431, "BUFF_HARM") 				-- Thoughtsteal (Buff)
+Add(322459, "DEBUFF_HARM") 				-- Thoughtstolen (Shaman)
+Add(322464, "DEBUFF_HARM", 322459) 		-- Thoughtstolen (Mage)
+Add(322442, "DEBUFF_HARM", 322459) 		-- Thoughtstolen (Druid)
+Add(322462, "DEBUFF_HARM", 322459) 		-- Thoughtstolen (Priest - Holy)
+Add(322457, "DEBUFF_HARM", 322459) 		-- Thoughtstolen (Paladin)
+Add(322463, "DEBUFF_HARM", 322459) 		-- Thoughtstolen (Warlock)
+Add(322461, "DEBUFF_HARM", 322459) 		-- Thoughtstolen (Priest - Discipline)
+Add(322458, "DEBUFF_HARM", 322459) 		-- Thoughtstolen (Monk)
+Add(322460, "DEBUFF_HARM", 322459) 		-- Thoughtstolen (Priest - Shadow)
+Add(394902, "DEBUFF_HARM", 322459) 		-- Thoughtstolen (Evoker)
+Add(373447, "BUFF_HELP") 				-- Translucent Image (Fade)
+Add( 15286, "BUFF_HELP") 				-- Vampiric Embrace
+Add( 34914, "DEBUFF_HARM") 				-- Vampiric Touch
+Add(114404, "ROOT") 					-- Void Tendrils
+Add(358861, "CC") 						-- Void Volley: Horrify (Shadow PvP Talent)
+Add(194249, "BUFF_HARM") 				-- Voidform
+Add(421453, "IMMUNITY") 				-- Ultimate Penitence
 
 -- Rogue
 --------------------------------------------------
-Add(   408, "CC") -- Kidney Shot
-Add(  1330, "CC") -- Garrote - Silence
-Add(  1776, "CC") -- Gouge
-Add(  1833, "CC") -- Cheap Shot
-Add(  1966, "BUFF_HELP") -- Feint
-Add(  2094, "CC") -- Blind
-Add(  2983, "BUFF_SPEED_BOOST") -- Sprint
-Add( 36554, "BUFF_SPEED_BOOST") -- Shadowstep
-Add(  5277, "BUFF_HELP") -- Evasion
-Add(  6770, "CC") -- Sap
-Add( 11327, "BUFF_HELP") -- Vanish
-Add( 13750, "BUFF_HARM") -- Adrenaline Rush
-Add( 31224, "IMMUNITY_SPELL") -- Cloak of Shadows
-Add( 45182, "BUFF_HELP") -- Cheating Death
-Add( 51690, "BUFF_HARM") -- Killing Spree
-Add(121471, "BUFF_HARM") -- Shadow Blades
-Add(185422, "BUFF_HARM") -- Shadow Dance
-Add(207736, "BUFF_HARM") -- Shadowy Duel
-Add(212283, "BUFF_HARM") -- Symbols of Death
-Add(207777, "CC") -- Dismantle
-Add(212183, "CC") -- Smoke Bomb (PvP Talent)
-Add(  1784, "BUFF_OTHER") -- Stealth
-Add(115191, "BUFF_OTHER", 1784) -- Stealth (with Subterfuge talented)
-Add(115192, "BUFF_HARM") -- Subterfuge
-Add(256735, "BUFF_HARM") -- Master Assassin
-Add(394758, "BUFF_HARM") -- Flagellation
-Add(375939, "BUFF_HARM") -- Sepsis
-Add(385408, "DEBUFF_HARM") -- Sepsis
-Add(360194, "DEBUFF_HARM") -- Deathmark
-Add(193359, "BUFF_HARM") -- True Bearing
-Add(193357, "BUFF_HARM") -- Ruthless Precision
-Add(319504, "DEBUFF_HARM") -- Shiv
+Add( 13750, "BUFF_HARM") 				-- Adrenaline Rush
+Add(  2094, "CC") 						-- Blind
+Add(  1833, "CC") 						-- Cheap Shot
+Add( 45182, "BUFF_HELP") 				-- Cheating Death
+Add( 31224, "IMMUNITY_SPELL") 			-- Cloak of Shadows
+Add(360194, "DEBUFF_HARM") 				-- Deathmark
+Add(207777, "CC") 						-- Dismantle
+Add(  5277, "BUFF_HELP") 				-- Evasion
+Add(  1966, "BUFF_HELP") 				-- Feint
+Add(394758, "BUFF_HARM") 				-- Flagellation
+Add(  1330, "CC") 						-- Garrote - Silence
+Add(  1776, "CC") 						-- Gouge
+Add(   408, "CC") 						-- Kidney Shot
+Add( 51690, "BUFF_HARM") 				-- Killing Spree
+Add(256735, "BUFF_HARM") 				-- Master Assassin
+Add(193357, "BUFF_HARM") 				-- Ruthless Precision
+Add(  6770, "CC") 						-- Sap
+Add(375939, "BUFF_HARM") 				-- Sepsis
+Add(385408, "DEBUFF_HARM") 				-- Sepsis
+Add(121471, "BUFF_HARM") 				-- Shadow Blades
+Add(185422, "BUFF_HARM") 				-- Shadow Dance
+Add( 36554, "BUFF_SPEED_BOOST") 		-- Shadowstep
+Add(207736, "BUFF_HARM") 				-- Shadowy Duel
+Add(319504, "DEBUFF_HARM") 				-- Shiv
+Add(212183, "CC") 						-- Smoke Bomb (PvP Talent)
+Add(  2983, "BUFF_SPEED_BOOST") 		-- Sprint
+Add(  1784, "BUFF_OTHER") 				-- Stealth
+Add(115191, "BUFF_OTHER", 1784) 		-- Stealth (with Subterfuge talented)
+Add(115192, "BUFF_HARM") 				-- Subterfuge
+Add(212283, "BUFF_HARM") 				-- Symbols of Death
+Add(193359, "BUFF_HARM") 				-- True Bearing
+Add( 11327, "BUFF_HELP") 				-- Vanish
 
 -- Shaman
 --------------------------------------------------
-Add(  2645, "BUFF_SPEED_BOOST") -- Ghost Wolf
-Add(  8178, "IMMUNITY_SPELL") -- Grounding Totem Effect (PvP Talent)
-Add(208997, "DEBUFF_HARM") -- Counterstrike Totem (PvP Talent)
-Add( 51514, "CC") -- Hex
-Add(210873, "CC", 51514) -- Hex (Compy)
-Add(211004, "CC", 51514) -- Hex (Spider)
-Add(211010, "CC", 51514) -- Hex (Snake)
-Add(211015, "CC", 51514) -- Hex (Cockroach)
-Add(269352, "CC", 51514) -- Hex (Skeletal Hatchling)
-Add(277778, "CC", 51514) -- Hex (Zandalari Tendonripper)
-Add(277784, "CC", 51514) -- Hex (Wicker Mongrel)
-Add(309328, "CC", 51514) -- Hex (Living Honey)
-Add( 58875, "BUFF_SPEED_BOOST") -- Spirit Walk
-Add( 79206, "BUFF_OTHER") -- Spiritwalker's Grace
-Add(108281, "BUFF_HELP") -- Ancestral Guidance
-Add( 64695, "ROOT") -- Earthgrab Totem
-Add( 77505, "CC") -- Earthquake (Stun)
-Add(325174, "BUFF_HELP") -- Spirit Link Totem
-Add(108271, "BUFF_HELP") -- Astral Shift
-Add(114049, "BUFF_HARM") -- Ascendance
-Add(114050, "BUFF_HARM", 114049) -- Ascendance (Elemental)
-Add(114051, "BUFF_HARM", 114049) -- Ascendance (Enhancement)
-Add(114052, "BUFF_HELP", 114049) -- Ascendance (Restoration)
-Add(118345, "CC") -- Pulverize
-Add(118337, "BUFF_HELP") -- Harden Skin
-Add(118905, "CC") -- Static Charge
-Add(191634, "BUFF_HARM") -- Stormkeeper (Ele)
-Add(383009, "BUFF_HARM") -- Stormkeeper (Resto)
-Add(197214, "CC") -- Sundering
-Add(201633, "BUFF_HELP") -- Earthen Wall Totem
-Add(384352, "BUFF_HARM") -- Doom Winds
-Add(260881, "BUFF_HELP") -- Spirit Wolf
-Add(378078, "BUFF_HELP") -- Spiritwalker's Aegis
-Add(305485, "CC") -- Lightning Lasso (PvP Talent)
-Add(   546, "BUFF_OTHER") -- Water Walking
-Add(333957, "BUFF_HARM") -- Feral Spirit
-Add(204361, "BUFF_HARM") -- Bloodlust (Enhancement PvP Talent)
-Add(204362, "BUFF_HARM", 204361) -- Heroism (Enhancement PvP Talent)
-Add(192082, "BUFF_SPEED_BOOST") -- Windrush Totem
-Add(378076, "BUFF_SPEED_BOOST") -- Thunderous Paws
-Add(375986, "BUFF_HARM") -- Primordial Wave
-Add(207495, "BUFF_HELP") -- Ancestral Protection (Totem)
-Add(207498, "BUFF_HELP", 207495) -- Ancestral Protection (Player)
-Add(356738, "ROOT") -- Earth Unleashed
-Add(285515, "ROOT") -- Surge of Power (Root)
-Add(356824, "DEBUFF_HARM") -- Water Unleashed
-Add(188389, "DEBUFF_HARM") -- Flame Shock
-Add(409293, "IMMUNITY") -- Burrow
+Add(114049, "BUFF_HARM") 				-- Ascendance
+Add(114050, "BUFF_HARM", 114049) 		-- Ascendance (Elemental)
+Add(114051, "BUFF_HARM", 114049) 		-- Ascendance (Enhancement)
+Add(114052, "BUFF_HELP", 114049) 		-- Ascendance (Restoration)
+Add(108281, "BUFF_HELP") 				-- Ancestral Guidance
+Add(207495, "BUFF_HELP") 				-- Ancestral Protection (Totem)
+Add(207498, "BUFF_HELP", 207495) 		-- Ancestral Protection (Player)
+Add(108271, "BUFF_HELP") 				-- Astral Shift
+Add(204361, "BUFF_HARM") 				-- Bloodlust (Enhancement PvP Talent)
+Add(409293, "IMMUNITY") 				-- Burrow
+Add(208997, "DEBUFF_HARM") 				-- Counterstrike Totem (PvP Talent)
+Add(384352, "BUFF_HARM") 				-- Doom Winds
+Add(356738, "ROOT") 					-- Earth Unleashed
+Add(201633, "BUFF_HELP") 				-- Earthen Wall Totem
+Add( 64695, "ROOT") 					-- Earthgrab Totem
+Add( 77505, "CC") 						-- Earthquake (Stun)
+Add(333957, "BUFF_HARM") 				-- Feral Spirit
+Add(188389, "DEBUFF_HARM") 				-- Flame Shock
+Add(  2645, "BUFF_SPEED_BOOST") 		-- Ghost Wolf
+Add(  8178, "IMMUNITY_SPELL") 			-- Grounding Totem Effect (PvP Talent)
+Add(118337, "BUFF_HELP") 				-- Harden Skin
+Add(204362, "BUFF_HARM", 204361) 		-- Heroism (Enhancement PvP Talent)
+Add( 51514, "CC") 						-- Hex
+Add(211015, "CC", 51514) 				-- Hex (Cockroach)
+Add(210873, "CC", 51514) 				-- Hex (Compy)
+Add(309328, "CC", 51514) 				-- Hex (Living Honey)
+Add(269352, "CC", 51514) 				-- Hex (Skeletal Hatchling)
+Add(211010, "CC", 51514) 				-- Hex (Snake)
+Add(211004, "CC", 51514) 				-- Hex (Spider)
+Add(277784, "CC", 51514) 				-- Hex (Wicker Mongrel)
+Add(277778, "CC", 51514) 				-- Hex (Zandalari Tendonripper)
+Add(305485, "CC") 						-- Lightning Lasso (PvP Talent)
+Add(375986, "BUFF_HARM") 				-- Primordial Wave
+Add(118345, "CC") 						-- Pulverize
+Add(118905, "CC") 						-- Static Charge
+Add(325174, "BUFF_HELP") 				-- Spirit Link Totem
+Add( 58875, "BUFF_SPEED_BOOST") 		-- Spirit Walk
+Add(260881, "BUFF_HELP") 				-- Spirit Wolf
+Add(378078, "BUFF_HELP") 				-- Spiritwalker's Aegis
+Add( 79206, "BUFF_OTHER") 				-- Spiritwalker's Grace
+Add(191634, "BUFF_HARM") 				-- Stormkeeper (Ele)
+Add(383009, "BUFF_HARM") 				-- Stormkeeper (Resto)
+Add(197214, "CC") 						-- Sundering
+Add(285515, "ROOT") 					-- Surge of Power (Root)
+Add(378076, "BUFF_SPEED_BOOST") 		-- Thunderous Paws
+Add(356824, "DEBUFF_HARM") 				-- Water Unleashed
+Add(   546, "BUFF_OTHER") 				-- Water Walking
+Add(192082, "BUFF_SPEED_BOOST") 		-- Windrush Totem
 
 -- Warlock
 --------------------------------------------------
-Add(113942, "BUFF_OTHER") -- Demonic Gateway
-Add(386997, "DEBUFF_HARM") -- Soul Rot
-Add(   710, "CC") -- Banish
-Add(  5484, "CC") -- Howl of Terror
-Add(  6358, "CC") -- Seduction
-Add(  6789, "CC") -- Mortal Coil
-Add( 20707, "BUFF_OTHER") -- Soulstone
-Add( 22703, "CC") -- Infernal Awakening
-Add( 30283, "CC") -- Shadowfury
-Add( 89766, "CC") -- Axe Toss
-Add(104773, "BUFF_HELP") -- Unending Resolve
-Add(108416, "BUFF_HELP") -- Dark Pact
-Add(111400, "BUFF_SPEED_BOOST") -- Burning Rush
-Add(265273, "BUFF_HARM") -- Demonic Power (Demonic Tyrant)
-Add(118699, "CC") -- Fear
-Add(130616, "CC", 118699) -- Fear (Horrify)
-Add(196364, "CC") -- Unstable Affliction (Silence)
-Add(212295, "IMMUNITY_SPELL") -- Nether Ward (PvP Talent)
-Add(  1098, "CC") -- Subjugate Demon
-Add(316099, "DEBUFF_HARM") -- Unstable Affliction
-Add(342938, "DEBUFF_HARM", 316099) -- Unstable Affliction (Affliction PvP Talent)
-Add( 30213, "DEBUFF_HARM") -- Legion Strike
-Add(200587, "DEBUFF_HARM") -- Fel Fissure (PvP Talent)
-Add(333889, "BUFF_HELP") -- Fel Domination
-Add(267171, "BUFF_HARM") -- Demonic Strength
-Add(267218, "BUFF_HARM") -- Nether Portal
-Add( 80240, "DEBUFF_HARM") -- Havoc
-Add(200548, "DEBUFF_HARM", 80240) -- Bane of Havoc (Destro PvP Talent)
-Add(213688, "CC") -- Fel Cleave - Fel Lord stun (Demo PvP Talent)
-Add(387633, "BUFF_SPEED_BOOST") -- Demonic Momentum (Soulburn)
-Add(  1714, "DEBUFF_HARM") -- Curse of Tongues
-Add(   702, "DEBUFF_HARM") -- Curse of Weakness
-Add(410598, "DEBUFF_HARM") -- Soul Rip
-Add(417537, "DEBUFF_HARM") -- Oblivion
+Add( 89766, "CC") 						-- Axe Toss
+Add(200548, "DEBUFF_HARM", 80240) 		-- Bane of Havoc (Destro PvP Talent)
+Add(   710, "CC") 						-- Banish
+Add(111400, "BUFF_SPEED_BOOST") 		-- Burning Rush
+Add(  1714, "DEBUFF_HARM") 				-- Curse of Tongues
+Add(   702, "DEBUFF_HARM") 				-- Curse of Weakness
+Add(108416, "BUFF_HELP") 				-- Dark Pact
+Add(113942, "BUFF_OTHER") 				-- Demonic Gateway
+Add(387633, "BUFF_SPEED_BOOST") 		-- Demonic Momentum (Soulburn)
+Add(265273, "BUFF_HARM") 				-- Demonic Power (Demonic Tyrant)
+Add(267171, "BUFF_HARM") 				-- Demonic Strength
+Add(118699, "CC") 						-- Fear
+Add(130616, "CC", 118699) 				-- Fear (Horrify)
+Add(213688, "CC") 						-- Fel Cleave - Fel Lord stun (Demo PvP Talent)
+Add(333889, "BUFF_HELP") 				-- Fel Domination
+Add(200587, "DEBUFF_HARM") 				-- Fel Fissure (PvP Talent)
+Add( 80240, "DEBUFF_HARM") 				-- Havoc
+Add(  5484, "CC") 						-- Howl of Terror
+Add( 22703, "CC") 						-- Infernal Awakening
+Add( 30213, "DEBUFF_HARM") 				-- Legion Strike
+Add(  6789, "CC") 						-- Mortal Coil
+Add(267218, "BUFF_HARM") 				-- Nether Portal
+Add(212295, "IMMUNITY_SPELL") 			-- Nether Ward (PvP Talent)
+Add(417537, "DEBUFF_HARM") 				-- Oblivion
+Add(  6358, "CC") 						-- Seduction
+Add( 30283, "CC") 						-- Shadowfury
+Add(410598, "DEBUFF_HARM") 				-- Soul Rip
+Add(386997, "DEBUFF_HARM") 				-- Soul Rot
+Add( 20707, "BUFF_OTHER") 				-- Soulstone
+Add(  1098, "CC") 						-- Subjugate Demon
+Add(104773, "BUFF_HELP") 				-- Unending Resolve
+Add(316099, "DEBUFF_HARM") 				-- Unstable Affliction
+Add(342938, "DEBUFF_HARM", 316099) 		-- Unstable Affliction (Affliction PvP Talent)
+Add(196364, "CC") 						-- Unstable Affliction (Silence)
 
 -- Warrior
 --------------------------------------------------
-Add(   871, "BUFF_HELP") -- Shield Wall
-Add(198817, "DEBUFF_HARM") -- Sharpen Blade
-Add(  1719, "BUFF_HARM") -- Recklessness
-Add( 52437, "BUFF_HARM" ) -- Sudden Death
-Add(  5246, "CC") -- Intimidating Shout
-Add(316593, "CC", 5246) -- Menace (Main target)
-Add(316595, "CC", 5246) -- Menace (Other targets)
-Add( 12975, "BUFF_HELP") -- Last Stand
-Add( 18499, "BUFF_OTHER") -- Berserker Rage
-Add(384100, "BUFF_OTHER", 18499) -- Berserker Shout
-Add( 23920, "IMMUNITY_SPELL") -- Spell Reflection
-Add(132168, "CC") -- Shockwave
-Add( 97463, "BUFF_HELP") -- Rallying Cry
-Add(105771, "ROOT") -- Charge
-Add(356356, "ROOT") -- Warbringer
-Add(107574, "BUFF_HARM") -- Avatar
-Add(118038, "BUFF_HELP") -- Die by the Sword
-Add(132169, "CC") -- Storm Bolt
-Add(147833, "BUFF_HELP") -- Intervene
-Add(184364, "BUFF_HELP") -- Enraged Regeneration
-Add(386208, "BUFF_HELP") -- Defensive Stance
-Add(208086, "DEBUFF_HARM") -- Colossus Smash
-Add(213871, "BUFF_HELP") -- Bodyguard (Prot PvP Talent)
-Add(227847, "IMMUNITY") -- Bladestorm (Arms)
-Add(389774, "IMMUNITY", 227847) -- Bladestorm (Hurricane)
-Add(236077, "CC") -- Disarm (PvP Talent)
-Add(199042, "ROOT") -- Thunderstruck (Prot PvP Talent)
-Add(424752, "ROOT") -- Piercing Howl (PvP Talent Root)
-Add(236273, "CC") -- Duel (Arms PvP Talent)
-Add(236321, "BUFF_HELP") -- War Banner (PvP Talent)
-Add(199085, "CC") -- Warpath (Prot PvP Talent)
-Add(198819, "DEBUFF_HARM") -- Mortal Strike when applied with Sharpen Blade (50% healing reduc)
-Add(202164, "BUFF_SPEED_BOOST") -- Bounding Stride
-Add(376080, "CC") -- Spear of Bastion
-Add(354788, "DEBUFF_HARM") -- Slaughterhouse
-Add(397364, "DEBUFF_HARM") -- Thunderous Roar
-Add(199261, "BUFF_HARM") -- Death Wish
+Add(107574, "BUFF_HARM") 				-- Avatar
+Add(227847, "IMMUNITY") 				-- Bladestorm (Arms)
+Add(389774, "IMMUNITY", 227847) 		-- Bladestorm (Hurricane)
+Add(105771, "ROOT") 					-- Charge
+Add( 18499, "BUFF_OTHER") 				-- Berserker Rage
+Add(384100, "BUFF_OTHER", 18499) 		-- Berserker Shout
+Add(202164, "BUFF_SPEED_BOOST") 		-- Bounding Stride
+Add(213871, "BUFF_HELP") 				-- Bodyguard (Prot PvP Talent)
+Add(208086, "DEBUFF_HARM") 				-- Colossus Smash
+Add(199261, "BUFF_HARM") 				-- Death Wish
+Add(386208, "BUFF_HELP") 				-- Defensive Stance
+Add(118038, "BUFF_HELP") 				-- Die by the Sword
+Add(236077, "CC") 						-- Disarm (PvP Talent)
+Add(236273, "CC") 						-- Duel (Arms PvP Talent)
+Add(184364, "BUFF_HELP") 				-- Enraged Regeneration
+Add(147833, "BUFF_HELP") 				-- Intervene
+Add(  5246, "CC") 						-- Intimidating Shout
+Add( 12975, "BUFF_HELP") 				-- Last Stand
+Add(316593, "CC", 5246) 				-- Menace (Main target)
+Add(316595, "CC", 5246) 				-- Menace (Other targets)
+Add(198819, "DEBUFF_HARM") 				-- Mortal Strike when applied with Sharpen Blade (50% healing reduc)
+Add(424752, "ROOT") 					-- Piercing Howl (PvP Talent Root)
+Add( 97463, "BUFF_HELP") 				-- Rallying Cry
+Add(  1719, "BUFF_HARM") 				-- Recklessness
+Add(   871, "BUFF_HELP") 				-- Shield Wall
+Add(132168, "CC") 						-- Shockwave
+Add(198817, "DEBUFF_HARM") 				-- Sharpen Blade
+Add(354788, "DEBUFF_HARM") 				-- Slaughterhouse
+Add(376080, "CC") 						-- Spear of Bastion
+Add( 23920, "IMMUNITY_SPELL") 			-- Spell Reflection
+Add(132169, "CC") 						-- Storm Bolt
+Add( 52437, "BUFF_HARM" ) 				-- Sudden Death
+Add(397364, "DEBUFF_HARM") 				-- Thunderous Roar
+Add(199042, "ROOT") 					-- Thunderstruck (Prot PvP Talent)
+Add(236321, "BUFF_HELP") 				-- War Banner (PvP Talent)
+Add(356356, "ROOT") 					-- Warbringer
+Add(199085, "CC") 						-- Warpath (Prot PvP Talent)
 
 -- Other
 --------------------------------------------------
-Add(115804, "DEBUFF_HARM") -- Mortal Wounds
-Add( 34709, "BUFF_OTHER") -- Shadow Sight
-Add(345231, "BUFF_HELP") -- Gladiator's Emblem
-Add(314646, "BUFF_OTHER") -- Drink (40k mana vendor item)
-Add(348436, "BUFF_OTHER", 314646) -- (20k mana vendor item)
-Add(167152, "BUFF_OTHER", 314646) -- Refreshment (mage food)
-Add(377362, "IMMUNITY") -- Precognition
-Add(240559, "DEBUFF_HARM") -- Grievous Wound (Mythic Plus Affix)
+Add(314646, "BUFF_OTHER") 				-- Drink (40k mana vendor item)
+Add(348436, "BUFF_OTHER", 314646) 		-- Drink (20k mana vendor item)
+Add(345231, "BUFF_HELP") 				-- Gladiator's Emblem
+Add(240559, "DEBUFF_HARM") 				-- Grievous Wound (Mythic Plus Affix)
+Add(115804, "DEBUFF_HARM") 				-- Mortal Wounds
+Add(377362, "IMMUNITY") 				-- Precognition
+Add(167152, "BUFF_OTHER", 314646) 		-- Refreshment (mage food)
+Add( 34709, "BUFF_OTHER") 				-- Shadow Sight
 
 -- Racials
 --------------------------------------------------
-Add( 20549, "CC") -- War Stomp
-Add(107079, "CC") -- Quaking Palm
-Add(255723, "CC") -- Bull Rush
-Add(287712, "CC") -- Haymaker
-Add(256948, "BUFF_OTHER") -- Spatial Rift
-Add( 65116, "BUFF_HELP") -- Stoneform
-Add(273104, "BUFF_HELP") -- Fireblood
-Add( 58984, "BUFF_HELP") -- Shadowmeld
+Add(255723, "CC") 						-- Bull Rush
+Add(273104, "BUFF_HELP") 				-- Fireblood
+Add(287712, "CC") 						-- Haymaker
+Add(107079, "CC") 						-- Quaking Palm
+Add( 58984, "BUFF_HELP") 				-- Shadowmeld
+Add(256948, "BUFF_OTHER") 				-- Spatial Rift
+Add( 65116, "BUFF_HELP") 				-- Stoneform
+Add( 20549, "CC") 						-- War Stomp
 
 -- Dragonflight: Dragonriding
 --------------------------------------------------
-Add(388673, "CC") -- Dragonrider's Initiative
-Add(388380, "BUFF_SPEED_BOOST") -- Dragonrider's Compassion
+Add(388380, "BUFF_SPEED_BOOST") 		-- Dragonrider's Compassion
+Add(388673, "CC") 						-- Dragonrider's Initiative
 
 -- Shadowlands: Covenant/Soulbind
 --------------------------------------------------
-Add(310143, "BUFF_SPEED_BOOST") -- Soulshape
-Add(320224, "BUFF_HELP") -- Podtender (Night Fae - Dreamweaver Trait)
-Add(323524, "IMMUNITY") -- Ultimate Form (Necrolord - Marileth Trait)
-Add(324263, "CC") -- Sulfuric Emission (Necrolord - Emeni Trait)
-Add(327140, "BUFF_OTHER") -- Forgeborne Reveries (Necrolord - Bonesmith Heirmir Trait)
-Add(330752, "BUFF_HELP") -- Ascendant Phial (Kyrian - Kleia Trait)
-Add(331866, "CC") -- Agent of Chaos (Venthyr - Nadjia Trait)
-Add(332505, "BUFF_OTHER") -- Soulsteel Clamps (Kyrian - Mikanikos Trait)
-Add(332506, "BUFF_OTHER", 332505) -- Soulsteel Clamps (Kyrian - Mikanikos Trait) - when moving
-Add(332423, "CC") -- Sparkling Driftglobe Core (Kyrian - Mikanikos Trait)
-Add(354051, "ROOT") -- Nimble Steps
+Add(331866, "CC") 						-- Agent of Chaos (Venthyr - Nadjia Trait)
+Add(330752, "BUFF_HELP") 				-- Ascendant Phial (Kyrian - Kleia Trait)
+Add(327140, "BUFF_OTHER") 				-- Forgeborne Reveries (Necrolord - Bonesmith Heirmir Trait)
+Add(354051, "ROOT") 					-- Nimble Steps
+Add(320224, "BUFF_HELP") 				-- Podtender (Night Fae - Dreamweaver Trait)
+Add(310143, "BUFF_SPEED_BOOST") 		-- Soulshape
+Add(332505, "BUFF_OTHER") 				-- Soulsteel Clamps (Kyrian - Mikanikos Trait)
+Add(332506, "BUFF_OTHER", 332505) 		-- Soulsteel Clamps (Kyrian - Mikanikos Trait) - when moving
+Add(332423, "CC") 						-- Sparkling Driftglobe Core (Kyrian - Mikanikos Trait)
+Add(324263, "CC") 						-- Sulfuric Emission (Necrolord - Emeni Trait)
+Add(323524, "IMMUNITY") 				-- Ultimate Form (Necrolord - Marileth Trait)
 
 --Trinkets
-Add(356567, "CC") -- Shackles of Malediction
-Add(358259, "CC") -- Gladiator's Maledict
-Add(362699, "IMMUNITY_SPELL") -- Gladiator's Resolve
-Add(363522, "BUFF_HELP") -- Gladiator's Eternal Aegis
+--------------------------------------------------
+Add(356567, "CC") 						-- Shackles of Malediction
+Add(358259, "CC") 						-- Gladiator's Maledict
+Add(362699, "IMMUNITY_SPELL") 			-- Gladiator's Resolve
+Add(363522, "BUFF_HELP") 				-- Gladiator's Eternal Aegis
 
 -- Legacy (may be deprecated)
 --------------------------------------------------
---Add(305252, "CC") -- Gladiator's Maledict
---Add(313148, "CC") -- Forbidden Obsidian Claw
+--Add(305252, "CC") 					-- Gladiator's Maledict
+--Add(313148, "CC") 					-- Forbidden Obsidian Claw
 
 -- Special
 --------------------------------------------------
---Add(  6788, "S"pecial)  -- Weakened Soul
+--Add(  6788, "S"pecial)  				-- Weakened Soul
 --------------------------------------------------
 
 -- Dragonflight Dungeons - Season 2
 --------------------------------------------------
-Add(266107, "DEBUFF_HARM") -- Thirst for Blood
-Add(368091, "DEBUFF_HARM") -- Infected Bite
+Add(368091, "DEBUFF_HARM") 				-- Infected Bite
+Add(266107, "DEBUFF_HARM") 				-- Thirst for Blood
