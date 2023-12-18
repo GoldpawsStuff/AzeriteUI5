@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 124
+local MINOR_VERSION = 125
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -1636,7 +1636,7 @@ function OnUpdate(_, elapsed)
 					elseif button.config.outOfRangeColoring == "hotkey" then
 						local hotkey = button.HotKey
 						if hotkey:GetText() == RANGE_INDICATOR then
-							if inRange == false then
+							if inRange == false and not self.config.hideElements.hotkey then
 								hotkey:Show()
 							else
 								hotkey:Hide()
@@ -1877,6 +1877,7 @@ function Update(self)
 		self.rangeTimer = nil
 		if self.HotKey:GetText() == RANGE_INDICATOR then
 			self.HotKey:Hide()
+
 		else
 			self.HotKey:SetVertexColor(unpack(self.config.text.hotkey.color))
 		end
