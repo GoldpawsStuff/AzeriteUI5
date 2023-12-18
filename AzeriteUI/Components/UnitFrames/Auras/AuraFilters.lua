@@ -29,6 +29,11 @@ if (not ns.IsRetail) then return end
 
 ns.AuraFilters = ns.AuraFilters or {}
 
+-- Data
+local Spells = ns.AuraData.Spells
+local Hidden = ns.AuraData.Hidden
+local Priority = ns.AuraData.Priority
+
 -- https://wowpedia.fandom.com/wiki/API_C_UnitAuras.GetAuraDataByAuraInstanceID
 ns.AuraFilters.PlayerAuraFilter = function(button, unit, data)
 
@@ -38,6 +43,17 @@ ns.AuraFilters.PlayerAuraFilter = function(button, unit, data)
 	button.duration = data.duration
 	button.noDuration = not data.duration or data.duration == 0
 	button.isPlayer = data.isPlayerAura
+	button.spellID = data.spellId
+
+	-- Hide blacklisted auras.
+	if (data.spellId and Hidden[data.spellId]) then
+		return
+	end
+
+	-- Show whitelisted auras.
+	if (data.spellId and Spells[data.spellId]) then
+		return true
+	end
 
 	if (data.isBossDebuff) then
 		return true
@@ -59,6 +75,17 @@ ns.AuraFilters.TargetAuraFilter = function(button, unit, data)
 	button.duration = data.duration
 	button.noDuration = not data.duration or data.duration == 0
 	button.isPlayer = data.isPlayerAura
+	button.spellID = data.spellId
+
+	-- Hide blacklisted auras.
+	if (data.spellId and Hidden[data.spellId]) then
+		return
+	end
+
+	-- Show whitelisted auras.
+	if (data.spellId and Spells[data.spellId]) then
+		return true
+	end
 
 	if (data.isBossDebuff) then
 		return true
@@ -79,6 +106,12 @@ ns.AuraFilters.PartyAuraFilter = function(button, unit, data)
 	button.duration = data.duration
 	button.noDuration = not data.duration or data.duration == 0
 	button.isPlayer = data.isPlayerAura
+	button.spellID = data.spellId
+
+	-- Hide blacklisted auras.
+	if (data.spellId and Hidden[data.spellId]) then
+		return
+	end
 
 	if (data.sourceUnit == unit) then
 		return
@@ -105,6 +138,12 @@ ns.AuraFilters.NameplateAuraFilter = function(button, unit, data)
 	button.duration = data.duration
 	button.noDuration = not data.duration or data.duration == 0
 	button.isPlayer = data.isPlayerAura
+	button.spellID = data.spellId
+
+	-- Hide blacklisted auras.
+	if (data.spellId and Hidden[data.spellId]) then
+		return
+	end
 
 	if (data.isBossDebuff) then
 		return true
@@ -127,6 +166,17 @@ ns.AuraFilters.ArenaAuraFilter = function(button, unit, data)
 	button.duration = data.duration
 	button.noDuration = not data.duration or data.duration == 0
 	button.isPlayer = data.isPlayerAura
+	button.spellID = data.spellId
+
+	-- Hide blacklisted auras.
+	if (data.spellId and Hidden[data.spellId]) then
+		return
+	end
+
+	-- Show whitelisted auras.
+	if (data.spellId and Spells[data.spellId]) then
+		return true
+	end
 
 	if (data.isStealable) then
 		return true

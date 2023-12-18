@@ -33,6 +33,11 @@ ns.AuraSorts = ns.AuraSorts or {}
 local math_huge = math.huge
 local table_sort = table.sort
 
+-- Data
+local Spells = ns.AuraData.Spells
+local Hidden = ns.AuraData.Hidden
+local Priority = ns.AuraData.Priority
+
 local Aura_Sort = function(a, b)
 	if (a and b) then
 		if (a:IsShown() and b:IsShown()) then
@@ -42,6 +47,13 @@ local Aura_Sort = function(a, b)
 			local bHarm = b.isDebuff
 			if (aHarm ~= bHarm) then
 				return aHarm
+			end
+
+			-- Show priority auras first
+			local aPrio = a.spellId and Priority[a.spellID]
+			local bPrio = b.spellId and Priority[b.spellID]
+			if (aPrio ~= bPrio) then
+				return aPrio
 			end
 
 			-- These flags are supplied by the aura filters

@@ -33,6 +33,11 @@ ns.AuraSorts = ns.AuraSorts or {}
 local math_huge = math.huge
 local table_sort = table.sort
 
+-- Data
+local Spells = ns.AuraData.Spells
+local Hidden = ns.AuraData.Hidden
+local Priority = ns.AuraData.Priority
+
 local Aura_Sort = function(a, b)
 	if (a and b) then
 		if (a:IsShown() and b:IsShown()) then

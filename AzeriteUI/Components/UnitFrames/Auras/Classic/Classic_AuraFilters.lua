@@ -29,6 +29,11 @@ if (not ns.IsClassic) then return end
 
 ns.AuraFilters = ns.AuraFilters or {}
 
+-- Data
+local Spells = ns.AuraData.Spells
+local Hidden = ns.AuraData.Hidden
+local Priority = ns.AuraData.Priority
+
 ns.AuraFilters.PlayerAuraFilter = function(element, unit, button, name, texture,
 	count, debuffType, duration, expiration, caster, isStealable, nameplateShowSelf, spellID,
 	canApply, isBossDebuff, casterIsPlayer, nameplateShowAll,timeMod, effect1, effect2, effect3)
@@ -39,6 +44,17 @@ ns.AuraFilters.PlayerAuraFilter = function(element, unit, button, name, texture,
 	button.duration = duration
 	button.noDuration = (not duration or duration == 0)
 	button.isPlayer = caster == "player" or caster == "vehicle"
+	button.spellID = spellID
+
+	-- Hide blacklisted auras.
+	if (button.spellID and Hidden[button.spellID]) then
+		return
+	end
+
+	-- Show whitelisted auras.
+	if (button.spellID and Spells[button.spellID]) then
+		return true
+	end
 
 	if (isBossDebuff) then
 		return true
@@ -62,6 +78,17 @@ ns.AuraFilters.TargetAuraFilter = function(element, unit, button, name, texture,
 	button.duration = duration
 	button.noDuration = (not duration or duration == 0)
 	button.isPlayer = caster == "player" or caster == "vehicle"
+	button.spellID = spellID
+
+	-- Hide blacklisted auras.
+	if (button.spellID and Hidden[button.spellID]) then
+		return
+	end
+
+	-- Show whitelisted auras.
+	if (button.spellID and Spells[button.spellID]) then
+		return true
+	end
 
 	if (isBossDebuff) then
 		return true
@@ -90,6 +117,12 @@ ns.AuraFilters.PartyAuraFilter = function(element, unit, button, name, texture,
 	button.duration = duration
 	button.noDuration = (not duration or duration == 0)
 	button.isPlayer = caster == "player" or caster == "vehicle"
+	button.spellID = spellID
+
+	-- Hide blacklisted auras.
+	if (button.spellID and Hidden[button.spellID]) then
+		return
+	end
 
 	-- Hide the enormous amounts of self-buffs and procs.
 	if (caster == unit) then
@@ -119,6 +152,12 @@ ns.AuraFilters.NameplateAuraFilter = function(element, unit, button, name, textu
 	button.duration = duration
 	button.noDuration = (not duration or duration == 0)
 	button.isPlayer = caster == "player" or caster == "vehicle"
+	button.spellID = spellID
+
+	-- Hide blacklisted auras.
+	if (button.spellID and Hidden[button.spellID]) then
+		return
+	end
 
 	if (isBossDebuff) then
 		return true
@@ -145,6 +184,17 @@ ns.AuraFilters.ArenaAuraFilter = function(element, unit, button, name, texture,
 	button.duration = duration
 	button.noDuration = (not duration or duration == 0)
 	button.isPlayer = caster == "player" or caster == "vehicle"
+	button.spellID = spellID
+
+	-- Hide blacklisted auras.
+	if (button.spellID and Hidden[button.spellID]) then
+		return
+	end
+
+	-- Show whitelisted auras.
+	if (button.spellID and Spells[button.spellID]) then
+		return true
+	end
 
 	if (isStealable) then
 		return true

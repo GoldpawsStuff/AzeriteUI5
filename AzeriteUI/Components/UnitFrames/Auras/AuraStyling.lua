@@ -34,6 +34,11 @@ local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 
+-- Data
+local Spells = ns.AuraData.Spells
+local Hidden = ns.AuraData.Hidden
+local Priority = ns.AuraData.Priority
+
 -- Local Functions
 --------------------------------------------------
 local UpdateTooltip = function(self)
@@ -161,7 +166,7 @@ ns.AuraStyles.PlayerPostUpdateButton = function(element, button, unit, data, pos
 	-- Icon Coloring
 	if (button.isHarmful)
 	or (data.nameplateShowAll or (data.nameplateShowPersonal and data.isPlayerAura))
-	or (not data.isHarmful and data.isPlayerAura and data.canApplyAura) then
+	or (not data.isHarmful and data.isPlayerAura and data.canApplyAura) or (data.spellId and Spells[data.spellId]) then
 		button.Icon:SetDesaturated(false)
 		button.Icon:SetVertexColor(1, 1, 1)
 
@@ -203,7 +208,7 @@ ns.AuraStyles.TargetPostUpdateButton = function(element, button, unit, data, pos
 
 	-- Icon Coloring
 	if (data.nameplateShowAll or (data.nameplateShowPersonal and data.isPlayerAura))
-	or (not data.isHarmful and data.isPlayerAura and data.canApplyAura) then
+	or (not data.isHarmful and data.isPlayerAura and data.canApplyAura) or (data.spellId and Spells[data.spellId]) then
 		button.Icon:SetDesaturated(false)
 		button.Icon:SetVertexColor(1, 1, 1)
 
@@ -246,7 +251,7 @@ ns.AuraStyles.ArenaPostUpdateButton = function(element, button, unit, data, posi
 
 	-- Coloring
 	local color
-	if (button.isHarmful and element.showDebuffType) or (not button.isHarmful and element.showBuffType) or (element.showType) then
+	if (button.isHarmful and element.showDebuffType) or (not button.isHarmful and element.showBuffType) or (element.showType) or (data.spellId and Spells[data.spellId]) then
 		color = Colors.debuff[data.dispelName] or Colors.debuff.none
 	else
 		color = Colors.verydarkgray

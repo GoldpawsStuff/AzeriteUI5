@@ -36,6 +36,8 @@ ns.AuraData = {
 	Priority = {}, 			-- [spellID] = <boolean,nil> (true/false)
 	Hidden = {}, 			-- [spellID] = <boolean,nil> (true/false)
 	Flags = {
+
+		-- Crowd Control & Debuffs
 		BUFF_HARM = 		2^0,
 		BUFF_HELP = 		2^1,
 		BUFF_OTHER = 		2^2,
@@ -45,7 +47,12 @@ ns.AuraData = {
 		CC = 				2^6,
 		ROOT = 				2^7,
 		IMMUNITY = 			2^8,
-		IMMUNITY_SPELL = 	2^9
+		IMMUNITY_SPELL = 	2^9,
+
+		-- General Damage & Healing
+		DPS = 				2^10,
+		HEAL = 				2^11
+
 	},
 	-- @input spellID <number> always first argument, must be there
 	-- @input [spellType] <string> spell type identifier
@@ -520,6 +527,8 @@ Add(114404, "ROOT") 					-- Void Tendrils
 Add(358861, "CC") 						-- Void Volley: Horrify (Shadow PvP Talent)
 Add(194249, "BUFF_HARM") 				-- Voidform
 Add(421453, "IMMUNITY") 				-- Ultimate Penitence
+
+Add( 15407, "DPS") 						-- Mindflay
 
 -- Rogue
 --------------------------------------------------

@@ -33,6 +33,11 @@ ns.AuraSorts = ns.AuraSorts or {}
 local math_huge = math.huge
 local table_sort = table.sort
 
+-- Data
+local Spells = ns.AuraData.Spells
+local Hidden = ns.AuraData.Hidden
+local Priority = ns.AuraData.Priority
+
 -- https://wowpedia.fandom.com/wiki/API_C_UnitAuras.GetAuraDataByAuraInstanceID
 local Aura_Sort = function(a, b)
 
@@ -41,6 +46,13 @@ local Aura_Sort = function(a, b)
 	local bHarm = b.isHarmful
 	if (aHarm ~= bHarm) then
 		return aHarm
+	end
+
+	-- Show priority auras first
+	local aPrio = a.spellId and Priority[a.spellId]
+	local bPrio = b.spellId and Priority[b.spellId]
+	if (aPrio ~= bPrio) then
+		return aPrio
 	end
 
 	-- Player applied HoTs that we would display on nameplates
@@ -73,6 +85,7 @@ local Aura_Sort = function(a, b)
 	return a.auraInstanceID < b.auraInstanceID
 end
 
+-- The alternate function is meant to mimic Blizzard sorting.
 local Aura_Sort_Alternate = function(a, b)
 
 	-- Player applied HoTs that we would display on nameplates
