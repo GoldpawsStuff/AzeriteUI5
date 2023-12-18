@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-12-17
+## [Unreleased] 2023-12-18
 ### Changed
 - Attempting to update actionbutton back-end to return the spellID of pure macro buttons to fix some issues with MaxDps. Work in progress.
 
