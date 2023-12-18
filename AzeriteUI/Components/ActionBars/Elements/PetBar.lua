@@ -623,9 +623,14 @@ PetBarMod.UpdateSettings = function(self)
 		return
 	end
 
-	local clickOnDown = ns:GetModule("ActionBars").db.profile.clickOnDown
-	self.db.profile.clickOnDown = clickOnDown
-	self.bar.config.clickOnDown = clickOnDown
+	-- Transfer options from main actionbars module.
+	local db = ns:GetModule("ActionBars").db.profile
+
+	self.db.profile.clickOnDown = db.clickOnDown
+	self.db.profile.hideElements = db.hideElements
+
+	self.bar.config.clickOnDown = db.clickOnDown
+	self.bar.config.hideElements = db.hideElements
 
 	self:UpdateEnabled()
 	self:UpdateBar()

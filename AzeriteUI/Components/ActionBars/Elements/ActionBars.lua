@@ -72,7 +72,14 @@ for i,j in next,BAR_TO_ID do ID_TO_BAR[j] = i end
 local defaults = { profile = ns:Merge({
 	clickOnDown = false,
 	dimWhenResting = false,
-	dimWhenInactive = false
+	dimWhenInactive = false,
+	hideElements = {
+		macro = true,
+		hotkey = false,
+		equipped = true,
+		border = false,
+		borderIfEmpty = true
+	}
 }, ns.Module.defaults) }
 
 -- Generate module defaults on the fly
@@ -426,6 +433,7 @@ ActionBarMod.CreateBars = function(self)
 
 		local config = self.db.profile.bars[i]
 		config.clickOnDown = self.db.profile.clickOnDown
+		config.hideElements = self.db.profile.hideElements
 
 		local bar = ns.ActionBar:Create(BAR_TO_ID[i], config, ns.Prefix.."ActionBar"..i)
 		bar.buttonWidth, bar.buttonHeight = unpack(ns.GetConfig("ActionButton").ButtonSize)
@@ -669,13 +677,16 @@ ActionBarMod.UpdateSettings = function(self, event)
 		bar.config.clickOnDown = self.db.profile.clickOnDown
 		bar.config.dimWhenResting = self.db.profile.dimWhenResting
 		bar.config.dimWhenInactive = self.db.profile.dimWhenInactive
+		bar.config.hideElements = self.db.profile.hideElements
 
 		-- Copy select settings into each button's config table.
 		for id,button in pairs(bar.buttons) do
 			button.config.clickOnDown = bar.config.clickOnDown
 			button.config.dimWhenResting = bar.config.dimWhenResting
 			button.config.dimWhenInactive = bar.config.dimWhenInactive
-			button:ForceUpdate()
+			button.config.hideElements = bar.config.hideElements
+			button:UpdateConfig(button.config)
+			--button:ForceUpdate()
 		end
 	end
 

@@ -93,6 +93,13 @@ local defaults = ns:Merge({
 	breakpoint = 12, -- when to start a new grid row
 	offset = 44/64, -- 44 -- relative offset in the growth direction for the alternate zigzag row as a fraction of button size.
 	hitrects = { -10, -10, -10, -10 },
+	hideElements = {
+		macro = true,
+		hotkey = false,
+		equipped = true,
+		border = false,
+		borderIfEmpty = true
+	},
 	visibility = {
 		dragon = false,
 		possess = false,

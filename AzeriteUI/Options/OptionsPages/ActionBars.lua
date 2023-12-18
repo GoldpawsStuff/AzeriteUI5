@@ -558,10 +558,29 @@ local GenerateOptions = function()
 				fontSize = "medium",
 				order = 0
 			},
+			hideElementsHotkey = {
+				name = L["Hide Hotkeys"],
+				desc = L["Hides Hotkeys from the actionbuttons."],
+				order = 1,
+				type = "toggle", width = "full",
+				set = function(info, val)
+					getmodule().db.profile.hideElements.hotkey = val
+					getmodule():UpdateSettings()
+					local pet = ns:GetModule("PetBar", true)
+					if (pet) then
+						pet:UpdateSettings()
+					end
+					local stance = ns:GetModule("StanceBar", true)
+					if (stance) then
+						pet:UpdateSettings()
+					end
+				end,
+				get = function(info) return getmodule().db.profile.hideElements.hotkey end
+			},
 			clickOnDown = {
 				name = L["Cast action keybinds on key down"],
 				desc = L["Cast action keybinds on key down"],
-				order = 1,
+				order = 2,
 				type = "toggle", width = "full",
 				set = function(info, val)
 					setter(info,val)
@@ -579,7 +598,7 @@ local GenerateOptions = function()
 			dimWhenInactive = {
 				name = L["Dim the actionbuttons when inactive"],
 				desc = L["Dim down and desaturate your action buttons when not engaged in combat and not currently targeting anything."],
-				order = 2,
+				order = 5,
 				type = "toggle", width = "full",
 				set = setter,
 				get = getter
@@ -587,7 +606,7 @@ local GenerateOptions = function()
 			dimWhenResting = {
 				name = L["Only dim the actionbuttons when resting"],
 				desc = L["This restricts the dimming to when the player is resting."],
-				order = 3,
+				order = 6,
 				type = "toggle", width = "full",
 				hidden = function(info) return not getsetting(info, "dimWhenInactive") end,
 				set = setter,
