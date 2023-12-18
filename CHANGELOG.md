@@ -4,8 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-12-18
+## [5.2.148-RC] 2023-12-18
 ### Added
+- Added the options to hide hotkeys for actionbars. You can find the option of the main page of the actionbar group in the `/azerite` options menu.
 - Added various auraIDs to whitelists for the player- and target unit frames. This is work in progress, and currently mainly crowd control and debuffs of note have been focused on. I'm working on adding lists for general damage and healing too.
 
 ### Changed
