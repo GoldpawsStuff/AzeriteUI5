@@ -20,6 +20,7 @@
 	<Script file="Auras\Wrath\Wrath_AuraStyling.lua"/>
 
 	<Script file="Units\Player.lua"/>
+	<Script file="Units\PlayerAlternate.lua"/>
 	<Script file="Units\PlayerCastBar.lua"/>
 	<Script file="Units\PlayerClassPower.lua"/>
 	<Script file="Units\Pet.lua"/>

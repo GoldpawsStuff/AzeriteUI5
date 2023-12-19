@@ -102,6 +102,36 @@ local GenerateOptions = function()
 	-- Player
 	do
 		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("PlayerFrame")
+		suboptions.hidden = function(info)
+			if (not ns.IsDevelopment) or (not ns.db.global.enableDevelopmentMode) then return end
+
+			-- Not hidden if self is enabled.
+			local playerFrame = ns:GetModule("PlayerFrame", true)
+			if playerFrame.db.profile.enabled then
+				return
+			end
+
+			-- Hidden if self is disabled and alternate frame is enabled.
+			local playerFrameAlt = ns:GetModule("PlayerFrameAlternate", true)
+			if playerFrameAlt then
+				if (playerFrameAlt:IsEnabled() and playerFrameAlt.db.profile.enabled) then
+					return  true
+				end
+			end
+
+		end
+
+		suboptions.args.enabled.set = function(info, val)
+			if (val) then
+				local playerFrameAlt = ns:GetModule("PlayerFrameAlternate", true)
+				if (playerFrameAlt) then
+					playerFrameAlt.db.profile.enabled = false
+					playerFrameAlt:Disable()
+				end
+			end
+			setter(info, val)
+		end
+
 		suboptions.name = L["Player"]
 		suboptions.order = 100
 		suboptions.args.elementHeader = {
@@ -128,6 +158,62 @@ local GenerateOptions = function()
 			order = 45, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
 		options.args.player = suboptions
+	end
+
+	-- Player Alternate Version (mirrored Target)
+	do
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("PlayerFrameAlternate")
+		suboptions.hidden = function(info)
+
+			-- Hidden if this isn't a development version with devmode enabled.
+			if (not ns.IsDevelopment) or (not ns.db.global.enableDevelopmentMode) then return true end
+
+			-- Hidden if the main playerframe is enabled.
+			local module = ns:GetModule("PlayerFrame", true)
+			if (not module) then return end
+
+			return module.db.profile.enabled
+		end
+
+		suboptions.args.enabled.set = function(info, val)
+			if (val) then
+				local playerFrame = ns:GetModule("PlayerFrame", true)
+				if (playerFrame) then
+					playerFrame.db.profile.enabled = false
+					playerFrame:Disable()
+				end
+			end
+			setter(info, val)
+		end
+
+		suboptions.name = "Player Alternate"
+		suboptions.order = 105
+		suboptions.args.elementHeader = {
+			name = L["Elements"], order = 10, type = "header", hidden = isdisabled
+		}
+		suboptions.args.showAuras = {
+			name = L["Show Auras"],
+			desc = L["Toggle whether to show auras on this unit frame."],
+			order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+		suboptions.args.aurasBelowFrame = {
+			name = "Auras below frame",
+			desc = "Toggle whether to show auras below or above the unit frame.",
+			order = 21, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled,
+			disabled = function(info) return not getoption(info, "showAuras") end
+		}
+		suboptions.args.showCastbar = {
+			name = L["Show Castbar"],
+			desc = L["Toggle whether to show overlay castbars on this unit frame."],
+			order = 25, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+		suboptions.args.showName = {
+			name = L["Show Unit Name"],
+			desc = L["Toggle whether to show the name of the unit."],
+			order = 30, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+
+		options.args.playerAlternate = suboptions
 	end
 
 	-- Pet

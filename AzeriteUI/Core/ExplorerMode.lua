@@ -161,6 +161,21 @@ ExplorerMode.UpdateSettings = function(self)
 		end
 	end
 
+	local PlayerFrameAlternate = ns:GetModule("PlayerFrameAlternate", true)
+	if (PlayerFrameAlternate) then
+		local fade = not self.FORCED and PlayerFrameAlternate:IsEnabled() and self.db.profile.enabled and self.db.profile.fadePlayerFrame
+		local playerFrame = PlayerFrameAlternate:GetFrame()
+		if (playerFrame) then
+			if (fade) then
+				LFF:RegisterFrameForFading(playerFrame, self:GetName())
+				LFF:RegisterFrameForFading(playerFrame.Portrait, self:GetName())
+			else
+				LFF:UnregisterFrameForFading(playerFrame)
+				LFF:UnregisterFrameForFading(playerFrame.Portrait)
+			end
+		end
+	end
+
 	local PlayerClassPowerFrame = ns:GetModule("PlayerClassPowerFrame", true)
 	if (PlayerClassPowerFrame) then
 		local fade = not self.FORCED and PlayerClassPowerFrame:IsEnabled() and self.db.profile.enabled and self.db.profile.fadePlayerClassPower

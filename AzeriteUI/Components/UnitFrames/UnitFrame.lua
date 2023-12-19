@@ -135,11 +135,22 @@ ns.UnitFrameModule = ns:Merge({
 		if (InCombatLockdown()) then
 			return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEnabledEvent")
 		end
+
+		local unitframe, anchor = self:GetUnitFrameOrHeader(), self:GetAnchor()
+
 		local config = self.db.profile
 		if (config.enabled) then
-			self:GetUnitFrameOrHeader():Enable()
+			unitframe:Enable()
+
+			if (anchor) then
+				anchor:Enable()
+			end
 		else
-			self:GetUnitFrameOrHeader():Disable()
+			unitframe:Disable()
+
+			if (anchor) then
+				anchor:Disable()
+			end
 		end
 	end,
 

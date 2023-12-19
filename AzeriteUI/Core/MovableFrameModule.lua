@@ -102,6 +102,10 @@ Module.CreateAnchor = function(self, label, watchVariables, colorGroup)
 	return self.anchor
 end
 
+Module.GetAnchor = function(self)
+	return self.anchor
+end
+
 -- Called when defaults somehow are changed,
 -- like when the user interface scale is modified.
 Module.UpdateDefaults = function(self)

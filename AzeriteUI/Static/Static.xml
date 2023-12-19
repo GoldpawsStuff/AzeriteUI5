@@ -18,6 +18,7 @@
 	<Script file="Configs\PlayerCastBar.lua"/>
 	<Script file="Configs\PlayerClassPower.lua"/>
 	<Script file="Configs\PlayerUnitFrame.lua"/>
+	<Script file="Configs\PlayerUnitFrameAlternate.lua"/>
 	<Script file="Configs\RaidUnitFrames5.lua"/>
 	<Script file="Configs\RaidUnitFrames40.lua"/>
 	<Script file="Configs\StanceButton.lua"/>
