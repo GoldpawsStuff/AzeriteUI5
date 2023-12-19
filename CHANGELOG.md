@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2023-12-19
+### Added
+- Added an alternate version of the player unit frame with its own options and position. Accessible by first disabling the player unit frame, then enabling this element. Currently only available through git version with development mode enabled.
+
+## [5.2.149-RC] 2023-12-19
+### Fixed
+- Pet- and stance buttons should no longer fire off a bug about a missing `hideElements` field.
+
 ## [5.2.148-RC] 2023-12-18
 ### Added
 - Added the options to hide hotkeys for actionbars. You can find the option of the main page of the actionbar group in the `/azerite` options menu.
