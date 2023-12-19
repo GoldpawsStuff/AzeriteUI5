@@ -211,7 +211,7 @@ end
 PetButton.UpdateHotkeys = function(self)
 	local key = self:GetHotkey() or ""
 	local hotkey = self.HotKey
-	if (key == "" or self.parent.config.hideElements.hotkey) then
+	if (key == "" or (self.parent.config.hideElements and self.parent.config.hideElements.hotkey)) then
 		hotkey:Hide()
 	else
 		hotkey:SetText(key)

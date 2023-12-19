@@ -72,7 +72,14 @@ local defaults = { profile = ns:Merge({
 	breakpadding = 8, -- vertical padding between the buttons
 	breakpoint = NUM_PET_ACTION_SLOTS, -- when to start a new grid row
 	offset = 44/64, -- 44 -- relative offset in the growth direction for the alternate zigzag row as a fraction of button size.
-	hitrects = { -10, -10, -10, -10 }
+	hitrects = { -10, -10, -10, -10 },
+	hideElements = {
+		macro = true,
+		hotkey = false,
+		equipped = true,
+		border = true,
+		borderIfEmpty = true
+	}
 }, ns.Module.defaults) }
 
 -- Generate module defaults on the fly
