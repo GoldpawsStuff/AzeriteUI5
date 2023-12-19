@@ -28,7 +28,7 @@ local Development = ns:NewModule("Development", "AceConsole-3.0", "LibMoreEvents
 
 Development.OnInitialize = function(self)
 
-	local showVersion = ns.db.global.enableDevelopmentMode or ns.IsDevelopment or ns.IsAlpha or ns.IsBeta -- or ns.IsRC
+	local showVersion = ns.db.global.enableDevelopmentMode or ns.IsDevelopment or ns.IsAlpha or ns.IsBeta
 	if (showVersion) then
 
 		local label = UIParent:CreateFontString()
