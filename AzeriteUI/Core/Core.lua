@@ -30,7 +30,7 @@ local Addon, ns = ...
 
 local LEMO = LibStub("LibEditModeOverride-1.0", true)
 
-ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "LibMoreEvents-1.0", "AceConsole-3.0")
+ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "LibMoreEvents-1.0", "AceConsole-3.0", "AceComm-3.0", "AceSerializer-3.0")
 ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false)
 ns.Hider = CreateFrame("Frame"); ns.Hider:Hide()
 ns.Noop = function() end
@@ -115,6 +115,23 @@ ns.DeleteProfile = function(self, targetProfileKey)
 			self.db:DeleteProfile(targetProfileKey)
 			return
 		end
+	end
+end
+
+ns.ExportProfile = function(self, sourceProfileKey)
+	local currentProfileKey = self.db:GetCurrentProfile()
+end
+
+ns.ImportProfile = function(self, targetProfileKey)
+	if (targetProfileKey) then
+		if (self:ProfileExists(targetProfileKey)) then
+			-- merge to existing
+		else
+			-- create new
+		end
+	else
+		local currentProfileKey = self.db:GetCurrentProfile()
+		-- copy to current
 	end
 end
 

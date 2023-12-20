@@ -14,6 +14,8 @@
 	<Include file="AceLocale-3.0\AceLocale-3.0.xml"/>
 	<Include file="AceGUI-3.0\AceGUI-3.0.xml"/>
 	<Include file="AceConfig-3.0\AceConfig-3.0.xml"/>
+	<Include file="AceComm-3.0\AceComm-3.0.xml"/>
+	<Include file="AceSerializer-3.0\AceSerializer-3.0.xml"/>
 	<Include file="UTF8\utf8.xml"/>
 	<Include file="LibSharedMedia-3.0\lib.xml"/>
 	<Include file="LibUIDropDownMenu\LibUIDropDownMenu.xml"/>
@@ -21,8 +23,6 @@
 	<Script file="LibMoreEvents-1.0\LibMoreEvents-1.0.lua"/>
 	@end-non-debug@-->
 	<Include file="LibKeyBound-1.0\lib.xml"/>
-	<Include file="LibDeflate\lib.xml"/>
-	<Include file="LibSerialize\lib.xml"/>
 
 	<!-- Modified Libraries -->
 	<Include file="AceDB-3.0-GE\AceDB-3.0-GE.xml"/>

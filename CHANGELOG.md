@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2023-12-20
 ### Added
+- Started work on export/import functionality for the options menu and movable frame panel. The goal is to allow both complete profile copies, select modules or settings, or just copy a set of movable frame positions/scales. Will take a little time and work to finish!
 - Added an alternate version of the player unit frame with its own options and position. Accessible by first disabling the player unit frame, then enabling this element. Currently only available through git version with development mode enabled.
 
 ## [5.2.150-RC] 2023-12-20

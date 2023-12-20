@@ -162,6 +162,22 @@ Options.GenerateProfileMenu = function(self)
 					end
 				end
 			},
+			export = {
+				name = "Export",
+				desc = "Expert the current settings profile to a string you can copy and share with other people.",
+				type = "execute",
+				order = 8,
+				disabled = function(info) return true end,
+				func = function(info) end
+			},
+			import = {
+				name = "Import",
+				desc = "Import settings from a string into the current options profile.",
+				type = "execute",
+				order = 9,
+				disabled = function(info) return true end,
+				func = function(info) end
+			},
 			space4 = {
 				name = "", order = 8, type = "description"
 			}
