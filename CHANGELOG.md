@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-12-19
+## [Unreleased] 2023-12-20
 ### Added
 - Added an alternate version of the player unit frame with its own options and position. Accessible by first disabling the player unit frame, then enabling this element. Currently only available through git version with development mode enabled.
+
+## [5.2.150-RC] 2023-12-20
+### Fixed
+- Fixed an issue introduced in the previous build(149) causing the options menu to break during startup and thus breaking the entire addon.
 
 ## [5.2.149-RC] 2023-12-19
 ### Fixed
