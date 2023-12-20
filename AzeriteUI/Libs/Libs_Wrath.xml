@@ -21,6 +21,8 @@
 	<Script file="LibMoreEvents-1.0\LibMoreEvents-1.0.lua"/>
 	@end-non-debug@-->
 	<Include file="LibKeyBound-1.0\lib.xml"/>
+	<Include file="LibDeflate\lib.xml"/>
+	<Include file="LibSerialize\lib.xml"/>
 
 	<!-- Modified Libraries -->
 	<Include file="AceDB-3.0-GE\AceDB-3.0-GE.xml"/>

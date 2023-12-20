@@ -26,6 +26,8 @@
 	<Script file="LibAuraTypes\LibAuraTypes.lua"/>
 	<Script file="LibSpellLocks\LibSpellLocks.lua"/>
 	<Script file="LibClassicCasterino\LibClassicCasterino.lua"/>
+	<Include file="LibDeflate\lib.xml"/>
+	<Include file="LibSerialize\lib.xml"/>
 
 	<!-- Modified Libraries -->
 	<Script file="LibActionButton-1.0-GE\LibActionButton-1.0-GE.lua"/>
