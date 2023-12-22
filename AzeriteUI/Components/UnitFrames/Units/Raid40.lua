@@ -65,7 +65,7 @@ local defaults = { profile = ns:Merge({
 	columnSpacing = -12, -- spacing between columns
 	columnAnchorPoint = "TOP" -- anchor point of column, columns grow opposite
 
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 RaidFrame40Mod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
@@ -869,5 +869,5 @@ RaidFrame40Mod.OnEnable = function(self)
 	self:CreateUnitFrames()
 	self:CreateAnchor(RAID .. " (40)") --[[PARTYRAID_LABEL RAID_AND_PARTY]]
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

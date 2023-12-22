@@ -24,7 +24,7 @@
 
 --]]
 local Addon, ns = ...
-local ExplorerMode = ns:NewModule("ExplorerMode", ns.Module, "LibMoreEvents-1.0", "AceTimer-3.0")
+local ExplorerMode = ns:NewModule("ExplorerMode", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceTimer-3.0")
 
 local LFF = LibStub("LibFadingFrames-1.0")
 
@@ -79,7 +79,7 @@ local defaults = { profile = ns:Merge({
 	fadeTracker = true,
 	fadeChatFrames = true
 
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 ExplorerMode.GenerateDefaults = function(self)
 	return defaults

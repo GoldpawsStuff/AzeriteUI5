@@ -25,7 +25,7 @@
 --]]
 local _, ns = ...
 
-local Info = ns:NewModule("Info", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0", "AceConsole-3.0")
+local Info = ns:NewModule("Info", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0", "AceConsole-3.0")
 
 -- GLOBALS: CreateFrame, GameTooltip, GameTooltip_SetDefaultAnchor, InCombatLockdown, IsResting, ToggleCalendar
 -- GLOBALS: GetFramerate, GetLocalTime, GetMinimapZoneText, GetNetStats, GetServerTime, GetZonePVPInfo
@@ -68,7 +68,7 @@ local defaults = { profile = ns:Merge({
 	hideWhenResting = false,
 	hideWhenMinimapIsHidden = true
 
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -335,7 +335,7 @@ Info.OnEnable = function(self)
 	self:PrepareFrames()
 	self:CreateAnchor(string_format("%s / %s", INFO, TIMEMANAGER_TITLE))
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateResting")
 	self:RegisterEvent("PLAYER_UPDATE_RESTING", "UpdateResting")

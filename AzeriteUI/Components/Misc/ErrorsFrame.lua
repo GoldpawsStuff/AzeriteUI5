@@ -25,7 +25,7 @@
 --]]
 local _, ns = ...
 
-local ErrorsFrame = ns:NewModule("ErrorsFrame", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
+local ErrorsFrame = ns:NewModule("ErrorsFrame", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- GLOBALS: UIErrorsFrame, UIParent
 -- GLOBALS: GetCVarBool, GetGameMessageInfo, PlaySound, PlayVocalErrorSoundID
@@ -87,7 +87,7 @@ local blackList = {
 	[ SPELL_FAILED_UNIT_NOT_BEHIND ] = true, 				-- Target needs to be behind you.
 }
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -190,5 +190,5 @@ ErrorsFrame.OnEnable = function(self)
 	self:PrepareFrames()
 	self:CreateAnchor(SYSTEM_MESSAGES)
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

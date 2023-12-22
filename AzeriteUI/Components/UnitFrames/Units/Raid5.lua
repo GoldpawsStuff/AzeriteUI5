@@ -66,7 +66,7 @@ local defaults = { profile = ns:Merge({
 	columnSpacing = 10, -- spacing between columns
 	columnAnchorPoint = "LEFT" -- anchor point of column, columns grow opposite
 
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 RaidFrame5Mod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
@@ -1075,7 +1075,7 @@ RaidFrame5Mod.OnEnable = function(self)
 	self:CreateUnitFrames()
 	self:CreateAnchor(RAID .. " (5)")
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 end

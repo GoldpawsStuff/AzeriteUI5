@@ -35,7 +35,7 @@ local string_gsub = string.gsub
 local defaults = { profile = ns:Merge({
 	hideWhenTargetingPlayer = true,
 	hideWhenTargetingSelf = true
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -437,5 +437,5 @@ ToTFrameMod.OnEnable = function(self)
 	self:CreateUnitFrames()
 	self:CreateAnchor(SHOW_TARGET_OF_TARGET_TEXT)
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

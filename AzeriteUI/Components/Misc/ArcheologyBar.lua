@@ -27,9 +27,9 @@ local _, ns = ...
 
 if (ns.IsClassic or ns.IsWrath) then return end
 
-local ArcheologyBar = ns:NewModule("ArcheologyBar", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
+local ArcheologyBar = ns:NewModule("ArcheologyBar", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -80,5 +80,5 @@ ArcheologyBar.OnEnable = function(self)
 	self:PrepareFrames()
 	self:CreateAnchor(PROFESSIONS_ARCHAEOLOGY)
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

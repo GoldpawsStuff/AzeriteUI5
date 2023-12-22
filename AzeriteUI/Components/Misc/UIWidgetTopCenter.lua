@@ -29,13 +29,13 @@ if (not UIWidgetTopCenterContainerFrame) then return end
 
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
-local UIWidgetTopCenter = ns:NewModule("UIWidgetTopCenter", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
+local UIWidgetTopCenter = ns:NewModule("UIWidgetTopCenter", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- GLOBALS: CreateFrame, UnitExists, UIParent, UIWidgetTopCenterContainerFrame
 
 local defaults = { profile = ns:Merge({
 	hideWithTarget =  true
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -101,5 +101,5 @@ UIWidgetTopCenter.OnEnable = function(self)
 	self:PrepareFrames()
 	self:CreateAnchor(L["Widgets: Top"])
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

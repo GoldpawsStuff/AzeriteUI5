@@ -43,7 +43,7 @@ local GetFont = ns.API.GetFont
 local IsAddOnEnabled = ns.API.IsAddOnEnabled
 local UIHider = ns.Hider
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -240,11 +240,11 @@ CastBarMod.OnEnable = function(self)
 	self:RegisterEvent("CVAR_UPDATE", "UpdateVisibility")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateVisibility")
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end
 
 CastBarMod.OnInitialize = function(self)
 	if (IsAddOnEnabled("Quartz")) then return self:Disable() end
 
-	ns.Module.OnInitialize(self)
+	ns.MovableModulePrototype.OnInitialize(self)
 end

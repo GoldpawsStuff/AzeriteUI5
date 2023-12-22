@@ -53,7 +53,7 @@ local defaults = { profile = ns:Merge({
 	fadeOnInActivity = true, -- blizz default is true
 	timeVisible = 20, -- 120, -- blizz default is 120
 	timeFading = 3
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on

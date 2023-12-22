@@ -25,12 +25,12 @@
 --]]
 local _, ns = ...
 
-local RaidWarnings = ns:NewModule("RaidWarnings", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
+local RaidWarnings = ns:NewModule("RaidWarnings", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Addon API
 local GetFont = ns.API.GetFont
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -94,5 +94,5 @@ RaidWarnings.OnEnable = function(self)
 	self:PrepareFrames()
 	self:CreateAnchor(CHAT_MSG_RAID_WARNING)
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

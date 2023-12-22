@@ -80,7 +80,7 @@ local defaults = { profile = ns:Merge({
 		border = false,
 		borderIfEmpty = true
 	}
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -498,6 +498,7 @@ ActionBarMod.CreateAnchors = function(self)
 		local pos = self.db.profile.bars[i].savedPosition
 
 		local anchor = ns:GetModule("MovableFramesManager"):RequestAnchor()
+		anchor:SetAnchorPointLocked(pos.lockAnchorPoint)
 		anchor:SetScalable(true)
 
 		-- Set defaults explicitly

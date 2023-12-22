@@ -50,7 +50,7 @@ local defaults = { profile = ns:Merge({
 	showRunes = ns.IsWrath or ns.IsRetail or nil,
 	showSoulShards = ns.IsRetail or nil,
 	showStagger = ns.IsRetail or nil
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -434,5 +434,5 @@ ClassPowerMod.OnEnable = function(self)
 	self:CreateUnitFrames()
 	self:CreateAnchor(self:GetLabel())
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

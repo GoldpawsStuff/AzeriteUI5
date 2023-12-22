@@ -74,6 +74,7 @@ OUTLINE:SetFrameLevel(10000)
 
 -- Anchor cache
 local AnchorData = {}
+local AnchorProxies = {}
 
 -- Utility
 --------------------------------------
@@ -91,7 +92,7 @@ end
 
 -- Get a properly parsed position of a frame,
 -- relative to UIParent and the frame's scale.
-local getPosition = function(frame)
+local getPosition = function(frame, point)
 
 	-- Retrieve UI coordinates, convert to unscaled screen coordinates
 	local worldHeight = 768 -- WorldFrame:GetHeight()
@@ -117,6 +118,39 @@ local getPosition = function(frame)
 	bottom = bottom - uiBottom
 	right = right - uiRight
 	top = top - uiTop
+
+	-- Has this frame requested a specific anchor point?
+	-- If so, calculate the coordinates relative to it,
+	-- regardless of its position on-screen.
+	if (point) then
+		if (point == "TOPLEFT") then
+			return "TOPLEFT", left / frameScale, top / frameScale
+
+		elseif (point == "TOP") then
+			return "TOP", (x - uiWidth/2) / frameScale, top / frameScale
+
+		elseif (point == "TOPRIGHT") then
+			return "TOPRIGHT", right / frameScale, top / frameScale
+
+		elseif (point == "RIGHT") then
+			return "RIGHT", right / frameScale, (y - uiHeight/2) / frameScale
+
+		elseif (point == "BOTTOMRIGHT") then
+			return "BOTTOMRIGHT", right / frameScale, bottom / frameScale
+
+		elseif (point == "BOTTOM") then
+			return "BOTTOM", (x - uiWidth/2) / frameScale, bottom / frameScale
+
+		elseif (point == "BOTTOMLEFT") then
+			return "BOTTOMLEFT", left / frameScale, bottom / frameScale
+
+		elseif (point == "LEFT") then
+			return "LEFT", left / frameScale, (y - uiHeight/2) / frameScale
+
+		elseif (point == "CENTER") then
+			return "CENTER", (x - uiWidth/2) / frameScale, (y - uiHeight/2) / frameScale
+		end
+	end
 
 	-- Figure out the point within the given coordinate space,
 	-- return values converted to the frame's own scale.
@@ -300,8 +334,11 @@ Anchor.Create = function(self)
 		minScale = .25,
 		maxScale = 2.5,
 		scaleStep = .1,
+		lockAnchorPoint = false,
 		colorGroup = "general"
 	}
+
+	AnchorProxies[overlay] = AnchorData[anchor]
 
 	anchor:Enable()
 
@@ -332,8 +369,8 @@ end
 Anchor.IsInDefaultPosition = function(self, diff)
 	local anchorData = AnchorData[self]
 	if (not anchorData.defaultPosition) then return end
-	local point, x, y = getPosition(self)
 	local point2, x2, y2 = self:GetParsedDefaultPosition() -- unpack(anchorData.defaultPosition)
+	local point, x, y = getPosition(self, point2) -- compare with same anchor point
 
 	return compare(anchorData.scale, anchorData.defaultScale) and compare(point, x, y, point2, x2, y2, diff)
 end
@@ -347,6 +384,11 @@ end
 Anchor.IsMovableBase = mt.IsMovable
 Anchor.IsMovable = function(self)
 	return AnchorData[self].isMovable
+end
+
+-- 'true' if set to always obey the same anchor point.
+Anchor.IsAnchorPointLocked = function(self)
+	return AnchorData[self].lockAnchorPoint and true or false
 end
 
 -- 'true' if the frame has moved since last showing the anchor.
@@ -512,9 +554,13 @@ Anchor.GetParsedDefaultPosition = function(self)
 	dummy:SetPoint(point, x, y)
 	dummy:SetSize(self:GetSize())
 
-	point, x, y = getPosition(dummy)
+	AnchorProxies[dummy] = anchorData
+
+	point, x, y = getPosition(dummy, point) -- keep relative to default point
 
 	dummy:Hide()
+
+	AnchorProxies[dummy] = nil
 
 	return point, x, y
 end
@@ -539,6 +585,10 @@ end
 Anchor.Unrestrict = function(self)
 	AnchorData[self].restrictToHorizontal = nil
 	AnchorData[self].restrictToVertical = nil
+end
+
+Anchor.SetAnchorPointLocked = function(self, isLocked)
+	AnchorData[self].lockAnchorPoint = isLocked and true or false
 end
 
 -- Scale can still be set and changed,
@@ -616,7 +666,7 @@ Anchor.SetPoint = function(self, ...)
 	self:SetPointBase(...)
 
 	-- Parse the position.
-	local point, x, y = getPosition(self)
+	local point, x, y = getPosition(self, (self:IsAnchorPointLocked() and self:GetPosition()))
 
 	-- Reset the position to our system.
 	self:UpdatePosition(point, x, y)
@@ -627,20 +677,6 @@ Anchor.SetPoint = function(self, ...)
 	if (not anchorData.defaultPosition) then
 		anchorData.defaultPosition = { point, x, y }
 	end
-end
-
-Anchor.SetPointScaled = function(self, ...)
-
-	local scale = AnchorData[self].scale
-
-	local points = { ... }
-	for i = #points,1,-1 do
-		if (type(points[i]) == "number") then
-			points[i] = points[i]*scale
-		end
-	end
-
-	self:SetPoint(...)
 end
 
 Anchor.SetTitle = function(self, title)
@@ -741,6 +777,11 @@ Anchor.OnDragStart = function(self, button)
 	--anchorData.dragStartPosition = { fx - (w/2)*frameScale, fy - (h/2)*frameScale }
 
 	-- Treat the dragged frame as clicked.
+	if (CURRENT) then
+		CURRENT.isSelected = nil
+		CURRENT:OnLeave()
+	end
+
 	CURRENT = self
 
 	self.isSelected = true
@@ -783,7 +824,7 @@ Anchor.OnDragStop = function(self)
 	self:SetScript("OnUpdate", nil)
 	--self:UpdateOverlay()
 
-	local point, x, y = getPosition(self.Overlay)
+	local point, x, y = getPosition(self.Overlay, (self:IsAnchorPointLocked() and self:GetPosition()))
 
 	anchorData.currentPosition = { point, x, y }
 
@@ -824,7 +865,7 @@ Anchor.OnShow = function(self)
 	end
 
 	local anchorData = AnchorData[self]
-	local point, x, y = getPosition(self)
+	local point, x, y = getPosition(self, (self:IsAnchorPointLocked() and self:GetPosition()))
 
 	anchorData.lastScale = anchorData.scale
 	anchorData.lastPosition = { point, x, y }
@@ -856,7 +897,7 @@ Anchor.OnUpdate = function(self, elapsed)
 	self.elapsed = 0
 	self:UpdateOverlay()
 
-	local point, x, y = getPosition(self.Overlay)
+	local point, x, y = getPosition(self.Overlay, (self:IsAnchorPointLocked() and self:GetPosition()))
 
 	-- Reuse old table here,
 	-- or we'll spam the garbage handler.
@@ -910,6 +951,8 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 
 		elseif (arg == "scale") then
 			return tostring(math_floor(scale * 1000 + .5)/1000)
+		elseif (arg == "lockAnchorPoint") then
+			return AnchorData[CURRENT].lockAnchorPoint
 		end
 	end
 
@@ -921,7 +964,14 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 
 		local arg = info[#info]
 		if (arg == "point") then
-			point = val
+
+			if (CURRENT:IsAnchorPointLocked()) then
+				point, x, y = getPosition(CURRENT, val)
+
+				CURRENT:UpdatePosition(point, x, y)
+			else
+				point = val
+			end
 
 		elseif (arg == "offsetX") then
 
@@ -942,6 +992,9 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 			if (not val) then return end
 
 			scale = val
+
+		elseif (arg == "lockAnchorPoint") then
+			CURRENT:SetAnchorPointLocked(val and true or false)
 		end
 
 		CURRENT:ClearAllPoints()
@@ -957,6 +1010,38 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 
 	local options, orderoffset = Options:GenerateProfileMenu()
 	orderoffset = orderoffset + 30
+
+	-- Export/import positions.
+	if (ns.IsDevelopment and ns.db.global.enableDevelopmentMode) then
+		options.args.framePositionsHeader = {
+			name = "Layouts",
+			order = orderoffset + 1,
+			type = "header",
+			disabled = function(info) return true end
+		}
+		options.args.framePositionsExport = {
+			name = "Export Layout",
+			desc = "Expert the current frame positions to a string you can copy and share with other people.",
+			type = "execute",
+			order = orderoffset + 2,
+			disabled = function(info) return true end,
+			func = function(info) end
+		}
+
+		options.args.framePositionsImport = {
+			name = "Import Layout",
+			desc = "Import frame positions from a string into the current options profile.",
+			type = "execute",
+			order = orderoffset + 3,
+			disabled = function(info) return true end,
+			func = function(info) end
+		}
+		options.args.framePositionsSpace = {
+			name = "", order = orderoffset + 4, type = "description"
+		}
+
+		orderoffset = orderoffset + 10
+	end
 
 	-- Frame positioning & scaling.
 	options.args.frameSelectionHeader = {
@@ -974,7 +1059,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		-- Create a table of currently enabled anchors,
 		-- use their titles as display names.
 		values = function(info)
-			local values = { [false] = L["Nothing Selected"] }
+			local values = { ["N/A"] = L["Nothing Selected"] }
 			for anchor in next,AnchorData do
 				if (anchor:IsEnabled()) then
 					local title = anchor.Title:GetText()
@@ -999,11 +1084,19 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 			table_sort(sorted, function(a,b)
 				return a.Title:GetText() < b.Title:GetText()
 			end)
-			table_insert(sorted, false)
+			table_insert(sorted, 1, "N/A")
 			return sorted
 		end,
 		set = function(info, val)
-			if (val) then
+			if (val == "N/A") then
+				if (CURRENT) then
+					CURRENT.isSelected = nil
+					CURRENT:OnLeave()
+					CURRENT = nil
+
+					MovableFramesManager:RefreshMFMFrame()
+				end
+			else
 				val:OnClick("LeftButton")
 			end
 		end,
@@ -1011,7 +1104,7 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 			if (CURRENT) then
 				return CURRENT
 			else
-				return false
+				return "N/A"
 			end
 		end
 	}
@@ -1123,8 +1216,17 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 		set = setter,
 		get = getter
 	}
+	options.args.lockAnchorPoint = {
+		name = "Lock Anchor Point",
+		desc = "Forces the frame to always use this anchor point regardless of position on-screen.\n\nThis is useful if you wish a frame to always have a certain distance from a specific anchor point regardless of screen size, ratio or scale.\n\nWhen this option is chosen, changing anchor point does not move the frame, but rather recalculates the coordinates relative to that anchor point.",
+		order = orderoffset + 111,
+		hidden = noselection,
+		type = "toggle",
+		set = setter,
+		get = getter
+	}
 	options.args.pointSpace = {
-		name = "", order = orderoffset + 111, type = "description", hidden = noselection
+		name = "", order = orderoffset + 112, type = "description", hidden = noselection
 	}
 	options.args.offsetX = {
 		name = L["X Offset"],
@@ -1184,7 +1286,7 @@ MovableFramesManager.RefreshMFMFrame = function(self)
 	if (AceConfigRegistry:GetOptionsTable(self.appName)) then
 		if (self.app.frame:IsShown()) then
 			-- When using a custom window for the dialog,
-			-- the notify callback does not fire for it.
+			-- the library's notify callback does not fire for it.
 			-- So we need to fake a refresh by hiding and showing.
 			if (self:IsHooked(self.app.frame, "Hide")) then
 				self:Unhook(self.app.frame, "Hide")
@@ -1326,7 +1428,7 @@ MovableFramesManager.OnInitialize = function(self)
 	app:Hide()
 	app:SetStatusTable({
 		width = 440,
-		height = 500,
+		height = 580,
 		left = 160,
 		top = UIParent:GetTop() / 2 + 100
 	})

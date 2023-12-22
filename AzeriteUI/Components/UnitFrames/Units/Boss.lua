@@ -37,7 +37,7 @@ local setmetatable = setmetatable
 local string_gsub = string.gsub
 local unpack = unpack
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -491,5 +491,5 @@ BossFrameMod.OnEnable = function(self)
 	self:CreateUnitFrames()
 	self:CreateAnchor(BOSSES)
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

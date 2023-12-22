@@ -54,7 +54,7 @@ local defaults = { profile = ns:Merge({
 	aurasBelowFrame = false,
 	alwaysUseCrystal = false,
 	useWrathCrystal = ns.IsWrath
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -969,5 +969,5 @@ PlayerFrameMod.OnEnable = function(self)
 	self:CreateUnitFrames()
 	self:CreateAnchor(HUD_EDIT_MODE_PLAYER_FRAME_LABEL or PLAYER)
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

@@ -25,7 +25,7 @@
 --]]
 local _, ns = ...
 
-local Auras = ns:NewModule("Auras", ns.Module, "LibMoreEvents-1.0", "AceTimer-3.0", "AceHook-3.0", "AceConsole-3.0", "LibSmoothBar-1.0")
+local Auras = ns:NewModule("Auras", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceTimer-3.0", "AceHook-3.0", "AceConsole-3.0", "LibSmoothBar-1.0")
 local LFF = LibStub("LibFadingFrames-1.0")
 
 -- Lua API
@@ -54,7 +54,7 @@ local defaults = { profile = ns:Merge({
 	paddingX = 6,
 	paddingY = 12,
 	wrapAfter = 8
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -667,7 +667,7 @@ Auras.OnEnable = function(self)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterUnitEvent("UNIT_AURA", "UpdateAuraButtonAlpha", "player", "vehicle")
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 
 	self:UpdateSettings()
 end

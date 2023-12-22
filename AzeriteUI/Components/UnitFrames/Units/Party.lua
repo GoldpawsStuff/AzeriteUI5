@@ -66,7 +66,7 @@ local defaults = { profile = ns:Merge({
 	columnSpacing = 0, -- spacing between columns
 	columnAnchorPoint = "TOP" -- anchor point of column, columns grow opposite
 
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -876,5 +876,5 @@ PartyFrameMod.OnEnable = function(self)
 	self:CreateUnitFrames()
 	self:CreateAnchor(PARTY)
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

@@ -28,6 +28,7 @@
 
 local Addon, ns = ...
 
+local LibDeflate = LibStub("LibDeflate")
 local LEMO = LibStub("LibEditModeOverride-1.0", true)
 
 ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "LibMoreEvents-1.0", "AceConsole-3.0", "AceComm-3.0", "AceSerializer-3.0")
@@ -38,10 +39,12 @@ ns.Noop = function() end
 -- Increasing this number forces a full settings reset.
 ns.SETTINGS_VERSION = 22
 
+-- Tinkerers rejoyce!
 _G[Addon] = ns
 
 -- Lua API
 local next = next
+local select = select
 
 local defaults = {
 	char = {
@@ -56,6 +59,8 @@ local defaults = {
 		editModeLayout = ns.Prefix
 	}
 }
+
+ns.exportableSettings, ns.exportableLayouts = {}, {}
 
 -- Proxy method to avoid modules using the callback object directly
 ns.Fire = function(self, name, ...)
@@ -118,23 +123,6 @@ ns.DeleteProfile = function(self, targetProfileKey)
 	end
 end
 
-ns.ExportProfile = function(self, sourceProfileKey)
-	local currentProfileKey = self.db:GetCurrentProfile()
-end
-
-ns.ImportProfile = function(self, targetProfileKey)
-	if (targetProfileKey) then
-		if (self:ProfileExists(targetProfileKey)) then
-			-- merge to existing
-		else
-			-- create new
-		end
-	else
-		local currentProfileKey = self.db:GetCurrentProfile()
-		-- copy to current
-	end
-end
-
 ns.ResetProfile = function(self)
 	self.db:ResetProfile()
 end
@@ -158,6 +146,68 @@ end
 
 ns.GetDefaultProfile = function(self)
 	return ns.Prefix
+end
+
+ns.Export = function(self, ...)
+
+	-- Decide which modules to export.
+	local numModules = select("#", ...)
+	local moduleList
+
+	if (numModules > 0) then
+		moduleList = {}
+
+		for i = 1, numModules do
+			moduleList[(select(i, ...))] = true
+		end
+	end
+
+	for moduleName in next,ns.exportableSettings do
+		if (not moduleList or moduleList[moduleName]) then
+
+			-- serialize, compress and encode
+			local module = self:GetModule(moduleName, true)
+			if (module) then
+				local data
+			end
+
+			-- prefix and add to export table
+		end
+	end
+
+	for moduleName in next,ns.exportableLayouts do
+		if (not moduleList or moduleList[moduleName]) then
+
+			-- serialize, compress and encode
+			local module = self:GetModule(moduleName, true)
+			if (module) then
+
+			end
+
+			-- prefix and add to export table
+		end
+	end
+
+end
+
+ns.ExportLayouts = function(self, ...)
+	local modules = {}
+
+end
+
+ns.Import = function(self, encoded)
+
+	local compressed = LibDeflate:DecodeForPrint(encoded)
+	local serialized = LibDeflate:DecompressDeflate(compressed)
+	local success, table = self:Deserialize(serialized)
+
+	if (success) then
+
+
+		local currentProfileKey = self.db:GetCurrentProfile()
+
+	end
+
 end
 
 ns.RefreshConfig = function(self, event, ...)

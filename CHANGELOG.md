@@ -4,10 +4,19 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-12-20
+## [Unreleased] 2023-12-22
+- The features listed here are not yet available in the public builds, nor directly accessible even through the GitHub development versions. They are listed here primarily as a preview of what's to come.
+
 ### Added
-- Started work on export/import functionality for the options menu and movable frame panel. The goal is to allow both complete profile copies, select modules or settings, or just copy a set of movable frame positions/scales. Will take a little time and work to finish!
 - Added an alternate version of the player unit frame with its own options and position. Accessible by first disabling the player unit frame, then enabling this element. Currently only available through git version with development mode enabled.
+- Started work on export/import functionality for the options menu and movable frame panel. The goal is to allow both complete profile copies, select modules or settings, or just copy a set of movable frame positions/scales. Will take a little time and work to finish!
+
+## [5.2.151-RC] 2023-12-22
+### Added
+- You can now lock frames to specific anchor points from within the `/lock` interface, keeping them always relative to your selection portion of the screen. This feature is a part of the preparation for the upcoming profile and layout sharing features, where having the ability to lock frames to specific anchor points will make the layouts far more compatible with multiple screen setups.
+
+### Fixed
+- Fixed an issue where entering combat directly from a vehicle with a visible vehicle indicator would taint the editmode.
 
 ## [5.2.150-RC] 2023-12-20
 ### Fixed

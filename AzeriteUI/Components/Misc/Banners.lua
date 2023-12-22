@@ -29,7 +29,7 @@ if (not ns.IsRetail) then return end
 
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
-local Banners = ns:NewModule("Banners", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
+local Banners = ns:NewModule("Banners", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Lua API
 local next = next
@@ -60,7 +60,7 @@ local defaults = { profile = ns:Merge({
 	hideCovenant = false,
 	hideMajorFactions = false,
 	hideObjectives = false
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -119,5 +119,5 @@ Banners.OnEnable = function(self)
 	self.anchor:SetScalable(false)
 	self.anchor:RestrictToVertical()
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

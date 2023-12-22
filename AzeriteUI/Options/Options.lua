@@ -96,18 +96,18 @@ Options.GenerateProfileMenu = function(self)
 				end
 			},
 			space2 = {
-				name = "", order = 13, type = "description"
+				name = "", order = 4, type = "description"
 			},
 			newprofileheader = {
 				name = L["Create New Profile"],
 				desc = L["Create a new settings profile."],
 				type = "header",
-				order = 4
+				order = 5
 			},
 			newprofileName = {
 				name = L["Name of new profile:"],
 				type = "input",
-				order = 5,
+				order = 6,
 				arg = "", -- store the name here
 				validate = function(info,val)
 					if (not val or val == "") then
@@ -126,13 +126,13 @@ Options.GenerateProfileMenu = function(self)
 				end
 			},
 			space3 = {
-				name = "", order = 22, type = "description"
+				name = "", order = 7, type = "description"
 			},
 			create = {
 				name = L["Create"],
 				desc = L["Create a new profile with the chosen name."],
 				type = "execute",
-				order = 6,
+				order = 8,
 				disabled = function(info)
 					local val = info.options.args.newprofileName.arg
 					return (not val or val == "" or ns:ProfileExists(val))
@@ -149,7 +149,7 @@ Options.GenerateProfileMenu = function(self)
 				name = L["Duplicate"],
 				desc = L["Create a new profile with the chosen name and copy the settings from the currently active one."],
 				type = "execute",
-				order = 7,
+				order = 9,
 				disabled = function(info)
 					local val = info.options.args.newprofileName.arg
 					return (not val or val == "" or ns:ProfileExists(val))
@@ -161,28 +161,34 @@ Options.GenerateProfileMenu = function(self)
 						info.options.args.newprofileName.arg = ""
 					end
 				end
-			},
-			export = {
-				name = "Export",
-				desc = "Expert the current settings profile to a string you can copy and share with other people.",
-				type = "execute",
-				order = 8,
-				disabled = function(info) return true end,
-				func = function(info) end
-			},
-			import = {
-				name = "Import",
-				desc = "Import settings from a string into the current options profile.",
-				type = "execute",
-				order = 9,
-				disabled = function(info) return true end,
-				func = function(info) end
-			},
-			space4 = {
-				name = "", order = 8, type = "description"
 			}
 		}
 	}
+	if (ns.IsDevelopment and ns.db.global.enableDevelopmentMode) then
+		options.args.space4 = {
+			name = "", order = 10, type = "description"
+		}
+		options.args.export = {
+			name = "Export",
+			desc = "Expert the current settings profile to a string you can copy and share with other people.",
+			type = "execute",
+			order = 11,
+			disabled = function(info) return true end,
+			func = function(info) end
+		}
+		options.args.import = {
+			name = "Import",
+			desc = "Import settings from a string into the current options profile.",
+			type = "execute",
+			order = 12,
+			disabled = function(info) return true end,
+			func = function(info) end
+		}
+		options.args.space5 = {
+			name = "", order = 13, type = "description"
+		}
+	end
+
 	local order = 0
 	for i,arg in next,options.args do
 		order = math_max(order, arg.order or 0)

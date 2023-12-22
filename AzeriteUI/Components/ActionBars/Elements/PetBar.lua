@@ -80,7 +80,7 @@ local defaults = { profile = ns:Merge({
 		border = true,
 		borderIfEmpty = true
 	}
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -515,6 +515,7 @@ PetBarMod.CreateAnchor = function(self)
 	local config = self.db.profile
 
 	local anchor = ns:GetModule("MovableFramesManager"):RequestAnchor()
+	anchor:SetAnchorPointLocked(config.savedPosition.lockAnchorPoint)
 	anchor:SetScalable(true)
 	anchor:SetDefaultScale(defaults.savedPosition.scale)
 	anchor:SetDefaultPosition(defaults.savedPosition[1], defaults.savedPosition[2], defaults.savedPosition[3])

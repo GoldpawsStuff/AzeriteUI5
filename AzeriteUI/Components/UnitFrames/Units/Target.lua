@@ -47,7 +47,7 @@ local defaults = { profile = ns:Merge({
 	aurasBelowFrame = false,
 	useStandardBossTexture = false,
 	useStandardCritterTexture = false
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -1035,5 +1035,5 @@ TargetFrameMod.OnEnable = function(self)
 	self:CreateUnitFrames()
 	self:CreateAnchor(HUD_EDIT_MODE_TARGET_FRAME_LABEL or TARGET)
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

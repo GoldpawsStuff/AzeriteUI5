@@ -48,7 +48,7 @@ local defaults = { profile = ns:Merge({
 	showCastbar = true,
 	showName = true,
 	aurasBelowFrame = false
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -922,5 +922,5 @@ PlayerFrameAltMod.OnEnable = function(self)
 	self:CreateUnitFrames()
 	self:CreateAnchor("PlayerFrame (Alternate)")
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

@@ -42,13 +42,14 @@ local clearSetPoint = function(frame, ...)
 	setPoint(frame, ...)
 end
 
-local Module = { defaults = { enabled = true } }
+-- Inherit from the default module prototype.
+local Module = ns:Merge({ defaults = { enabled = true } }, ns.ModulePrototype)
 
-ns.Module = Module
+ns.MovableModulePrototype = Module
 
 Module.GetDefaults = function(self)
 	if (self.GenerateDefaults) then
-		return self:GenerateDefaults(self.defaults)
+		return self:GenerateDefaults()
 	end
 	return self.defaults
 end
@@ -66,6 +67,7 @@ Module.CreateAnchor = function(self, label, watchVariables, colorGroup)
 
 	local defaults = self:GetDefaults()
 	if (defaults.profile.savedPosition) then
+		anchor:SetAnchorPointLocked(self.db.profile.savedPosition.lockAnchorPoint)
 		anchor:SetPoint(unpack(defaults.profile.savedPosition))
 		anchor:SetScale(defaults.profile.savedPosition.scale)
 		anchor:SetDefaultPosition(unpack(defaults.profile.savedPosition))
@@ -227,6 +229,7 @@ Module.OnAnchorEvent = function(self, event, ...)
 		if (anchor ~= self.anchor) then return end
 
 		if (self.db.profile.savedPosition) then
+			self.db.profile.savedPosition.lockAnchorPoint = self.anchor:IsAnchorPointLocked()
 			self.db.profile.savedPosition[1] = point
 			self.db.profile.savedPosition[2] = x
 			self.db.profile.savedPosition[3] = y

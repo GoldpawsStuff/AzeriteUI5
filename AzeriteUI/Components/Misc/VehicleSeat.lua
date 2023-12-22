@@ -29,7 +29,7 @@ if (not ns.IsRetail and not ns.IsWrath) then return end
 
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
-local VehicleSeat = ns:NewModule("VehicleSeat", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
+local VehicleSeat = ns:NewModule("VehicleSeat", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Lua API
 local pairs, unpack = pairs, unpack
@@ -44,7 +44,7 @@ local clearSetPoint = function(frame, ...)
 	setPoint(frame, ...)
 end
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -69,7 +69,10 @@ VehicleSeat.PrepareFrames = function(self)
 
 	-- This will prevent UIParent_ManageFramePositions() from being executed
 	-- *for some reason it's not working? Why not?
-	self.frame.IsShown = function() return false end
+	-- *taints the editmode in retail.
+	if (not ns.WoW10) then
+		self.frame.IsShown = function() return false end
+	end
 
 	self:SecureHook(self.frame, "SetPoint", "UpdatePositionAndScale")
 end
@@ -94,5 +97,5 @@ VehicleSeat.OnEnable = function(self)
 	self:PrepareFrames()
 	self:CreateAnchor(L["Vehicle Seat"])
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

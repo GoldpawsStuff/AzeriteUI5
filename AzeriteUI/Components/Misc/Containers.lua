@@ -27,12 +27,12 @@ local _, ns = ...
 
 if (not C_Container) then return print("C_Container not found") end
 
-local Containers = ns:NewModule("Containers", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
+local Containers = ns:NewModule("Containers", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 
 local defaults = { profile = ns:Merge({
 	sort = "rtl",
 	insert = "ltr"
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on

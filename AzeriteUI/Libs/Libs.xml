@@ -23,6 +23,7 @@
 	@end-non-debug@-->
 	<Include file="LibEditModeOverride\LibEditModeOverride.xml"/>
 	<Include file="LibKeyBound-1.0\lib.xml"/>
+	<Script file="Libs\LibDeflate\LibDeflate.lua"/>
 
 	<!-- Modified Libraries -->
 	<Script file="LibActionButton-1.0-GE\LibActionButton-1.0-GE.lua"/>

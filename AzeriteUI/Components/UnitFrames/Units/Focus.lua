@@ -34,7 +34,7 @@ local FocusFrameMod = ns:NewModule("FocusFrame", ns.UnitFrameModule, "LibMoreEve
 local unpack = unpack
 local string_gsub = string.gsub
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -405,5 +405,5 @@ FocusFrameMod.OnEnable = function(self)
 	self:CreateUnitFrames()
 	self:CreateAnchor(FOCUS)
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

@@ -27,7 +27,7 @@ local _, ns = ...
 
 if (not ns.WoW10) then return end
 
-local Tracker = ns:NewModule("Tracker", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0")
+local Tracker = ns:NewModule("Tracker", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0")
 
 -- GLOBALS: IsAddOnLoaded, SetOverrideBindingClick
 
@@ -54,7 +54,7 @@ local defaults = { profile = ns:Merge({
 	theme = "Azerite",
 	disableBlizzardTracker = false
 
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on

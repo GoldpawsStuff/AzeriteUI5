@@ -27,7 +27,7 @@ local _, ns = ...
 
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
-local AlertFrames = ns:NewModule("AlertFrames", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
+local AlertFrames = ns:NewModule("AlertFrames", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- GLOBALS: CreateFrame
 -- GLOBALS: AlertFrame, GroupLootContainer, UIParent
@@ -53,7 +53,7 @@ local points = {
 local defaults = { profile = ns:Merge({
 	useAutomaticGrowth = true,
 	growUpwards = false
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -214,5 +214,5 @@ AlertFrames.OnEnable = function(self)
 	self:CreateAnchor(L["Alerts"])
 	self.anchor:SetScalable(false)
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

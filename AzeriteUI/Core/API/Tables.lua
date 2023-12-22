@@ -27,11 +27,12 @@ local _, ns = ...
 local API = ns.API or {}
 ns.API = API
 
-local pairs, type = pairs, type
+local pairs, select, type = pairs, select, type
 
 -- Global API
 ---------------------------------------------------------
 -- Deep table merging without metatables.
+-- *Fills in holes in target with values from source.
 ns.Merge = function(self, target, source)
 	if (type(target) ~= "table") then target = {} end
 	for k,v in pairs(source) do
@@ -58,4 +59,50 @@ ns.Copy = function(self, target, source)
 		end
 	end
 	return target
+end
+
+-- Purges given keys from a table
+ns.PurgeKeys = function(self, target, ...)
+	for k,v in pairs(target) do
+		local shouldPurge
+		for i = 1,select("#", ...) do
+			local unwantedKeys = select(i, ...)
+			if (unwantedKeys == k) then
+				shouldPurge = true
+				break
+			end
+		end
+		if (shouldPurge) then
+			target[k] = nil
+		else
+			-- Iterate subtables for keys to purge.
+			if (type(v) == "table") then
+				target[k] = ns:PurgeKeys(target[k], ...)
+			end
+		end
+	end
+end
+
+-- Purges keys not given from a table
+ns.PurgeOtherKeys = function(self, target, ...)
+	for k,v in pairs(target) do
+		-- Leave table structure intact, always.
+		if (type(v) == "table") then
+			target[k] = ns:PurgeKeys(target[k], ...)
+		else
+			-- Assume anything not a table
+			-- should be purged until proven otherwise.
+			local shouldPurge = true
+			for i = 1,select("#", ...) do
+				local wantedKeys = select(i, ...)
+				if (wantedKeys == k) then
+					shouldPurge = nil
+					break
+				end
+			end
+			if (shouldPurge) then
+				target[k] = nil
+			end
+		end
+	end
 end

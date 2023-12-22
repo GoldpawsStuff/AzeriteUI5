@@ -47,7 +47,7 @@ local defaults = { profile = ns:Merge({
 	showAurasOnTargetOnly = false,
 	showNameAlways = false,
 	scale = 1
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Utility Functions
 --------------------------------------------

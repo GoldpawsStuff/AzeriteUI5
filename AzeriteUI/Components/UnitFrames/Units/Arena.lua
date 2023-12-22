@@ -69,7 +69,7 @@ local defaults = { profile = ns:Merge({
 	columnSpacing = 10, -- spacing between columns
 	columnAnchorPoint = "RIGHT" -- anchor point of column, columns grow opposite
 
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -1088,7 +1088,7 @@ ArenaFrameMod.OnEnable = function(self)
 	self:CreateUnitFrames()
 	self:CreateAnchor(L["Arena Enemy Frames"])
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS", "OnEvent")

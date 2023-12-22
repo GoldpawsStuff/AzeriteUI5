@@ -27,7 +27,7 @@ local _, ns = ...
 
 if (not ns.IsWrath) then return end
 
-local Tracker = ns:NewModule("Tracker", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
+local Tracker = ns:NewModule("Tracker", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- GLOBALS: UIParent, CreateFrame, SetCVar, InCombatLockdown
 -- GLOBALS: WatchFrame, WatchFrameItem1, WatchFrameTitle, WatchFrameLinkButtonTemplate_OnClick
@@ -44,7 +44,7 @@ local defaults = { profile = ns:Merge({
 
 	disableBlizzardTracker = false
 
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -281,5 +281,5 @@ Tracker.OnEnable = function(self)
 	self:PrepareFrames()
 	self:CreateAnchor(TRACKER_HEADER_OBJECTIVE, true)
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

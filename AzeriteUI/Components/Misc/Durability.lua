@@ -27,7 +27,7 @@ local _, ns = ...
 
 if (not DurabilityFrame) then return end
 
-local Durability = ns:NewModule("Durability", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
+local Durability = ns:NewModule("Durability", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0", "AceTimer-3.0")
 
 -- Lua API
 local pairs, unpack = pairs, unpack
@@ -58,7 +58,7 @@ local inventoryColors = {
 	[2] = { .9, .3, .1 }
 }
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -305,5 +305,5 @@ Durability.OnEnable = function(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("UPDATE_INVENTORY_ALERTS", "OnEvent")
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

@@ -29,11 +29,11 @@ if (not UIWidgetBelowMinimapContainerFrame) then return end
 
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
-local UIWidgetBelowMinimap = ns:NewModule("UIWidgetBelowMinimap", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
+local UIWidgetBelowMinimap = ns:NewModule("UIWidgetBelowMinimap", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- GLOBALS: CreateFrame, UIParent, UIWidgetBelowMinimapContainerFrame
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -102,5 +102,5 @@ UIWidgetBelowMinimap.OnEnable = function(self)
 	self:PrepareFrames()
 	self:CreateAnchor(L["Widgets: Minimap"])
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

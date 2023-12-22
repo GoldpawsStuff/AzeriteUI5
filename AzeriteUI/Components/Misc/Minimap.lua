@@ -25,7 +25,7 @@
 --]]
 local _, ns = ...
 
-local MinimapMod = ns:NewModule("Minimap", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0", "AceConsole-3.0")
+local MinimapMod = ns:NewModule("Minimap", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0", "AceConsole-3.0")
 
 local LibDD = LibStub("LibUIDropDownMenu-4.0")
 
@@ -72,7 +72,7 @@ local mapScale = ns.WoW10 and 1 or 198/140
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	theme = "Azerite"
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 MinimapMod.GetScale = function(self)
 	return mapScale
@@ -1119,7 +1119,7 @@ MinimapMod.OnEnable = function(self)
 	self:CreateCustomElements()
 	self:CreateAnchor(MINIMAP_LABEL):SetDefaultScale(mapScale * ns.API.GetEffectiveScale())
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 
 	self:RegisterEvent("CVAR_UPDATE", "UpdateTimers")
 	self:RegisterEvent("UPDATE_PENDING_MAIL", "UpdateMail")

@@ -34,7 +34,7 @@ local string_gsub = string.gsub
 
 local PetHasHappiness = ((ns.IsClassic or ns.IsWrath) and ns.PlayerClass == "HUNTER")
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -481,5 +481,5 @@ PetFrameMod.OnEnable = function(self)
 	self:CreateUnitFrames()
 	self:CreateAnchor(PET)
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

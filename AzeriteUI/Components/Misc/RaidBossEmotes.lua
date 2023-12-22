@@ -25,12 +25,12 @@
 --]]
 local _, ns = ...
 
-local RaidBossEmotes = ns:NewModule("RaidBossEmotes", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
+local RaidBossEmotes = ns:NewModule("RaidBossEmotes", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Addon API
 local GetFont = ns.API.GetFont
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -95,5 +95,5 @@ RaidBossEmotes.OnEnable = function(self)
 	self:PrepareFrames()
 	self:CreateAnchor(CHAT_MSG_RAID_BOSS_EMOTE)
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

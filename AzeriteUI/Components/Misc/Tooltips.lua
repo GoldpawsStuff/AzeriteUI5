@@ -27,7 +27,7 @@ local _, ns = ...
 
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
-local Tooltips = ns:NewModule("Tooltips", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
+local Tooltips = ns:NewModule("Tooltips", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Lua API
 local _G = _G
@@ -78,7 +78,7 @@ local defaults = { profile = ns:Merge({
 	hideInCombat = false,
 	hideActionBarTooltipsInCombat = true,
 	hideUnitFrameTooltipsInCombat = true
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -596,5 +596,5 @@ Tooltips.OnEnable = function(self)
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateTooltipThemes")
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

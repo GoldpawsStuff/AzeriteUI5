@@ -33,14 +33,14 @@ if (not ns.IsWrath) or (not MultiCastActionBarFrame) or (ns.PlayerClass ~= "SHAM
 	return
 end
 
-local MultiCast = ns:NewModule("MultiCast", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
+local MultiCast = ns:NewModule("MultiCast", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- Lua API
 local unpack = unpack
 
 -- GLOBALS: CreateFrame, MultiCastActionBarFrame
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -79,7 +79,7 @@ MultiCast.OnEnable = function(self)
 	self:PrepareFrames()
 	self:CreateAnchor(L["Totem Bar"])
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 
 	self:UpdateMultiCastBar()
 end

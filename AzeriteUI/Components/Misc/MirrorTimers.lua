@@ -27,7 +27,7 @@ local _, ns = ...
 
 --if (not ns.WoW10) then return end
 
-local MirrorTimers = ns:NewModule("MirrorTimers", ns.Module, "LibMoreEvents-1.0", "AceTimer-3.0", "AceHook-3.0")
+local MirrorTimers = ns:NewModule("MirrorTimers", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceTimer-3.0", "AceHook-3.0")
 
 local LibSmoothBar = LibStub("LibSmoothBar-1.0")
 
@@ -42,7 +42,7 @@ local unpack = unpack
 
 local defaults = { profile = ns:Merge({
 	growUpwards = false
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -256,7 +256,7 @@ MirrorTimers.OnEnable = function(self)
 	self:PrepareFrames()
 	self:CreateAnchor(string_format("%s / %s", BREATH_LABEL, EXHAUSTION_LABEL))
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("MIRROR_TIMER_START", "OnEvent")

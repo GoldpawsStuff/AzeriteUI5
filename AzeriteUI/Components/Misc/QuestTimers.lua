@@ -27,9 +27,9 @@ local _, ns = ...
 
 if (not ns.IsClassic or not QuestTimerFrame) then return end
 
-local QuestTimers = ns:NewModule("QuestTimers", ns.Module, "LibMoreEvents-1.0")
+local QuestTimers = ns:NewModule("QuestTimers", ns.MovableModulePrototype, "LibMoreEvents-1.0")
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -68,5 +68,5 @@ QuestTimers.OnEnable = function(self)
 	self:PrepareFrames()
 	self:CreateAnchor(QUEST_TIMERS)
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end

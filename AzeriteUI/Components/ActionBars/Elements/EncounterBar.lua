@@ -29,9 +29,9 @@ if (not ns.WoW10) then return end
 
 if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return end
 
-local EncounterBar = ns:NewModule("EncounterBar", ns.Module, "LibMoreEvents-1.0", "AceHook-3.0")
+local EncounterBar = ns:NewModule("EncounterBar", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 
-local defaults = { profile = ns:Merge({}, ns.Module.defaults) }
+local defaults = { profile = ns:Merge({}, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
 -- to recalculate default values relying on
@@ -133,7 +133,7 @@ end
 EncounterBar.OnInitialize = function(self)
 	if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return self:Disable() end
 
-	ns.Module.OnInitialize(self)
+	ns.MovableModulePrototype.OnInitialize(self)
 end
 
 EncounterBar.OnEnable = function(self)
@@ -141,7 +141,7 @@ EncounterBar.OnEnable = function(self)
 	self:PrepareFrames()
 	self:CreateAnchor(HUD_EDIT_MODE_ENCOUNTER_BAR_LABEL, true)
 
-	ns.Module.OnEnable(self)
+	ns.MovableModulePrototype.OnEnable(self)
 end
 
 

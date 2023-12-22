@@ -42,7 +42,7 @@ local next = next
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	disableAuraSorting = false
-}, ns.Module.defaults) }
+}, ns.MovableModulePrototype.defaults) }
 
 -- UnitFrame Callbacks
 ---------------------------------------------------
@@ -122,6 +122,7 @@ ns.UnitFrame.Spawn = function(unit, overrideName, ...)
 	return frame
 end
 
+-- Inherit from the default movable frame module prototype.
 ns.UnitFrameModule = ns:Merge({
 	OnEnabledEvent = function(self, event, ...)
 		if (event == "PLAYER_REGEN_ENABLED") then
@@ -217,10 +218,10 @@ ns.UnitFrameModule = ns:Merge({
 	end,
 
 	CreateAnchor = function(self, label, watchVariables, colorGroup)
-		return ns.Module.CreateAnchor(self, label, watchVariables, colorGroup or "unitframes")
+		return ns.MovableModulePrototype.CreateAnchor(self, label, watchVariables, colorGroup or "unitframes")
 	end
 
-}, ns.Module)
+}, ns.MovableModulePrototype)
 
 UnitFrameMod.UpdateSettings = function(self)
 

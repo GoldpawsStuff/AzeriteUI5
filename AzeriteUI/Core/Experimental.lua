@@ -24,7 +24,7 @@
 
 --]]
 local Addon, ns = ...
-local Experimental = ns:NewModule("Experimental", "LibMoreEvents-1.0", "AceConsole-3.0")
+local Experimental = ns:NewModule("Experimental", "LibMoreEvents-1.0", "AceConsole-3.0", "AceSerializer-3.0")
 
 -- GLOBALS: EnableAddOn, DisableAddOn, ReloadUI, UIParent
 
@@ -62,40 +62,89 @@ Experimental.ToggleUI = function(self, input)
 end
 
 Experimental.ToggleBlips = function(self)
+	if (not ns.IsDevelopment) then return end
+
+	if (not self.Blips) then
+
+		-- Little trick to show the layout and dimensions
+		-- of the Minimap blip icons on-screen in-game,
+		-- whenever blizzard decide to update those.
+		------------------------------------------------------------
+
+		-- By setting a single point, but not any sizes,
+		-- the texture is shown in its original size and dimensions!
+		local f = UIParent:CreateTexture()
+		f:SetIgnoreParentScale(true)
+		f:SetScale(ns.API.GetScale())
+		f:Hide()
+		f:SetTexture([[Interface\MiniMap\ObjectIconsAtlas.blp]])
+		f:SetPoint("CENTER")
+
+		-- Add a little backdrop for easy
+		-- copy & paste from screenshots!
+		local g = UIParent:CreateTexture()
+		g:Hide()
+		g:SetColorTexture(0,.7,0,.25)
+		g:SetAllPoints(f)
+
+		self.Blips = f
+		self.BlibsBackdrop = g
+	end
+
 	local show = not self.Blips:IsShown()
+
 	self.Blips:SetShown(show)
 	self.BlibsBackdrop:SetShown(show)
 end
 
-Experimental.SpawnBlips = function(self)
+Experimental.SerializeOptions = function(self)
+	if (not self.SerializedOutputWindow) then
+		local frame = CreateFrame("Frame", nil, UIParent)
+		frame:Hide()
+		frame:SetSize(1200,900)
+		frame:SetPoint("CENTER")
 
-	-- Little trick to show the layout and dimensions
-	-- of the Minimap blip icons on-screen in-game,
-	-- whenever blizzard decide to update those.
-	------------------------------------------------------------
+		local backdrop = frame:CreateTexture(nil, "BACKGROUND")
+		backdrop:SetAllPoints()
+		backdrop:SetColorTexture(.15, .15, .15, .75)
 
-	-- By setting a single point, but not any sizes,
-	-- the texture is shown in its original size and dimensions!
-	local f = UIParent:CreateTexture()
-	f:SetIgnoreParentScale(true)
-	f:SetScale(ns.API.GetScale())
-	f:Hide()
-	f:SetTexture([[Interface\MiniMap\ObjectIconsAtlas.blp]])
-	f:SetPoint("CENTER")
+		local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
+		scrollFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", 10, -28)
+		scrollFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -27, 15)
 
-	-- Add a little backdrop for easy
-	-- copy & paste from screenshots!
-	local g = UIParent:CreateTexture()
-	g:Hide()
-	g:SetColorTexture(0,.7,0,.25)
-	g:SetAllPoints(f)
+		local messageFrame = CreateFrame("EditBox", nil, scrollFrame)
+		frame.messageFrame = messageFrame
 
-	self.Blips = f
-	self.BlibsBackdrop = g
+		messageFrame:SetScript("OnEscapePressed", function() frame:Hide() end)
+		messageFrame:SetMultiLine(true)
+		messageFrame:SetAutoFocus(false)
+		messageFrame:SetFontObject(ChatFontNormal)
+		messageFrame:SetSize(440, 260)
+		messageFrame:SetPoint("TOPLEFT", scrollFrame, "TOPLEFT", 0, -5)
+		messageFrame:SetPoint("BOTTOMRIGHT", scrollFrame, "BOTTOMRIGHT")
+		messageFrame:Show()
+
+		self.SerializedOutputWindow = frame
+	end
+
+	local LibDeflate = LibStub("LibDeflate")
+
+	local serialized = self:Serialize(ns:GetModule("ActionBars").db.profile)
+	local compressed = LibDeflate:CompressDeflate(serialized)
+	local encoded = LibDeflate:EncodeForPrint(compressed)
+
+	--local compressed = LibDeflate:DecodeForPrint(encoded)
+	--local serialized = LibDeflate:DecompressDeflate(compressed)
+	--local success, table = self:Deserialize(serialized)
+
+	self.SerializedOutputWindow.messageFrame:SetText(encoded)
+	self.SerializedOutputWindow:SetShown(not self.SerializedOutputWindow:IsShown())
 end
 
 Experimental.OnInitialize = function(self)
-	self:SpawnBlips()
-	self:RegisterChatCommand("toggleblips", "ToggleBlips")
-	self:RegisterChatCommand("go", "ToggleUI")
+	if (ns.IsDevelopment and ns.db.global.enableDevelopmentMode) then
+		self:RegisterChatCommand("serial", "SerializeOptions")
+		self:RegisterChatCommand("toggleblips", "ToggleBlips")
+		self:RegisterChatCommand("go", "ToggleUI")
+	end
 end
