@@ -10,7 +10,6 @@ If you choose to download and manually install directly from GitHub, you'll have
 - [LibUIDropDownMenu](https://www.curseforge.com/wow/addons/libuidropdownmenu)
 - [LibClassicDurations](https://www.curseforge.com/wow/addons/libclassicdurations) (Classic)
 - [LibHealComm-4.0 (SoD)](https://github.com/caboyd/LibHealComm-4.0) (Classic/SoD/Wrath) *(Not on CurseForge/Wago)*
-- [LibCompress](https://www.curseforge.com/wow/addons/libcompress) *(Only available for retail, must manually copy to Classics)*
 - [TaintLess](https://www.townlong-yak.com/addons/taintless) *(Not on CurseForge/Wago)*
 
 ## FAQ
