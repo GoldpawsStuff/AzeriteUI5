@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-12-22
+## [Unreleased] 2023-12-23
 - The features listed here are not yet available in the public builds, nor directly accessible even through the GitHub development versions. They are listed here primarily as a preview of what's to come.
 
 ### Added
