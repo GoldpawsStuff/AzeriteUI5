@@ -382,7 +382,7 @@ local function UpdateDispelTypes(self, event, unit, ...)
 		-- A 'change' of -1 indicates one used (learning a talent)
 		-- A 'change' of 1 indicates one gained (leveling)
 		local change = ...
-		if (change > 0) then return end
+		if (change and change > 0) then return end -- sometimes this can be nil, for some reason.
 	end
 
 	local dispelTypes

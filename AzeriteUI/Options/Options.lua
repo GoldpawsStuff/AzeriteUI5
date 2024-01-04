@@ -205,7 +205,7 @@ end
 
 Options.OpenOptionsMenu = function(self)
 	if (AceConfigRegistry:GetOptionsTable(Addon)) then
-		AceConfigDialog:SetDefaultSize(Addon, 880, 960)
+		AceConfigDialog:SetDefaultSize(Addon, 880, 720)
 		AceConfigDialog:Open(Addon)
 	end
 end

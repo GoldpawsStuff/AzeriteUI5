@@ -4,12 +4,18 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2023-12-23
+## [Unreleased] 2024-01-04
 - The features listed here are not yet available in the public builds, nor directly accessible even through the GitHub development versions. They are listed here primarily as a preview of what's to come.
 
 ### Added
-- Added an alternate version of the player unit frame with its own options and position. Accessible by first disabling the player unit frame, then enabling this element. Currently only available through git version with development mode enabled.
 - Started work on export/import functionality for the options menu and movable frame panel. The goal is to allow both complete profile copies, select modules or settings, or just copy a set of movable frame positions/scales. Will take a little time and work to finish!
+
+## [5.2.152-RC] 2024-01-04
+### Added
+- Added an alternate version of the player unit frame with its own options and position. Accessible by first disabling the player unit frame, then enabling this element. Currently only available through git version with development mode enabled.
+
+### Fixed
+- Fixed an issue where changes to a character's talent points sometimes would cause an error.
 
 ## [5.2.151-RC] 2023-12-22
 ### Added
