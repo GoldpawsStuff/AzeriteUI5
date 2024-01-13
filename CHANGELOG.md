@@ -4,11 +4,19 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2024-01-04
+## [Unreleased] 2024-01-13
 - The features listed here are not yet available in the public builds, nor directly accessible even through the GitHub development versions. They are listed here primarily as a preview of what's to come.
 
 ### Added
 - Started work on export/import functionality for the options menu and movable frame panel. The goal is to allow both complete profile copies, select modules or settings, or just copy a set of movable frame positions/scales. Will take a little time and work to finish!
+
+## [Unreleased] 2024-01-13
+### Added
+- Added an option to disable HealComm in Classic Era and Wrath, as this sometimes would cause a drop in framerate for some users.
+
+### Changed
+- The option to exit the explorer mode when having any sort of replacement actionbar now also applies to Dragonriding in Retail. This option is enabled by default.
+- The alternate playerframe is now available from public versions of the user interface as long as `/devmode` is enabled. Note that I'll ignore any issue reports or questions about missing items or when it'll be ready. This is in development and thus you use it at your own risk and without help.
 
 ## [5.2.152-RC] 2024-01-04
 ### Added
