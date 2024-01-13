@@ -99,11 +99,25 @@ local GenerateOptions = function()
 		}
 	}
 
+	-- Option to toggle HealComm in the classics.
+	if (ns.IsClassic or ns.IsWrath) then
+		options.args.disableHealComm = {
+			name = "Enable HealComm",
+			desc = "When enabled you'll get previews of incoming heals on the unit frames. If you experience a drop in framerate while in raids or groups, try disabling this option.",
+			order = 15,
+			type = "toggle", width = "full",
+			hidden = isdisabled,
+			set = function(info,val) setter(info, not val) end,
+			get = function(info) return not getter(info) end
+		}
+	end
+
 	-- Player
 	do
 		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("PlayerFrame")
 		suboptions.hidden = function(info)
-			if (not ns.IsDevelopment) or (not ns.db.global.enableDevelopmentMode) then return end
+			-- If devmode isn't enabled, this doesn't apply.
+			if (not ns.db.global.enableDevelopmentMode) then return end
 
 			-- Not hidden if self is enabled.
 			local playerFrame = ns:GetModule("PlayerFrame", true)
@@ -165,12 +179,12 @@ local GenerateOptions = function()
 		-- This isn't always here, check for it to avoid breaking the whole addon!
 		local PlayerFrameAlternate = ns:GetModule("PlayerFrameAlternate", true)
 		if (PlayerFrameAlternate) then
-			
+
 			local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("PlayerFrameAlternate")
 			suboptions.hidden = function(info)
 
-				-- Hidden if this isn't a development version with devmode enabled.
-				if (not ns.IsDevelopment) or (not ns.db.global.enableDevelopmentMode) then return true end
+				-- Hidden if devmode isn't enabled.
+				if (not ns.db.global.enableDevelopmentMode) then return true end
 
 				-- Hidden if the main playerframe is enabled.
 				local module = ns:GetModule("PlayerFrame", true)
