@@ -26,7 +26,7 @@
 local _, ns = ...
 local oUF = ns.oUF
 
-if (not ns.IsDevelopment) then return end
+--if (not ns.IsDevelopment) then return end
 
 local PlayerFrameAltMod = ns:NewModule("PlayerFrameAlternate", ns.UnitFrameModule, "LibMoreEvents-1.0")
 
