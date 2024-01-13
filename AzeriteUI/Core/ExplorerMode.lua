@@ -279,6 +279,7 @@ ExplorerMode.CheckForForcedState = function(self)
 	or (self.inGroup and not db.fadeInGroups)
 	or (self.hasOverride and not db.fadeInVehicles)
 	or (self.hasPossess and not db.fadeInVehicles)
+	or (self.isDragonRiding and not db.fadeInVehicles)
 	or (self.inVehicle and not db.fadeInVehicles)
 	or (self.inInstance and not db.fadeInInstances)
 	or (self.lowHealth and not db.fadeWithLowMana)
@@ -373,6 +374,18 @@ ExplorerMode.CheckPossess = function(self)
 		return
 	end
 	self.hasPossess = nil
+end
+
+ExplorerMode.CheckDragonRiding = function(self)
+	if (HasBonusActionBar()) then
+		if (GetBonusBarOffset() == 5) then
+			if (IsMounted()) then
+				self.isDragonRiding = true
+				return
+			end
+		end
+	end
+	self.isDragonRiding = nil
 end
 
 ExplorerMode.CheckTarget = function(self)
@@ -487,6 +500,7 @@ ExplorerMode.OnEvent = function(self, event, ...)
 			self:CheckVehicle()
 			self:CheckOverride()
 			self:CheckPossess()
+			self:CheckDragonRiding()
 		end
 
 		self:CheckHealth()
@@ -533,6 +547,9 @@ ExplorerMode.OnEvent = function(self, event, ...)
 	elseif (event == "UPDATE_OVERRIDE_ACTIONBAR") then
 		self:CheckOverride()
 
+	elseif (event == "UPDATE_BONUS_ACTIONBAR") then
+		self:CheckDragonRiding()
+
 	elseif (event == "UNIT_ENTERING_VEHICLE")
 		or (event == "UNIT_ENTERED_VEHICLE")
 		or (event == "UNIT_EXITING_VEHICLE")
@@ -577,6 +594,7 @@ ExplorerMode.OnEnable = function(self)
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED", "OnEvent")
 		self:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR", "OnEvent")
 		self:RegisterEvent("UPDATE_POSSESS_BAR", "OnEvent")
+		self:RegisterEvent("UPDATE_BONUS_ACTIONBAR", "OnEvent")
 		self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", "OnEvent", "player")
 		self:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", "OnEvent", "player")
 		self:RegisterUnitEvent("UNIT_ENTERING_VEHICLE", "OnEvent", "player")
