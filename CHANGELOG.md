@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Started work on export/import functionality for the options menu and movable frame panel. The goal is to allow both complete profile copies, select modules or settings, or just copy a set of movable frame positions/scales. Will take a little time and work to finish!
 
-## [Unreleased] 2024-01-13
+## [5.2.153-RC] 2024-01-13
 ### Added
 - Added an option to disable HealComm in Classic Era and Wrath, as this sometimes would cause a drop in framerate for some users.
 
