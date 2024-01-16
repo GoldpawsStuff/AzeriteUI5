@@ -48,3 +48,107 @@ for _,global in next,{
 		_G[global] = function() return false end
 	end
 end
+
+local tocversion = select(4, GetBuildInfo())
+
+-- Deprecated in 10.1.0
+if (tocversion >= 100100) then
+	if (not _G.GetAddOnMetadata) then
+		GetAddOnMetadata = C_AddOns.GetAddOnMetadata
+	end
+end
+
+-- Deprecated in 10.2.0
+if (tocversion >= 100200) then
+	for method,func in next,{
+		EnableAddOn = C_AddOns.EnableAddOn,
+		DisableAddOn = C_AddOns.DisableAddOn,
+		GetAddOnEnableState = function(character, name) return C_AddOns.GetAddOnEnableState(name, character) end,
+		LoadAddOn = C_AddOns.LoadAddOn,
+		IsAddOnLoaded = C_AddOns.IsAddOnLoaded,
+		EnableAllAddOns = C_AddOns.EnableAllAddOns,
+		DisableAllAddOns = C_AddOns.DisableAllAddOns,
+		GetAddOnInfo = C_AddOns.GetAddOnInfo,
+		GetAddOnDependencies = C_AddOns.GetAddOnDependencies,
+		GetAddOnOptionalDependencies = C_AddOns.GetAddOnOptionalDependencies,
+		GetNumAddOns = C_AddOns.GetNumAddOns,
+		SaveAddOns = C_AddOns.SaveAddOns,
+		ResetAddOns = C_AddOns.ResetAddOns,
+		ResetDisabledAddOns = C_AddOns.ResetDisabledAddOns,
+		IsAddonVersionCheckEnabled = C_AddOns.IsAddonVersionCheckEnabled,
+		SetAddonVersionCheck = C_AddOns.SetAddonVersionCheck,
+		IsAddOnLoadOnDemand = C_AddOns.IsAddOnLoadOnDemand
+	} do
+		if (not _G[method]) then
+			_G[method] = func
+		end
+	end
+end
+
+-- Deprecated in 10.2.5
+if (tocversion >= 100205) then
+	for method,func in next,{
+		GetTimeToWellRested = function() return nil end,
+		FillLocalizedClassList = function(tbl, isFemale)
+			local classList = LocalizedClassList(isFemale)
+			MergeTable(tbl, classList)
+			return tbl
+		end,
+		GetSetBonusesForSpecializationByItemID = C_Item.GetSetBonusesForSpecializationByItemID,
+		GetItemStats = function(itemLink, existingTable)
+			local statTable = C_Item.GetItemStats(itemLink)
+			if existingTable then
+				MergeTable(existingTable, statTable)
+				return existingTable
+			else
+				return statTable
+			end
+		end,
+		GetItemStatDelta = function(itemLink1, itemLink2, existingTable)
+			local statTable = C_Item.GetItemStatDelta(itemLink1, itemLink2)
+			if existingTable then
+				MergeTable(existingTable, statTable)
+				return existingTable
+			else
+				return statTable
+			end
+		end,
+		UnitAura = function(unitToken, index, filter)
+			local auraData = C_UnitAuras.GetAuraDataByIndex(unitToken, index, filter)
+			if not auraData then
+				return nil
+			end
+
+			return AuraUtil.UnpackAuraData(auraData)
+		end,
+		UnitBuff = function(unitToken, index, filter)
+			local auraData = C_UnitAuras.GetBuffDataByIndex(unitToken, index, filter)
+			if not auraData then
+				return nil
+			end
+
+			return AuraUtil.UnpackAuraData(auraData)
+		end,
+		UnitDebuff = function(unitToken, index, filter)
+			local auraData = C_UnitAuras.GetDebuffDataByIndex(unitToken, index, filter)
+			if not auraData then
+				return nil
+			end
+
+			return AuraUtil.UnpackAuraData(auraData)
+		end,
+		UnitAuraBySlot = function(unitToken, index)
+			local auraData = C_UnitAuras.GetAuraDataBySlot(unitToken, index)
+			if not auraData then
+				return nil
+			end
+
+			return AuraUtil.UnpackAuraData(auraData)
+		end,
+		UnitAuraSlots = C_UnitAuras.GetAuraSlots
+	} do
+		if (not _G[method]) then
+			_G[method] = func
+		end
+	end
+end
