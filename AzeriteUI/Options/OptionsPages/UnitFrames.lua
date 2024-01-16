@@ -291,7 +291,7 @@ local GenerateOptions = function()
 		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("ToTFrame")
 		suboptions.name = L["Target of Target"]
 		suboptions.order = 130
-		suboptions.args.elementHeader = {
+		suboptions.args.visibilityHeader = {
 			name = L["Visibility"], order = 10, type = "header", hidden = isdisabled
 		}
 		suboptions.args.hideWhenTargetingPlayer = {
@@ -315,9 +315,47 @@ local GenerateOptions = function()
 		options.args.focus = suboptions
 	end
 
+	-- Utility function to create group frame visibility options
+	local GenerateGroupVisibilityOptions = function(offset, ...)
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = ...
+
+		offset = offset or 50
+
+		suboptions.args.visibilityHeader = {
+			name = L["Visibility"], order = offset, type = "header", hidden = isdisabled
+		}
+		suboptions.args.useInParties = {
+			name = "Show in Party (2-5)",
+			desc = "Toggle whether to show while in a non-raid group of 2-6 members.",
+			order = offset + 1, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+		suboptions.args.useInRaid5 = {
+			name = "Show in Raid (1-5)",
+			desc = "Toggle whether to show while in a raid group of 1-5 members.",
+			order = offset + 2, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+		suboptions.args.useInRaid10 = {
+			name = "Show in Raid (6-10)",
+			desc = "Toggle whether to show while in a raid group of 1-5 members.",
+			order = offset + 3, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+		suboptions.args.useInRaid25 = {
+			name = "Show in Raid (11-25)",
+			desc = "Toggle whether to show while in a raid group of 1-5 members.",
+			order = offset + 4, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+		suboptions.args.useInRaid40 = {
+			name = "Show in Raid (26-40)",
+			desc = "Toggle whether to show while in a raid group of 1-5 members.",
+			order = offset + 5, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
+
+		return suboptions, module, setter, getter, setoption, getoption, isdisabled
+	end
+
 	-- Party Frames
 	do
-		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("PartyFrames")
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateGroupVisibilityOptions(50, GenerateSubOptions("PartyFrames"))
 		suboptions.name = L["Party Frames"]
 		suboptions.order = 150
 		suboptions.args.elementHeader = {
@@ -328,25 +366,17 @@ local GenerateOptions = function()
 			desc = L["Toggle whether to show auras on this unit frame."],
 			order = 11, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
-		suboptions.args.elementHeader = {
-			name = L["Visibility"], order = 19, type = "header", hidden = isdisabled
-		}
 		suboptions.args.showPlayer = {
 			name = L["Show player"],
 			desc = L["Toggle whether to show the player while in a party."],
-			order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
-		}
-		suboptions.args.showInRaids = {
-			name = L["Show in raids."],
-			desc = L["Show in party sized raid groups (1-5 Players)."],
-			order = 21, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+			order = 12, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
 		options.args.party = suboptions
 	end
 
 	-- Raid Frames (5)
 	do
-		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("RaidFrame5")
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateGroupVisibilityOptions(50, GenerateSubOptions("RaidFrame5"))
 		suboptions.name = L["Raid Frames"] .. " (5)"
 		suboptions.order = 160
 		suboptions.hidden = function(info)
@@ -362,7 +392,7 @@ local GenerateOptions = function()
 
 	-- Raid Frames (25)
 	do
-		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("RaidFrame25")
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateGroupVisibilityOptions(50, GenerateSubOptions("RaidFrame25"))
 		suboptions.name = L["Raid Frames"] .. " (25)"
 		suboptions.order = 161
 		suboptions.args.useRangeIndicator = {
@@ -375,7 +405,7 @@ local GenerateOptions = function()
 
 	-- Raid Frames (40)
 	do
-		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("RaidFrame40")
+		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateGroupVisibilityOptions(50, GenerateSubOptions("RaidFrame40"))
 		suboptions.name = L["Raid Frames"] .. " (40)"
 		suboptions.order = 162
 		suboptions.args.useRangeIndicator = {
@@ -404,7 +434,7 @@ local GenerateOptions = function()
 			desc = L["Toggle whether to fade unit frames of units that are out of range."],
 			order = 11, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
-		suboptions.args.elementHeader = {
+		suboptions.args.visibilityHeader = {
 			name = L["Visibility"], order = 19, type = "header", hidden = isdisabled
 		}
 		suboptions.args.showInBattlegrounds = {

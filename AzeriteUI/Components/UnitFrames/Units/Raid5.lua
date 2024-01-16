@@ -52,6 +52,13 @@ local Units = {}
 local defaults = { profile = ns:Merge({
 
 	enabled = true,
+
+	useInParties = false, -- show in non-raid parties
+	useInRaid5 = true, -- show in raid groups of 1-5 players
+	useInRaid10 = false, -- show in raid groups of 6-10 players
+	useInRaid25 = false, -- show in raid groups of 11-25 players
+	useInRaid40 = false, -- show in raid groups of 26-40 players
+
 	useRangeIndicator = false,
 
 	point = "TOP", -- anchor point of unitframe, group members within column grow opposite
@@ -681,12 +688,28 @@ end
 GroupHeader.UpdateVisibilityDriver = function(self)
 	if (InCombatLockdown()) then return end
 
-	local enabled, visibility = RaidFrame5Mod:GetVisibilityDriver()
+	local driver = {}
+
+	local db = RaidFrame5Mod.db.profile
+	if (db.enabled) then
+		table_insert(driver, "[group:party,nogroup:raid]"..(db.useInParties and "show" or "hide"))
+		table_insert(driver, "[@raid26,exists]"..(db.useInRaid40 and "show" or "hide"))
+		table_insert(driver, "[@raid11,exists]"..(db.useInRaid25 and "show" or "hide"))
+		table_insert(driver, "[@raid6,exists]"..(db.useInRaid10 and "show" or "hide"))
+		table_insert(driver, "[group:raid]"..(db.useInRaid5 and "show" or "hide"))
+	end
+
+	table_insert(driver, "hide")
+
+	self.visibility = table_concat(driver, ";")
 
 	UnregisterAttributeDriver(self, "state-visibility")
-	RegisterAttributeDriver(self, "state-visibility", visibility)
+	RegisterAttributeDriver(self, "state-visibility", self.visibility)
 
-	self.visibility = enabled and visibility
+	self:SetAttribute("showRaid", db.useInRaid5 or db.useInRaid10 or db.useInRaid25 or db.useInRaid40)
+	self:SetAttribute("showParty", db.useInParties)
+	self:SetAttribute("showPlayer", true)
+
 end
 
 -- Sourced from FrameXML\SecureGroupHeaders.lua
@@ -863,37 +886,6 @@ RaidFrame5Mod.GetHeaderSize = function(self)
 	return self:GetCalculatedHeaderSize(5)
 end
 
-RaidFrame5Mod.GetVisibilityDriver = function(self)
-	local party = ns:GetModule("PartyFrames").db.profile.enabled
-	local partyInRaids = party and ns:GetModule("PartyFrames").db.profile.showInRaids
-	local raid5 = not partyInRaids and ns:GetModule("RaidFrame5").db.profile.enabled
-	local raid25 = ns:GetModule("RaidFrame25").db.profile.enabled
-	local raid40 = ns:GetModule("RaidFrame40").db.profile.enabled
-
-	-- Development and debugging
-	if (ns.IsInDevelopmentMode) then
-		if (raid5) then
-			return true, "show"
-		else
-			return false, "hide"
-		end
-	end
-
-	-- Is the raid5 module enabled?
-	if (raid5) then
-		if (party) then
-			-- Party frames are enabled, only show raid5 for 1-5p raid groups.
-			return true, "[@raid6,exists]hide;[group:raid]show;hide"
-		else
-			-- Party frames are disabled, so we show raid5 for all 1-5p groups.
-			return true, "[@raid6,exists]hide;[group]show;hide"
-		end
-	else
-		return false, "hide"
-	end
-
-end
-
 RaidFrame5Mod.CreateUnitFrames = function(self)
 
 	local unit, name = "raid", "Raid5"
@@ -902,7 +894,7 @@ RaidFrame5Mod.CreateUnitFrames = function(self)
 	oUF:SetActiveStyle(ns.Prefix..name)
 
 	self.frame = CreateFrame("Frame", nil, UIParent)
-	self.frame.content = CreateFrame("Frame", ns.Prefix.."ArenaEnemyFrames", UIParent, "SecureHandlerStateTemplate")
+	self.frame.content = CreateFrame("Frame", ns.Prefix.."Raid5Frames", UIParent, "SecureHandlerStateTemplate")
 
 	-- Embed our custom methods
 	for method,func in next,GroupHeader do
@@ -976,6 +968,8 @@ RaidFrame5Mod.UpdateHeader = function(self)
 		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 		return
 	end
+
+	header:UpdateVisibilityDriver()
 
 	local config = ns.GetConfig("Raid5Frames")
 	header:SetAttribute("unitWidth", config.UnitSize[1])

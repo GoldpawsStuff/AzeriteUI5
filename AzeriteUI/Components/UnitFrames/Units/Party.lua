@@ -35,6 +35,8 @@ local next = next
 local select = select
 local string_gsub = string.gsub
 local string_split = string.split
+local table_concat = table.concat
+local table_insert = table.insert
 local type = type
 local unpack = unpack
 
@@ -50,9 +52,16 @@ local Units = {}
 
 local defaults = { profile = ns:Merge({
 
+	enabled = true,
+
+	useInParties = true, -- show in non-raid parties
+	useInRaid5 = false, -- show in raid groups of 1-5 players
+	useInRaid10 = false, -- show in raid groups of 6-10 players
+	useInRaid25 = false, -- show in raid groups of 11-25 players
+	useInRaid40 = false, -- show in raid groups of 26-40 players
+
 	showAuras = true,
 	showPlayer = false,
-	showInRaids = false,
 
 	point = "LEFT", -- anchor point of unitframe, group members within column grow opposite
 	xOffset = 0, -- horizontal offset within the same column
@@ -729,13 +738,28 @@ end
 GroupHeader.UpdateVisibilityDriver = function(self)
 	if (InCombatLockdown()) then return end
 
-	local enabled, visibility, showRaid = PartyFrameMod:GetVisibilityDriver()
+	local driver = {}
+
+	local db = PartyFrameMod.db.profile
+	if (db.enabled) then
+		table_insert(driver, "[group:party,nogroup:raid]"..(db.useInParties and "show" or "hide"))
+		table_insert(driver, "[@raid26,exists]"..(db.useInRaid40 and "show" or "hide"))
+		table_insert(driver, "[@raid11,exists]"..(db.useInRaid25 and "show" or "hide"))
+		table_insert(driver, "[@raid6,exists]"..(db.useInRaid10 and "show" or "hide"))
+		table_insert(driver, "[group:raid]"..(db.useInRaid5 and "show" or "hide"))
+	end
+
+	table_insert(driver, "hide")
+
+	self.visibility = table_concat(driver, ";")
 
 	UnregisterAttributeDriver(self, "state-visibility")
-	RegisterAttributeDriver(self, "state-visibility", visibility)
+	RegisterAttributeDriver(self, "state-visibility", self.visibility)
 
-	self:SetAttribute("showRaid", enabled and showRaid)
-	self.visibility = enabled and visibility
+	self:SetAttribute("showRaid", db.useInRaid5 or db.useInRaid10 or db.useInRaid25 or db.useInRaid40)
+	self:SetAttribute("showParty", db.useInParties)
+	self:SetAttribute("showPlayer", db.showPlayer)
+
 end
 
 PartyFrameMod.GetHeaderAttributes = function(self)
@@ -756,9 +780,6 @@ PartyFrameMod.GetHeaderAttributes = function(self)
 	"sortDir", "ASC", -- ASC, DESC
 	"groupFilter", "1,2,3,4,5,6,7,8", -- Group filter
 	"showSolo", false, -- show while non-grouped
-	"showPlayer", db.showPlayer, -- show the player in the party
-	"showRaid", true, -- show while in a raid group
-	"showParty", true, -- show while in a party
 	"point", db.point, -- Unit anchoring within each column
 	"xOffset", db.xOffset,
 	"yOffset", db.yOffset,
@@ -771,25 +792,6 @@ PartyFrameMod.GetHeaderAttributes = function(self)
 
 end
 
-PartyFrameMod.GetVisibilityDriver = function(self)
-	local party = ns:GetModule("PartyFrames").db.profile.enabled
-	local raid5 = ns:GetModule("RaidFrame5").db.profile.enabled
-	local raid25 = ns:GetModule("RaidFrame25").db.profile.enabled
-	local raid40 = ns:GetModule("RaidFrame40").db.profile.enabled
-
-	if (party) then
-		if (self.frame:GetAttribute("showSolo")) then -- only for testing purposed, don't set it!
-			return true, "show", false
-		elseif (self.db.profile.showInRaids or not(raid5 or raid25 or raid40)) then
-			return true, "[group]show;hide", true
-		else
-			return true, "[group:party,nogroup:raid]show;hide", nil
-		end
-	else
-		return false, "hide", nil
-	end
-end
-
 PartyFrameMod.GetHeaderSize = function(self)
 	local config = ns.GetConfig("PartyFrames")
 	return
@@ -798,26 +800,27 @@ PartyFrameMod.GetHeaderSize = function(self)
 end
 
 PartyFrameMod.UpdateHeader = function(self)
-	if (not self.frame) then return end
+	local header = self:GetUnitFrameOrHeader()
+	if (not header) then return end
+
 	if (InCombatLockdown()) then
 		self.needHeaderUpdate = true
 		self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 		return
 	end
 
-	self.frame:UpdateVisibilityDriver()
+	header:UpdateVisibilityDriver()
 
-	for _,attr in next,{
-		"showPlayer",
+	for _,attrib in next,{
 		"point","xOffset","yOffset",
 		"groupBy","groupingOrder",
 		"unitsPerColumn","maxColumns",
 		"columnSpacing","columnAnchorPoint"
 	} do
-		self.frame:SetAttribute(attr, self.db.profile[attr])
+		header:SetAttribute(attrib, self.db.profile[attrib])
 	end
 
-	self.frame:SetSize(self:GetHeaderSize())
+	self:GetFrame():SetSize(self:GetHeaderSize())
 
 	self:UpdateAnchor() -- the general update does this too, but we need it in case nothing but this function has been called.
 end

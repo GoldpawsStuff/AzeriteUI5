@@ -38,6 +38,8 @@ local math_abs = math.abs
 local next = next
 local select = select
 local string_gsub = string.gsub
+local table_concat = table.concat
+local table_insert = table.insert
 local type = type
 local unpack = unpack
 
@@ -51,6 +53,13 @@ local Units = {}
 local defaults = { profile = ns:Merge({
 
 	enabled = true,
+
+	useInParties = false, -- show in non-raid parties
+	useInRaid5 = false, -- show in raid groups of 1-5 players
+	useInRaid10 = false, -- show in raid groups of 6-10 players
+	useInRaid25 = false, -- show in raid groups of 11-25 players
+	useInRaid40 = true, -- show in raid groups of 26-40 players
+
 	useRangeIndicator = true,
 
 	point = "LEFT", -- anchor point of unitframe, group members within column grow opposite
@@ -661,13 +670,28 @@ end
 GroupHeader.UpdateVisibilityDriver = function(self)
 	if (InCombatLockdown()) then return end
 
-	local enabled, visibility, showParty = RaidFrame40Mod:GetVisibilityDriver()
+	local driver = {}
+
+	local db = RaidFrame40Mod.db.profile
+	if (db.enabled) then
+		table_insert(driver, "[group:party,nogroup:raid]"..(db.useInParties and "show" or "hide"))
+		table_insert(driver, "[@raid26,exists]"..(db.useInRaid40 and "show" or "hide"))
+		table_insert(driver, "[@raid11,exists]"..(db.useInRaid25 and "show" or "hide"))
+		table_insert(driver, "[@raid6,exists]"..(db.useInRaid10 and "show" or "hide"))
+		table_insert(driver, "[group:raid]"..(db.useInRaid5 and "show" or "hide"))
+	end
+
+	table_insert(driver, "hide")
+
+	self.visibility = table_concat(driver, ";")
 
 	UnregisterAttributeDriver(self, "state-visibility")
-	RegisterAttributeDriver(self, "state-visibility", visibility)
+	RegisterAttributeDriver(self, "state-visibility", self.visibility)
 
-	self:SetAttribute("showParty", showParty)
-	self.visibility = enabled and visibility
+	self:SetAttribute("showRaid", db.useInRaid5 or db.useInRaid10 or db.useInRaid25 or db.useInRaid40)
+	self:SetAttribute("showParty", db.useInParties)
+	self:SetAttribute("showPlayer", true)
+
 end
 
 RaidFrame40Mod.DisableBlizzard = function(self)
@@ -708,9 +732,6 @@ RaidFrame40Mod.GetHeaderAttributes = function(self)
 	"sortDir", "ASC", -- ASC, DESC
 	"groupFilter", "1,2,3,4,5,6,7,8", -- Group filter
 	"showSolo", false, -- show while non-grouped
-	"showPlayer", true, -- show the player while in a party
-	"showRaid", true, -- show while in a raid group
-	"showParty", true, -- show while in a party
 	"point", db.point, -- Unit anchoring within each column
 	"xOffset", db.xOffset,
 	"yOffset", db.yOffset,
@@ -721,28 +742,6 @@ RaidFrame40Mod.GetHeaderAttributes = function(self)
 	"columnSpacing", db.columnSpacing,
 	"columnAnchorPoint", db.columnAnchorPoint
 
-end
-
-RaidFrame40Mod.GetVisibilityDriver = function(self)
-	local party = ns:GetModule("PartyFrames").db.profile.enabled
-	local partyInRaids = party and ns:GetModule("PartyFrames").db.profile.showInRaids
-	local raid5 = ns:GetModule("RaidFrame5").db.profile.enabled
-	local raid25 = ns:GetModule("RaidFrame25").db.profile.enabled
-	local raid40 = ns:GetModule("RaidFrame40").db.profile.enabled
-
-	if (raid40) then
-		if (raid25) then
-			return true, "[@raid26,exists]show;hide", nil
-		elseif (raid5 or partyInRaids) then
-			return true, "[@raid6,exists]show;hide", nil
-		elseif (party) then
-			return true, "[group:raid]show;hide", nil
-		else
-			return true, "[group]show;hide", true
-		end
-	else
-		return false, "hide", nil
-	end
 end
 
 RaidFrame40Mod.GetHeaderSize = function(self)

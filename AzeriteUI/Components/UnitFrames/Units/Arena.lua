@@ -729,12 +729,16 @@ end
 GroupHeader.UpdateVisibilityDriver = function(self)
 	if (InCombatLockdown()) then return end
 
-	local enabled, visibility = ArenaFrameMod:GetVisibilityDriver()
+	local isInInstance, instanceType = IsInInstance()
+	if (not isInInstance or (instanceType ~= "arena" and not self.db.profile.showInBattlegrounds)) then
+		self.visibility = "hide"
+	else
+		self.visibility = "show"
+	end
 
 	UnregisterAttributeDriver(self, "state-visibility")
-	RegisterAttributeDriver(self, "state-visibility", visibility)
+	RegisterAttributeDriver(self, "state-visibility", self.visibility)
 
-	self.visibility = enabled and visibility
 end
 
 -- Sourced from FrameXML\SecureGroupHeaders.lua
@@ -897,14 +901,6 @@ ArenaFrameMod.ConfigureChildren = function(self)
 	header:SetSize(self:GetCalculatedHeaderSize(numDisplayed))
 end
 
-ArenaFrameMod.GetVisibilityDriver = function(self)
-	local isInInstance, instanceType = IsInInstance()
-	if (not isInInstance or (instanceType ~= "arena" and not self.db.profile.showInBattlegrounds)) then
-		return false, "hide"
-	end
-	return true, "show"
-end
-
 ArenaFrameMod.GetHeaderSize = function(self)
 	return self:GetCalculatedHeaderSize(5)
 end
@@ -970,7 +966,7 @@ ArenaFrameMod.UpdateHeader = function(self)
 		header:SetAttribute(attrib, self.db.profile[attrib])
 	end
 
-	self.frame:SetSize(self:GetHeaderSize())
+	self:GetFrame():SetSize(self:GetHeaderSize())
 	self:ConfigureChildren()
 
 	self:UpdateHeaderAnchorPoint() -- update where the group header is anchored to our anchorframe.
