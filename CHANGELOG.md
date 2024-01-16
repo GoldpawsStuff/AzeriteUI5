@@ -5,8 +5,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2024-01-16
-- The features listed here are not yet available in the public builds, nor directly accessible even through the GitHub development versions. They are listed here primarily as a preview of what's to come.
-
 ### Added
 - Started work on export/import functionality for the options menu and movable frame panel. The goal is to allow both complete profile copies, select modules or settings, or just copy a set of movable frame positions/scales. Will take a little time and work to finish!
 
