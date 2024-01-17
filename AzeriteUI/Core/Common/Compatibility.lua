@@ -34,19 +34,17 @@ if (BackdropTemplateMixin) then
 	ns.Private.BackdropTemplate = "BackdropTemplate" -- Usable in Lua
 end
 
--- Create an alias for the classics.
+-- Classics
 if (not _G.UnitEffectiveLevel) then
 	_G.UnitEffectiveLevel = UnitLevel
 end
 
--- Functions that would always return false when not present.
-for _,global in next,{
-	"IsXPUserDisabled",
-	"UnitHasVehicleUI"
-} do
-	if (not _G[global]) then
-		_G[global] = function() return false end
-	end
+if (not _G.IsXPUserDisabled) then
+	_G.IsXPUserDisabled = function() return false end
+end
+
+if (not _G.UnitHasVehicleUI) then
+	_G.UnitHasVehicleUI = function() return false end
 end
 
 local tocversion = select(4, GetBuildInfo())
@@ -54,13 +52,15 @@ local tocversion = select(4, GetBuildInfo())
 -- Deprecated in 10.1.0
 if (tocversion >= 100100) then
 	if (not _G.GetAddOnMetadata) then
-		GetAddOnMetadata = C_AddOns.GetAddOnMetadata
+		_G.GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 	end
 end
 
 -- Deprecated in 10.2.0
 if (tocversion >= 100200) then
+	local original_SetPortraitToTexture = SetPortraitToTexture
 	for method,func in next,{
+		GetCVarInfo = C_CVar.GetCVarInfo,
 		EnableAddOn = C_AddOns.EnableAddOn,
 		DisableAddOn = C_AddOns.DisableAddOn,
 		GetAddOnEnableState = function(character, name) return C_AddOns.GetAddOnEnableState(name, character) end,
@@ -77,7 +77,15 @@ if (tocversion >= 100200) then
 		ResetDisabledAddOns = C_AddOns.ResetDisabledAddOns,
 		IsAddonVersionCheckEnabled = C_AddOns.IsAddonVersionCheckEnabled,
 		SetAddonVersionCheck = C_AddOns.SetAddonVersionCheck,
-		IsAddOnLoadOnDemand = C_AddOns.IsAddOnLoadOnDemand
+		IsAddOnLoadOnDemand = C_AddOns.IsAddOnLoadOnDemand,
+		SetPortraitToTexture = function(texture, asset)
+			if asset ~= nil then
+				if type(texture) == "string" then
+					texture = _G[texture]
+				end
+				original_SetPortraitToTexture(texture, asset)
+			end
+		end
 	} do
 		if (not _G[method]) then
 			_G[method] = func
