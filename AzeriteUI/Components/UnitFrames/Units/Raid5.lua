@@ -904,7 +904,7 @@ RaidFrame5Mod.CreateUnitFrames = function(self)
 	for i = 1,5 do
 
 		-- The real unit of the frame.
-		local realUnit = ns.IsInDevelopmentMode and "player" or unit..i
+		local realUnit = ns.IsInTestMode and "player" or unit..i
 
 		-- Spawn our unit button and parent it to our visibility driver.
 		local unitButton = ns.UnitFrame.Spawn(realUnit, ns.Prefix.."UnitFrame"..name..i)
