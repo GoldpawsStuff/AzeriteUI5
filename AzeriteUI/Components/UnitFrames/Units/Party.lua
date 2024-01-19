@@ -843,6 +843,10 @@ PartyFrameMod.Update = function(self)
 	self:UpdateUnits()
 end
 
+PartyFrameMod.DisableBlizzard = function(self)
+	oUF:DisableBlizzard("party")
+end
+
 PartyFrameMod.CreateUnitFrames = function(self)
 
 	local name = "Party"
@@ -876,6 +880,7 @@ end
 
 PartyFrameMod.OnEnable = function(self)
 
+	self:DisableBlizzard()
 	self:CreateUnitFrames()
 	self:CreateAnchor(PARTY)
 
