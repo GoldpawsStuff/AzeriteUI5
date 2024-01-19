@@ -951,20 +951,21 @@ ArenaFrameMod.UpdateHeader = function(self)
 		return
 	end
 
+	local config = ns.GetConfig("ArenaFrames")
+
 	header:UpdateVisibilityDriver()
 
-	local config = ns.GetConfig("ArenaFrames")
 	header:SetAttribute("unitWidth", config.UnitSize[1])
 	header:SetAttribute("unitHeight", config.UnitSize[2])
-
-	for _,attrib in next,{
-		"point","xOffset","yOffset",
-		"groupBy","groupingOrder",
-		"unitsPerColumn","maxColumns",
-		"columnSpacing","columnAnchorPoint"
-	} do
-		header:SetAttribute(attrib, self.db.profile[attrib])
-	end
+	header:SetAttribute("point", self.db.profile["point"])
+	header:SetAttribute("xOffset", self.db.profile["xOffset"])
+	header:SetAttribute("yOffset", self.db.profile["yOffset"])
+	header:SetAttribute("groupBy", self.db.profile["groupBy"])
+	header:SetAttribute("groupingOrder", self.db.profile["groupingOrder"])
+	header:SetAttribute("unitsPerColumn", self.db.profile["unitsPerColumn"])
+	header:SetAttribute("maxColumns", self.db.profile["maxColumns"])
+	header:SetAttribute("columnSpacing", self.db.profile["columnSpacing"])
+	header:SetAttribute("columnAnchorPoint", self.db.profile["columnAnchorPoint"])
 
 	self:GetFrame():SetSize(self:GetHeaderSize())
 	self:ConfigureChildren()
