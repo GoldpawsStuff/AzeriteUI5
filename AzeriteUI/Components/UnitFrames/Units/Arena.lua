@@ -730,7 +730,7 @@ GroupHeader.UpdateVisibilityDriver = function(self)
 	if (InCombatLockdown()) then return end
 
 	local isInInstance, instanceType = IsInInstance()
-	if (not isInInstance or (instanceType ~= "arena" and not self.db.profile.showInBattlegrounds)) then
+	if (not isInInstance or (instanceType ~= "arena" and not ArenaFrameMod.db.profile.showInBattlegrounds)) then
 		self.visibility = "hide"
 	else
 		self.visibility = "show"
