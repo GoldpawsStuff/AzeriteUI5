@@ -117,9 +117,7 @@ local function updateArenaPreparation(self, event)
 		end
 	elseif(event == 'PLAYER_ENTERING_WORLD' and not UnitExists(self.unit)) then
 		-- semi-recursive call for when the player zones into an arena
-		if(oUF.isRetail) then
-			updateArenaPreparation(self, 'ARENA_PREP_OPPONENT_SPECIALIZATIONS')
-		end
+		updateArenaPreparation(self, 'ARENA_PREP_OPPONENT_SPECIALIZATIONS')
 	elseif(event == 'ARENA_PREP_OPPONENT_SPECIALIZATIONS') then
 		if(InCombatLockdown()) then
 			-- prevent calling protected functions if entering arena while in combat
@@ -188,12 +186,13 @@ function oUF:HandleUnit(object, unit)
 		object:RegisterEvent('UNIT_TARGETABLE_CHANGED', object.UpdateAllElements)
 	elseif(unit:match('arena%d?$')) then
 		object:RegisterEvent('ARENA_OPPONENT_UPDATE', object.UpdateAllElements, true)
-		if oUF.isRetail then
+
+		if(oUF.isRetail) then
 			object:RegisterEvent('ARENA_PREP_OPPONENT_SPECIALIZATIONS', updateArenaPreparation, true)
+			object:SetAttribute('oUF-enableArenaPrep', true)
+			-- the event handler only fires for visible frames, so we have to hook it for arena prep
+			object:HookScript('OnEvent', updateArenaPreparation)
 		end
-		object:SetAttribute('oUF-enableArenaPrep', true)
-		-- the event handler only fires for visible frames, so we have to hook it for arena prep
-		object:HookScript('OnEvent', updateArenaPreparation)
 	end
 end
 
