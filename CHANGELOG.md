@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2024-01-19
 ### Fixed
+- Party frames should now be explicitly disabled on startup and reloads to prevent blizzard party frames from showing in the classics.
 - Fixed an issue where the enemy arena frames looked in the wrong place for the saved settings and would bug out upon loading.
 
 ## [5.2.154-RC] 2024-01-17
