@@ -353,7 +353,9 @@ ChatFrames.StyleFrame = function(self, frame)
 	self:UpdateChatFading(frame)
 	self:SecureHook(frame, "SetFont", "UpdateChatFont")
 
-	local setAlpha = frame.SetAlpha
+	-- Frame Metamethods
+	local setAlpha = getmetatable(CreateFrame("Frame")).__index.SetAlpha
+	local getAlpha = getmetatable(CreateFrame("Frame")).__index.GetAlpha
 
 	-- Attempt to fix coins and chat textures not fading by double setting the alpha.
 	-- The bug seems to go away when the textures once have been set to zero alpha.
@@ -365,6 +367,18 @@ ChatFrames.StyleFrame = function(self, frame)
 			setAlpha(frame, alpha)
 		end
 	end)
+
+	-- Overkill experiment to see if we can force the opacity
+	-- of chat textures to be updated right from the start.
+	local origAddMessage = frame.AddMessage
+	frame.AddMessage = function(chatFrame, msg, r, g, b, chatID, ...)
+		if (msg and msg:find("|T")) then
+			local alpha = getAlpha(chatFrame)
+			setAlpha(chatFrame, 0)
+			setAlpha(chatFrame, alpha)
+		end
+		origAddMessage(chatFrame, msg, r, g, b, chatID, ...)
+	end
 
 	frame.isSkinned = true
 end
