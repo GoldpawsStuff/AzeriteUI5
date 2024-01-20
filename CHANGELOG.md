@@ -4,11 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2024-01-19
+## [Unreleased] 2024-01-20
 ### Added
 - Started work on export/import functionality for the options menu and movable frame panel. The goal is to allow both complete profile copies, select modules or settings, or just copy a set of movable frame positions/scales. Will take a little time and work to finish!
 
-## [Unreleased] 2024-01-19
+## [5.2.155-RC] 2024-01-20
 ### Fixed
 - Party frames should now be explicitly disabled on startup and reloads to prevent blizzard party frames from showing in the classics.
 - Fixed an issue where the enemy arena frames looked in the wrong place for the saved settings and would bug out upon loading.
