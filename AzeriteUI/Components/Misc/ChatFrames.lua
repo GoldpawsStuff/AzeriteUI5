@@ -372,12 +372,15 @@ ChatFrames.StyleFrame = function(self, frame)
 	-- of chat textures to be updated right from the start.
 	local origAddMessage = frame.AddMessage
 	frame.AddMessage = function(chatFrame, msg, r, g, b, chatID, ...)
-		if (msg and msg:find("|T")) then
-			local alpha = getAlpha(chatFrame)
-			setAlpha(chatFrame, 0)
-			setAlpha(chatFrame, alpha)
-		end
+
+		-- call this first, otherwise the alpha changes are meaningless.
 		origAddMessage(chatFrame, msg, r, g, b, chatID, ...)
+
+		-- the bug re-occur on scrolling, as the textures are redrawn.
+		local alpha = getAlpha(chatFrame)
+		setAlpha(chatFrame, 0)
+		setAlpha(chatFrame, 1)
+		setAlpha(chatFrame, alpha)
 	end
 
 	frame.isSkinned = true
