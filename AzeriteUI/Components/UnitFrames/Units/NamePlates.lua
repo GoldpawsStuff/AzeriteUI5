@@ -818,7 +818,7 @@ local style = function(self, unit, id)
 	name:SetJustifyH(db.NameJustifyH)
 	name:SetJustifyV(db.NameJustifyV)
 	--self:Tag(name, prefix("[*:Name(32,nil,nil,true)]"))
-	self:Tag(name, prefix("[*:Name(16,nil,nil,nil)]")) -- maxChars, showLevel, showLevelLast, showFull
+	self:Tag(name, prefix("[*:Name(24,nil,nil,nil)]")) -- maxChars, showLevel, showLevelLast, showFull
 
 	self.Name = name
 
