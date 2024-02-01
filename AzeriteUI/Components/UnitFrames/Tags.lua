@@ -242,11 +242,7 @@ Methods[prefix("*:Name")] = function(unit, realUnit, ...)
 	local fullName, fullLength = name, string_len(name) + (shouldShowLevel and levelTextLength or 0)
 	local abbreviatedLength
 
-	if (not showFull and string_find(name, "%s")) then
-		name = AbbreviateName(name)
-		abbreviatedLength = string_len(name) + (shouldShowLevel and levelTextLength or 0)
-	end
-
+	-- Create level text if requested.
 	if (showLevel) then
 		local level = UnitEffectiveLevel(realUnit or unit)
 		if (level and level > 0) then
@@ -255,6 +251,12 @@ Methods[prefix("*:Name")] = function(unit, realUnit, ...)
 			levelTextLength = level >= 100 and 5 or level >= 10 and 4 or 3
 			shouldShowLevel = true
 		end
+	end
+
+	-- Abbreviate when needed, but not when we have space.
+	if (not showFull) and (not maxChars or fullLength > maxChars) then
+		name = AbbreviateName(name)
+		abbreviatedLength = string_len(name) + (shouldShowLevel and levelTextLength or 0)
 	end
 
 	-- Truncate when needed. Messy.
