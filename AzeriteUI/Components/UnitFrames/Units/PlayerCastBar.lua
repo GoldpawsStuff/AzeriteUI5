@@ -170,9 +170,9 @@ local style = function(self, unit)
 	cast.Time = castTime
 
 	local castDelay = cast:CreateFontString(nil, "OVERLAY", nil, 0)
-	castDelay:SetFontObject(GetFont(12,true))
+	castDelay:SetFontObject(GetFont(15,true))
 	castDelay:SetTextColor(unpack(Colors.red))
-	castDelay:SetPoint("LEFT", cast, "RIGHT", 12, 0)
+	castDelay:SetPoint("LEFT", cast, "RIGHT", 20, 0)
 	castDelay:SetJustifyV("MIDDLE")
 	cast.Delay = castDelay
 
