@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2024-02-01
+## [5.2.156-RC] 2024-02-01
 - Certain features that will remain in alpha testing a while will no longer be included in these patch notes until they're actually ready to be tested by the public.
 
 ### Changed
