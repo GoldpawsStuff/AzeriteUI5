@@ -4,9 +4,14 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2024-01-20
-### Added
-- Started work on export/import functionality for the options menu and movable frame panel. The goal is to allow both complete profile copies, select modules or settings, or just copy a set of movable frame positions/scales. Will take a little time and work to finish!
+## [Unreleased] 2024-02-01
+- Certain features that will remain in alpha testing a while will no longer be included in these patch notes until they're actually ready to be tested by the public.
+
+### Changed
+- Display names on arena enemy frames, boss frames, the focus frame, the target of target frame and nameplates will now be abbreviated before truncation in an effort to make names easier to read.
+
+### Fixed
+- Fixed an issue where the git development version would fail to load the embedded UTF8 library.
 
 ## [5.2.155-RC] 2024-01-20
 ### Fixed
