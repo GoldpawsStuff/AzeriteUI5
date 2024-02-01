@@ -359,28 +359,38 @@ ChatFrames.StyleFrame = function(self, frame)
 
 	-- Attempt to fix coins and chat textures not fading by double setting the alpha.
 	-- The bug seems to go away when the textures once have been set to zero alpha.
-	hooksecurefunc(UIParent, "SetAlpha", function()
-		local alpha = UIParent:GetAlpha()
-		if (alpha < .5) then
-			setAlpha(frame, 0)
-		else
-			setAlpha(frame, alpha)
+	--hooksecurefunc(UIParent, "SetAlpha", function()
+	--	local alpha = UIParent:GetAlpha()
+	--	if (alpha < .5) then
+	--		setAlpha(frame, 0)
+	--	else
+	--		setAlpha(frame, alpha)
+	--	end
+	--end)
+
+	local fixAlpha = function()
+		if (frame.alphaTimer) then
+			frame.alphaTimer:Cancel()
 		end
-	end)
+		local alpha = getAlpha(frame)
+		setAlpha(frame, 0)
+		setAlpha(frame, 1)
+		setAlpha(frame, alpha)
+	end
 
 	-- Overkill experiment to see if we can force the opacity
 	-- of chat textures to be updated right from the start.
+	-- *the bug re-occur on scrolling, as the textures are redrawn.
 	local origAddMessage = frame.AddMessage
 	frame.AddMessage = function(chatFrame, msg, r, g, b, chatID, ...)
 
 		-- call this first, otherwise the alpha changes are meaningless.
 		origAddMessage(chatFrame, msg, r, g, b, chatID, ...)
-
-		-- the bug re-occur on scrolling, as the textures are redrawn.
-		local alpha = getAlpha(chatFrame)
-		setAlpha(chatFrame, 0)
-		setAlpha(chatFrame, 1)
-		setAlpha(chatFrame, alpha)
+		fixAlpha() -- call the fix the first time
+		-- schedule a timer on the next frame update
+		if (not chatFrame.alphaTimer) then
+			chatFrame.alphaTimer = C_Timer.After(0, fixAlpha)
+		end
 	end
 
 	frame.isSkinned = true
