@@ -349,7 +349,8 @@ local Name_PostUpdate = function(self)
 		if (not name.usingSmallWidth) then
 			name.usingSmallWidth = true
 			self:Untag(name)
-			self:Tag(name, prefix("[*:Name(30,true,nil,true)]"))
+			--self:Tag(name, prefix("[*:Name(30,true,nil,true)]"))
+			self:Tag(name, prefix("[*:Name(30,true,nil,nil)]")) -- maxChars, showLevel, showLevelLast, showFull
 		end
 	else
 		if (name.usingSmallWidth) then

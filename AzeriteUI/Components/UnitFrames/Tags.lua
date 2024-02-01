@@ -239,9 +239,12 @@ Methods[prefix("*:Name")] = function(unit, realUnit, ...)
 
 	local maxChars, showLevel, showLevelLast, showFull = getargs(...)
 	local levelTextLength, levelText, shouldShowLevel = 0, nil, nil
+	local fullName, fullLength = name, string_len(name) + (shouldShowLevel and levelTextLength or 0)
+	local abbreviatedLength
 
 	if (not showFull and string_find(name, "%s")) then
 		name = AbbreviateName(name)
+		abbreviatedLength = string_len(name) + (shouldShowLevel and levelTextLength or 0)
 	end
 
 	if (showLevel) then
@@ -254,11 +257,9 @@ Methods[prefix("*:Name")] = function(unit, realUnit, ...)
 		end
 	end
 
-	if (maxChars) then
-		local fullLength = string_len(name) + (shouldShowLevel and levelTextLength or 0)
-		if (fullLength > maxChars) then
-			name = utf8sub(name, showLevel and (maxChars - levelTextLength) or maxChars)
-		end
+	-- Truncate when needed. Messy.
+	if (maxChars) and (showFull and fullLength > maxChars) or (abbreviatedLength and abbreviatedLength > maxChars) then
+		name = utf8sub(name, showLevel and (maxChars - levelTextLength) or maxChars)
 	end
 
 	if (shouldShowLevel) then

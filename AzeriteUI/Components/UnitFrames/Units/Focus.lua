@@ -341,7 +341,7 @@ local style = function(self, unit)
 	name:SetTextColor(unpack(db.NameColor))
 	name:SetJustifyH(db.NameJustifyH)
 	name:SetJustifyV(db.NameJustifyV)
-	self:Tag(name, prefix("[*:Name(16,nil,nil,true)]"))
+	self:Tag(name, prefix("[*:Name(16,nil,nil,nil)]")) -- maxChars, showLevel, showLevelLast, showFull
 
 	self.Name = name
 
