@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 125
+local MINOR_VERSION = 126
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -375,10 +375,13 @@ function SetupSecureSnippets(button)
 			local pressAndHold = false
 			if type == "action" then
 				self:SetAttribute("typerelease", "actionrelease")
-				local actionType, id = GetActionInfo(action)
+				local actionType, id, subType = GetActionInfo(action)
 				if actionType == "spell" then
 					pressAndHold = IsPressHoldReleaseSpell(id)
 				elseif actionType == "macro" then
+					if subType == "spell" then
+						pressAndHold = IsPressHoldReleaseSpell(id)
+					end
 					-- GetMacroSpell is not in the restricted environment
 					--[=[
 						local spellID = GetMacroSpell(id)
@@ -2489,15 +2492,19 @@ Action.IsConsumableOrStackable = function(self) return IsConsumableAction(self._
 Action.IsUnitInRange           = function(self, unit) return IsActionInRange(self._state_action, unit) end
 Action.SetTooltip              = function(self) return GameTooltip:SetAction(self._state_action) end
 Action.GetSpellId              = function(self)
-	local actionType, id, _subType = GetActionInfo(self._state_action)
+	local actionType, id, subType = GetActionInfo(self._state_action)
 	if actionType == "spell" then
 		return id
 	elseif actionType == "macro" then
-		return (GetMacroSpell(id))
+		if subType == "spell" then
+			return id
+		else
+			return (GetMacroSpell(id))
+		end
 	end
 end
 Action.GetLossOfControlCooldown = function(self) return GetActionLossOfControlCooldown(self._state_action) end
-if C_UnitAuras then
+if C_UnitAuras and C_UnitAuras.GetCooldownAuraBySpellID and C_ActionBar and C_ActionBar.GetItemActionOnEquipSpellID then
 	Action.GetPassiveCooldownSpellID = function(self)
 		local _actionType, actionID = GetActionInfo(self._state_action)
 		local onEquipPassiveSpellID
@@ -2576,7 +2583,7 @@ Item.IsCurrentlyActive       = function(self) return IsCurrentItem(self._state_a
 Item.IsAutoRepeat            = function(self) return nil end
 Item.IsUsable                = function(self) return IsUsableItem(self._state_action) end
 Item.IsConsumableOrStackable = function(self) return IsConsumableItem(self._state_action) end
-Item.IsUnitInRange           = function(self, unit) return IsItemInRange(self._state_action, unit) end
+--Item.IsUnitInRange           = function(self, unit) return IsItemInRange(self._state_action, unit) end
 Item.SetTooltip              = function(self) return GameTooltip:SetHyperlink(self._state_action) end
 Item.GetSpellId              = function(self) return nil end
 Item.GetPassiveCooldownSpellID = function(self) return nil end
@@ -2629,7 +2636,7 @@ Custom.RunCustom               = function(self, unit, button) return self._state
 Custom.GetPassiveCooldownSpellID = function(self) return nil end
 
 --- WoW Classic overrides
-if (WoWClassic or WoWBCC or WoWWrath) then
+if WoWClassic or WoWBCC or WoWWrath then
 	UpdateOverlayGlow = function() end
 end
 

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.126-Alpha] 2024-02-07
+### Fixed
+- Various fixes for WoW Classic Era 1.15.1.
+
 ## [1.0.125-Alpha] 2023-12-18
 ### Changed
 - Don't show hotkeys under any circumstances if the button config says to hide them.
