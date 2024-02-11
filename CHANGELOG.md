@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2024-02-11
+### Fixed
+- Fixed wrong threat texture on target unit frame portraits for critters.
+
 ## [5.2.157-RC] 2024-02-07
 ### Fixed
 - Fixed and updated for WoW Classic Era 1.15.1.
