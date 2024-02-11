@@ -265,7 +265,7 @@ ns.RegisterConfig("TargetFrame", {
 		-- Portrait Threat
 		PortraitThreatSize = { 187, 187 },
 		PortraitThreatPosition = { "CENTER", -1, 3 },
-		PortraitThreatTexture = GetMedia("hp_critter_case_glow"),
+		PortraitThreatTexture = GetMedia("portrait_frame_glow"),
 
 	},
 	Novice = {
