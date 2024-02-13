@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2024-02-11
+## [5.2.158-RC] 2024-02-13
 ### Fixed
 - Fixed wrong threat texture on target unit frame portraits for critters.
 

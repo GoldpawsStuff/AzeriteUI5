@@ -100,6 +100,10 @@ local TEXTURES = {
 	}
 }
 
+-- Frame Metamethods
+local setAlpha = getmetatable(CreateFrame("Frame")).__index.SetAlpha
+local getAlpha = getmetatable(CreateFrame("Frame")).__index.GetAlpha
+
 -- Local element cache for lookups without member properties
 local Elements = setmetatable({}, { __index = function(t,k) rawset(t,k,{}) return rawget(t,k) end })
 
@@ -352,10 +356,6 @@ ChatFrames.StyleFrame = function(self, frame)
 	self:UpdateChatFont(frame)
 	self:UpdateChatFading(frame)
 	self:SecureHook(frame, "SetFont", "UpdateChatFont")
-
-	-- Frame Metamethods
-	local setAlpha = getmetatable(CreateFrame("Frame")).__index.SetAlpha
-	local getAlpha = getmetatable(CreateFrame("Frame")).__index.GetAlpha
 
 	-- Attempt to fix coins and chat textures not fading by double setting the alpha.
 	-- The bug seems to go away when the textures once have been set to zero alpha.
