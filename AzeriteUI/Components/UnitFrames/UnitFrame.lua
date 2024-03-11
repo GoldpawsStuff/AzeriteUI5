@@ -123,6 +123,16 @@ ns.UnitFrame.Spawn = function(unit, overrideName, ...)
 	return frame
 end
 
+local enableProxy = function(frame)
+	local method = frame.OverrideEnable or frame.Enable
+	method(frame)
+end
+
+local disableProxy = function(frame)
+	local method = frame.OverrideDisable or frame.Disable
+	method(frame)
+end
+
 -- Inherit from the default movable frame module prototype.
 ns.UnitFrameModule = ns:Merge({
 	OnEnabledEvent = function(self, event, ...)
@@ -142,13 +152,13 @@ ns.UnitFrameModule = ns:Merge({
 
 		local config = self.db.profile
 		if (config.enabled) then
-			unitframe:Enable()
+			enableProxy(unitframe)
 
 			if (anchor) then
 				anchor:Enable()
 			end
 		else
-			unitframe:Disable()
+			disableProxy(unitframe)
 
 			if (anchor) then
 				anchor:Disable()

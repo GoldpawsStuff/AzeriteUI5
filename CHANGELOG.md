@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.159-RC] 2024-03-11
+### Fixed
+- It should now be possible to `/reload` the user interface while in an instanced raid group without losing the raid leader unit frame and getting an error message.
+
 ## [5.2.158-RC] 2024-02-13
 ### Fixed
 - Fixed wrong threat texture on target unit frame portraits for critters.
