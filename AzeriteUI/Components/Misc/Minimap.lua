@@ -213,6 +213,8 @@ local ObjectSnippets = {
 	},
 	AzeriteEyeClassicPvP = {
 		Enable = function(object)
+			MiniMapBattlefieldFrame:SetFrameStrata("MEDIUM")
+			MiniMapBattlefieldFrame:SetFrameLevel(70) -- Minimap's XP button is 60
 			MiniMapBattlefieldFrame:ClearAllPoints()
 			MiniMapBattlefieldFrame:SetPoint("BOTTOMLEFT", Minimap, 4, 2)
 			MiniMapBattlefieldFrame:SetHitRectInsets(-8, -8, -8, -8)
@@ -222,6 +224,8 @@ local ObjectSnippets = {
 			if (BattlefieldIconText) then BattlefieldIconText:Hide() end
 		end,
 		Disable = function(object)
+			MiniMapBattlefieldFrame:SetFrameStrata(Minimap:GetFrameStrata())
+			MiniMapBattlefieldFrame:SetFrameLevel(Minimap:GetFrameLevel() + 1)
 			MiniMapBattlefieldFrame:ClearAllPoints()
 			MiniMapBattlefieldFrame:SetPoint("BOTTOMLEFT", Minimap, 13, -13)
 			MiniMapBattlefieldFrame:SetHitRectInsets(0, 0, 0, 0)
