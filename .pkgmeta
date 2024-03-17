@@ -22,9 +22,7 @@ externals:
     AzeriteUI/Libs/LibClassicDurations: https://repos.curseforge.com/wow/libclassicdurations
     AzeriteUI/Libs/LibHealComm-4.0: https://github.com/caboyd/LibHealComm-4.0.git
     AzeriteUI/Libs/LibMoreEvents-1.0: https://github.com/GoldpawsStuff/LibMoreEvents-1.0
-    AzeriteUI/Libs/TaintLess:
-        url: https://www.townlong-yak.com/addons.git/taintless
-        commit: default
+    AzeriteUI/Libs/TaintLess: https://www.townlong-yak.com/addons.git/taintless
 
 move-folders:
     AzeriteUI/AzeriteUI: AzeriteUI
