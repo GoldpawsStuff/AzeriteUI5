@@ -133,7 +133,8 @@ Colors.blizzquality = createColorGroup(ITEM_QUALITY_COLORS)
 Colors.quality = {}
 Colors.quality[0] = createColor(157/255, 157/255, 157/255) -- Poor
 Colors.quality[1] = createColor(240/255, 240/255, 240/255) -- Common
-Colors.quality[2] = createColor(30/255, 178/255, 0/255) -- Uncommon
+Colors.quality[2] = createColor(30/255, 198/255, 0/255) -- Uncommon
+--Colors.quality[2] = createColor(30/255, 178/255, 0/255) -- Uncommon
 Colors.quality[3] = createColor(0/255, 112/255, 221/255) -- Rare
 Colors.quality[4] = createColor(163/255, 53/255, 238/255) -- Epic
 Colors.quality[5] = createColor(225/255, 96/255, 0/255) -- Legendary
@@ -274,15 +275,24 @@ end
 
 -- Reactions
 Colors.reaction = {}
+--Colors.reaction[1] = createColor(205/255, 46/255, 36/255) -- hated
+--Colors.reaction[2] = createColor(205/255, 46/255, 36/255) -- hostile
+--Colors.reaction[3] = createColor(192/255, 68/255, 0/255) -- unfriendly
+--Colors.reaction[4] = createColor(249/255, 158/255, 55/255) -- neutral
+--Colors.reaction[5] = createColor( 64/255, 101/255, 38/255) -- friendly
+--Colors.reaction[6] = createColor( 64/255, 116/255, 69/255) -- honored
+--Colors.reaction[7] = createColor( 64/255, 131/255, 104/255) -- revered
+--Colors.reaction[8] = createColor( 64/255, 131/255, 131/255) -- exalted
+--Colors.reaction.civilian = createColor(64/255, 131/255, 38/255) -- used for friendly player nameplates
 Colors.reaction[1] = createColor(205/255, 46/255, 36/255) -- hated
 Colors.reaction[2] = createColor(205/255, 46/255, 36/255) -- hostile
-Colors.reaction[3] = createColor(192/255, 68/255, 0/255) -- unfriendly
-Colors.reaction[4] = createColor(249/255, 158/255, 55/255) -- neutral
-Colors.reaction[5] = createColor( 64/255, 101/255, 38/255) -- friendly
+Colors.reaction[3] = createColor(192/255, 98/255, 0/255) -- unfriendly
+Colors.reaction[4] = createColor(249/255, 188/255, 55/255) -- neutral
+Colors.reaction[5] = createColor( 64/255, 131/255, 38/255) -- friendly
 Colors.reaction[6] = createColor( 64/255, 116/255, 69/255) -- honored
-Colors.reaction[7] = createColor( 64/255, 131/255, 104/255) -- revered
-Colors.reaction[8] = createColor( 64/255, 131/255, 131/255) -- exalted
-Colors.reaction.civilian = createColor(64/255, 131/255, 38/255) -- used for friendly player nameplates
+Colors.reaction[7] = createColor( 64/255, 171/255, 104/255) -- revered
+Colors.reaction[8] = createColor( 64/255, 171/255, 131/255) -- exalted
+Colors.reaction.civilian = createColor(64/255, 161/255, 38/255) -- used for friendly player nameplates
 
 -- Friendship
 -- Just using these as pointers to the reaction colors,
