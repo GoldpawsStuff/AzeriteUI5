@@ -426,15 +426,15 @@ Tooltips.OnTooltipSetUnit = function(self, tooltip, data)
 		end
 	end
 
-	if (UnitIsPlayer(unit)) then
-		local color = GetUnitColor(unit)
-		if (color) then
+	local color = GetUnitColor(unit)
+	if (color) then
 
-			local unitName, unitRealm = UnitName(unit)
-			local displayName = color.colorCode..unitName.."|r"
-			local gray = Colors.quest.gray.colorCode
-			local levelText
+		local unitName, unitRealm = UnitName(unit)
+		local displayName = color.colorCode..unitName.."|r"
+		local gray = Colors.quest.gray.colorCode
+		local levelText
 
+		if (UnitIsPlayer(unit)) then
 			if (unitRealm and unitRealm ~= "") then
 				local relationship = UnitRealmRelationship(unit)
 				if (relationship == _G.LE_REALM_RELATION_COALESCED) then
@@ -444,13 +444,12 @@ Tooltips.OnTooltipSetUnit = function(self, tooltip, data)
 					displayName = displayName ..gray..  _G.INTERACTIVE_SERVER_LABEL .."|r"
 				end
 			end
+		end
 
-			if (levelText) then
-				_G.GameTooltipTextLeft1:SetText(levelText .. gray .. ": |r" .. displayName)
-			else
-				_G.GameTooltipTextLeft1:SetText(displayName)
-			end
-
+		if (levelText) then
+			_G.GameTooltipTextLeft1:SetText(levelText .. gray .. ": |r" .. displayName)
+		else
+			_G.GameTooltipTextLeft1:SetText(displayName)
 		end
 
 	end
