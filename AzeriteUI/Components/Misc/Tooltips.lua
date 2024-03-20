@@ -73,6 +73,7 @@ local defaults = { profile = ns:Merge({
 	theme = "Classic",
 	showItemID = false,
 	showSpellID = false,
+	showGuildName = false,
 	anchor = true,
 	anchorToCursor = false,
 	hideInCombat = false,
@@ -429,10 +430,18 @@ Tooltips.OnTooltipSetUnit = function(self, tooltip, data)
 	local color = GetUnitColor(unit)
 	if (color) then
 
+<<<<<<< HEAD
 		local unitName, unitRealm = UnitName(unit)
 		local displayName = color.colorCode..unitName.."|r"
 		local gray = Colors.quest.gray.colorCode
 		local levelText
+=======
+			local unitName, unitRealm = UnitName(unit)
+			local guildName, _, _, _ = GetGuildInfo(unit)
+			local displayName = color.colorCode..unitName.."|r"
+			local gray = Colors.quest.gray.colorCode
+			local levelText
+>>>>>>> 9dea4cf (Add toggle to show Guildname for player in tooltip)
 
 		if (UnitIsPlayer(unit)) then
 			if (unitRealm and unitRealm ~= "") then
@@ -446,10 +455,23 @@ Tooltips.OnTooltipSetUnit = function(self, tooltip, data)
 			end
 		end
 
+<<<<<<< HEAD
 		if (levelText) then
 			_G.GameTooltipTextLeft1:SetText(levelText .. gray .. ": |r" .. displayName)
 		else
 			_G.GameTooltipTextLeft1:SetText(displayName)
+=======
+			if (levelText) then
+				_G.GameTooltipTextLeft1:SetText(levelText .. gray .. ": |r" .. displayName)
+			else
+				_G.GameTooltipTextLeft1:SetText(displayName)
+			end
+
+			if (self.db.profile.showGuildName and guildName) then
+          tooltip:AddLine(guildName, 1, 0.8, 0) -- Add the guild name on a new line
+      end
+
+>>>>>>> 9dea4cf (Add toggle to show Guildname for player in tooltip)
 		end
 
 	end
