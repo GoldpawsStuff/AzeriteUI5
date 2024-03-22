@@ -50,14 +50,14 @@ end
 local tocversion = select(4, GetBuildInfo())
 
 -- Deprecated in 10.1.0
-if (tocversion >= 100100) then
+if (tocversion >= 100100) or (tocversion >= 40400 and tocversion < 50000) then
 	if (not _G.GetAddOnMetadata) then
 		_G.GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 	end
 end
 
 -- Deprecated in 10.2.0
-if (tocversion >= 100200) then
+if (tocversion >= 100200) or (tocversion >= 40400 and tocversion < 50000) then
 	local original_SetPortraitToTexture = SetPortraitToTexture
 	for method,func in next,{
 		GetCVarInfo = C_CVar.GetCVarInfo,
@@ -94,7 +94,7 @@ if (tocversion >= 100200) then
 end
 
 -- Deprecated in 10.2.5
-if (tocversion >= 100205) then
+if (tocversion >= 100205) or (tocversion >= 40400 and tocversion < 50000) then
 	for method,func in next,{
 		GetTimeToWellRested = function() return nil end,
 		FillLocalizedClassList = function(tbl, isFemale)
