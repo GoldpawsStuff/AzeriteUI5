@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 35
+local MINOR_VERSION = 36
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -204,7 +204,7 @@ lib.UpdateCurrentlyFadingFrames = function()
 		if (currentAlpha > targetAlpha) then
 
 			-- Is there room to change the alpha?
-			if (currentAlpha - fadeThrottle/lib.fadeOutDuration > targetAlpha) then
+			if (lib.fadeOutDuration > 0) and (currentAlpha - fadeThrottle/lib.fadeOutDuration > targetAlpha) then
 				setCurrentAlpha(frame, currentAlpha - fadeThrottle/lib.fadeOutDuration)
 			else
 
@@ -218,7 +218,7 @@ lib.UpdateCurrentlyFadingFrames = function()
 		elseif (currentAlpha < targetAlpha) then
 
 			-- Is there room to change the alpha?
-			if (currentAlpha + fadeThrottle/lib.fadeInDuration < targetAlpha) then
+			if (lib.fadeInDuration > 0) and (currentAlpha + fadeThrottle/lib.fadeInDuration < targetAlpha) then
 				setCurrentAlpha(frame, currentAlpha + fadeThrottle/lib.fadeInDuration)
 			else
 
