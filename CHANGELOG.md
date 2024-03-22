@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2024-03-22
+### Changed
+
 ## [5.2.160-RC] 2024-03-17
 ### Changed
 - Brightened up some of the non-hostile faction colors for tooltips and unitframe health bars.
