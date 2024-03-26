@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.162-RC] 2024-03-26
+### Fixed
+- Updated the name of the Retail Minimap TrackingFrame to work with WoW Client Patch 10.2.6.
+
 ## [5.2.161-RC] 2024-03-22
 - Updated for WoW Client Patch 10.2.6.
 - Started work on supporting WoW Client Patch 4.4.0.
