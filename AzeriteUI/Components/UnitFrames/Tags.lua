@@ -230,7 +230,7 @@ Methods[prefix("*:ManaText:Low")] = function(unit)
 	end
 end
 
-Events[prefix("*:Name")] = "UNIT_NAME_UPDATE"
+Events[prefix("*:Name")] = "UNIT_NAME_UPDATE UNIT_LEVEL PLAYER_LEVEL_UP GROUP_ROSTER_UPDATE"
 Methods[prefix("*:Name")] = function(unit, realUnit, ...)
 	local name = UnitName(realUnit or unit)
 	if (not name) then
