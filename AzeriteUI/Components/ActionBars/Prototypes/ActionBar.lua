@@ -185,10 +185,12 @@ ns.ActionBar.Create = function(self, id, config, name)
 		self:SetAttribute("hastempshapeshiftbar", hasTempShapeshiftBar);
 		self:SetAttribute("haspossessbar", hasPossessBar);
 
-		self:CallMethod("UpdateButtonDimming");
+		self:CallMethod("UpdateButtonFlags");
 
 		self:SetAttribute("state", newstate);
 		control:ChildUpdate("state", newstate);
+
+		self:CallMethod("UpdateFading");
 	]])
 
 	for i = 1,NUM_ACTIONBAR_BUTTONS do
@@ -201,7 +203,7 @@ ns.ActionBar.Create = function(self, id, config, name)
 	return bar
 end
 
-ActionBar.UpdateButtonDimming = function(self)
+ActionBar.UpdateButtonFlags = function(self)
 
 	self.isDragonRiding = self:GetAttribute("isdragonriding")
 	self.hasVehicleBar = self:GetAttribute("hasvehiclebar")
@@ -216,7 +218,6 @@ ActionBar.UpdateButtonDimming = function(self)
 		button.hasTempShapeshiftBar = self.hasTempShapeshiftBar
 		button.hasPossessBar = self.hasPossessBar
 	end
-
 end
 
 ActionBar.CreateButton = function(self, buttonConfig)
@@ -268,7 +269,10 @@ ActionBar.Disable = function(self)
 end
 
 ActionBar.Update = function(self)
-	if (InCombatLockdown()) then return end
+	if (InCombatLockdown()) then
+		self:UpdateFading()
+		return
+	end
 
 	self:UpdateButtonConfig()
 	self:UpdateButtonCount()
@@ -289,7 +293,8 @@ ActionBar.UpdateFading = function(self)
 
 		-- Remove any previous fade registrations.
 		for id = 1, #buttons do
-			LFF:UnregisterFrameForFading(buttons[id])
+			local button = buttons[id]
+			LFF:UnregisterFrameForFading(button)
 		end
 
 		-- Register fading for selected buttons.
@@ -297,6 +302,8 @@ ActionBar.UpdateFading = function(self)
 			local button = buttons[id]
 			if (button:GetTexture()) then
 				LFF:RegisterFrameForFading(button, config.fadeAlone and self:GetName() or "actionbuttons", unpack(config.hitrects))
+			else
+				button:ForceUpdate()
 			end
 		end
 
@@ -305,7 +312,9 @@ ActionBar.UpdateFading = function(self)
 		-- Unregister all fading.
 		for id, button in next,buttons do
 			LFF:UnregisterFrameForFading(buttons[id])
-			--button:ForceUpdate()
+			if (not button:GetTexture()) then
+				button:ForceUpdate()
+			end
 		end
 	end
 
