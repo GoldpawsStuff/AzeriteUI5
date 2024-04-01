@@ -32,6 +32,7 @@ local select = select
 local setmetatable = setmetatable
 local string_format = string.format
 local tostring = tostring
+local unpack = unpack
 
 -- GLOBALS: UIParent
 -- GLOBALS: UnregisterStateDriver, RegisterStateDriver
@@ -280,6 +281,7 @@ end
 
 ActionBar.UpdateFading = function(self)
 	if (not self:IsEnabled()) then return end
+	if (not IsPlayerInWorld()) then return end
 
 	local config, buttons = self.config, self.buttons
 
@@ -292,15 +294,11 @@ ActionBar.UpdateFading = function(self)
 
 		-- Register fading for selected buttons.
 		for id = config.fadeFrom or 1, #buttons do
-			LFF:RegisterFrameForFading(buttons[id], config.fadeAlone and self:GetName() or "actionbuttons", unpack(config.hitrects))
+			local button = buttons[id]
+			if (button:GetTexture()) then
+				LFF:RegisterFrameForFading(button, config.fadeAlone and self:GetName() or "actionbuttons", unpack(config.hitrects))
+			end
 		end
-
-		--if (config.fadeFrom and config.fadeFrom > 1) then
-			--for id = 1, config.fadeFrom-1 do
-			--	local button = buttons[id]
-			--	button:ForceUpdate()
-			--end
-		--end
 
 	else
 
