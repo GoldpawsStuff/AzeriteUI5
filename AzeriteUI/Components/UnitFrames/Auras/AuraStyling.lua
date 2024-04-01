@@ -160,7 +160,6 @@ ns.AuraStyles.PlayerPostUpdateButton = function(element, button, unit, data, pos
 	end
 	if (color) then
 		button.Border:SetBackdropBorderColor(color[1], color[2], color[3])
-		--button.Bar:SetStatusBarColor(color[1], color[2], color[3])
 	end
 
 	-- Icon Coloring
@@ -179,28 +178,24 @@ ns.AuraStyles.PlayerPostUpdateButton = function(element, button, unit, data, pos
 		button.Icon:SetVertexColor(.6, .6, .6)
 	end
 
-	--if (button.isHarmful) or (data.isPlayerAura and (data.nameplateShowAll or data.nameplateShowPersonal)) or (not button.isHarmful and data.isPlayerAura and data.canApplyAura) then
-	--	button.Icon:SetDesaturated(false)
-	--	button.Icon:SetVertexColor(1, 1, 1)
-	--else
-	--	button.Icon:SetDesaturated(true)
-	--	button.Icon:SetVertexColor(.6, .6, .6)
-	--end
-
 end
 
 ns.AuraStyles.TargetPostUpdateButton = function(element, button, unit, data, position)
 
-	-- Stealable buffs
-	--if(not button.isHarmful and isStealable and element.showStealableBuffs and not UnitIsUnit("player", unit)) then
-	--end
-
 	-- Border Coloring
 	local color
-	if (button.isHarmful and element.showDebuffType) or (not button.isHarmful and element.showBuffType) or (element.showType) then
-		color = Colors.debuff[data.dispelName] or Colors.debuff.none
+	if (UnitCanAttack("player", unit)) then
+		if (button.isHarmful) then
+			color = Colors.verydarkgray
+		else
+			color = Colors.debuff[data.dispelName] or Colors.verydarkgray
+		end
 	else
-		color = Colors.verydarkgray
+		if (button.isHarmful and element.showDebuffType) or (not button.isHarmful and element.showBuffType) or (element.showType) then
+			color = Colors.debuff[data.dispelName] or Colors.debuff.none
+		else
+			color = Colors.verydarkgray
+		end
 	end
 	if (color) then
 		button.Border:SetBackdropBorderColor(color[1], color[2], color[3])
@@ -225,10 +220,6 @@ end
 
 ns.AuraStyles.NameplatePostUpdateButton = function(element, button, unit, data, position)
 
-	-- Stealable buffs
-	--if(not button.isHarmful and isStealable and element.showStealableBuffs and not UnitIsUnit("player", unit)) then
-	--end
-
 	-- Coloring
 	local color
 	if (button.isHarmful and element.showDebuffType) or (not button.isHarmful and element.showBuffType) or (element.showType) then
@@ -243,11 +234,6 @@ ns.AuraStyles.NameplatePostUpdateButton = function(element, button, unit, data, 
 end
 
 ns.AuraStyles.ArenaPostUpdateButton = function(element, button, unit, data, position)
-
-	-- Stealable buffs
-	if (not button.isHarmful and data.isStealable and element.showStealableBuffs and not UnitIsUnit("player", unit)) then
-
-	end
 
 	-- Coloring
 	local color

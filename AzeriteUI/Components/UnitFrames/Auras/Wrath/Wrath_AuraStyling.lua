@@ -154,7 +154,6 @@ ns.AuraStyles.PlayerPostUpdateButton = function(element, unit, button, index, po
 	end
 	if (color) then
 		button.Border:SetBackdropBorderColor(color[1], color[2], color[3])
-		--button.Bar:SetStatusBarColor(color[1], color[2], color[3])
 	end
 
 	-- Icon Coloring
@@ -170,17 +169,23 @@ end
 
 ns.AuraStyles.TargetPostUpdateButton = function(element, unit, button, index, position, duration, expiration, debuffType, isStealable)
 
-	-- Stealable buffs
-	if(not button.isDebuff and isStealable and element.showStealableBuffs and not UnitIsUnit("player", unit)) then
-	end
-
 	-- Border Coloring
 	local color
-	if (button.isDebuff and element.showDebuffType) or (not button.isDebuff and element.showBuffType) or (element.showType) then
-		color = Colors.debuff[debuffType] or Colors.debuff.none
+
+	if (UnitCanAttack("player", unit)) then
+		if (button.isDebuff) then
+			color = Colors.verydarkgray -- Colors.aura
+		else
+			color = Colors.debuff[debuffType] or Colors.verydarkgray
+		end
 	else
-		color = Colors.verydarkgray
+		if (button.isDebuff and element.showDebuffType) or (not button.isDebuff and element.showBuffType) or (element.showType) then
+			color = Colors.debuff[debuffType] or Colors.debuff.none
+		else
+			color = Colors.verydarkgray -- Colors.aura
+		end
 	end
+
 	if (color) then
 		button.Border:SetBackdropBorderColor(color[1], color[2], color[3])
 	end
@@ -198,10 +203,6 @@ end
 
 ns.AuraStyles.NameplatePostUpdateButton = function(element, unit, button, index, position, duration, expiration, debuffType, isStealable)
 
-	-- Stealable buffs
-	if(not button.isDebuff and isStealable and element.showStealableBuffs and not UnitIsUnit("player", unit)) then
-	end
-
 	-- Coloring
 	local color
 	if (button.isDebuff and element.showDebuffType) or (not button.isDebuff and element.showBuffType) or (element.showType) then
@@ -216,10 +217,6 @@ ns.AuraStyles.NameplatePostUpdateButton = function(element, unit, button, index,
 end
 
 ns.AuraStyles.ArenaPostUpdateButton = function(element, unit, button, index, position, duration, expiration, debuffType, isStealable)
-
-	-- Stealable buffs
-	if(not button.isDebuff and isStealable and element.showStealableBuffs and not UnitIsUnit("player", unit)) then
-	end
 
 	-- Coloring
 	local color
