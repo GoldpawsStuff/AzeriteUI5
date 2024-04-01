@@ -87,13 +87,21 @@ end
 
 ExplorerMode.UpdateSettings = function(self)
 
-	self.FORCED = self:CheckForForcedState()
+	local db = self.db.profile
+
+	if (db.enabled and not self.enabled) then
+		self:EnableExplorerMode()
+	elseif (not db.enabled and self.enabled) then
+		self:DisableExplorerMode()
+	end
+
+	self.FORCED = not db.enabled and self:CheckForForcedState()
 
 	-- Action Bars
 	--------------------------------------------
 	local ActionBars = ns:GetModule("ActionBars", true)
 	if (ActionBars) then
-		local fade = not self.FORCED and ActionBars:IsEnabled() and self.db.profile.enabled and self.db.profile.fadeActionBars
+		local fade = not self.FORCED and ActionBars:IsEnabled() and db.enabled and db.fadeActionBars
 		for id,bar in next,ActionBars.bars do
 
 			-- Exempt bars that are fully set to fade
@@ -118,7 +126,7 @@ ExplorerMode.UpdateSettings = function(self)
 
 	local PetBar = ns:GetModule("PetBar", true)
 	if (PetBar) then
-		local fade = not self.FORCED and PetBar:IsEnabled() and self.db.profile.enabled and self.db.profile.fadePetBar
+		local fade = not self.FORCED and PetBar:IsEnabled() and db.enabled and db.fadePetBar
 		local petBar = PetBar.bar
 		if (petBar) then
 			local db = petBar.config
@@ -133,7 +141,7 @@ ExplorerMode.UpdateSettings = function(self)
 
 	local StanceBar = ns:GetModule("StanceBar", true)
 	if (StanceBar) then
-		local fade = not self.FORCED and StanceBar:IsEnabled() and self.db.profile.enabled and self.db.profile.fadeStanceBar
+		local fade = not self.FORCED and StanceBar:IsEnabled() and db.enabled and db.fadeStanceBar
 		local stanceBar = StanceBar.bar
 		if (stanceBar) then
 			local db = stanceBar.config
@@ -150,7 +158,7 @@ ExplorerMode.UpdateSettings = function(self)
 	--------------------------------------------
 	local PlayerFrame = ns:GetModule("PlayerFrame", true)
 	if (PlayerFrame) then
-		local fade = not self.FORCED and PlayerFrame:IsEnabled() and self.db.profile.enabled and self.db.profile.fadePlayerFrame
+		local fade = not self.FORCED and PlayerFrame:IsEnabled() and db.enabled and db.fadePlayerFrame
 		local playerFrame = PlayerFrame:GetFrame()
 		if (playerFrame) then
 			if (fade) then
@@ -163,7 +171,7 @@ ExplorerMode.UpdateSettings = function(self)
 
 	local PlayerFrameAlternate = ns:GetModule("PlayerFrameAlternate", true)
 	if (PlayerFrameAlternate) then
-		local fade = not self.FORCED and PlayerFrameAlternate:IsEnabled() and self.db.profile.enabled and self.db.profile.fadePlayerFrame
+		local fade = not self.FORCED and PlayerFrameAlternate:IsEnabled() and db.enabled and db.fadePlayerFrame
 		local playerFrame = PlayerFrameAlternate:GetFrame()
 		if (playerFrame) then
 			if (fade) then
@@ -178,7 +186,7 @@ ExplorerMode.UpdateSettings = function(self)
 
 	local PlayerClassPowerFrame = ns:GetModule("PlayerClassPowerFrame", true)
 	if (PlayerClassPowerFrame) then
-		local fade = not self.FORCED and PlayerClassPowerFrame:IsEnabled() and self.db.profile.enabled and self.db.profile.fadePlayerClassPower
+		local fade = not self.FORCED and PlayerClassPowerFrame:IsEnabled() and db.enabled and db.fadePlayerClassPower
 		local playerClassPowerFrame = PlayerClassPowerFrame:GetFrame()
 		if (playerClassPowerFrame) then
 			if (fade) then
@@ -191,7 +199,7 @@ ExplorerMode.UpdateSettings = function(self)
 
 	local PetFrame = ns:GetModule("PetFrame", true)
 	if (PetFrame) then
-		local fade = not self.FORCED and PetFrame:IsEnabled() and self.db.profile.enabled and self.db.profile.fadePetFrame
+		local fade = not self.FORCED and PetFrame:IsEnabled() and db.enabled and db.fadePetFrame
 		local petFrame = PetFrame:GetFrame()
 		if (petFrame) then
 			if (fade) then
@@ -204,7 +212,7 @@ ExplorerMode.UpdateSettings = function(self)
 
 	local FocusFrame = ns:GetModule("FocusFrame", true)
 	if (FocusFrame) then
-		local fade = not self.FORCED and FocusFrame:IsEnabled() and self.db.profile.enabled and self.db.profile.fadeFocusFrame
+		local fade = not self.FORCED and FocusFrame:IsEnabled() and db.enabled and db.fadeFocusFrame
 		local focusFrame = FocusFrame:GetFrame()
 		if (focusFrame) then
 			if (fade) then
@@ -219,7 +227,7 @@ ExplorerMode.UpdateSettings = function(self)
 	--------------------------------------------
 	local Tracker = ns:GetModule("Tracker", true)
 	if (Tracker) then
-		local fade = not self.FORCED and Tracker:IsEnabled() and self.db.profile.enabled and self.db.profile.fadeTracker
+		local fade = not self.FORCED and Tracker:IsEnabled() and db.enabled and db.fadeTracker
 		local tracker = Tracker:GetFrame()
 		if (tracker) then
 			if (fade) then
@@ -232,7 +240,7 @@ ExplorerMode.UpdateSettings = function(self)
 
 	-- Chat Windows
 	--------------------------------------------
-	local fadeChat = not self.FORCED and self.db.profile.enabled and self.db.profile.fadeChatFrames
+	local fadeChat = not self.FORCED and db.enabled and db.fadeChatFrames
 	for _,frameName in pairs(_G.CHAT_FRAMES) do
 		local chatFrame = _G[frameName]
 		if (chatFrame) then
@@ -293,10 +301,10 @@ ExplorerMode.CheckForForcedState = function(self)
 end
 
 ExplorerMode.CheckCursor = function(self)
-	if (CursorHasSpell() or CursorHasItem()) then
-		self.busyCursor = true
-		return
-	end
+	--if (CursorHasSpell() or CursorHasItem()) then
+	--	self.busyCursor = true
+	--	return
+	--end
 
 	-- other values: money, merchant
 	local cursor = GetCursorInfo()
@@ -308,6 +316,7 @@ ExplorerMode.CheckCursor = function(self)
 		self.busyCursor = true
 		return
 	end
+
 	self.busyCursor = nil
 end
 
@@ -574,8 +583,7 @@ ExplorerMode.OnEvent = function(self, event, ...)
 	self:UpdateSettings()
 end
 
-ExplorerMode.OnEnable = function(self)
-
+ExplorerMode.EnableExplorerMode = function(self)
 	self:RegisterEvent("CURSOR_CHANGED", "OnEvent")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "OnEvent")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
@@ -590,7 +598,7 @@ ExplorerMode.OnEnable = function(self)
 	self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "OnEvent", "player")
 	self:RegisterUnitEvent("UNIT_AURA", "OnEvent", "player", "vehicle")
 
-	if (ns.IsRetail or ns.IsWrath) then
+	if (ns.IsRetail or ns.IsWrath or ns.IsCata) then
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED", "OnEvent")
 		self:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR", "OnEvent")
 		self:RegisterEvent("UPDATE_POSSESS_BAR", "OnEvent")
@@ -605,4 +613,43 @@ ExplorerMode.OnEnable = function(self)
 	-- This is needed to put actionbars that were exempt from Explorer Mode fading
 	-- back into it when their own full fading has been disabled.
 	ns.RegisterCallback(self, "ActionBarSettings_Changed", "UpdateSettings")
+
+	self.enabled = true
+end
+
+ExplorerMode.DisableExplorerMode = function(self)
+	self:UnregisterEvent("CURSOR_CHANGED", "OnEvent")
+	self:UnregisterEvent("ZONE_CHANGED_NEW_AREA", "OnEvent")
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
+	self:UnregisterEvent("PLAYER_LEAVING_WORLD", "OnEvent")
+	self:UnregisterEvent("PLAYER_LEVEL_UP", "OnEvent")
+	self:UnregisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
+	self:UnregisterEvent("PLAYER_TARGET_CHANGED", "OnEvent")
+	self:UnregisterEvent("GROUP_ROSTER_UPDATE", "OnEvent")
+	self:UnregisterEvent("UNIT_HEALTH", "OnEvent", "player")
+	self:UnregisterEvent("UNIT_POWER_FREQUENT", "OnEvent", "player")
+	self:UnregisterEvent("UNIT_DISPLAYPOWER", "OnEvent", "player")
+	self:UnregisterEvent("UNIT_AURA", "OnEvent", "player", "vehicle")
+
+	if (ns.IsRetail or ns.IsWrath or ns.IsCata) then
+		self:UnregisterEvent("PLAYER_FOCUS_CHANGED", "OnEvent")
+		self:UnregisterEvent("UPDATE_OVERRIDE_ACTIONBAR", "OnEvent")
+		self:UnregisterEvent("UPDATE_POSSESS_BAR", "OnEvent")
+		self:UnregisterEvent("UPDATE_BONUS_ACTIONBAR", "OnEvent")
+		self:UnregisterEvent("UPDATE_VEHICLE_ACTIONBAR", "OnEvent", "player")
+		self:UnregisterEvent("UNIT_ENTERED_VEHICLE", "OnEvent", "player")
+		self:UnregisterEvent("UNIT_ENTERING_VEHICLE", "OnEvent", "player")
+		self:UnregisterEvent("UNIT_EXITED_VEHICLE", "OnEvent", "player")
+		self:UnregisterEvent("UNIT_EXITING_VEHICLE", "OnEvent", "player")
+	end
+
+	-- This is needed to put actionbars that were exempt from Explorer Mode fading
+	-- back into it when their own full fading has been disabled.
+	ns.UnregisterCallback(self, "ActionBarSettings_Changed", "UpdateSettings")
+
+	self.enabled = nil
+end
+
+ExplorerMode.OnEnable = function(self)
 end
