@@ -344,7 +344,10 @@ PetBar.Disable = function(self)
 end
 
 PetBar.Update = function(self)
-	if (InCombatLockdown()) then return end
+	if (InCombatLockdown()) then
+		self:UpdateFading()
+		return
+	end
 
 	self:UpdateButtonConfig()
 	self:UpdateButtonCount()
