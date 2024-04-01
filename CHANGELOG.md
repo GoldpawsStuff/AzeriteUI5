@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Buffs on hostile targets on the target unit frame now has their borders colored to indicate magic school.
 
 ### Fixed
+- Fixed several inconsistencies in fade updates of actionbuttons when changing action page for any reason.
 - Fixed an issue where the Explorer mode even when disabled interfered with regular frame fading and caused all actionbutton fadeouts to be instant instead of timed.
 
 ## [5.2.162-RC] 2024-03-26
