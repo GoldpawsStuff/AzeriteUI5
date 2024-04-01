@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2024-04-01
+### Changed
+- Did a lot of work on the fade framing system.
+- Debuffs on the player frame and friendly targets should once again have their borders colored according to debuff type.
+- Buffs on hostile targets on the target unit frame now has their borders colored to indicate magic school.
+
+### Fixed
+- Fixed an issue where the Explorer mode even when disabled interfered with regular frame fading and caused all actionbutton fadeouts to be instant instead of timed.
+
 ## [5.2.162-RC] 2024-03-26
 ### Fixed
 - Updated the name of the Retail Minimap TrackingFrame to work with WoW Client Patch 10.2.6.
