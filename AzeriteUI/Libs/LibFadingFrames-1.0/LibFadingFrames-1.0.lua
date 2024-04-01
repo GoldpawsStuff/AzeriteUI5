@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 36
+local MINOR_VERSION = 40
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -53,21 +53,20 @@ lib.fadeFrameCurrentAlpha = lib.fadeFrameCurrentAlpha or {} -- fadeFrameCurrentA
 lib.fadeFrameTargetAlpha = lib.fadeFrameTargetAlpha or {} -- fadeFrameTargetAlpha[frame] = alpha
 lib.fadeFrameHitRects = lib.fadeFrameHitRects or {}
 lib.hoverFrames = lib.hoverFrames or {} -- hoverFrames[frame] = "fadeGroup"
+lib.hoveredGroups = lib.hoveredGroups or {} -- lib.hoveredGroups[fadeGroup] = boolean
 lib.hoverCount = lib.hoverCount or { default = 0 } -- hoverCount[groupName] = count
 lib.gridCounter = lib.gridCounter or 0
 lib.petGridCounter = lib.petGridCounter or 0
 lib.embeds = lib.embeds or {}
 
 -- General fade settings.
-local fadeThrottle = .02
+local fadeThrottle = .05
 local fadeInDuration = .1
-local fadeOutDuration = .35
-local fadeHoldDuration = 0
+local fadeOutDuration = .25
 
 lib.fadeThrottle = fadeThrottle
 lib.fadeInDuration = fadeInDuration
 lib.fadeOutDuration = fadeOutDuration
-lib.fadeHoldDuration = fadeHoldDuration
 
 -- speed!
 local FadeFrames = lib.fadeFrames
@@ -76,6 +75,7 @@ local FadeFrameCurrentAlpha = lib.fadeFrameCurrentAlpha
 local FadeFrameTargetAlpha = lib.fadeFrameTargetAlpha
 local FadeFrameHitRects = lib.fadeFrameHitRects
 local HoverFrames = lib.hoverFrames
+local HoveredGroups = lib.hoveredGroups
 local HoverCount = lib.hoverCount
 
 -- GLOBALS: CreateFrame, IsPlayerInWorld, LAB10GEFlyoutHandlerFrame, SpellFlyout
@@ -86,74 +86,27 @@ local math_floor = math.floor
 local next = next
 local pairs = pairs
 local select = select
+local tonumber = tonumber
 local unpack = unpack
 
 -- Game flavor constants
+local patch, build, date, version = GetBuildInfo()
 local isRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 local isClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
 local isTBC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 local isWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
-local WoW10 = select(4, GetBuildInfo()) >= 100000
+--local isCata = WOW_PROJECT_ID == (WOW_PROJECT_CATA_CLASSIC or 99) -- NYI in first build
+local isCata = (version >= 40400) and (version < 50000)
+local WoW10 = version >= 100000
 
 -- Frame Metamethods
 local setAlpha = getmetatable(CreateFrame("Frame")).__index.SetAlpha
 local getAlpha = getmetatable(CreateFrame("Frame")).__index.GetAlpha
 
--- Check if a frame is of the type actionbutton.
-local isButton = function(frame)
-	return frame and FadeFrameType[frame] == "actionbutton"
-end
-
--- Check if a frame is a pet actionbutton.
-local isPetButton = function(frame)
-	return frame and FadeFrameType[frame] == "actionbutton" and frame.GetAttribute and frame:GetAttribute("type") == "pet"
-end
-
--- Check if a frame is an empty action button set to have no visible slot.
--- This will return false when you hold an item on the cursor that fit the slot.
-local isTransparentButton = function(frame)
-	if (not frame) then return end
-
-	local isEmpty = isButton(frame) and not frame:GetTexture() and not (frame.config and frame.config.showGrid)
-	if (isEmpty) then
-		if (CursorHasSpell() or CursorHasItem()) then
-			return false
-		end
-		local cursor =  GetCursorInfo() -- money, merchant
-		if (cursor == "spell")
-		or (cursor == "macro")
-		or (cursor == "mount")
-		or (cursor == "item")
-		or (cursor == "petaction" and (isPetButton(frame) or isRetail)) then
-			return false
-		end
-		return true
-	end
-	return false
-end
-
--- Alpha getter fixing the inconsistent blizzard return values
-local getCurrentAlpha = function(frame)
-
-	-- Report empty slots as transparent,
-	-- regardless of actual values.
-	if (isTransparentButton(frame)) then
-		return 0
-	end
-
-	return FadeFrameCurrentAlpha[frame] or math_floor((getAlpha(frame) * 100) + .5) / 100
-end
-
 -- Alpha setter that also stores the alpha in our local registry
 local setCurrentAlpha = function(frame, alpha)
 
-	-- Keep empty slots faded,
-	-- regardless of actual opacity.
-	if (isTransparentButton(frame)) then
-		setAlpha(frame, 0)
-	else
-		setAlpha(frame, alpha)
-	end
+	setAlpha(frame, alpha)
 
 	-- Store the desired value,
 	-- even for empty slots.
@@ -170,7 +123,7 @@ local requestAlpha = function(frame, targetAlpha)
 	-- update the alpha correctly after the parent has changed its.
 	if (not next(FadeFrameTargetAlpha)) then
 		if (not lib.fadeTimer) then
-			lib.fadeTimer = lib:ScheduleRepeatingTimer("UpdateCurrentlyFadingFrames", fadeThrottle)
+			lib.fadeTimer = lib:ScheduleRepeatingTimer("UpdateCurrentAlphas", fadeThrottle)
 		end
 	end
 
@@ -179,65 +132,61 @@ local requestAlpha = function(frame, targetAlpha)
 	FadeFrameTargetAlpha[frame] = targetAlpha
 end
 
--- Update: No longer needed, keeping it for reference for a while.
--- Our fade frame unregistration sets alpha back to full opacity,
--- this conflicts with how actionbuttons work so we're faking events to fix it.
---local updateLAB = function()
---	local LAB = LibStub("LibActionButton-1.0-GE", true)
---	local OnEvent = LAB and LAB.eventFrame:GetScript("OnEvent")
---	if (OnEvent) then
---		OnEvent(LAB, "ACTIONBAR_SHOWGRID")
---		OnEvent(LAB, "ACTIONBAR_HIDEGRID")
---	end
---end
+local updateCurrentAlpha = function(frame)
 
-lib.UpdateCurrentlyFadingFrames = function()
+	local targetAlpha = FadeFrameTargetAlpha[frame]
+	local currentAlpha = FadeFrameCurrentAlpha[frame] or math_floor((getAlpha(frame) * 100) + .5) / 100
 
-	-- Iterate frames that hasn't yet been verified
-	-- to have reached their target opacity.
-	for frame,targetAlpha in next,FadeFrameTargetAlpha do
+	-- If we're fading out
+	if (currentAlpha > targetAlpha) then
 
-		-- Retrieve a rounded, two decimal vale of the current alpha.
-		local currentAlpha = getCurrentAlpha(frame)
-
-		-- If we're fading out
-		if (currentAlpha > targetAlpha) then
-
-			-- Is there room to change the alpha?
-			if (lib.fadeOutDuration > 0) and (currentAlpha - fadeThrottle/lib.fadeOutDuration > targetAlpha) then
-				setCurrentAlpha(frame, currentAlpha - fadeThrottle/lib.fadeOutDuration)
-			else
-
-				-- The fade is finished.
-				setCurrentAlpha(frame, targetAlpha)
-
-				FadeFrameTargetAlpha[frame] = nil
-			end
-
-		-- If we're fading in
-		elseif (currentAlpha < targetAlpha) then
-
-			-- Is there room to change the alpha?
-			if (lib.fadeInDuration > 0) and (currentAlpha + fadeThrottle/lib.fadeInDuration < targetAlpha) then
-				setCurrentAlpha(frame, currentAlpha + fadeThrottle/lib.fadeInDuration)
-			else
-
-				-- The fade is finished.
-				setCurrentAlpha(frame, targetAlpha)
-
-				FadeFrameTargetAlpha[frame] = nil
-			end
+		-- Is there room to change the alpha?
+		if (lib.fadeOutDuration > 0) and (currentAlpha - fadeThrottle/lib.fadeOutDuration > targetAlpha) then
+			setCurrentAlpha(frame, currentAlpha - fadeThrottle/lib.fadeOutDuration)
 		else
 
-			-- This is not redundant.
-			-- When both parent and child has a fader,
-			-- the child can get stuck at max opacity after changing the parent,
-			-- and setting the child on the next frame cycle through this will fix it.
+			-- The fade is finished.
 			setCurrentAlpha(frame, targetAlpha)
 
 			FadeFrameTargetAlpha[frame] = nil
+			HoveredGroups[FadeFrames[frame]] = nil
 		end
 
+	-- If we're fading in
+	elseif (currentAlpha < targetAlpha) then
+
+		-- Is there room to change the alpha?
+		if (lib.fadeInDuration > 0) and (currentAlpha + fadeThrottle/lib.fadeInDuration < targetAlpha) then
+			setCurrentAlpha(frame, currentAlpha + fadeThrottle/lib.fadeInDuration)
+		else
+
+			-- The fade is finished.
+			setCurrentAlpha(frame, targetAlpha)
+
+			FadeFrameTargetAlpha[frame] = nil
+			HoveredGroups[FadeFrames[frame]] = nil
+		end
+	else
+
+		-- This is not redundant.
+		-- When both parent and child has a fader,
+		-- the child can get stuck at max opacity after changing the parent,
+		-- and setting the child on the next frame cycle through this will fix it.
+		setCurrentAlpha(frame, targetAlpha)
+
+		FadeFrameTargetAlpha[frame] = nil
+		HoveredGroups[FadeFrames[frame]] = nil
+	end
+end
+
+lib.UpdateCurrentAlphas = function()
+
+	-- Iterate frames that hasn't yet been verified
+	-- to have reached their target opacity.
+	for frame in next,FadeFrameTargetAlpha do
+		if (FadeFrames[frame]) then
+			updateCurrentAlpha(frame)
+		end
 	end
 
 	-- Kill off this timer if nothing is still fading.
@@ -249,102 +198,94 @@ lib.UpdateCurrentlyFadingFrames = function()
 	end
 end
 
-lib.UpdateFadeFrame = function(self, frame)
-
-	local isActionButton = isButton(frame)
-	local isEmpty = isActionButton and isTransparentButton(frame)
-	local isPetButton = isActionButton and isPetButton(frame)
-
-	if (isPetButton) then
-		if (lib.inCombat and not (frame.header and frame.header.config and frame.header.config.fadeInCombat) and not isEmpty)
-		or (lib.petGridCounter > 0 and not frame.ignoreGridCounterOnHover and (lib.cursorType == "petaction")) then
-			requestAlpha(frame, 1)
-			return
-		end
-
-	elseif (isActionButton) then
-		if (lib.flyoutShown)
-		or (not isEmpty and lib.inCombat and not(frame.header and frame.header.config and frame.header.config.fadeInCombat)) or (lib.gridCounter > 0 and not frame.ignoreGridCounterOnHover and (lib.cursorType ~= "petaction" or isRetail))
-		then
-			requestAlpha(frame, 1)
-			return
-		end
-	end
-
+local updateTargetAlpha = function(frame)
 	if (not lib.enableFading) then
-		if (isActionButton) then
-
-			-- The frame has an action or grid set to visible.
-			if (not isEmpty) or (frame.config and frame.config.showGrid) or (frame.parent and frame.parent.config.showGrid) then
-				requestAlpha(frame, 1)
-			else
-				requestAlpha(frame, 0)
-			end
-		else
-			requestAlpha(frame, 1)
-		end
+		requestAlpha(frame, 1)
 	else
-		-- The group is visible.
-		if (HoverCount[FadeFrames[frame]] > 0) then
-			if (isActionButton) then
+		local forceShow
 
-				-- The frame has an action or grid set to visible.
-				if (not isEmpty) or (frame.config and frame.config.showGrid) or (frame.parent and frame.parent.config.showGrid) then
-					requestAlpha(frame, 1)
-				else
-					requestAlpha(frame, 0)
-				end
-			else
-				requestAlpha(frame, 1)
+		local frameType = FadeFrameType[frame]
+		if (frameType == "petbutton") then
+			if (lib.inCombat and not (frame.header and frame.header.config and frame.header.config.fadeInCombat))
+			or (lib.petGridCounter > 0 and not frame.ignoreGridCounterOnHover and (lib.cursorType == "petaction")) then
+				forceShow = true
 			end
-		else
-			-- Group is hidden, hide this.
-			requestAlpha(frame, 0)
+
+		elseif (frameType == "actionbutton") then
+			if (lib.flyoutShown)
+			or (lib.inCombat and not(frame.header and frame.header.config and frame.header.config.fadeInCombat)) or (lib.gridCounter > 0 and not frame.ignoreGridCounterOnHover and (lib.cursorType ~= "petaction" or isRetail))
+			then
+				forceShow = true
+			end
 		end
+
+		if (forceShow) then
+			requestAlpha(frame, 1)
+		else
+
+			-- The group is visible.
+			local fadeGroup = FadeFrames[frame]
+			if (HoverCount[fadeGroup] > 0) then
+				requestAlpha(frame, 1)
+			else
+				-- Group is hidden, hide this.
+				--if (HoveredGroups[fadeGroup]) then
+					requestAlpha(frame, 0)
+				--else
+				--	setCurrentAlpha(frame, 0)
+				--end
+			end
+		end
+
 	end
 end
 
-lib.UpdateFadeFrames = function()
+lib.UpdateTargetAlphas = function()
 	if (not lib.inWorld) then return end
 
 	lib.cursorType = GetCursorInfo()
 
 	for frame in next,FadeFrames do
-		lib:UpdateFadeFrame(frame)
+		updateTargetAlpha(frame)
 	end
 end
 
-lib.OnFadeFrameEnter = function(self, frame, fadeGroup)
+lib.OnFadeFrameEnter = function(_, frame, fadeGroup)
 	if (HoverFrames[frame]) then return end
 
 	HoverCount[fadeGroup] = HoverCount[fadeGroup] + 1
 	HoverFrames[frame] = fadeGroup
 end
 
-lib.OnFadeFrameLeave = function(self, frame, fadeGroup)
+lib.OnFadeFrameLeave = function(_, frame, fadeGroup)
 	if (not HoverFrames[frame]) then return end
 
 	HoverCount[fadeGroup] = HoverCount[fadeGroup] - 1
+	HoveredGroups[fadeGroup] = true
 	HoverFrames[frame] = nil
 end
 
-lib.CheckFadeFrames = function()
-	local needupdate
+lib.CheckHoverFrames = function(needupdate)
+
 	for frame,fadeGroup in next,HoverFrames do
 		-- Frame could've been unregistered while hovered.
-		if (not FadeFrames[frame] or not frame:IsMouseOver(unpack(FadeFrameHitRects[frame]))) then
+		local rects = FadeFrameHitRects[frame]
+		if (not FadeFrames[frame] or not frame:IsMouseOver(rects[1], rects[2], rects[3], rects[4])) then
 			lib:OnFadeFrameLeave(frame, fadeGroup)
 			needupdate = true
 		end
 	end
+
 	for frame,fadeGroup in next,FadeFrames do
-		if (not HoverFrames[frame] and frame:IsVisible() and frame:IsMouseOver(unpack(FadeFrameHitRects[frame]))) then
+		local rects = FadeFrameHitRects[frame]
+		if (not HoverFrames[frame] and frame:IsVisible() and frame:IsMouseOver(rects[1], rects[2], rects[3], rects[4])) then
 			lib:OnFadeFrameEnter(frame, fadeGroup)
 			needupdate = true
 		end
 	end
+
 	if (needupdate) then
-		lib:UpdateFadeFrames()
+		lib:UpdateTargetAlphas()
 	end
 end
 
@@ -353,29 +294,33 @@ lib.UpdateFlyout = function()
 
 	lib.flyoutShown = lib.flyoutHandler:IsShown()
 
-	lib:UpdateFadeFrames()
+	lib:UpdateTargetAlphas()
 end
 
-lib.SetFadeInDuration = function(self, duration)
+lib.SetFadeInDuration = function(_, duration)
 	lib.fadeInDuration = tonumber(duration) or fadeInDuration
 end
 
-lib.SetFadeOutDuration = function(self, duration)
+lib.SetFadeOutDuration = function(_, duration)
 	lib.fadeOutDuration = tonumber(duration) or fadeOutDuration
 end
 
-lib.RegisterFrameForFading = function(self, frame, fadeGroup, ...)
+lib.RegisterFrameForFading = function(_, frame, fadeGroup, ...)
+	local shouldInit = not next(FadeFrames)
 	if (FadeFrames[frame]) then
 		return
 	end
-
-	local shouldInit = not next(FadeFrames)
 
 	fadeGroup = fadeGroup or "default"
 
 	-- Not the best check ever, but it'll have to do for now.
 	if (frame:GetObjectType() == "CheckButton") and (frame.HasAction) then
-		FadeFrameType[frame] = "actionbutton"
+
+		if (frame.GetAttribute and frame:GetAttribute("type") == "pet") then
+			FadeFrameType[frame] = "petbutton"
+		else
+			FadeFrameType[frame] = "actionbutton"
+		end
 
 		-- Keep track of the flyout handlers.
 		if (not lib.flyoutHandler) then
@@ -391,24 +336,16 @@ lib.RegisterFrameForFading = function(self, frame, fadeGroup, ...)
 
 	-- Hooking proved to create a lot of problems,
 	-- it is ultimately better in this scenario to replace.
-	--lib:SecureHook(frame, "SetAlpha", "UpdateFadeFrame")
-	if (FadeFrameType[frame] == "actionbutton") then
-
-		-- Keeping a one-way dummy function here so that
-		-- the actionbutton library can hide empty slots instantly.
-		frame.SetAlpha = function(frame, alpha)
-			if (isTransparentButton(frame)) then
-				setAlpha(frame, 0)
-			end
-		end
-	else
-		-- Nooping this method for all other frames,
-		-- giving the fade library full control over the opacity.
-		frame.SetAlpha = function() end
-	end
+	frame.SetAlpha = function() end
 
 	if (not HoverCount[fadeGroup]) then
 		HoverCount[fadeGroup] = 0
+	end
+
+	local rects = FadeFrameHitRects[frame]
+	if (not rects) then
+		rects = {}
+		FadeFrameHitRects[frame] = rects
 	end
 
 	FadeFrames[frame] = fadeGroup
@@ -416,47 +353,48 @@ lib.RegisterFrameForFading = function(self, frame, fadeGroup, ...)
 	-- Convert frame hit rects to mouseover values.
 	if (...) then
 		local left, right, top, bottom = ...
-		FadeFrameHitRects[frame] = { -top, bottom, left, -right }
+		rects[1], rects[2], rects[3], rects[4] = -top, bottom, left, -right
 	else
-		FadeFrameHitRects[frame] = { 0, 0, 0, 0 }
+		rects[1], rects[2], rects[3], rects[4] = 0, 0, 0, 0
 	end
 
 	if (shouldInit) then
 		lib:Enable()
 	end
 
-	lib:UpdateFadeFrames()
+	--requestAlpha(frame, 0)
+	--setCurrentAlpha(frame, 0)
+
+	lib:UpdateTargetAlphas()
 end
 
-lib.UnregisterFrameForFading = function(self, frame)
+lib.UnregisterFrameForFading = function(_, frame)
 	if (not FadeFrames[frame]) then
 		return
 	end
 
-	-- Retrieve button status before we reset registry entries.
-	local isEmpty = isTransparentButton(frame)
+	local frameType = FadeFrameType[frame]
 
-	--lib:Unhook(frame, "SetAlpha", "UpdateFadeFrame")
 	frame.SetAlpha = nil
 
 	FadeFrames[frame] = nil
 	FadeFrameType[frame] = nil
-	FadeFrameHitRects[frame] = nil
 
-	-- Keep empty actionbutton slots
-	-- fully transparent if setting implies it.
-	if (isEmpty) then
-		setAlpha(frame, 0)
-	else
-		-- Return other frames to full opacity.
-		requestAlpha(frame, 1)
+	local rects = FadeFrameHitRects[frame]
+	if (rects) then
+		rects[1], rects[2], rects[3], rects[4] = 0, 0, 0, 0
+	end
+
+	-- Return frames to full opacity.
+	if (frameType ~= "actionbutton" and frameType ~= "petbutton") then
+		setCurrentAlpha(frame, 1)
 	end
 
 	if (not next(FadeFrames)) then
 		lib:Disable()
 	end
 
-	lib:UpdateFadeFrames()
+	--lib:UpdateTargetAlphas()
 end
 
 lib.Enable = function()
@@ -477,11 +415,11 @@ lib.Enable = function()
 	end
 
 	if (not lib.checkTimer) then
-		lib.checkTimer = lib:ScheduleRepeatingTimer("CheckFadeFrames", 0.1)
+		lib.checkTimer = lib:ScheduleRepeatingTimer("CheckHoverFrames", 0.1)
 	end
 
-	lib:CheckFadeFrames()
-	lib:UpdateFadeFrames()
+	lib:UpdateTargetAlphas()
+
 end
 
 lib.Disable = function()
@@ -502,7 +440,7 @@ lib.Disable = function()
 		lib.checkTimer = nil
 	end
 
-	lib:UpdateFadeFrames()
+	lib:UpdateTargetAlphas()
 end
 
 lib.OnEvent = function(self, event, ...)
@@ -524,9 +462,8 @@ lib.OnEvent = function(self, event, ...)
 		lib.gridCounter = lib.gridCounter + 1
 
 		if (lib.gridCounter >= 1) then
-			lib:UpdateFadeFrames()
+			lib:UpdateTargetAlphas()
 		end
-
 		return
 
 	elseif (event == "ACTIONBAR_HIDEGRID") then
@@ -534,7 +471,7 @@ lib.OnEvent = function(self, event, ...)
 			lib.gridCounter = lib.gridCounter - 1
 		end
 		if (lib.gridCounter == 0) then
-			lib:UpdateFadeFrames()
+			lib:UpdateTargetAlphas()
 		end
 		return
 
@@ -542,7 +479,7 @@ lib.OnEvent = function(self, event, ...)
 		lib.petGridCounter = lib.petGridCounter + 1
 
 		if (lib.petGridCounter >= 1) then
-			lib:UpdateFadeFrames()
+			lib:UpdateTargetAlphas()
 		end
 		return
 
@@ -554,12 +491,12 @@ lib.OnEvent = function(self, event, ...)
 			lib.gridCounter = lib.gridCounter - 1
 		end
 		if (lib.petGridCounter == 0 or (isClassic and lib.gridCounter == 0)) then
-			lib:UpdateFadeFrames()
+			lib:UpdateTargetAlphas()
 		end
 		return
 	end
 
-	lib:UpdateFadeFrames()
+	lib:UpdateTargetAlphas()
 end
 
 local mixins = {
