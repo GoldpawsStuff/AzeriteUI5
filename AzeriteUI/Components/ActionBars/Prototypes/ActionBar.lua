@@ -200,7 +200,16 @@ ns.ActionBar.Create = function(self, id, config, name)
 	bar:UpdateButtonCount()
 	bar:UpdateVisibilityDriver()
 
+	bar:SetScript("OnEvent", ActionBar.OnEvent)
+	bar:RegisterEvent("ACTIONBAR_SLOT_CHANGED")
+
 	return bar
+end
+
+ActionBar.OnEvent = function(self, event, ...)
+	if (event == "ACTIONBAR_SLOT_CHANGED") then
+		self:UpdateFading()
+	end
 end
 
 ActionBar.UpdateButtonFlags = function(self)
