@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2024-04-03
+### Fixed
+- Actionbutton fading should be updated instantly when moving abilities around.
+
 ## [5.2.164-RC] 2024-04-03
 - Updated for WoW Client Patch 1.15.2.
 
