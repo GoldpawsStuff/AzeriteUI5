@@ -735,8 +735,8 @@ RaidFrame25Mod.GetHeaderAttributes = function(self)
 	"point", db.point, -- Unit anchoring within each column
 	"xOffset", db.xOffset,
 	"yOffset", db.yOffset,
-	"groupBy", db.groupBy, -- ROLE, CLASS, GROUP -- Grouping order and type
-	"groupingOrder", db.groupingOrder,
+	"groupBy", "GROUP", -- db.groupBy, -- ROLE, CLASS, GROUP -- Grouping order and type
+	"groupingOrder", "1,2,3,4,5,6,7,8", -- db.groupingOrder,
 	"unitsPerColumn", db.unitsPerColumn, -- Column setup and growth
 	"maxColumns", db.maxColumns,
 	"columnSpacing", db.columnSpacing,

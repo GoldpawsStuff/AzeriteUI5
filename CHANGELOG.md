@@ -4,8 +4,12 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2024-04-03
+## [5.2.165-RC] 2024-04-04
+### Changed
+- Default unit frame grouping in raid(15) and raid(40) group frames is now by player group, not by role as previously. Options of this is coming.
+
 ### Fixed
+- Fixed `GetTimeToWellRested` nil bug when hovering over the XP bar in SoD phase 3.
 - Actionbutton fading should be updated instantly when moving abilities around.
 
 ## [5.2.164-RC] 2024-04-03

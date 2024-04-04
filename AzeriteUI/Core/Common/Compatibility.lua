@@ -47,6 +47,10 @@ if (not _G.UnitHasVehicleUI) then
 	_G.UnitHasVehicleUI = function() return false end
 end
 
+if (not _G.GetTimeToWellRested) then
+	_G.GetTimeToWellRested = function() return nil end
+end
+
 local tocversion = select(4, GetBuildInfo())
 
 -- Deprecated in 10.1.0
