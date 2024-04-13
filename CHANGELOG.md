@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2024-04-13
+### Changed
+- Low Focus and Energy will no loner affect the Explorer Mode. These resources regenerate so fast that the Explorer Mode shouldn't be affected by them. Druid Mana in forms still remain as an option.
+- The mana value on the power crystal for druid in forms will now appear from as much as 75% of maximum mana, but will be colored blue until below 25% mana where it will turn red.
+
+### Fixed
+- The Explorer Mode properly starts and exits again. Issues preventing it from starting on logons and reloads and preventing it from exiting on combat start, targeting and similar has been resolved.
+
 ## [5.2.165-RC] 2024-04-04
 ### Changed
 - Default unit frame grouping in raid(15) and raid(40) group frames is now by player group, not by role as previously. Options of this is coming.
