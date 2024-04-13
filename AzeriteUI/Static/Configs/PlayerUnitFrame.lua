@@ -75,7 +75,7 @@ ns.RegisterConfig("PlayerFrame", {
 	-- Mana Value Text (when mana is not primary resource)
 	ManaTextPosition = { "CENTER", 1, -34 },
 	ManaTextFont = GetFont(15, true),
-	ManaTextColor = { Colors.red[1], Colors.red[2], Colors.red[3], .75 },
+	ManaTextColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75 },
 	ManaTextJustifyH = "CENTER",
 	ManaTextJustifyV = "MIDDLE",
 
