@@ -63,7 +63,7 @@ local defaults = { profile = ns:Merge({
 	fadeWithLowMana = false,
 		fadeThresholdMana = .75,
 		fadeThresholdManaInForms = .5,
-		fadeThresholdEnergy = .5,
+		fadeThresholdEnergy = 0,
 	fadeWithLowHealth = false,
 		fadeThresholdHealth = .9,
 
@@ -95,7 +95,7 @@ ExplorerMode.UpdateSettings = function(self)
 		self:DisableExplorerMode()
 	end
 
-	self.FORCED = not db.enabled and self:CheckForForcedState()
+	self.FORCED = not db.enabled or self:CheckForForcedState()
 
 	-- Action Bars
 	--------------------------------------------
@@ -333,22 +333,23 @@ end
 ExplorerMode.CheckPower = function(self)
 	local powerID, powerType = UnitPowerType("player")
 	if (powerType == "MANA") then
-		local min = UnitPower("player") or 0
-		local max = UnitPowerMax("player") or 0
+		local min = UnitPower("player", POWER_TYPE_MANA) or 0
+		local max = UnitPowerMax("player", POWER_TYPE_MANA) or 0
 		if (max > 0) and (min/max < self.db.profile.fadeThresholdMana) then
 			self.lowPower = true
 			return
 		end
-	elseif (powerType == "ENERGY" or powerType == "FOCUS") then
-		local min = UnitPower("player") or 0
-		local max = UnitPowerMax("player") or 0
-		if (max > 0) and (min/max < self.db.profile.fadeThresholdEnergy) then
-			self.lowPower = true
-			return
-		end
+	else
+		--if (powerType == "ENERGY" or powerType == "FOCUS") then
+		--local min = UnitPower("player") or 0
+		--local max = UnitPowerMax("player") or 0
+		--if (max > 0) and (min/max < self.db.profile.fadeThresholdEnergy) then
+		--	self.lowPower = true
+		--	return
+		--end
 		if (playerClass == "DRUID") then
-			min = UnitPower("player", POWER_TYPE_MANA) or 0
-			max = UnitPowerMax("player", POWER_TYPE_MANA) or 0
+			local min = UnitPower("player", POWER_TYPE_MANA) or 0
+			local max = UnitPowerMax("player", POWER_TYPE_MANA) or 0
 			if (max > 0) and (min/max < self.db.profile.fadeThresholdManaInForms) then
 				self.lowPower = true
 				return
@@ -652,4 +653,5 @@ ExplorerMode.DisableExplorerMode = function(self)
 end
 
 ExplorerMode.OnEnable = function(self)
+	self:UpdateSettings()
 end
