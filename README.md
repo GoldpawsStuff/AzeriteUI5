@@ -9,7 +9,6 @@ If you choose to download and manually install directly from GitHub, you'll have
 - [LibSharedMedia-3.0](https://www.curseforge.com/wow/addons/libsharedmedia-3-0)
 - [LibUIDropDownMenu](https://www.curseforge.com/wow/addons/libuidropdownmenu)
 - [LibClassicDurations](https://www.curseforge.com/wow/addons/libclassicdurations) (Classic)
-- [LibHealComm-4.0 (SoD)](https://github.com/caboyd/LibHealComm-4.0) (Classic/SoD/Wrath) *(Not on CurseForge/Wago)*
 - [TaintLess](https://www.townlong-yak.com/addons/taintless) *(Not on CurseForge/Wago)*
 
 ## FAQ
@@ -23,11 +22,12 @@ If you choose to download and manually install directly from GitHub, you'll have
 - **A:** Click on the clock next to the Minimap.
 
 ## Configuring the UI
-- **/azerite** - Toggles the options menu.
+- **/azerite** or **/az** - Toggles the options menu.
 - **/lock** - Toggles the movable frame anchors. *(Note that in Retail a lot of the default Blizzard elements are controlled by the EditMode, so you need to enter it to move or scale these.)*
 - **/resetsettings** - Full settings reset of the addon. Only use this in emergencies as it will erase all your settings profiles when doing it.
 
 ## Sponsor
+Note the amount of people visibly and monthly pledging is directly equivalent to the amount of time and effort I put into investigating bugs and adding features that does not affect me personally. You're dedicated, I'm dedicated.
 - GitHub: [github.com/sponsors/goldpawsstuff](https://github.com/sponsors/goldpawsstuff)
 - Patreon: [patreon.com/goldpawsstuff](https://www.patreon.com/goldpawsstuff)
 - Ko-fi: [ko-fi.com/GoldpawsStuff](https://ko-fi.com/goldpawsstuff)
