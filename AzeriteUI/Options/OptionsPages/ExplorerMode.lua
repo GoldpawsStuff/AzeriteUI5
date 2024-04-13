@@ -218,20 +218,20 @@ local GenerateOptions = function()
 				hidden = function(info) return isdisabled(info) or getoption(info, "fadeWithLowMana") end,
 				order = 30
 			},
-			fadeThresholdEnergy = {
-				name = L["Set the Low Energy/Focus threshold"],
-				desc = L["Sets the threshold in a percentage of maximum energy or focus for when the Explorer Mode will exit."],
-				order = 31,
-				type = "range", width = "full", min = 30, max = 90, step = 5,
-				hidden = function(info) return isdisabled(info) or getoption(info, "fadeWithLowMana") end,
-				set = function(info,value) setter(info,value/100) end,
-				get = function(info) return getter(info)*100 end
-			},
-			fadeThresholdEnergyspacer = {
-				name = "\n ", type = "description", fontSize = "medium",
-				hidden = function(info) return isdisabled(info) or getoption(info, "fadeWithLowMana") end,
-				order = 30
-			},
+			--fadeThresholdEnergy = {
+			--	name = L["Set the Low Energy/Focus threshold"],
+			--	desc = L["Sets the threshold in a percentage of maximum energy or focus for when the Explorer Mode will exit."],
+			--	order = 31,
+			--	type = "range", width = "full", min = 0, max = 100, step = 5,
+			--	hidden = function(info) return isdisabled(info) or getoption(info, "fadeWithLowMana") end,
+			--	set = function(info,value) setter(info,value/100) end,
+			--	get = function(info) return getter(info)*100 end
+			--},
+			--fadeThresholdEnergyspacer = {
+			--	name = "\n ", type = "description", fontSize = "medium",
+			--	hidden = function(info) return isdisabled(info) or getoption(info, "fadeWithLowMana") end,
+			--	order = 30
+			--},
 			fadeInGroups = {
 				name = L["While in a group"],
 				desc = "",
