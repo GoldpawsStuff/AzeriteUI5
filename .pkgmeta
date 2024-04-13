@@ -20,7 +20,6 @@ externals:
     AzeriteUI/Libs/LibUIDropDownMenu: https://repos.wowace.com/wow/libuidropdownmenu/trunk/LibUIDropDownMenu
     AzeriteUI/Libs/LibEditModeOverride: https://github.com/plusmouse/LibEditModeOverride.git
     AzeriteUI/Libs/LibClassicDurations: https://repos.curseforge.com/wow/libclassicdurations
-    AzeriteUI/Libs/LibHealComm-4.0: https://github.com/caboyd/LibHealComm-4.0.git
     AzeriteUI/Libs/LibMoreEvents-1.0: https://github.com/GoldpawsStuff/LibMoreEvents-1.0
 
 move-folders:

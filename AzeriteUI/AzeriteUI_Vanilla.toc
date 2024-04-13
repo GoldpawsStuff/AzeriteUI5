@@ -12,7 +12,7 @@
 ## X-License: Custom
 
 ## SavedVariables: AzeriteUI5_DB
-## OptionalDeps: TaintLess, Ace3, Clique, LibKeyBound-1.0, LibClassicDurations, LibClassicSwingTimerAPI, LibHealComm-4.0, LibHealComm-4.0, LibSharedMedia-3.0, !LibUIDropDownMenu, LibMoreEvents-1.0
+## OptionalDeps: TaintLess, Ace3, Clique, LibKeyBound-1.0, LibClassicDurations, LibClassicSwingTimerAPI, LibHealComm-4.0, LibSharedMedia-3.0, !LibUIDropDownMenu, LibMoreEvents-1.0
 
 # Fontstyles
 FontStyles_Classic.xml

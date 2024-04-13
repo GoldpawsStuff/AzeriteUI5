@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2024-04-13
+### Removed
+- Removed support for and integration with LibHealComm-4.0 as it's no longer maintained by the author and no working versions for SoD Phase 3 are available.
+
 ## [5.2.166-RC] 2024-04-13
 ### Changed
 - Low Focus and Energy will no loner affect the Explorer Mode. These resources regenerate so fast that the Explorer Mode shouldn't be affected by them. Druid Mana in forms still remain as an option.

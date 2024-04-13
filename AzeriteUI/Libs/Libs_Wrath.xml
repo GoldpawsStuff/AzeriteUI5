@@ -18,7 +18,6 @@
 	<Include file="AceSerializer-3.0\AceSerializer-3.0.xml"/>
 	<Include file="LibSharedMedia-3.0\lib.xml"/>
 	<Include file="LibUIDropDownMenu\LibUIDropDownMenu.xml"/>
-	<Script file="LibHealComm-4.0\LibHealComm-4.0.lua"/>
 	<Script file="LibMoreEvents-1.0\LibMoreEvents-1.0.lua"/>
 	@end-non-debug@-->
 	<Include file="UTF8\utf8.xml"/>
