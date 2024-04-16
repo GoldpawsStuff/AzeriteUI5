@@ -75,7 +75,7 @@ ns.RegisterConfig("PlayerFrame", {
 	-- Mana Value Text (when mana is not primary resource)
 	ManaTextPosition = { "CENTER", 1, -34 },
 	ManaTextFont = GetFont(15, true),
-	ManaTextColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75 },
+	ManaTextColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .85 },
 	ManaTextJustifyH = "CENTER",
 	ManaTextJustifyV = "MIDDLE",
 
@@ -84,7 +84,7 @@ ns.RegisterConfig("PlayerFrame", {
 	PowerValueJustifyH = "CENTER",
 	PowerValueJustifyV = "MIDDLE",
 	PowerValueFont = GetFont(18, true),
-	PowerValueColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .4 },
+	PowerValueColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75 },
 
 	-- Mana Orb Value Text
 	ManaValuePosition = { "CENTER", 3, 0 },
