@@ -50,6 +50,8 @@ local c_normal = Colors.normal.colorCode
 local c_rare = Colors.quality.Rare.colorCode
 local c_red = Colors.red.colorCode
 local c_paleblue = Colors.paleblue.colorCode
+local c_brightblue = Colors.brightblue.colorCode
+local c_brightred = Colors.brightred.colorCode
 local r = "|r"
 
 -- Strings
@@ -223,12 +225,12 @@ Methods[prefix("*:ManaText:Low")] = function(unit)
 		local mana, maxMana = UnitPower(unit, Enum.PowerType.Mana), UnitPowerMax(unit, Enum.PowerType.Mana)
 		if (maxMana > 0) then
 			local perc = mana / maxMana
-			if (perc < .25) then
+			if (perc < .35) then
 				local value = perc * 100 + .5
-				return c_red .. (value - value%1) .. r
-			elseif (perc < .75) then
+				return c_brightred .. (value - value%1) .. r
+			elseif (perc < .85) then
 				local value = perc * 100 + .5
-				return c_paleblue .. (value - value%1) .. r
+				return c_brightblue .. (value - value%1) .. r
 			end
 		end
 	end
