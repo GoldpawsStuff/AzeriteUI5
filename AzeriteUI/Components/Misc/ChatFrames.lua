@@ -52,7 +52,9 @@ local defaults = { profile = ns:Merge({
 	enabled = true,
 	fadeOnInActivity = true, -- blizz default is true
 	timeVisible = 20, -- 120, -- blizz default is 120
-	timeFading = 3
+	timeFading = 3,
+	clearOnReload = true,
+	timeClearing = 1
 }, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly
@@ -621,14 +623,17 @@ ChatFrames.OnEvent = function(self, event, ...)
 				QuickJoinToastButton:Hide()
 			end
 
-			if (not ns.IsVerboseMode) then
-				local quiettime = GetTime() + 10
+			if (self.db.profile.clearOnReload and not ns.IsVerboseMode) then
+				local quiettime = GetTime() + self.db.profile.timeClearing
 				CreateFrame("Frame"):SetScript("OnUpdate", function(self)
 					if (GetTime() > quiettime) then
 						self:Hide()
 						self:SetScript("OnUpdate", nil)
 						return
 					end
+					-- Todo:
+					-- Make a clear function that caches + shows guild/group chat?
+					-- Move this whole thing to Chat Cleaner?
 					ChatFrame1:Clear()
 				end)
 			end

@@ -90,6 +90,20 @@ local GenerateOptions = function()
 				hidden = function(info) return isdisabled(info) or not getoption(info, "fadeOnInActivity") end,
 				set = setter,
 				get = getter
+			},
+			clearOnReload = {
+				name = "Clear Chat Reload",
+				desc = L["Keeps the chat window clear for a period after logging in or relaoding the user interface. Note that you can still show all chat if you hold down the SHIFT key while reloading or logging in."],
+				type = "toggle", width = "full",
+				set = setter,
+				get = getter
+			},
+			timeClearing = {
+				name = "Sets the time after logon or reload until chat is allowed to pass through.",
+				type = "range", width = "full", min = 1, max = 10, step = 1,
+				hidden = function(info) return isdisabled(info) or not getoption(info, "clearOnReload") end,
+				set = setter,
+				get = getter
 			}
 		}
 	}
