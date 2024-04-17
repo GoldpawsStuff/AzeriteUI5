@@ -1142,6 +1142,21 @@ NamePlatesMod.UpdateSettings = function(self)
 	end
 end
 
+NamePlatesMod.OnEvent = function(self, event, ...)
+	if (event == "PLAYER_ENTERING_WORLD") then
+		-- Todo:
+		-- Make this a user controllable setting.
+		local isInInstance, instanceType = IsInInstance()
+		if (isInInstance) then
+			SetCVar("nameplateMinAlpha", .75) -- The minimum alpha of nameplates.
+			SetCVar("nameplateOccludedAlphaMult", .35) -- Alpha multiplier of hidden plates
+		else
+			SetCVar("nameplateMinAlpha", .4) -- The minimum alpha of nameplates.
+			SetCVar("nameplateOccludedAlphaMult", .15) -- Alpha multiplier of hidden plates
+		end
+	end
+end
+
 NamePlatesMod.OnInitialize = function(self)
 	if (self:CheckForConflicts()) then return self:Disable() end
 
@@ -1159,4 +1174,6 @@ NamePlatesMod.OnEnable = function(self)
 
 	self.mouseTimer = self:ScheduleRepeatingTimer(checkMouseOver, 1/20)
 	self.softTimer = ns.IsRetail and self:ScheduleRepeatingTimer(checkSoftTarget, 1/20)
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 end
