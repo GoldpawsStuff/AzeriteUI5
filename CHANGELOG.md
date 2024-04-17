@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Modified the power value display on the player's power crystal to be much clearer and more readable.
 - Modified the mana value displayed beneath the power crystal's power value while in Druid forms to be brighter andre more readable.
+- Nameplates have a higher minimum opacity when in instances now.
 
 ### Removed
 - Removed support for and integration with LibHealComm-4.0 as it's no longer maintained by the author and no working versions for SoD Phase 3 are available.
