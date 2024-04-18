@@ -444,6 +444,9 @@ Tooltips.OnTooltipSetUnit = function(self, tooltip, data)
 					displayName = displayName ..gray..  _G.INTERACTIVE_SERVER_LABEL .."|r"
 				end
 			end
+			if (UnitIsAFK(unit)) then
+				displayName = displayName ..gray.. " <" .. _G.AFK ..">|r"
+			end
 		end
 
 		if (levelText) then
