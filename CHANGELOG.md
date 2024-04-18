@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2024-04-18
+## [5.2.167-Alpha] 2024-04-18
 ### Added
 - Added an option to the chat settings in `/azerite` to toggle whether or not the primary chat window is cleared on logon and reloads. Also added a slider to adjust the number of seconds the window is kept clear.
 
