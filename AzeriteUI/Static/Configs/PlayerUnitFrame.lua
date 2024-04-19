@@ -94,6 +94,7 @@ ns.RegisterConfig("PlayerFrame", {
 	ManaValueFont = GetFont(18, true),
 
 	-- Castbar Name Text
+	CastBarTextFont = GetFont(16, true),
 	CastBarTextColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .5 },
 	CastBarTextProtectedColor = { Colors.normal[1], Colors.normal[2], Colors.normal[3], .75 },
 
@@ -102,7 +103,7 @@ ns.RegisterConfig("PlayerFrame", {
 	CastBarValueJustifyH = "CENTER",
 	CastBarValueJustifyV = "MIDDLE",
 	CastBarValueFont = GetFont(18, true),
-	CastBarValueColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .4 },
+	CastBarValueColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75 },
 
 	-- Combat Feedback Text
 	CombatFeedbackAnchorElement = "Health",

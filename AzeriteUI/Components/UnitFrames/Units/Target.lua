@@ -686,8 +686,8 @@ local style = function(self, unit, id)
 	-- Cast Name
 	--------------------------------------------
 	local castText = healthOverlay:CreateFontString(nil, "OVERLAY", nil, 1)
-	castText:SetPoint(unpack(db.HealthValuePosition))
-	castText:SetFontObject(db.HealthValueFont)
+	castText:SetPoint(unpack(db.CastBarTextPosition))
+	castText:SetFontObject(db.CastBarTextFont)
 	castText:SetTextColor(unpack(db.CastBarTextColor))
 	castText:SetJustifyH(db.HealthValueJustifyH)
 	castText:SetJustifyV(db.HealthValueJustifyV)

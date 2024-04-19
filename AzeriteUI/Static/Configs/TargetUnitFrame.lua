@@ -126,7 +126,7 @@ ns.RegisterConfig("TargetFrame", {
 	CastBarValueJustifyH = "CENTER",
 	CastBarValueJustifyV = "MIDDLE",
 	CastBarValueFont = GetFont(18, true),
-	CastBarValueColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .4 },
+	CastBarValueColor = { Colors.highlight[1], Colors.highlight[2], Colors.highlight[3], .75 },
 
 	-- Combat Feedback Text
 	CombatFeedbackAnchorElement = "Health",
