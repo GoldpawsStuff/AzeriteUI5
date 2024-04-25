@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Slightly modified the class coloring of Paladins, Warlocks and Druids.
 
 ### Removed
-- Removed support for and integration with LibHealComm-4.0 as it's no longer maintained by the author and no working versions for SoD Phase 3 are available.
+- Removed support for and integration with LibHealComm-4.0 as it's no longer maintained by the author and no working versions for SoD Phase 3 are available. Having it supported even optionally would cause bugs as we cannot control what versions people might be using.
 
 ## [5.2.166-RC] 2024-04-13
 ### Changed
