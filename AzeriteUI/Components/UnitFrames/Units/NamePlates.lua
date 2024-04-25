@@ -325,7 +325,7 @@ local TargetHighlight_Update = function(self, event, unit, ...)
 	if (self.isFocus or self.isTarget) then
 		element:SetVertexColor(unpack(self.isFocus and element.colorFocus or element.colorTarget))
 		element:Show()
-	elseif (ns.IsRetail and (self.isSoftEnemy or self.isSoftInteract)) then
+	elseif (self.isSoftEnemy or self.isSoftInteract) then
 		element:SetVertexColor(unpack(self.isSoftEnemy and element.colorSoftEnemy or element.colorSoftInteract))
 		element:Show()
 	else
@@ -536,8 +536,8 @@ local NamePlate_PostUpdate = function(self, event, unit, ...)
 	self.inCombat = InCombatLockdown()
 	self.isFocus = UnitIsUnit(unit, "focus")
 	self.isTarget = UnitIsUnit(unit, "target")
-	self.isSoftEnemy = ns.IsRetail and UnitIsUnit(unit, "softenemy")
-	self.isSoftInteract = ns.IsRetail and UnitIsUnit(unit, "softinteract")
+	self.isSoftEnemy = UnitIsUnit(unit, "softenemy")
+	self.isSoftInteract = UnitIsUnit(unit, "softinteract")
 
 	local db = ns.GetConfig("NamePlates")
 	local main, reverse = db.Orientation, db.OrientationReversed
@@ -939,11 +939,8 @@ local style = function(self, unit, id)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", NamePlate_OnEvent, true)
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", NamePlate_OnEvent, true)
 	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", NamePlate_OnEvent)
-
-	if (ns.IsRetail) then
-		self:RegisterEvent("PLAYER_SOFT_ENEMY_CHANGED", NamePlate_OnEvent, true)
-		self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED", NamePlate_OnEvent, true)
-	end
+	self:RegisterEvent("PLAYER_SOFT_ENEMY_CHANGED", NamePlate_OnEvent, true)
+	self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED", NamePlate_OnEvent, true)
 
 	-- Make our nameplates obey UIParent alpha and fade out when Immersion says so.
 	hooksecurefunc(UIParent, "SetAlpha", function() self:SetAlpha(UIParent:GetAlpha()) end)
@@ -1016,13 +1013,23 @@ local callback = function(self, event, unit)
 		end
 
 		if (self.SoftTargetFrame) then
-			self.SoftTargetFrame:SetParent(ns.Hider)
+			self.SoftTargetFrame:SetIgnoreParentAlpha(true)
+			self.SoftTargetFrame:SetParent(self)
+			self.SoftTargetFrame:ClearAllPoints()
+			self.SoftTargetFrame:SetPoint("BOTTOM", self.Name, "TOP", 0, 0)
 		end
 
 		ns.NamePlates[self] = true
 		ns.ActiveNamePlates[self] = true
 
 	elseif (event == "NAME_PLATE_UNIT_REMOVED") then
+
+		if (self.SoftTargetFrame) then
+			self.SoftTargetFrame:SetIgnoreParentAlpha(false)
+			self.SoftTargetFrame:SetParent(self.blizzPlate)
+			self.SoftTargetFrame:ClearAllPoints()
+			self.SoftTargetFrame:SetPoint("BOTTOM", self.blizzPlate.name, "TOP", 0, -8)
+		end
 
 		self.isPRD = nil
 		self.inCombat = nil
@@ -1173,7 +1180,7 @@ NamePlatesMod.OnEnable = function(self)
 	oUF:SpawnNamePlates(ns.Prefix, callback, cvars)
 
 	self.mouseTimer = self:ScheduleRepeatingTimer(checkMouseOver, 1/20)
-	self.softTimer = ns.IsRetail and self:ScheduleRepeatingTimer(checkSoftTarget, 1/20)
+	self.softTimer = self:ScheduleRepeatingTimer(checkSoftTarget, 1/20)
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 end
