@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2024-04-25
+### Added
+- Added soft target icons to our nameplates in all versions of the game.
+
 ## [5.2.168-Alpha] 2024-04-19
 ### Changed
 - Classic Era Debuffs with a high duration on the player unit frame will now still be shown in combat.
