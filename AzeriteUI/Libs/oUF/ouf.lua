@@ -823,6 +823,7 @@ function oUF:SpawnNamePlates(namePrefix, nameplateCallback, nameplateCVars)
 				nameplate.unitFrame = CreateFrame('Button', prefix..nameplate:GetName(), nameplate)
 				nameplate.unitFrame:EnableMouse(false)
 				nameplate.unitFrame.isNamePlate = true
+				nameplate.unitFrame.blizzPlate = nameplate
 
 				Private.UpdateUnits(nameplate.unitFrame, unit)
 
