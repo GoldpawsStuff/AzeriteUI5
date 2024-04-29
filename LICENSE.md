@@ -1,6 +1,6 @@
 # MIT License
 
-Copyright (c) 2023 Lars Norberg
+Copyright (c) 2024 Lars Norberg
 
 This document and the software here mentioned refers to any and all code of this project, but none of the artwork and media assets.
 
