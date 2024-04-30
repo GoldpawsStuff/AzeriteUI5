@@ -125,6 +125,19 @@ ns.RegisterConfig("RaidFrames", {
 	GroupRoleHealerTexture = GetMedia("grouprole-icons-heal"),
 	GroupRoleTankTexture = GetMedia("grouprole-icons-tank"),
 
+	-- Group Number
+	-----------------------------------------
+	GroupNumberColor = { Colors.offwhite[1], Colors.offwhite[2], Colors.offwhite[3], .75 },
+	GroupNumberDrawLayer = { "ARTWORK", 1 },
+	GroupNumberFont = GetFont(11,true),
+	GroupNumberJustifyH = "RIGHT",
+	GroupNumberJustifyV = "BOTTOM",
+	GroupNumberPlace = { "BOTTOMLEFT", 2, 2 },
+
+	-- RaidTarget Indicator
+	-----------------------------------------
+	RaidTargetTexture = GetMedia("raid_target_icons_small"),
+
 	-- Combat Feedback Text
 	-----------------------------------------
 	CombatFeedbackAnchorElement = "Health",

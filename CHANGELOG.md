@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2024-04-30
+### Added
+- Added raid target icons to the raid(25) and raid(40) raid frames.
+- Added group numbers to the raid(25) and raid(40) raid frames.
+
 ### Fixed
 - Fixed an issue where the floating player castbar would keep re-enabling itself even when disabled in the `/azerite` options menu.
 

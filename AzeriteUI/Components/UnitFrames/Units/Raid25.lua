@@ -293,12 +293,37 @@ local GroupRoleIndicator_Override = function(self, event)
 	end
 end
 
--- Update leader indicator position
--- when master looter indicator is shown or hidden.
-local MasterLooterIndicator_PostUpdate = function(self, isShown)
-	local leaderIndicator = self.__owner.LeaderIndicator
-	leaderIndicator:ClearAllPoints()
-	leaderIndicator:SetPoint("RIGHT", isShown and self or self.__owner.Name, "LEFT")
+local LeaderIndicator_PostUpdate = function(element, isLeader, isInLFGInstance)
+
+	local name = element.__owner.Name
+	local ml = element.__owner.MasterLooterIndicator
+	local leader = element.__owner.LeaderIndicator
+
+	-- Move raidtarget to far most left
+	local rt = element.__owner.RaidTargetIndicator
+	rt:ClearAllPoints()
+	rt:SetPoint("RIGHT", isLeader and leader or ml:IsShown() and ml or name, "LEFT")
+
+end
+
+local MasterLooterIndicator_PostUpdate = function(element, isShown)
+
+	local name = element.__owner.Name
+	local leader = element.__owner.LeaderIndicator
+	local rt = element.__owner.RaidTargetIndicator
+
+	-- Move leader when masterlooter is shown
+	leader:ClearAllPoints()
+	leader:SetPoint("RIGHT", isShown and element or name, "LEFT")
+
+	-- Move raidtarget to far most left
+	rt:ClearAllPoints()
+	rt:SetPoint("RIGHT", leader:IsShown() and leader or isShown and element or name, "LEFT")
+
+end
+
+local RaidTargetIndicator_PostUpdate = function(element, index)
+	-- nothing actually needed
 end
 
 -- Update targeting highlight outline
@@ -571,6 +596,18 @@ local style = function(self, unit)
     self.GroupRoleIndicator = groupRoleIndicator
 	self.GroupRoleIndicator.Override = GroupRoleIndicator_Override
 
+	-- Group Number
+	--------------------------------------------
+	local groupNumber = overlay:CreateFontString(nil, "OVERLAY")
+	groupNumber:SetPoint(unpack(db.GroupNumberPlace))
+	groupNumber:SetDrawLayer(unpack(db.GroupNumberDrawLayer))
+	groupNumber:SetJustifyH(db.GroupNumberJustifyH)
+	groupNumber:SetJustifyV(db.GroupNumberJustifyV)
+	groupNumber:SetFontObject(db.GroupNumberFont)
+	groupNumber:SetTextColor(unpack(db.GroupNumberColor))
+
+	self.GroupNumber = groupNumber
+
 	-- CombatFeedback Text
 	--------------------------------------------
 	--local feedbackText = overlay:CreateFontString(nil, "OVERLAY")
@@ -612,6 +649,7 @@ local style = function(self, unit)
 	leaderIndicator:SetPoint("RIGHT", self.Name, "LEFT")
 
 	self.LeaderIndicator = leaderIndicator
+	self.LeaderIndicator.PostUpdate = LeaderIndicator_PostUpdate
 
 	-- MasterLooter Indicator
 	--------------------------------------------
@@ -621,6 +659,16 @@ local style = function(self, unit)
 
 	self.MasterLooterIndicator = masterLooterIndicator
 	self.MasterLooterIndicator.PostUpdate = MasterLooterIndicator_PostUpdate
+
+	-- RaidTarget Indicator
+	--------------------------------------------
+	local raidTargetIndicator = overlay:CreateTexture(nil, "OVERLAY", nil, 2)
+	raidTargetIndicator:SetSize(24, 24)
+	raidTargetIndicator:SetPoint("RIGHT", self.Name, "LEFT")
+	raidTargetIndicator:SetTexture(db.RaidTargetTexture)
+
+	self.RaidTargetIndicator = raidTargetIndicator
+	self.RaidTargetIndicator.PostUpdate = RaidTargetIndicator_PostUpdate
 
 	-- Range Opacity
 	-----------------------------------------------------------
