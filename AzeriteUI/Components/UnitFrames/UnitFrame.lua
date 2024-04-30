@@ -180,7 +180,6 @@ ns.UnitFrameModule = ns:Merge({
 		-- Placeholder. Update unitframe settings here.
 	end,
 
-	-- Severe cleanup of my systems needed, this is a mess.
 	PostUpdatePositionAndScale = function(self)
 		local config = self.db.profile.savedPosition
 		if (not config) then return end
@@ -190,32 +189,17 @@ ns.UnitFrameModule = ns:Merge({
 		-- Used by group frames
 		local header = self.frame.content
 		if (header) then
-
 			header:SetScale(config.scale)
-
-			-- Let's attempt to do this.
-			--if (header.units) then
-			--	for i,unitFrame in next,header.units do
-			--		unitFrame:SetScale(config.scale)
-			--	end
-			--elseif (header.ForAll) then
-			--	header:ForAll("SetScale", config.scale)
-			--end
-
-			--return
 		end
 
 
 		-- Used by boss frames
 		if (frame.units) then
-
 			for i,unitFrame in next,frame.units do
 				if (not header or unitFrame:GetParent() ~= header) then
 					unitFrame:SetScale(config.scale)
 				end
 			end
-
-			--return
 		end
 
 	end,
