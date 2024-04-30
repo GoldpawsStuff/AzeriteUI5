@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2024-04-30
+### Fixed
+- Fixed an issue where the floating player castbar would keep re-enabling itself even when disabled in the `/azerite` options menu.
+
 ## [5.2.170-Release] 2024-04-30
 - Support for Cataclysm Classic Pre-Patch.
 
