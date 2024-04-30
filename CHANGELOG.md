@@ -4,8 +4,8 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2024-04-30
-- Cataclysm Classic Pre-Patch.
+## [5.2.170-Release] 2024-04-30
+- Support for Cataclysm Classic Pre-Patch.
 
 ## [5.2.169-Release] 2024-04-29
 ### Added
