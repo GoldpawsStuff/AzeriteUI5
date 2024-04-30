@@ -25,7 +25,7 @@
 --]]
 local _, ns = ...
 
-if (not ns.IsWrath) then return end
+if (not ns.IsWrath and not ns.IsCata) then return end
 
 local Tracker = ns:NewModule("Tracker", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 
@@ -63,7 +63,7 @@ local config = {
 	-- Size of the holder. Set to same width as our Minimap.
 	-- *Wrath WatchFrame is 306 expanded, 204 standard width, Retail ObjectiveTracker 248
 	Width = 306,
-	Position = { "TOPRIGHT", UIParent, "TOPRIGHT", ns.IsWrath and -90 or -60, -240 }, -- might need to adjust
+	Position = { "TOPRIGHT", UIParent, "TOPRIGHT", (ns.IsWrath or ns.IsCata) and -90 or -60, -240 }, -- might need to adjust
 	BottomOffset = 380,
 	TrackerHeight = 1080 - 380 - 240,
 	WrathScale = 1.0625,

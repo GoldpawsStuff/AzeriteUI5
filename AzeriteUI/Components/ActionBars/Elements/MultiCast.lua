@@ -29,6 +29,7 @@ local _, ns = ...
 -- so we'll just leave it fully to blizz for now.
 do return end
 
+-- CATA: check if this exists there
 if (not ns.IsWrath) or (not MultiCastActionBarFrame) or (ns.PlayerClass ~= "SHAMAN") then
 	return
 end

@@ -125,7 +125,8 @@ local style = function(button)
 	end
 
 	-- Wrath overwrites the default texture
-	if (ns.IsWrath) then
+	-- CATA: check if this exists there
+	if (ns.IsWrath or ns.IsCata) then
 		button.AutoCastable = _G[button:GetName().."AutoCastable"]
 		button.AutoCastShine = _G[button:GetName().."Shine"]
 	end
@@ -453,7 +454,7 @@ PetBar.UpdateVisibilityDriver = function(self)
 		if (ns.IsClassic or ns.IsTBC) then
 			visdriver = visdriver.."[@pet,exists]show;"
 
-		elseif (ns.IsWrath) then
+		elseif (ns.IsWrath or ns.IsCata) then
 			-- UNTESTED!
 			visdriver = visdriver.."[@pet,exists,nopossessbar,nooverridebar,noshapeshift,novehicleui]show;"
 

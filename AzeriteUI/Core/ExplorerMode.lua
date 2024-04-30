@@ -505,7 +505,7 @@ ExplorerMode.OnEvent = function(self, event, ...)
 		self:CheckGroup()
 		self:CheckTarget()
 
-		if (ns.IsRetail or ns.IsWrath) then
+		if (ns.IsRetail or ns.IsWrath or ns.IsCata) then
 			self:CheckFocus()
 			self:CheckVehicle()
 			self:CheckOverride()

@@ -133,7 +133,7 @@ VehicleExit.OnEnable = function(self)
 	if (ns.IsClassic) then
 		button:SetAttribute("macrotext", "/dismount [mounted]\n")
 		RegisterStateDriver(button, "visibility", "[mounted]show;hide")
-	elseif (ns.IsWrath) then
+	elseif (ns.IsWrath or ns.IsCata) then -- CATA: check this
 		button:SetAttribute("macrotext", "/dismount [mounted]\n/run if CanExitVehicle() then VehicleExit() end")
 		RegisterStateDriver(button, "visibility", "[@vehicle,canexitvehicle][possessbar][mounted]show;hide")
 	else

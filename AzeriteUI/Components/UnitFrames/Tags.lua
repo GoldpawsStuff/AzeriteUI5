@@ -134,7 +134,7 @@ if (ns.IsRetail) then
 end
 
 Events[prefix("*:Classification")] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_CHANGED"
-if (oUF.isClassic or oUF.isTBC or oUF.isWrath) then
+if (oUF.isClassic or oUF.isTBC or oUF.isWrath or oUF.isCata) then
 	Methods[prefix("*:Classification")] = function(unit)
 		local l = UnitEffectiveLevel(unit)
 		local c = UnitClassification(unit)
@@ -334,7 +334,7 @@ Methods[prefix("*:DeadOrOffline")] = function(unit)
 end
 
 Events[prefix("*:Level")] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_CHANGED"
-if (oUF.isClassic or oUF.isTBC or oUF.isWrath) then
+if (oUF.isClassic or oUF.isTBC or oUF.isWrath or oUF.isCata) then
 	Methods[prefix("*:Level")] = function(unit, asPrefix)
 		local l = UnitEffectiveLevel(unit)
 		local c = UnitClassification(unit)

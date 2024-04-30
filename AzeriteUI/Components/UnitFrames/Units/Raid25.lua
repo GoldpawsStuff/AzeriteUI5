@@ -649,14 +649,14 @@ GroupHeader.ForAll = function(self, methodOrFunc, ...)
 	end
 end
 
-GroupHeader.OverrideEnable = function(self)
+GroupHeader.Enable = function(self)
 	if (InCombatLockdown()) then return end
 
 	self:UpdateVisibilityDriver()
 	self.enabled = true
 end
 
-GroupHeader.OverrideDisable = function(self)
+GroupHeader.Disable = function(self)
 	if (InCombatLockdown()) then return end
 
 	self:UpdateVisibilityDriver()

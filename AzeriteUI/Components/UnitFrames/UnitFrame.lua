@@ -42,7 +42,7 @@ local next = next
 local defaults = { profile = ns:Merge({
 	enabled = true,
 	disableAuraSorting = false,
-	disableHealComm = false
+	disableHealComm = nil -- TODO: purge it
 }, ns.MovableModulePrototype.defaults) }
 
 -- UnitFrame Callbacks
@@ -235,55 +235,6 @@ ns.UnitFrameModule = ns:Merge({
 }, ns.MovableModulePrototype)
 
 UnitFrameMod.UpdateSettings = function(self)
-
-	if (ns.IsClassic or ns.IsWrath) then
-		if (self.db.profile.disableHealComm) then
-
-			-- Iterate through unitframes.
-			if (ns.UnitFrames) then
-				for frame in next,ns.UnitFrames do
-					local healthPrediction = frame.HealthPrediction
-					if (healthPrediction) then
-						frame:DisableElement("HealthPrediction")
-					end
-				end
-			end
-			-- Iterate through nameplates.
-			if (ns.NamePlates) then
-				for frame in next,ns.NamePlates do
-					local healthPrediction = frame.HealthPrediction
-					if (healthPrediction) then
-						frame:DisableElement("HealthPrediction")
-					end
-				end
-			end
-
-		else
-
-			-- Iterate through unitframes.
-			if (ns.UnitFrames) then
-				for frame in next,ns.UnitFrames do
-					local healthPrediction = frame.HealthPrediction
-					if (healthPrediction) then
-						frame:EnableElement("HealthPrediction")
-						healthPrediction:ForceUpdate()
-					end
-				end
-			end
-
-			-- Iterate through nameplates.
-			if (ns.NamePlates) then
-				for frame in next,ns.NamePlates do
-					local healthPrediction = frame.HealthPrediction
-					if (healthPrediction) then
-						frame:EnableElement("HealthPrediction")
-						healthPrediction:ForceUpdate()
-					end
-				end
-			end
-		end
-
-	end
 
 	if (self.db.profile.disableAuraSorting) then
 

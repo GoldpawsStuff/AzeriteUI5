@@ -19,6 +19,11 @@
 	<Script file="Auras\Wrath\Wrath_AuraSorting.lua"/>
 	<Script file="Auras\Wrath\Wrath_AuraStyling.lua"/>
 
+	<Script file="Auras\Cata\Cata_AuraData.lua"/>
+	<Script file="Auras\Cata\Cata_AuraFilters.lua"/>
+	<Script file="Auras\Cata\Cata_AuraSorting.lua"/>
+	<Script file="Auras\Cata\Cata_AuraStyling.lua"/>
+
 	<Script file="Units\Player.lua"/>
 	<Script file="Units\PlayerAlternate.lua"/>
 	<Script file="Units\PlayerCastBar.lua"/>

@@ -99,19 +99,6 @@ local GenerateOptions = function()
 		}
 	}
 
-	-- Option to toggle HealComm in the classics.
-	if (ns.IsClassic or ns.IsWrath) then
-		options.args.disableHealComm = {
-			name = "Enable HealComm",
-			desc = "When enabled you'll get previews of incoming heals on the unit frames. If you experience a drop in framerate while in raids or groups, try disabling this option.",
-			order = 15,
-			type = "toggle", width = "full",
-			hidden = isdisabled,
-			set = function(info,val) setter(info, not val) end,
-			get = function(info) return not getter(info) end
-		}
-	end
-
 	-- Player
 	do
 		local suboptions, module, setter, getter, setoption, getoption, isdisabled = GenerateSubOptions("PlayerFrame")

@@ -462,7 +462,11 @@ GroupHeader.Disable = function(self)
 end
 
 GroupHeader.IsEnabled = function(self)
-	return self.units[1]:IsEnabled()
+	for i,frame in next,self.units do
+		if (frame:IsEnabled()) then
+			return true
+		end
+	end
 end
 
 BossFrameMod.CreateUnitFrames = function(self)
