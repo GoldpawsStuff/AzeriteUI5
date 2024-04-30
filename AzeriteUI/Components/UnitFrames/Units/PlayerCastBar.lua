@@ -206,10 +206,12 @@ CastBarMod.UpdateVisibility = function(self, event, ...)
 	if (event == "PLAYER_REGEN_ENABLED") then
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "UpdateVisibility")
 	end
-	if (GetCVarBool("nameplateShowSelf")) then
-		self.frame:Disable()
-	else
-		self.frame:Enable()
+	if (self.db.profile.enabled) then
+		if (GetCVarBool("nameplateShowSelf")) then
+			self.frame:Disable()
+		else
+			self.frame:Enable()
+		end
 	end
 end
 
