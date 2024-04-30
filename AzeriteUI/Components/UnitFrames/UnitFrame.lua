@@ -192,7 +192,6 @@ ns.UnitFrameModule = ns:Merge({
 			header:SetScale(config.scale)
 		end
 
-
 		-- Used by boss frames
 		if (frame.units) then
 			for i,unitFrame in next,frame.units do
@@ -201,7 +200,6 @@ ns.UnitFrameModule = ns:Merge({
 				end
 			end
 		end
-
 	end,
 
 	GetFrame = function(self)
