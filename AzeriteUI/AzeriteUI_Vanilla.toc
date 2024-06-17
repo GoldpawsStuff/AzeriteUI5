@@ -1,4 +1,4 @@
-## Interface: 11502
+## Interface: 11503
 ## IconTexture: Interface\Addons\AzeriteUI\Assets\power-crystal-ice-icon.tga
 
 ## Title: |TInterface\Addons\AzeriteUI\Assets\power-crystal-ice-icon.tga:16:16:0:0:512:512:70:442:40:472|t |cff4488bbAzerite|r |cfffafafaUI|r |cffcccccc5.2|r

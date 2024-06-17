@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2024-04-30
+## [5.2.171-Release] 2024-05-02
+- Bumped TOC version.
+
 ### Added
 - Added raid target icons to the raid(25) and raid(40) raid frames.
 - Added group numbers to the raid(25) and raid(40) raid frames.
