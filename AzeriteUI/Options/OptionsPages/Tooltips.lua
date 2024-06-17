@@ -134,6 +134,14 @@ local GenerateOptions = function()
 				set = setter,
 				get = getter
 			},
+			showGuildName = {
+				name = L["Show Guildname"],
+				desc = L["Toggle whether to add Guildname in tooltips or not."],
+				order = 23,
+				type = "toggle", width = "full",
+				set = setter,
+				get = getter
+			},
 			anchorHeader = {
 				name = L["Position"],
 				order = 29,
