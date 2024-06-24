@@ -560,6 +560,7 @@ local style = function(self, unit)
 
 	-- Trinket Icon
 	--------------------------------------------
+	--[[--
 	local trinket = CreateFrame("Frame", nil, self)
 	trinket:SetSize(unpack(db.TrinketFrameSize))
 	trinket:SetPoint(unpack(db.TrinketFramePosition))
@@ -598,6 +599,7 @@ local style = function(self, unit)
 	self.Trinket = trinket
 	self.Trinket.cc = trinketCooldown
 	self.Trinket.icon = trinketIcon
+	--]]--
 
 	-- Auras
 	--------------------------------------------
