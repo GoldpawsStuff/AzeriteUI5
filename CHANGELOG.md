@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.173-Release] 2024-07-03
+### Added
+- Added NDui to the list of addons that make our nameplates auto-disable.
+
 ## [5.2.172-Release] 2024-06-24
 ### Fixed
 - Disabled the trinket cooldown part of raid(5) and enemy arena frames, as this has been broken since the last WoW patch, or maybe a bit longer. Note that I plan to fully replace both raid(5) and enemy arena frames with something slimmer and more fitting. I aim to rewrite the aura filtering and try to write something that is actually usable in arena and not just pretty on screenshots! Hope this bugfix works, I'm a week away from being able to test it myself (longer story than this changelog). Don't hesitate to drop by my discord and tell me when something is wrong! Over and out!
