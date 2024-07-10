@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.174-Release] 2024-07-10
+- Updated for WoW Client Patch 1.15.3.
+
+### Fixed
+- The new friends button in Season of Discovery now hides on mouseover.
+
 ## [5.2.173-Release] 2024-07-03
 ### Added
 - Added NDui to the list of addons that make our nameplates auto-disable.

@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
-	<!--@non-debug@
 	<Script file="LibStub\LibStub.lua"/>
 	<Include file="CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
+	<!--@non-debug@
 	<Include file="TaintLess\TaintLess.xml"/>
 	<Include file="AceAddon-3.0\AceAddon-3.0.xml"/>
 	<Include file="AceDB-3.0\AceDB-3.0.xml"/>
@@ -23,7 +23,7 @@
 	<Include file="UTF8\utf8.xml"/>
 	<Include file="LibEditModeOverride\LibEditModeOverride.xml"/>
 	<Include file="LibKeyBound-1.0\lib.xml"/>
-	<Script file="Libs\LibDeflate\LibDeflate.lua"/>
+	<Script file="LibDeflate\LibDeflate.lua"/>
 
 	<!-- Modified Libraries -->
 	<Script file="LibActionButton-1.0-GE\LibActionButton-1.0-GE.lua"/>

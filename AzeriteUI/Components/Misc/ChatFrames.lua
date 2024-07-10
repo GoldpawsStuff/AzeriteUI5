@@ -70,7 +70,8 @@ local GLOBAL_BUTTONS = {
 	"ChatFrameChannelButton",
 	"ChatFrameToggleVoiceDeafenButton",
 	"ChatFrameToggleVoiceMuteButton",
-	"ChatMenu"
+	"ChatMenu",
+	"FriendsMicroButton"
 }
 
 -- ChatFrame Texture Suffixes

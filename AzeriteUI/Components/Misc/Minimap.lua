@@ -634,8 +634,8 @@ end
 MinimapMod.SetMinimapTheme = function(self, input)
 	if (InCombatLockdown()) then return end
 	local theme = self:GetArgs(string_lower(input))
-	if (not ns.IsRetail and theme == "Blizzard") then
-		theme = "Azerite"
+	if (not ns.IsRetail and theme == "blizzard") then
+		theme = "azerite"
 	end
 	self:SetTheme(theme)
 end
