@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [5.2.174-Release] 2024-07-10
-- Updated for WoW Client Patch 1.15.3.
+- Previously updated for WoW Classic Client Patch 1.15.3.
 
 ### Fixed
 - The new friends button in Season of Discovery now hides on mouseover.
