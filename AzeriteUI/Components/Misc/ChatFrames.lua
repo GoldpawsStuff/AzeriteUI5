@@ -505,10 +505,17 @@ ChatFrames.UpdateButtons = function(self, event, ...)
 
 				if (not Elements[frame].isMouseOver) then
 
-					if (up) then up:SetParent(buttonFrame) end
-					if (down) then down:SetParent(buttonFrame) end
-					if (bottom) then bottom:SetParent(buttonFrame) end
-					if (scrollBar) then scrollBar:SetParent(buttonFrame); scrollBar:Update() end
+					if (ns.IsRetail) then
+						if (up) then up:SetParent(buttonFrame) end
+						if (down) then down:SetParent(buttonFrame) end
+						if (bottom) then bottom:SetParent(buttonFrame) end
+						if (scrollBar) then scrollBar:SetParent(buttonFrame); scrollBar:Update() end
+					else
+						if (up) then up:SetAlpha(1) end
+						if (down) then down:SetAlpha(1) end
+						if (bottom) then bottom:SetAlpha(1) end
+						if (scrollBar) then scrollBar:SetAlpha(1); scrollBar:Update() end
+					end
 
 					local tabText = ChatFrame.GetTabText(frame)
 					tabText:Show()
@@ -530,10 +537,17 @@ ChatFrames.UpdateButtons = function(self, event, ...)
 					local bottom = ChatFrame.GetToBottomButton(frame)
 					local scrollBar = ChatFrame.GetScrollBar(frame)
 
-					if (up) then up:SetParent(UIHider) end
-					if (down) then down:SetParent(UIHider) end
-					if (bottom) then bottom:SetParent(UIHider) end
-					if (scrollBar) then scrollBar:SetParent(UIHider) end
+					if (ns.IsRetail) then
+						if (up) then up:SetParent(UIHider) end
+						if (down) then down:SetParent(UIHider) end
+						if (bottom) then bottom:SetParent(UIHider) end
+						if (scrollBar) then scrollBar:SetParent(UIHider) end
+					else
+						if (up) then up:SetAlpha(0) end
+						if (down) then down:SetAlpha(0) end
+						if (bottom) then bottom:SetAlpha(0) end
+						if (scrollBar) then scrollBar:SetAlpha(0) end
+					end
 
 					ChatFrame.GetTabText(frame):Hide()
 
@@ -543,14 +557,8 @@ ChatFrames.UpdateButtons = function(self, event, ...)
 		end
 	end
 
-	if (atDock) then
-		for button in self:GetGlobalButtons() do
-			button:SetAlpha(1)
-		end
-	else
-		for button in self:GetGlobalButtons() do
-			button:SetAlpha(0)
-		end
+	for button in self:GetGlobalButtons() do
+		button:SetAlpha(atDock and 1 or 0)
 	end
 
 end
@@ -615,7 +623,7 @@ ChatFrames.OnEvent = function(self, event, ...)
 			self:SecureHook("FCF_DockUpdate","UpdateClutter")
 
 			-- Not an ideal solution for this,
-			-- but mouse scripts are just too unreliable here.
+			-- but mouse hover scripts are just too unreliable here.
 			self:ScheduleRepeatingTimer("UpdateClutter", 1/10)
 
 			if (QuickJoinToastButton) then
