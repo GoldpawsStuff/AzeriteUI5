@@ -225,18 +225,24 @@ local Button_UpdateTooltip = function(button)
 
 		local exhaustionCountdown = GetTimeToWellRested() and (GetTimeToWellRested() / 60)
 		local exhaustionStateID, exhaustionStateName, exhaustionStateMultiplier = GetRestState()
-		local tooltipText = string_format(EXHAUST_TOOLTIP1, exhaustionStateName, exhaustionStateMultiplier * 100)
 
-		if (exhaustionCountdown and GetXPExhaustion() and IsResting()) then
-			tooltipText = tooltipText..string_format(EXHAUST_TOOLTIP4, exhaustionCountdown)
-		elseif (exhaustionStateID == 4 or exhaustionStateID == 5) then
-			tooltipText = tooltipText..EXHAUST_TOOLTIP2
+		-- Sometimes when hovering over this button upon zoning or reloading,
+		-- this return value will be nil and cause a bug.
+		if (exhaustionStateMultiplier) then
+			local tooltipText = string_format(EXHAUST_TOOLTIP1, exhaustionStateName, exhaustionStateMultiplier * 100)
+
+			if (exhaustionCountdown and GetXPExhaustion() and IsResting()) then
+				tooltipText = tooltipText..string_format(EXHAUST_TOOLTIP4, exhaustionCountdown)
+			elseif (exhaustionStateID == 4 or exhaustionStateID == 5) then
+				tooltipText = tooltipText..EXHAUST_TOOLTIP2
+			end
+
+			GameTooltip_SetDefaultAnchor(GameTooltip, button)
+			GameTooltip:AddDoubleLine(COMBAT_XP_GAIN, string_format(UNIT_LEVEL_TEMPLATE, UnitLevel("player")), r, g, b, unpack(Colors.gray))
+			GameTooltip:AddLine("\n"..tooltipText)
+			GameTooltip:Show()
 		end
 
-		GameTooltip_SetDefaultAnchor(GameTooltip, button)
-		GameTooltip:AddDoubleLine(COMBAT_XP_GAIN, string_format(UNIT_LEVEL_TEMPLATE, UnitLevel("player")), r, g, b, unpack(Colors.gray))
-		GameTooltip:AddLine("\n"..tooltipText)
-		GameTooltip:Show()
 
 	elseif (bar.currentType == "reputation") then
 		local r, g, b = unpack(bar.standingID and Colors.reaction[bar.standingID] or Colors.reaction[#Colors.reaction])
