@@ -70,6 +70,7 @@ ns.Private.IsWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
 --ns.Private.IsCata = WOW_PROJECT_ID == (WOW_PROJECT_CATA_CLASSIC or 99) -- NYI in first build
 ns.Private.IsCata = (version >= 40400) and (version < 50000)
 ns.Private.WoW10 = version >= 100000
+ns.Private.WoW11 = version >= 110000
 
 -- Developer Mode constants
 ------------------------------------------------------
