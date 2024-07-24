@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 126
+local MINOR_VERSION = 127
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -264,7 +264,10 @@ function lib:CreateButton(id, name, header, config)
 	end
 
 	-- Hide unused elements
-	button.AutoCastShine:SetParent(Hider)
+	-- *Various elements removed in 11.0.0.
+	if (button.AutoCastShine) then
+		button.AutoCastShine:SetParent(Hider)
+	end
 	--button.Border:SetParent(Hider)
 	button.NewActionTexture:SetParent(Hider)
 	button.NormalTexture:SetTexture()
