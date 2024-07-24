@@ -145,6 +145,6 @@ Experimental.OnInitialize = function(self)
 	if (ns.IsDevelopment and ns.db.global.enableDevelopmentMode) then
 		self:RegisterChatCommand("serial", "SerializeOptions")
 		self:RegisterChatCommand("toggleblips", "ToggleBlips")
-		self:RegisterChatCommand("go", "ToggleUI")
+		--self:RegisterChatCommand("go", "ToggleUI")
 	end
 end
