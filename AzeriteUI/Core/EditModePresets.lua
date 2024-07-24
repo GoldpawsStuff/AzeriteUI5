@@ -25,7 +25,8 @@
 --]]
 local _, ns = ...
 
-if (not ns.WoW10) then return end
+-- Something is tainted or broken in 11.0.0.
+if (not ns.WoW10 or ns.WoW11) then return end
 
 local EditMode = ns:NewModule("EditMode", "LibMoreEvents-1.0", "AceConsole-3.0", "AceTimer-3.0", "AceHook-3.0")
 local LEMO = LibStub("LibEditModeOverride-1.0")

@@ -249,19 +249,23 @@ end
 ns.OnEvent = function(self, event, ...)
 	if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
 		self:UnregisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
-		self:ApplyEditModeLayout()
+		if (ns.WoW10 and not ns.WoW11) then
+			self:ApplyEditModeLayout()
+		end
 
 	elseif (event == "PLAYER_REGEN_ENABLED") then
 		if (InCombatLockdown()) then return end
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-		self:ApplyEditModeLayout()
+		if (ns.WoW10 and not ns.WoW11) then
+			self:ApplyEditModeLayout()
+		end
 	end
 end
 
 ns.OnEnable = function(self)
 	self.db:SetProfile(self.db.char.profile)
 
-	if (ns.WoW10) then
+	if (ns.WoW10 and not ns.WoW11) then
 		self:ApplyEditModeLayout()
 	end
 end

@@ -25,7 +25,8 @@
 --]]
 local _, ns = ...
 
-if (not ns.WoW10) then return end
+-- Something is tainted or broken in 11.0.0.
+if (not ns.WoW10 or ns.WoW11) then return end
 
 local EditModeManager = ns:NewModule("EditModeManager", "LibMoreEvents-1.0", "AceHook-3.0")
 
@@ -193,10 +194,13 @@ EditModeManager.OnInitialize = function(self)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 
-	self:SecureHook(GameMenuButtonEditMode, "SetEnabled", function(self, enabled)
-		if (InCombatLockdown() and enabled) then
-			self:Disable()
-		end
-	end)
+	-- Function removed in 11.0.0
+	if (GameMenuButtonEditMode) then
+		self:SecureHook(GameMenuButtonEditMode, "SetEnabled", function(self, enabled)
+			if (InCombatLockdown() and enabled) then
+				self:Disable()
+			end
+		end)
+	end
 
 end
