@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2024-07-24
+## [5.2.175-Alpha] 2024-07-24
 ### Fixed
 - Various fixes and workarounds for WoW Retail 11.0.0.
 - Changed how chat frame buttons are shown and hidden in Classic Era to avoid complications with button positioning when using the addon Dialogue UI.
