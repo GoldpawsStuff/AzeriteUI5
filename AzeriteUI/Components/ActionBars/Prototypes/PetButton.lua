@@ -164,15 +164,32 @@ PetButton.Update = function(self)
 
 	if (autoCastAllowed) then
 		if (autoCastEnabled) then
-			self.AutoCastable:Hide()
-			AutoCastShine_AutoCastStart(self.AutoCastShine)
+			-- Removed in 11.0.0
+			if (self.AutoCastable) then
+				self.AutoCastable:Hide()
+			end
+			-- Removed in 11.0.0
+			if (AutoCastShine_AutoCastStart) then
+				AutoCastShine_AutoCastStart(self.AutoCastShine)
+			end
 		else
-			self.AutoCastable:Show()
-			AutoCastShine_AutoCastStop(self.AutoCastShine)
+			-- Removed in 11.0.0
+			if (self.AutoCastable) then
+				self.AutoCastable:Show()
+			end
+			-- Removed in 11.0.0
+			if (AutoCastShine_AutoCastStop) then
+				AutoCastShine_AutoCastStop(self.AutoCastShine)
+			end
 		end
 	else
-		self.AutoCastable:Hide()
-		AutoCastShine_AutoCastStop(self.AutoCastShine)
+		-- Removed in 11.0.0
+		if (self.AutoCastable) then
+			self.AutoCastable:Hide()
+		end
+		if (AutoCastShine_AutoCastStop) then
+			AutoCastShine_AutoCastStop(self.AutoCastShine)
+		end
 	end
 
 	if (texture) then
