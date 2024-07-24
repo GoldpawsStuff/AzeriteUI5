@@ -538,6 +538,7 @@ local NamePlate_PostUpdate = function(self, event, unit, ...)
 	self.isTarget = UnitIsUnit(unit, "target")
 	self.isSoftEnemy = UnitIsUnit(unit, "softenemy")
 	self.isSoftInteract = UnitIsUnit(unit, "softinteract")
+	self.nameplateShowsWidgetsOnly = ns.IsRetail and UnitNameplateShowsWidgetsOnly(unit)
 
 	local db = ns.GetConfig("NamePlates")
 	local main, reverse = db.Orientation, db.OrientationReversed
@@ -1166,8 +1167,14 @@ NamePlatesMod.OnEvent = function(self, event, ...)
 		-- Make this a user controllable setting.
 		local isInInstance, instanceType = IsInInstance()
 		if (isInInstance) then
-			SetCVar("nameplateMinAlpha", .75) -- The minimum alpha of nameplates.
-			SetCVar("nameplateOccludedAlphaMult", .35) -- Alpha multiplier of hidden plates
+			if (instanceType == "pvp") then
+				SetCVar("nameplateMinAlpha", 1) -- The minimum alpha of nameplates.
+			elseif (instanceType == "arena") then
+				SetCVar("nameplateMinAlpha", 1) -- The minimum alpha of nameplates.
+			else
+				SetCVar("nameplateMinAlpha", .75) -- The minimum alpha of nameplates.
+			end
+			SetCVar("nameplateOccludedAlphaMult", .45) -- Alpha multiplier of hidden plates
 		else
 			SetCVar("nameplateMinAlpha", .4) -- The minimum alpha of nameplates.
 			SetCVar("nameplateOccludedAlphaMult", .15) -- Alpha multiplier of hidden plates
