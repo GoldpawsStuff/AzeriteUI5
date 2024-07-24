@@ -25,7 +25,7 @@
 --]]
 local _, ns = ...
 
-if (not ns.WoW10) then return end
+if (not ns.WoW10 or ns.WoW11) then return end
 
 local Tracker = ns:NewModule("Tracker", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0", "AceConsole-3.0")
 
@@ -683,6 +683,10 @@ Tracker.OnEvent = function(self, event, ...)
 end
 
 Tracker.OnEnable = function(self)
+	if (ns.WoW11) then
+		return self:Disable()
+	end
+
 	LoadAddOn("Blizzard_ObjectiveTracker")
 
 	self:PrepareFrames()
