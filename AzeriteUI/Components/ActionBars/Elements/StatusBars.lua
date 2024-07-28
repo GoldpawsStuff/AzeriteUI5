@@ -561,6 +561,140 @@ StatusBars.UpdateBars = function(self, event, ...)
 	end
 end
 
+if (ns.IsClassic) then
+
+	StatusBars.UpdateBars = function(self, event, ...)
+		if (not self.Bar) then return end
+
+		local bar, bonus = self.Bar, self.Bonus
+		local bonusShown = bonus:IsShown()
+		local showButton
+
+		local name, standingID, min, max, current, factionID = GetWatchedFactionInfo()
+
+		if (name and standingID) then
+
+			local level, maxLevel
+			local barMax, barValue
+			local standingLabel, nextStandingLabel
+
+			local color = standingID and Colors.reaction[standingID] or Colors.reaction[#Colors.reaction]
+
+			local gender = UnitSex("player")
+
+			standingLabel = GetText("FACTION_STANDING_LABEL"..standingID, gender)
+			nextStandingLabel = _G["FACTION_STANDING_LABEL"..(standingID + 1)] and GetText("FACTION_STANDING_LABEL"..standingID + 1, gender)
+
+			level = standingID
+			maxLevel = MAX_REPUTATION_REACTION
+
+			barMax = max - min
+			barValue = current - min
+
+			if (barMax == 0) then
+				bar:SetMinMaxValues(0, 1, forced)
+				bar:SetValue(1, forced)
+			else
+				bar:SetMinMaxValues(0, barMax, forced)
+				bar:SetValue(barValue, forced)
+			end
+
+			local r, g, b = unpack(color)
+			bar:SetStatusBarColor(r, g, b)
+			bar.currentType = "reputation"
+
+			bar.name = name
+			bar.standingID, bar.standingLabel = standingID, standingLabel
+
+
+			if (nextStandingLabel) then
+				bar.Value:SetFormattedText("%s", AbbreviateNumber(barMax-barValue))
+				bar.Description:SetFormattedText(L["to %s"], nextStandingLabel)
+
+			elseif (maxLevel and level and level < maxLevel) then
+				bar.Value:SetFormattedText("%s", AbbreviateNumber(barMax-barValue))
+				bar.Description:SetText(L["to next level"])
+			else
+				bar.Value:SetFormattedText("%s", AbbreviateNumber(barValue))
+				bar.Description:SetText("")
+			end
+
+			bar.Value:SetTextColor(r, g, b)
+			bar.Percent:SetTextColor(r, g, b)
+
+			local perc = math_floor(barValue/barMax*100)
+			if (perc > 0) then
+				bar.Percent:SetFormattedText("%.0f", perc)
+			else
+				bar.Percent:SetText("*")
+			end
+
+			bar:Show()
+
+			showButton = true
+		else
+
+			if (IsPlayerAtEffectiveMaxLevel() or IsXPUserDisabled()) then
+				bar.currentType = nil
+				bar:Hide()
+				bonus:Hide()
+				bar.Value:SetText("")
+				bar.Description:SetText("")
+
+				bar.Percent:SetText("")
+			else
+
+				local forced = bar.currentType ~= "xp"
+				local restedLeft = GetXPExhaustion()
+				local min = UnitXP("player") or 0
+				local max = UnitXPMax("player") or 0
+				local r, g, b = unpack(Colors[restedLeft and "rested" or "xp"])
+
+				bar:SetMinMaxValues(0, max, forced)
+				bar:SetValue(min, forced)
+				bar:SetStatusBarColor(r, g, b)
+				bar.currentType = "xp"
+
+				if (restedLeft) then
+					bonus:SetMinMaxValues(0, max, not bonusShown)
+					bonus:SetValue(math_min(max, min + restedLeft), not bonusShown)
+					if (not bonusShown) then
+						bonus:Show()
+					end
+				elseif (bonusShown) then
+					bonus:Hide()
+					bonus:SetValue(0, true)
+					bonus:SetMinMaxValues(0, 1, true)
+				end
+
+				bar.Value:SetFormattedText("%s", AbbreviateNumber(max-min))
+				bar.Description:SetFormattedText(L["to level %s"], UnitLevel("player") + 1)
+				bar.Value:SetTextColor(r, g, b)
+				bar.Percent:SetTextColor(r, g, b)
+
+				local perc = math_floor(min/max*100)
+				if (perc > 0) then
+					bar.Percent:SetFormattedText("%.0f", perc)
+				else
+					bar.Percent:SetText(XP)
+				end
+
+				bar:Show()
+
+				showButton = true
+			end
+		end
+
+		if (showButton and not self.Button:IsShown()) then
+			self.Button:Show()
+		elseif (not showButton and self.Button:IsShown()) then
+			self.Button:Hide()
+		end
+
+	end
+
+end
+
 StatusBars.CreateBars = function(self)
 	if (self.Bar) then return end
 
