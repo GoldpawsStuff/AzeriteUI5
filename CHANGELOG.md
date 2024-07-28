@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2024-07-28
+### Fixed
+- Slightly reduced the size of the Minimap border to avoid a tiny fully transparent area in Classic Era.
+- Slightly adjusted the position of the Vehicle Exit button on the Minimap in Classic Era.
+
 ## [5.2.175-Alpha] 2024-07-24
 ### Fixed
 - Various fixes and workarounds for WoW Retail 11.0.0.
