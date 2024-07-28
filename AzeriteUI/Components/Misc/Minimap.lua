@@ -297,8 +297,8 @@ local Skins = {
 				DrawLayer = "BORDER",
 				DrawLevel = 1,
 				Path = GetMedia("minimap-border"),
-				Size = function() return (404 / mapScale), (404 / mapScale) end,
-				Point = { "CENTER", -1, 0 },
+				Size = function() return (398 / mapScale), (398 / mapScale) end, -- 404
+				Point = { "CENTER", 0, 0 },
 				Color = { Colors.ui[1], Colors.ui[2], Colors.ui[3] },
 			},
 			AzeriteEye = {
