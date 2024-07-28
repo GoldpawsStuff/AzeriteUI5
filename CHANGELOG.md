@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Slightly reduced the size of the Minimap border to avoid a tiny fully transparent area in Classic Era.
 - Slightly adjusted the position of the Vehicle Exit button on the Minimap in Classic Era.
+- Fixed reputation tracking in Classic Era.
 
 ## [5.2.175-Alpha] 2024-07-24
 ### Fixed
