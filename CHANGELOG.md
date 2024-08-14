@@ -4,14 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2024-08-14
-### Fixed
-- Fixed some incorrect texture crops in the health predict element of the player- and target healthbars.
-
-## [5.2.176-Alpha] 2024-08-14
+## [5.2.177-Alpha] 2024-08-14
 - Retail fixes are a work in progress and not finished.
 
 ### Fixed
+- Fixed some incorrect texture crops in the health predict element of the player- and target healthbars.
 - Fixed an issue where the XP bar located on the Minimap would bug out if the mouse cursor hovered above the display button upon reloading the user interface.
 - Changed how chat frame buttons are shown and hidden in Classic Era to avoid complications with button positioning when using the addon Dialogue UI.
 - Slightly reduced the size of the Minimap border to avoid a tiny fully transparent area in Classic Era.
