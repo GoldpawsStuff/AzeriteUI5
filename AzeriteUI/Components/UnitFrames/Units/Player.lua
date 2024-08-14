@@ -142,27 +142,14 @@ local HealPredict_PostUpdate = function(element, unit, myIncomingHeal, otherInco
 		local value = preview:GetValue() / max
 		local previewTexture = preview:GetStatusBarTexture()
 		local previewWidth, previewHeight = preview:GetSize()
-		local left, right, top, bottom = preview:GetTexCoord()
-		local isFlipped = preview:IsFlippedHorizontally()
 
 		if (growth == "RIGHT") then
-
-			local texValue, texChange = value, change
-			local rangeH
-
-			rangeH = right - left
-			texChange = change*value
-			texValue = left + value*rangeH
 
 			if (change > 0) then
 				element:ClearAllPoints()
 				element:SetPoint("BOTTOMLEFT", previewTexture, "BOTTOMRIGHT", 0, 0)
 				element:SetSize(change*previewWidth, previewHeight)
-				if (isFlipped) then
-					element:SetTexCoord(texValue + texChange, texValue, top, bottom)
-				else
-					element:SetTexCoord(texValue, texValue + texChange, top, bottom)
-				end
+				element:SetTexCoord(curHealth/maxHealth, curHealth/maxHealth + change, 0, 1)
 				element:SetVertexColor(0, .7, 0, .25)
 				element:Show()
 
@@ -170,11 +157,7 @@ local HealPredict_PostUpdate = function(element, unit, myIncomingHeal, otherInco
 				element:ClearAllPoints()
 				element:SetPoint("BOTTOMRIGHT", previewTexture, "BOTTOMRIGHT", 0, 0)
 				element:SetSize((-change)*previewWidth, previewHeight)
-				if (isFlipped) then
-					element:SetTexCoord(texValue, texValue + texChange, top, bottom)
-				else
-					element:SetTexCoord(texValue + texChange, texValue, top, bottom)
-				end
+				element:SetTexCoord(curHealth/maxHealth, curHealth/maxHealth + change, 0, 1)
 				element:SetVertexColor(.5, 0, 0, .75)
 				element:Show()
 
@@ -183,34 +166,20 @@ local HealPredict_PostUpdate = function(element, unit, myIncomingHeal, otherInco
 			end
 
 		elseif (growth == "LEFT") then
-			local texValue, texChange = value, change
-			local rangeH
-
-			rangeH = right - left
-			texChange = change*value
-			texValue = left + value*rangeH
 
 			if (change > 0) then
 				element:ClearAllPoints()
-				element:SetPoint("BOTTOMRIGHT", previewTexture, "BOTTOMLEFT", 0, 0)
+				element:SetPoint("TOPRIGHT", previewTexture, "TOPLEFT", 0, 0)
 				element:SetSize(change*previewWidth, previewHeight)
-				if (isFlipped) then
-					element:SetTexCoord(texValue, texValue + texChange, top, bottom)
-				else
-					element:SetTexCoord(texValue + texChange, texValue, top, bottom)
-				end
+				element:SetTexCoord(1 - (1 - (curHealth/maxHealth + change)), 1 - (1 - curHealth/maxHealth), 0, 1)
 				element:SetVertexColor(0, .7, 0, .25)
 				element:Show()
 
 			elseif (change < 0) then
 				element:ClearAllPoints()
-				element:SetPoint("BOTTOMLEFT", previewTexture, "BOTTOMLEFT", 0, 0)
-				element:SetSize((-change)*previewWidth, previewHeight)
-				if (isFlipped) then
-					element:SetTexCoord(texValue + texChange, texValue, top, bottom)
-				else
-					element:SetTexCoord(texValue, texValue + texChange, top, bottom)
-				end
+				element:SetPoint("TOPLEFT", previewTexture, "TOPLEFT", 0, 0)
+				element:SetSize(change*previewWidth, previewHeight)
+				element:SetTexCoord(1 - (1 - (curHealth/maxHealth + change)), 1 - (1 - curHealth/maxHealth), 0, 1)
 				element:SetVertexColor(.5, 0, 0, .75)
 				element:Show()
 

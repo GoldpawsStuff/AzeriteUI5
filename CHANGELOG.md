@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2024-08-14
+### Fixed
+- Fixed some incorrect texture crops in the health predict element of the player- and target healthbars.
+
 ## [5.2.176-Alpha] 2024-08-14
 - Retail fixes are a work in progress and not finished.
 
