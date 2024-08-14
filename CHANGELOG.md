@@ -4,20 +4,17 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2024-08-14
-- Current build only tested in Classic Era.
+## [5.2.176-Alpha] 2024-08-14
+- Retail fixes are a work in progress and not finished.
 
 ### Fixed
+- Fixed an issue where the XP bar located on the Minimap would bug out if the mouse cursor hovered above the display button upon reloading the user interface.
+- Changed how chat frame buttons are shown and hidden in Classic Era to avoid complications with button positioning when using the addon Dialogue UI.
 - Slightly reduced the size of the Minimap border to avoid a tiny fully transparent area in Classic Era.
 - Slightly adjusted the position of the Vehicle Exit button on the Minimap in Classic Era.
 - Fixed reputation tracking in Classic Era.
 - Removed usage of `GetMouseFocus` from Retail.
-
-## [5.2.175-Alpha] 2024-07-24
-### Fixed
-- Various fixes and workarounds for WoW Retail 11.0.0.
-- Changed how chat frame buttons are shown and hidden in Classic Era to avoid complications with button positioning when using the addon Dialogue UI.
-- Fixed an issue where the XP bar located on the Minimap would bug out if the mouse cursor hovered above the display button upon reloading the user interface.
+- Various fixes and workarounds for WoW Retail 11.0.x.
 
 ## [5.2.174-Release] 2024-07-10
 - Previously updated for WoW Classic Client Patch 1.15.3.
