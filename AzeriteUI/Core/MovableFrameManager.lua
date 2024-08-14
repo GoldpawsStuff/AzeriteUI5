@@ -1380,8 +1380,9 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 				EMP:LoadLayouts()
 			end
 		end
+	end
 
-	elseif (event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED") then
+	if (event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED") then
 		local scale = UIParent:GetScale()
 
 		for anchor,anchorData in next,AnchorData do

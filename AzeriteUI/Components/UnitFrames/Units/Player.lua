@@ -27,6 +27,7 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local PlayerFrameMod = ns:NewModule("PlayerFrame", ns.UnitFrameModule, "LibMoreEvents-1.0")
+PlayerFrameMod:SetEnabledState(not ns.WoW11)
 
 -- Lua API
 local next = next
@@ -972,4 +973,16 @@ PlayerFrameMod.OnEnable = function(self)
 	self:CreateAnchor(HUD_EDIT_MODE_PLAYER_FRAME_LABEL or PLAYER)
 
 	ns.MovableModulePrototype.OnEnable(self)
+end
+
+if not ns.WoW11 then return end
+
+PlayerFrameMod.OnInitialize = function(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+end
+
+PlayerFrameMod.DelayedEnable = function(self)
+	ns.UnitFrameModule.OnInitialize(self)
+	self:Enable()
+	self.frame:UpdateAllElements("DelayedEnable")
 end

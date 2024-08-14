@@ -30,6 +30,8 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 
 local Options = ns:NewModule("Options", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
+Options:SetEnabledState(not ns.WoW11)
+
 local LEMO = LibStub("LibEditModeOverride-1.0", true)
 
 -- Lua API
@@ -369,4 +371,26 @@ Options.OnDisable = function(self)
 	if (ns.IsRetail) then
 		self:UnregisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
 	end
+end
+
+
+if not ns.WoW11 then return end
+
+Options.OnInitialize = function(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ExtraDelayedEnable")
+end
+
+Options.OnEnable = function(self)
+	self:RegisterChatCommand("az", "OpenOptionsMenu")
+	self:RegisterChatCommand("azerite", "OpenOptionsMenu")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
+	self:RegisterEvent("PLAYER_TALENT_UPDATE", "OnEvent")
+	ns.RegisterCallback(self, "OptionsNeedRefresh", "Refresh")
+	self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
+
+	self:OnEvent("PLAYER_ENTERING_WORLD", true)
+end
+
+Options.ExtraDelayedEnable = function(self)
+	C_Timer.After(.1, function() Options:OnEnable() end)
 end

@@ -653,5 +653,5 @@ ExplorerMode.DisableExplorerMode = function(self)
 end
 
 ExplorerMode.OnEnable = function(self)
-	self:UpdateSettings()
+	--self:UpdateSettings()
 end

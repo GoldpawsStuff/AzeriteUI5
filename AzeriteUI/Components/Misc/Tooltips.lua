@@ -419,7 +419,7 @@ Tooltips.OnTooltipSetUnit = function(self, tooltip, data)
 
 	local _, unit = tooltip:GetUnit()
 	if not unit then
-		local GMF = GetMouseFocus()
+		local GMF = GetMouseFocus and GetMouseFocus()
 		local focusUnit = GMF and GMF.GetAttribute and GMF:GetAttribute("unit")
 		if focusUnit then unit = focusUnit end
 		if not unit or not UnitExists(unit) then
