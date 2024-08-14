@@ -338,7 +338,8 @@ Tooltips.OnValueChanged = function(self)
 	local unit = select(2, GameTooltip.StatusBar:GetParent():GetUnit())
 
 	if (not unit) then
-		local GMF = GetMouseFocus()
+		-- Removed in 11.0.0.
+		local GMF = GetMouseFocus and GetMouseFocus()
 		if (GMF and GMF.GetAttribute and GMF:GetAttribute("unit")) then
 			unit = GMF:GetAttribute("unit")
 		end

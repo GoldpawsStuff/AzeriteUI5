@@ -5,12 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2024-07-28
-- Current build only tested in Classic Era. 
+- Current build only tested in Classic Era.
 
 ### Fixed
 - Slightly reduced the size of the Minimap border to avoid a tiny fully transparent area in Classic Era.
 - Slightly adjusted the position of the Vehicle Exit button on the Minimap in Classic Era.
 - Fixed reputation tracking in Classic Era.
+- Removed usage of `GetMouseFocus` from Retail.
 
 ## [5.2.175-Alpha] 2024-07-24
 ### Fixed

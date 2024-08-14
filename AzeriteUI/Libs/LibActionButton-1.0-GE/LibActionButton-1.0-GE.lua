@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 127
+local MINOR_VERSION = 129
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -45,6 +45,11 @@ local WoWRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 local WoWClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
 local WoWBCC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 local WoWWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
+
+-- Ugly fix for 11.0.x.
+local GetNumAddOns = GetNumAddOns or C_AddOns and C_AddOns.GetNumAddOns
+local GetAddOnInfo = GetAddOnInfo or C_AddOns and C_AddOns.GetAddOnInfo
+local GetAddOnEnableState = GetAddOnEnableState or C_AddOns and C_AddOns.GetAddOnEnableState
 
 -- Check whether an addon is loadable and set to enabled.
 local IsAddOnEnabled = function(addonName)
@@ -2385,7 +2390,7 @@ else
 			-- based on ActionButton_UpdateFlyout in ActionButton.lua
 			local actionType = GetActionInfo(self._state_action)
 			if actionType == "flyout" then
-				local isMouseOverButton =  GetMouseFocus() == self;
+				local isMouseOverButton = self:IsMouseOver()
 
 				local isButtonDown
 				if (isButtonDownOverride ~= nil) then

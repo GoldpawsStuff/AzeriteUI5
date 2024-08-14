@@ -17,6 +17,12 @@
 # Fontstyles
 FontStyles_Classic.xml
 
+# Protect the environment
+Core\Private.lua
+
+# Compatibility
+Core\Compatibility.lua
+
 # Libraries
 Libs\Libs_Cata.xml
 
@@ -25,6 +31,9 @@ Locale\Locale.xml
 
 # Addon core
 Core\Core.xml
+
+# Finalize the environment
+Core\Finalize.lua
 
 # Options Menu
 Options\Options.xml

@@ -1,4 +1,4 @@
-## Interface: 100207
+## Interface: 110002
 ## IconTexture: Interface\Addons\AzeriteUI\Assets\power-crystal-ice-icon.tga
 
 ## Title: |cff4488bbAzerite|r |cfffafafaUI|r |cffcccccc5.2|r
@@ -17,6 +17,12 @@
 # Fontstyles
 Fontstyles.xml
 
+# Protect the environment
+Core\Private.lua
+
+# Compatibility
+Core\Compatibility.lua
+
 # Libraries
 Libs\Libs.xml
 
@@ -25,6 +31,9 @@ Locale\Locale.xml
 
 # Addon core
 Core\Core.xml
+
+# Finalize the environment
+Core\Finalize.lua
 
 # Options Menu
 Options\Options.xml

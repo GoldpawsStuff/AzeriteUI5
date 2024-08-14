@@ -1,10 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
-	<!-- Protect the environment -->
-	<Script file="Private.lua"/>
-
 	<!-- Data -->
-	<Script file="Common\Compatibility.lua"/>
 	<Script file="Common\Constants.lua"/>
 	<Script file="Common\Colors.lua"/>
 
@@ -17,6 +13,7 @@
 	<Script file="API\Addons.lua"/>
 	<Script file="API\Assets.lua"/>
 	<Script file="API\Colors.lua"/>
+	<Script file="API\Frames.lua"/>
 	<Script file="API\Positions.lua"/>
 	<Script file="API\Scale.lua"/>
 	<Script file="API\Tables.lua"/>
@@ -47,8 +44,5 @@
 	<Script file="Development.lua"/>
 	<Script file="Debugging.lua"/>
 	<Script file="Experimental.lua"/>
-
-	<!-- Finalize the environment -->
-	<Script file="Finalize.lua"/>
 
 </Ui>
