@@ -98,6 +98,10 @@ local Elements = {}
 local Objects = {}
 local ObjectOwners = {}
 
+MinimapMod.Elements = Elements
+MinimapMod.Objects = Objects
+MinimapMod.ObjectOwners = ObjectOwners
+
 -- Snippets to be run upon object toggling.
 ----------------------------------------------------
 local ObjectSnippets = {

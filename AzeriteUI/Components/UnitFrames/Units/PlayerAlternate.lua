@@ -29,7 +29,6 @@ local oUF = ns.oUF
 --if (not ns.IsDevelopment) then return end
 
 local PlayerFrameAltMod = ns:NewModule("PlayerFrameAlternate", ns.UnitFrameModule, "LibMoreEvents-1.0")
-PlayerFrameAltMod:SetEnabledState(not ns.WoW11)
 
 -- Lua API
 local next = next
@@ -893,15 +892,4 @@ PlayerFrameAltMod.OnEnable = function(self)
 	self:CreateAnchor("PlayerFrame (Alternate)")
 
 	ns.MovableModulePrototype.OnEnable(self)
-end
-
-if not ns.WoW11 then return end
-
-PlayerFrameAltMod.OnInitialize = function(self)
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", function() self:DelayedEnable() end)
-end
-
-PlayerFrameAltMod.DelayedEnable = function(self)
-	ns.MovableModulePrototype.OnInitialize(self)
-	self:Enable()
 end

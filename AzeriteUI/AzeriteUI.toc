@@ -44,5 +44,8 @@ Static\Static.xml
 # Addon components
 Components\Components.xml
 
+# For retail only
+WoW11\WoW11.xml
+
 # Resolve Conflicts
 Core\Conflicts.lua

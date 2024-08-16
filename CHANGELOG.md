@@ -4,9 +4,14 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.2.177-Alpha] 2024-08-14
-- Retail fixes are a work in progress and not finished.
+## [Unreleased] 2024-08-16
+- Settings will be reset on each new alpha build.
+- Settings will be reset on the final release build.
 
+### Fixed
+- Reworked the Retail loading order for multiple modules.
+
+## [5.2.177-Alpha] 2024-08-14
 ### Fixed
 - Fixed some incorrect texture crops in the health predict element of the player- and target healthbars.
 - Fixed an issue where the XP bar located on the Minimap would bug out if the mouse cursor hovered above the display button upon reloading the user interface.
@@ -15,10 +20,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Slightly adjusted the position of the Vehicle Exit button on the Minimap in Classic Era.
 - Fixed reputation tracking in Classic Era.
 - Removed usage of `GetMouseFocus` from Retail.
-- Various fixes and workarounds for WoW Retail 11.0.x.
 
 ## [5.2.174-Release] 2024-07-10
-- Previously updated for WoW Classic Client Patch 1.15.3.
+- Previously updated for WoW Classic Era Client Patch 1.15.3.
 
 ### Fixed
 - The new friends button in Season of Discovery now hides on mouseover.

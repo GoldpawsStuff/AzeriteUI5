@@ -1,0 +1,16 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+	<!-- ActionBars -->
+	<Script file="ActionBars.lua"/>
+	<Script file="PetBar.lua"/>
+	<Script file="StanceBar.lua"/>
+
+	<!-- UnitFrames -->
+	<Script file="PlayerFrame.lua"/>
+	<Script file="PlayerFrameAlternate.lua"/>
+
+	<!-- Misc -->
+	<Script file="Minimap.lua"/>
+	<Script file="Tooltips.lua"/>
+
+</Ui>
