@@ -4,9 +4,8 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2024-08-14
-### Fixed
-- An issue where the actionbutton back-end attempted to call the deprecated and removed `GetNumAddOns` in Retail has been fixed.
+## [1.0.130-Alpha] 2024-08-14
+- Updated for WoW 11.x.
 
 ## [1.0.128-Alpha] 2024-08-03
 ### Fixed

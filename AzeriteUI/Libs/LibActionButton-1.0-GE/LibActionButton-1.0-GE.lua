@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 129
+local MINOR_VERSION = 130
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -50,6 +50,7 @@ local WoWWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
 local GetNumAddOns = GetNumAddOns or C_AddOns and C_AddOns.GetNumAddOns
 local GetAddOnInfo = GetAddOnInfo or C_AddOns and C_AddOns.GetAddOnInfo
 local GetAddOnEnableState = GetAddOnEnableState or C_AddOns and C_AddOns.GetAddOnEnableState
+local IsAddOnLoaded = IsAddOnLoaded or C_AddOns.IsAddOnLoaded
 
 -- Check whether an addon is loadable and set to enabled.
 local IsAddOnEnabled = function(addonName)
