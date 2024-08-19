@@ -923,7 +923,7 @@ RaidFrame5Mod.CreateUnitFrames = function(self)
 		local raidPetUnit, partyPetUnit = raidUnit.."pet", partyUnit.."pet"
 
 		-- Vehicle toggling
-		if (ns.IsWrath or ns.IsRetail) then
+		if (ns.IsCata or ns.IsRetail) then
 
 			-- Don't automatically toggle for vehicles, we handle this one.
 			unitButton:SetAttribute("toggleForVehicle", nil)

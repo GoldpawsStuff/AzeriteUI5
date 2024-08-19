@@ -39,7 +39,7 @@ Core\Finalize.lua
 Options\Options.xml
 
 # Static Layouts
-Static\Static.xml
+Layouts\Layouts.xml
 
 # Addon components
 Components\Components.xml

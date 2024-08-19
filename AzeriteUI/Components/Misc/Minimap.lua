@@ -85,8 +85,8 @@ MinimapMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = mapScale * ns.API.GetEffectiveScale(),
 		[1] = "BOTTOMRIGHT",
-		[2] = -(40 - ((ns.IsCata or ns.IsWrath or ns.IsClassic) and 10 or 0)) * (mapScale * ns.API.GetEffectiveScale()),
-		[3] = (40 - ((ns.IsCata or ns.IsWrath or ns.IsClassic) and 10 or 0)) * (mapScale * ns.API.GetEffectiveScale())
+		[2] = -(40 - ((ns.IsCata or ns.IsClassic) and 10 or 0)) * (mapScale * ns.API.GetEffectiveScale()),
+		[3] = (40 - ((ns.IsCata or ns.IsClassic) and 10 or 0)) * (mapScale * ns.API.GetEffectiveScale())
 	}
 	return defaults
 end
@@ -134,18 +134,18 @@ local ObjectSnippets = {
 	},
 	Eye = {
 		Enable = function(object)
-			if (ns.IsWrath or ns.IsCata) then
+			if (ns.IsCata) then
 				object:SetFrameLevel(object:GetParent():GetFrameLevel() + 2)
 			elseif (ns.IsRetail) then
 			end
 		end,
 		Disable = function(object)
-			if (ns.IsWrath or ns.IsCata) then
+			if (ns.IsCata) then
 			elseif (ns.IsRetail) then
 			end
 		end,
 		Update = function(object)
-			if (ns.IsWrath or ns.IsCata) then
+			if (ns.IsCata) then
 			elseif (ns.IsRetail) then
 			end
 		end
@@ -173,7 +173,7 @@ local ObjectSnippets = {
 	------------------------------------------
 	AzeriteEye = {
 		Enable = function(object)
-			if (ns.IsWrath or ns.IsCata) then
+			if (ns.IsCata) then
 				MiniMapLFGFrame:SetParent(Minimap)
 				MiniMapLFGFrame:SetFrameLevel(100)
 				MiniMapLFGFrame:ClearAllPoints()
@@ -192,7 +192,7 @@ local ObjectSnippets = {
 			end
 		end,
 		Disable = function(object)
-			if (ns.IsWrath or ns.IsCata) then
+			if (ns.IsCata) then
 				MiniMapLFGFrame:SetParent(_G[ObjectOwners.Eye])
 				MiniMapLFGFrame:SetFrameLevel(MinimapBackdrop:GetFrameLevel() + 2)
 				MiniMapLFGFrame:ClearAllPoints()
@@ -315,7 +315,7 @@ local Skins = {
 				Color = { .90, .95, 1 }
 			},
 			-- CATA: check
-			AzeriteEyeClassicPvP = (ns.IsClassic or ns.IsWrath or ns.IsCata) and {
+			AzeriteEyeClassicPvP = (ns.IsClassic or ns.IsCata) and {
 				Owner = "EyeClassicPvP",
 				DrawLayer = "BORDER",
 				DrawLevel = 2,
@@ -999,7 +999,7 @@ MinimapMod.InitializeObjectTables = function(self)
 	end
 
 	-- CATA: check
-	if (ns.IsWrath or ns.IsCata) then
+	if (ns.IsCata) then
 		Objects.BorderTop = MinimapBorderTop
 		Objects.BorderClassic = MinimapBorder
 		Objects.Calendar = GameTimeFrame
@@ -1054,7 +1054,7 @@ MinimapMod.InitializeObjectTables = function(self)
 	end
 
 	-- CATA: check
-	if (ns.IsWrath or ns.IsCata) then
+	if (ns.IsCata) then
 		ObjectOwners.BorderTop = MinimapCluster
 		ObjectOwners.BorderClassic = MinimapBackdrop
 		ObjectOwners.Calendar = MinimapCluster

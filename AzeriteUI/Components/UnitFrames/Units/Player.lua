@@ -53,7 +53,7 @@ local defaults = { profile = ns:Merge({
 	showCastbar = true,
 	aurasBelowFrame = false,
 	alwaysUseCrystal = false,
-	useWrathCrystal = ns.IsWrath
+	useWrathCrystal = ns.IsCata
 }, ns.MovableModulePrototype.defaults) }
 
 -- Generate module defaults on the fly

@@ -450,7 +450,7 @@ local GenerateOptions = function()
 			desc = L["Toggle whether to show Combo Points."],
 			order = 11, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
-		if (ns.IsWrath or ns.IsRetail) then
+		if (ns.IsCata or ns.IsRetail) then
 			suboptions.args.showRunes = {
 				name = L["Show Runes (Death Knight)"],
 				desc = L["Toggle whether to show Death Knight Runes."],

@@ -47,7 +47,7 @@ local defaults = { profile = ns:Merge({
 	showArcaneCharges = ns.IsRetail or nil,
 	showChi = ns.IsRetail or nil,
 	showHolyPower = ns.IsRetail or nil,
-	showRunes = ns.IsWrath or ns.IsRetail or nil,
+	showRunes = ns.IsCata or ns.IsRetail or nil,
 	showSoulShards = ns.IsRetail or nil,
 	showStagger = ns.IsRetail or nil
 }, ns.MovableModulePrototype.defaults) }
@@ -210,13 +210,13 @@ local Runes_PostUpdateColor = function(element, r, g, b, color, rune)
 	if (rune) then
 		rune:SetStatusBarColor(r, g, b)
 	else
-		if (not ns.IsWrath) then
+		if (not ns.IsCata) then
 			color = element.__owner.colors.power.RUNES
 			r, g, b = color[1], color[2], color[3]
 		end
 		for i = 1, #element do
 			local rune = element[i]
-			if (ns.IsWrath) then
+			if (ns.IsCata) then
 				color = element.__owner.colors.runes[rune.runeType]
 				r, g, b = color[1], color[2], color[3]
 			end
@@ -407,7 +407,7 @@ end
 
 ClassPowerMod.Update = function(self)
 
-	if (ns.IsWrath or ns.IsRetail) and (playerClass == "DEATHKNIGHT") then
+	if (ns.IsCata or ns.IsRetail) and (playerClass == "DEATHKNIGHT") then
 		if (self.db.profile.showRunes) then
 			self.frame:EnableElement("Runes")
 			self.frame.Runes:ForceUpdate()

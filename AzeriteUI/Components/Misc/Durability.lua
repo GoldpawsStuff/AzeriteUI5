@@ -281,7 +281,7 @@ Durability.UpdateWidget = function(self, forced)
 	end
 	--frame:SetWidth(width)
 
-	local noVehicleSeat = (not ns.IsWrath and not ns.IsRetail) or not VehicleSeatIndicator:IsShown()
+	local noVehicleSeat = not ns.IsRetail or not VehicleSeatIndicator:IsShown()
 	local noArenaEnemies = not ArenaEnemyFramesContainer or not ArenaEnemyFramesContainer:IsShown()
 
 	if (numAlerts > 0 and noVehicleSeat and noArenaEnemies) or (forced) then

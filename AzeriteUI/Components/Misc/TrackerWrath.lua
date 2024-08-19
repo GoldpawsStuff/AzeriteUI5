@@ -25,7 +25,7 @@
 --]]
 local _, ns = ...
 
-if (not ns.IsWrath and not ns.IsCata) then return end
+if (not ns.IsCata) then return end
 
 local Tracker = ns:NewModule("Tracker", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 

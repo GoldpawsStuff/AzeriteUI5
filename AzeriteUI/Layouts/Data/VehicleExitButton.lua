@@ -35,7 +35,7 @@ local unpack = unpack
 local Colors = ns.Colors
 local GetMedia = ns.API.GetMedia
 
-local r = ns.IsClassic and 100 or ns.IsWrath and 100 or 100 -- 110, 100, 100
+local r = 100
 
 ns.RegisterConfig("VehicleExitButton", {
 	VehicleExitButtonPosition = {  "CENTER", Minimap, "CENTER", -((45/180 * math_pi) * r), ((45/180 * math_pi) * r) },

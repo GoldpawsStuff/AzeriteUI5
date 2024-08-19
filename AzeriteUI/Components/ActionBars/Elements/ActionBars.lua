@@ -447,7 +447,7 @@ ActionBarMod.CreateBars = function(self)
 		self.bars[i] = bar
 	end
 
-	if (not ns.IsClassic and not ns.IsTBC and not ns.IsWrath) then
+	if (not ns.IsClassic) then
 
 		local petBattleController = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
 		petBattleController:SetAttribute("_onstate-petbattle", string_format([[

@@ -96,7 +96,7 @@ local GetDifficultyColor = function(level, isScaling)
 end
 
 -- CATA: check this
-if (ns.IsClassic or ns.IsTBC or ns.IsWrath or ns.IsCata) then
+if (ns.IsClassic or ns.IsCata) then
 	GetDifficultyColor = function(level, isScaling)
 		local colors = Colors.quest
 		local levelDiff = level - UnitLevel("player")

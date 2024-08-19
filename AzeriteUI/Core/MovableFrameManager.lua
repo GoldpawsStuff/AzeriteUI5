@@ -445,7 +445,7 @@ Anchor.UpdateText = function(self)
 		msg = string_format(Colors.highlight.colorCode.."%s, %.0f, %.0f|r", unpack(anchorData.currentPosition))
 	end
 
-	if (ns.IsWrath or ns.IsCata or ns.IsRetail) then
+	if (ns.IsCata or ns.IsRetail) then
 		local width,height = self:GetSize()
 		if (width/height < .8) and (width > 100) then
 			self.Text:SetRotation(-math.pi/2)

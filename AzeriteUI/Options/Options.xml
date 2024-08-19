@@ -12,7 +12,6 @@
 	<Script file="OptionsPages\Tooltips.lua"/>
 	<Script file="OptionsPages\Tracker.lua"/>
 	<Script file="OptionsPages\TrackerVanilla.lua"/>
-	<Script file="OptionsPages\TrackerWrath.lua"/>
 	<Script file="OptionsPages\UnitFrames.lua"/>
 
 </Ui>

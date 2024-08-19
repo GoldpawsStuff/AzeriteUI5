@@ -65,22 +65,6 @@ MicroMenu.SpawnButtons = function(self)
 		}
 	end
 
-	-- Wrath Classic
-	if (ns.IsWrath) then
-		labels = {
-			CharacterMicroButton = CHARACTER_BUTTON,
-			SpellbookMicroButton = SPELLBOOK_ABILITIES_BUTTON,
-			TalentMicroButton = TALENTS_BUTTON,
-			AchievementMicroButton = ACHIEVEMENT_BUTTON,
-			QuestLogMicroButton = QUESTLOG_BUTTON,
-			SocialsMicroButton = SOCIALS,
-			PVPMicroButton = PLAYER_V_PLAYER,
-			LFGMicroButton = LFG_BUTTON,
-			MainMenuMicroButton = MAINMENU_BUTTON,
-			HelpMicroButton = HELP_BUTTON
-		}
-	end
-
 	-- Classic Era
 	if (ns.IsClassic) then
 		labels = {
@@ -114,22 +98,6 @@ MicroMenu.SpawnButtons = function(self)
 
 	-- Wrath Classic
 	if (ns.IsCata) then
-		buttons = {
-			CharacterMicroButton,
-			SpellbookMicroButton,
-			TalentMicroButton,
-			AchievementMicroButton,
-			QuestLogMicroButton,
-			SocialsMicroButton,
-			PVPMicroButton,
-			LFGMicroButton,
-			MainMenuMicroButton,
-			HelpMicroButton
-		}
-	end
-
-	-- Wrath Classic
-	if (ns.IsWrath) then
 		buttons = {
 			CharacterMicroButton,
 			SpellbookMicroButton,
@@ -222,13 +190,13 @@ MicroMenu.SpawnButtons = function(self)
 						HideUIPanel(GameMenuFrame)
 					end
 				end)
-			elseif ((ns.IsWrath or ns.IsCata) and microButton == PVPMicroButton) then
+			elseif (ns.IsCata and microButton == PVPMicroButton) then
 				button.nocombat = true
 				button:SetScript("OnClick", function(self)
 					if (InCombatLockdown()) then return end
 					TogglePVPFrame()
 				end)
-			elseif ((ns.IsWrath or ns.IsCata) and microButton == LFGMicroButton) then
+			elseif (ns.IsCata and microButton == LFGMicroButton) then
 				button.nocombat = true
 				button:SetScript("OnClick", function(self)
 					if (InCombatLockdown()) then return end

@@ -129,7 +129,7 @@ FlavorDifferences.OnInitialize = function(self)
 	-- and instead will show a red warning message on the top of the screen,
 	-- directing the player to either join the bg or leave the queue
 	-- using the bg finder eye located at the border of the minimap.
-	if (ns.IsClassic or ns.IsTBC) then
+	if (ns.IsClassic) then
 
 		local battleground = CreateFrame("Frame", nil, UIParent)
 		battleground:SetSize(574, 40)

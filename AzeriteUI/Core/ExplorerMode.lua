@@ -505,7 +505,7 @@ ExplorerMode.OnEvent = function(self, event, ...)
 		self:CheckGroup()
 		self:CheckTarget()
 
-		if (ns.IsRetail or ns.IsWrath or ns.IsCata) then
+		if (ns.IsRetail or ns.IsCata) then
 			self:CheckFocus()
 			self:CheckVehicle()
 			self:CheckOverride()
@@ -599,7 +599,7 @@ ExplorerMode.EnableExplorerMode = function(self)
 	self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "OnEvent", "player")
 	self:RegisterUnitEvent("UNIT_AURA", "OnEvent", "player", "vehicle")
 
-	if (ns.IsRetail or ns.IsWrath or ns.IsCata) then
+	if (ns.IsRetail or ns.IsCata) then
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED", "OnEvent")
 		self:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR", "OnEvent")
 		self:RegisterEvent("UPDATE_POSSESS_BAR", "OnEvent")
@@ -633,7 +633,7 @@ ExplorerMode.DisableExplorerMode = function(self)
 	self:UnregisterEvent("UNIT_DISPLAYPOWER", "OnEvent", "player")
 	self:UnregisterEvent("UNIT_AURA", "OnEvent", "player", "vehicle")
 
-	if (ns.IsRetail or ns.IsWrath or ns.IsCata) then
+	if (ns.IsRetail or ns.IsCata) then
 		self:UnregisterEvent("PLAYER_FOCUS_CHANGED", "OnEvent")
 		self:UnregisterEvent("UPDATE_OVERRIDE_ACTIONBAR", "OnEvent")
 		self:UnregisterEvent("UPDATE_POSSESS_BAR", "OnEvent")

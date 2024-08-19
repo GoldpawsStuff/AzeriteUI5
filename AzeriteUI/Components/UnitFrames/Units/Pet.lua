@@ -32,7 +32,7 @@ local PetFrameMod = ns:NewModule("PetFrame", ns.UnitFrameModule, "LibMoreEvents-
 local unpack = unpack
 local string_gsub = string.gsub
 
-local PetHasHappiness = ((ns.IsClassic or ns.IsWrath) and ns.PlayerClass == "HUNTER")
+local PetHasHappiness = (ns.IsClassic and ns.PlayerClass == "HUNTER")
 
 local defaults = { profile = ns:Merge({}, ns.MovableModulePrototype.defaults) }
 
@@ -441,7 +441,7 @@ PetFrameMod.CreateUnitFrames = function(self)
 	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
 
 	-- Vehicle switching is currently broken in Wrath.
-	--if (ns.IsWrath) then
+	--if (ns.IsCata) then
 
 		local enabled = true
 
