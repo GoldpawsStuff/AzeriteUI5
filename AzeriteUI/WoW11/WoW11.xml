@@ -1,16 +1,28 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
 	<!-- ActionBars -->
-	<Script file="ActionBars.lua"/>
-	<Script file="PetBar.lua"/>
-	<Script file="StanceBar.lua"/>
+	<Script file="ActionBars\ActionBars.lua"/>
+	<Script file="ActionBars\PetBar.lua"/>
+	<Script file="ActionBars\StanceBar.lua"/>
 
 	<!-- UnitFrames -->
-	<Script file="PlayerFrame.lua"/>
-	<Script file="PlayerFrameAlternate.lua"/>
+	<Script file="UnitFrames\PlayerFrame.lua"/>
+	<Script file="UnitFrames\PlayerFrameAlternate.lua"/>
+	<Script file="UnitFrames\PlayerCastBarFrame.lua"/>
+	<Script file="UnitFrames\PetFrame.lua"/>
+	<Script file="UnitFrames\FocusFrame.lua"/>
+	<Script file="UnitFrames\TargetFrame.lua"/>
+	<Script file="UnitFrames\ToTFrame.lua"/>
+	<Script file="UnitFrames\ArenaFrames.lua"/>
+	<Script file="UnitFrames\BossFrames.lua"/>
+	<Script file="UnitFrames\PartyFrames.lua"/>
+	<Script file="UnitFrames\Raid5Frames.lua"/>
+	<Script file="UnitFrames\Raid25Frames.lua"/>
+	<Script file="UnitFrames\Raid40Frames.lua"/>
 
 	<!-- Misc -->
-	<Script file="Minimap.lua"/>
-	<Script file="Tooltips.lua"/>
+	<Script file="Misc\Auras.lua"/>
+	<Script file="Misc\Minimap.lua"/>
+	<Script file="Misc\Tooltips.lua"/>
 
 </Ui>

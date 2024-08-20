@@ -37,7 +37,7 @@ ns.Hider = CreateFrame("Frame"); ns.Hider:Hide()
 ns.Noop = function() end
 
 -- Increasing this number forces a full settings reset.
-ns.SETTINGS_VERSION = ns.WoW11 and 24 or 22 -- use client dependant settings version to avoid resets in unaffected builds.
+ns.SETTINGS_VERSION = ns.WoW11 and 25 or 22 -- use client dependant settings version to avoid resets in unaffected builds.
 
 -- Tinkerers rejoyce!
 _G[Addon] = ns
