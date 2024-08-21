@@ -37,6 +37,8 @@ ActionBarMod.OnInitialize = function(self)
 end
 
 ActionBarMod.DelayedEnable = function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+
 	self.db = ns.db:RegisterNamespace(self:GetName(), self:GetDefaults())
 
 	if (ns.WoW10) then

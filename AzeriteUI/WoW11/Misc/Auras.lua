@@ -37,6 +37,8 @@ Auras.OnInitialize = function(self)
 end
 
 Auras.DelayedEnable = function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+
 	ns.MovableModulePrototype.OnInitialize(self)
 
 	self:Enable()

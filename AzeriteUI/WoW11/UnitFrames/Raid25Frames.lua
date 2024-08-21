@@ -35,6 +35,7 @@ RaidFrame25Mod.OnInitialize = function(self)
 end
 
 RaidFrame25Mod.DelayedEnable = function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
 	ns.UnitFrameModule.OnInitialize(self)
 	self:Enable()
 	self:Update()

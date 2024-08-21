@@ -35,6 +35,8 @@ MinimapMod.OnInitialize = function(self)
 end
 
 MinimapMod.DelayedEnable = function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+
 	ns.MovableModulePrototype.OnInitialize(self)
 
 	self:Enable()

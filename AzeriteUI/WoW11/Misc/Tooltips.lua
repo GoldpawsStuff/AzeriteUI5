@@ -37,6 +37,8 @@ Tooltips.OnInitialize = function(self)
 end
 
 Tooltips.DelayedEnable = function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+
 	ns.MovableModulePrototype.OnInitialize(self)
 
 	self:Enable()

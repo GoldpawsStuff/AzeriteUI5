@@ -35,6 +35,7 @@ PetFrameMod.OnInitialize = function(self)
 end
 
 PetFrameMod.DelayedEnable = function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
 	ns.UnitFrameModule.OnInitialize(self)
 	self:Enable()
 	self.frame:UpdateAllElements("DelayedEnable")
