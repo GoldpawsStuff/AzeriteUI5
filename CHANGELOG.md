@@ -4,10 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.2.178-Alpha] 2024-08-20
-- Settings will be reset on each new alpha build.
-- Settings will be reset on the final release build.
-
+## [5.2.179-Beta] 2024-08-21
 ### Fixed
 - Reworked the Retail loading order for multiple modules to avoid incorrect scaling.
 - Fixed some incorrect texture crops in the health predict element of the player- and target healthbars.
