@@ -821,7 +821,7 @@ end
 
 StatusBars.OnEnable = function(self)
 	local MinimapMod = ns:GetModule("Minimap", true)
-	if (not MinimapMod or not MinimapMod:IsEnabled()) then return end
+	if (not MinimapMod or not MinimapMod:IsEnabled()) then return self:Disable() end
 
 	self:CreateBars()
 	self:UpdateBars()

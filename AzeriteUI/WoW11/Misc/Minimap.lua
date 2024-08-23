@@ -40,6 +40,14 @@ MinimapMod.DelayedEnable = function(self)
 	ns.MovableModulePrototype.OnInitialize(self)
 
 	self:Enable()
+
+	-- Manually enable the XP bars,
+	-- in case they were unable to previously load
+	-- because of the delayed Minimap module start.
+	local PlayerStatusBars = ns:GetModule("PlayerStatusBars", true)
+	if (PlayerStatusBars and not PlayerStatusBars:IsEnabled()) then
+		PlayerStatusBars:Enable()
+	end
 end
 
 MinimapMod.InitializeObjectTables = function(self)

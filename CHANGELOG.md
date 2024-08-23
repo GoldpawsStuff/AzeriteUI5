@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.2.179-Beta] 2024-08-21
+## [5.2.180-Release] 2024-08-24
+- Note that for Retail users that didn't use the Alpha/Beta development versions leading up to this Release, there will be a full settings reset as a lot of settings got broken and stored incorrectly as a result of the bugs after WoW Retail patch 11.0.2.
+
 ### Fixed
 - Reworked the Retail loading order for multiple modules to avoid incorrect scaling.
 - Fixed some incorrect texture crops in the health predict element of the player- and target healthbars.
@@ -14,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Slightly adjusted the position of the Vehicle Exit button on the Minimap in Classic Era.
 - Fixed reputation tracking in Classic Era.
 - Removed usage of `GetMouseFocus` from Retail.
+- The XP bar is once again displayed on the Minimap in Retail. The Retail reputation tracking seems to be missing in action, though. A fix for that is coming later.
 
 ## [5.2.174-Release] 2024-07-10
 - Previously updated for WoW Classic Era Client Patch 1.15.3.
