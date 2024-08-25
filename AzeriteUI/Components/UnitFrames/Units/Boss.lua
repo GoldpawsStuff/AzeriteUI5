@@ -493,7 +493,7 @@ end
 BossFrameMod.OnEnable = function(self)
 
 	self:CreateUnitFrames()
-	self:CreateAnchor(BOSSES)
+	self:CreateAnchor(BOSS or BOSSES) -- check if exists in Classic Era
 
 	ns.MovableModulePrototype.OnEnable(self)
 end

@@ -149,21 +149,23 @@ ns.UnitFrameModule = ns:Merge({
 		end
 
 		local unitframe, anchor = self:GetUnitFrameOrHeader(), self:GetAnchor()
+		if (unitframe) then
+			local config = self.db.profile
+			if (config.enabled) then
+				enableProxy(unitframe)
 
-		local config = self.db.profile
-		if (config.enabled) then
-			enableProxy(unitframe)
+				if (anchor) then
+					anchor:Enable()
+				end
+			else
+				disableProxy(unitframe)
 
-			if (anchor) then
-				anchor:Enable()
-			end
-		else
-			disableProxy(unitframe)
-
-			if (anchor) then
-				anchor:Disable()
+				if (anchor) then
+					anchor:Disable()
+				end
 			end
 		end
+
 	end,
 
 	UpdateSettings = function(self)
@@ -207,7 +209,7 @@ ns.UnitFrameModule = ns:Merge({
 	end,
 
 	GetUnitFrameOrHeader = function(self)
-		return self.frame.content or self.frame
+		return self.frame and self.frame.content or self.frame
 	end,
 
 	CreateAnchor = function(self, label, watchVariables, colorGroup)

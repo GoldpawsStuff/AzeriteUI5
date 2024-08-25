@@ -683,9 +683,9 @@ Tracker.OnEvent = function(self, event, ...)
 end
 
 Tracker.OnEnable = function(self)
-	if (ns.WoW11) then
-		return self:Disable()
-	end
+	--if (ns.WoW11) then
+	--	return self:Disable()
+	--end
 
 	LoadAddOn("Blizzard_ObjectiveTracker")
 

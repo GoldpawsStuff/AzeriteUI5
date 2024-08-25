@@ -16,7 +16,7 @@
 	<Script file="RaidBossEmotes.lua"/>
 	<Script file="RaidWarnings.lua"/>
 	<Script file="Tooltips.lua"/>
-	<Script file="Tracker.lua"/>
+	<Script file="TrackerWoW11.lua"/>
 	<Script file="TrackerVanilla.lua"/>
 	<Script file="TrackerWrath.lua"/>
 	<Script file="Tutorials.lua"/>
