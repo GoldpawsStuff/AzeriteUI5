@@ -5,8 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] 2024-08-25
+### Fixed
+- Boss unit frames once again appear in Retail. They are also movable and scalable through `/lock` as before.
+
 ### Removed
-- All EditMode integrations removed.
+- All EditMode integrations and automations removed. You know fully have to set up the Blizzard parts of the user interface yourself, no automatic preset creation or selection anymore.
 
 ## [5.2.180-Release] 2024-08-24
 - Note that for Retail users that didn't use the Alpha/Beta development versions leading up to this Release, there will be a full settings reset as a lot of settings got broken and stored incorrectly as a result of the bugs after WoW Retail patch 11.0.2.
