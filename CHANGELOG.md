@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2024-08-25
+## [5.2.181-Alpha] 2024-08-25
 ### Fixed
 - Boss unit frames once again appear in Retail. They are also movable and scalable through `/lock` as before.
 
