@@ -27,21 +27,26 @@ local _, ns = ...
 
 if (not ns.WoW11) then return end
 
--- Do not automatically load this,
--- let the primary actionbar module do it.
-local Auras = ns:GetModule("Auras", true)
-if (not Auras) then return end
+local Options = ns:GetModule("Options", true)
+if (not Options) then return end
 
-Auras:SetEnabledState(false)
+Options:SetEnabledState(false)
 
-Auras.OnInitialize = function(self)
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+Options.OnInitialize = function(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ExtraDelayedEnable")
 end
 
-Auras.DelayedEnable = function(self)
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+Options.OnEnable = function(self)
+	self:RegisterChatCommand("az", "OpenOptionsMenu")
+	self:RegisterChatCommand("azerite", "OpenOptionsMenu")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
+	self:RegisterEvent("PLAYER_TALENT_UPDATE", "OnEvent")
+	ns.RegisterCallback(self, "OptionsNeedRefresh", "Refresh")
+	self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
 
-	ns.MovableModulePrototype.OnInitialize(self)
+	self:OnEvent("PLAYER_ENTERING_WORLD", true)
+end
 
-	self:Enable()
+Options.ExtraDelayedEnable = function(self)
+	C_Timer.After(.1, function() Options:OnEnable() end)
 end

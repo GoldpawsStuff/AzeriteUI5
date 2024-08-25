@@ -84,20 +84,11 @@ end
 
 Durability.PrepareFrames = function(self)
 
-	-- Will this taint?
-	-- *This is to prevent the durability frame size
-	-- affecting other anchors
-	if (ns.WoW10) then
-		DurabilityFrame.HighlightSystem = ns.Noop
-		DurabilityFrame.ClearHighlight = ns.Noop
-	end
-
 	DurabilityFrame:UnregisterAllEvents()
 	DurabilityFrame:SetScript("OnShow", nil)
 	DurabilityFrame:SetScript("OnHide", nil)
 	DurabilityFrame:SetParent(UIHider)
 	DurabilityFrame:Hide()
-	DurabilityFrame.IsShown = function() return false end
 
 	-- Create a carbon copy of the blizzard durability frame.
 	-- Everything here found in FrameXML/DurabilityFrame.xml

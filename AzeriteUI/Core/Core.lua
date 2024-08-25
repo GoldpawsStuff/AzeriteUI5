@@ -29,7 +29,7 @@
 local Addon, ns = ...
 
 local LibDeflate = LibStub("LibDeflate")
-local LEMO = LibStub("LibEditModeOverride-1.0", true)
+--local LEMO = LibStub("LibEditModeOverride-1.0", true)
 
 ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "LibMoreEvents-1.0", "AceConsole-3.0", "AceComm-3.0", "AceSerializer-3.0")
 ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false)
@@ -228,46 +228,8 @@ ns.RefreshConfig = function(self, event, ...)
 	end
 end
 
-ns.ApplyEditModeLayout = function(self)
-	if (not LEMO:IsReady()) then
-		return self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
-	end
-	if (InCombatLockdown()) then
-		return self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-	end
-
-	LEMO:LoadLayouts()
-
-	if (LEMO:DoesLayoutExist(self.db.profile.editModeLayout)) then
-		if (LEMO:GetActiveLayout() ~= self.db.profile.editModeLayout) then
-			LEMO:SetActiveLayout(self.db.profile.editModeLayout)
-			LEMO:ApplyChanges()
-		end
-	end
-end
-
-ns.OnEvent = function(self, event, ...)
-	if (event == "EDIT_MODE_LAYOUTS_UPDATED") then
-		self:UnregisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
-		if (ns.WoW10 and not ns.WoW11) then
-			self:ApplyEditModeLayout()
-		end
-
-	elseif (event == "PLAYER_REGEN_ENABLED") then
-		if (InCombatLockdown()) then return end
-		self:UnregisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
-		if (ns.WoW10 and not ns.WoW11) then
-			self:ApplyEditModeLayout()
-		end
-	end
-end
-
 ns.OnEnable = function(self)
 	self.db:SetProfile(self.db.char.profile)
-
-	if (ns.WoW10 and not ns.WoW11) then
-		self:ApplyEditModeLayout()
-	end
 end
 
 ns.OnInitialize = function(self)

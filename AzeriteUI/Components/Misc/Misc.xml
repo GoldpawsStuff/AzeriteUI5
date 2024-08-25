@@ -5,7 +5,9 @@
 	<Script file="Banners.lua"/>
 	<Script file="ChatFrames.lua"/>
 	<Script file="Containers.lua"/>
+
 	<Script file="Durability.lua"/>
+	<!---->
 	<Script file="ErrorsFrame.lua"/>
 	<Script file="Info.lua"/>
 	<Script file="Minimap.lua"/>

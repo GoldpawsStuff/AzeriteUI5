@@ -27,7 +27,9 @@ local _, ns = ...
 
 if (not ns.WoW11) then return end
 
-local MinimapMod = ns:GetModule("Minimap")
+local MinimapMod = ns:GetModule("Minimap", true)
+if (not MinimapMod) then return end
+
 MinimapMod:SetEnabledState(false)
 
 MinimapMod.OnInitialize = function(self)

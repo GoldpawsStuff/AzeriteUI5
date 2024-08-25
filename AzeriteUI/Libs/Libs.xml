@@ -21,7 +21,6 @@
 	<Script file="LibMoreEvents-1.0\LibMoreEvents-1.0.lua"/>
 	@end-non-debug@-->
 	<Include file="UTF8\utf8.xml"/>
-	<Include file="LibEditModeOverride\LibEditModeOverride.xml"/>
 	<Include file="LibKeyBound-1.0\lib.xml"/>
 	<Script file="LibDeflate\LibDeflate.lua"/>
 

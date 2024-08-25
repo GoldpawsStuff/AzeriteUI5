@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2024-08-25
+### Removed
+- All EditMode integrations removed.
+
 ## [5.2.180-Release] 2024-08-24
 - Note that for Retail users that didn't use the Alpha/Beta development versions leading up to this Release, there will be a full settings reset as a lot of settings got broken and stored incorrectly as a result of the bugs after WoW Retail patch 11.0.2.
 

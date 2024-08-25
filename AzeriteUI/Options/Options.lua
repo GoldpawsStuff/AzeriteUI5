@@ -30,9 +30,6 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 
 local Options = ns:NewModule("Options", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
-Options:SetEnabledState(not ns.WoW11)
-
-local LEMO = LibStub("LibEditModeOverride-1.0", true)
 
 -- Lua API
 local math_max = math.max
@@ -247,65 +244,6 @@ Options.GenerateOptionsMenu = function(self)
 	-- Generate the options table.
 	local options, orderoffset = self:GenerateProfileMenu()
 
-	-- Add option to auto-load an EditMode layout.
-	if (ns.IsRetail) then
-		options.args.editmodeheader = {
-			name = L["Edit Mode"],
-			desc = "",
-			type = "header",
-			order = orderoffset + 1
-		}
-		options.args.autoLoadEditModeLayout = {
-			name = L["Automatically load an Edit Mode layout."],
-			type = "toggle", width = "full",
-			set = function(info, val)
-				ns.db.profile[info[#info]] = val
-			end,
-			get = function(info)
-				return ns.db.profile[info[#info]]
-			end,
-			order = orderoffset + 3
-		}
-		options.args.editModeLayout = {
-			name = L["Edit Mode Layout"],
-			desc = L["Choose an Edit Mode layout to automaically load when enabling this profile."],
-			type = "select",
-			style = "dropdown",
-			values = function(info)
-				if (not LEMO:IsReady()) then return true end
-				LEMO:LoadLayouts()
-				local values = {}
-				for i,layoutName in ipairs(LEMO:GetPresetLayoutNames()) do
-					values[layoutName] = layoutName
-				end
-				for i,layoutName in ipairs(LEMO:GetEditableLayoutNames()) do
-					values[layoutName] = layoutName
-				end
-				return values
-			end,
-			disabled = function(info)
-				if (not ns.db.profile.autoLoadEditModeLayout) then return true end
-				if (not LEMO:IsReady()) then return true end
-			end,
-			set = function(info, val)
-				ns.db.profile.editModeLayout = val
-				ns:ApplyEditModeLayout()
-			end,
-			get = function(info)
-				return ns.db.profile[info[#info]]
-			end,
-			order = orderoffset + 4
-		}
-		options.args.editmodespacer = {
-			name = "",
-			type = "description",
-			fontSize = "medium",
-			order = orderoffset + 5
-		}
-
-		orderoffset = orderoffset + 10
-	end
-
 	local order = orderoffset
 	for i,data in ipairs(self.objects) do
 		if (data.group) then
@@ -332,15 +270,8 @@ Options.OnEvent = function(self, event, ...)
 			self:GenerateOptionsMenu()
 			self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 		end
-		if (LEMO and LEMO:IsReady()) then
-			LEMO:LoadLayouts()
+		if (ns.IsRetail) and (EditModeManagerFrame and EditModeManagerFrame.accountSettings ~= nil) then
 			self:Refresh()
-		end
-
-	elseif (event == "EDIT_MODE_LAYOUTS_UPDATED") then
-		if (LEMO and LEMO:IsReady()) then
-			LEMO:LoadLayouts()
-				self:Refresh()
 		end
 
 	elseif (event == "PLAYER_TALENT_UPDATE") then
@@ -348,49 +279,10 @@ Options.OnEvent = function(self, event, ...)
 	end
 end
 
-Options.OnInitialize = function(self)
-end
-
 Options.OnEnable = function(self)
 	self:RegisterChatCommand("az", "OpenOptionsMenu")
 	self:RegisterChatCommand("azerite", "OpenOptionsMenu")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_TALENT_UPDATE", "OnEvent")
 	ns.RegisterCallback(self, "OptionsNeedRefresh", "Refresh")
-	if (ns.IsRetail) then
-		self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
-	end
-end
-
-Options.OnDisable = function(self)
-	self:UnregisterChatCommand("az")
-	self:UnregisterChatCommand("azerite")
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	self:UnregisterEvent("PLAYER_TALENT_UPDATE", "OnEvent")
-	ns.UnregisterCallback(self, "OptionsNeedRefresh")
-	if (ns.IsRetail) then
-		self:UnregisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
-	end
-end
-
-
-if not ns.WoW11 then return end
-
-Options.OnInitialize = function(self)
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ExtraDelayedEnable")
-end
-
-Options.OnEnable = function(self)
-	self:RegisterChatCommand("az", "OpenOptionsMenu")
-	self:RegisterChatCommand("azerite", "OpenOptionsMenu")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-	self:RegisterEvent("PLAYER_TALENT_UPDATE", "OnEvent")
-	ns.RegisterCallback(self, "OptionsNeedRefresh", "Refresh")
-	self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
-
-	self:OnEvent("PLAYER_ENTERING_WORLD", true)
-end
-
-Options.ExtraDelayedEnable = function(self)
-	C_Timer.After(.1, function() Options:OnEnable() end)
 end

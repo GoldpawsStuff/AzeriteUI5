@@ -27,7 +27,9 @@ local _, ns = ...
 
 if (not ns.WoW11) then return end
 
-local ActionBarMod = ns:GetModule("ActionBars")
+local ActionBarMod = ns:GetModule("ActionBars", true)
+if (not ActionBarMod) then return end
+
 ActionBarMod:SetEnabledState(false)
 
 ActionBarMod.OnInitialize = function(self)
