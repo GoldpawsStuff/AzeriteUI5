@@ -228,7 +228,7 @@ ExplorerMode.UpdateSettings = function(self)
 	local Tracker = ns:GetModule("Tracker", true)
 	if (Tracker) then
 		local fade = not self.FORCED and Tracker:IsEnabled() and db.enabled and db.fadeTracker
-		local tracker = Tracker:GetFrame()
+		local tracker = Tracker.GetFrame and Tracker:GetFrame() -- we don't have this in WoW11
 		if (tracker) then
 			if (fade) then
 				LFF:RegisterFrameForFading(tracker, Tracker:GetName())

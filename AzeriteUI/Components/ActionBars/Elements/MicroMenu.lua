@@ -36,6 +36,7 @@ MicroMenu.SpawnButtons = function(self)
 	-- Retail
 	local labels = {
 		CharacterMicroButton = CHARACTER_BUTTON,
+		ProfessionMicroButton = TRADE_SKILLS,
 		SpellbookMicroButton = SPELLBOOK_ABILITIES_BUTTON,
 		TalentMicroButton = TALENTS_BUTTON,
 		AchievementMicroButton = ACHIEVEMENT_BUTTON,
@@ -46,7 +47,7 @@ MicroMenu.SpawnButtons = function(self)
 		CollectionsMicroButton = COLLECTIONS,
 		EJMicroButton = ADVENTURE_JOURNAL or ENCOUNTER_JOURNAL,
 		StoreMicroButton = BLIZZARD_STORE,
-		MainMenuMicroButton = MAINMENU_BUTTON,
+		MainMenuMicroButton = MAINMENU_BUTTON
 	}
 
 	-- Cata Classic
@@ -83,6 +84,7 @@ MicroMenu.SpawnButtons = function(self)
 	-- Retail
 	local buttons = {
 		CharacterMicroButton,
+		ProfessionMicroButton,
 		SpellbookMicroButton,
 		TalentMicroButton,
 		AchievementMicroButton,
@@ -342,6 +344,7 @@ end
 
 MicroMenu.OnEnable = function(self)
 
+	-- Watch this, it is a potential source of taint in WoW11.
 	if (ns.WoW10) then
 		MicroMenuContainer.HighlightSystem = ns.Noop
 		MicroMenuContainer.ClearHighlight = ns.Noop
