@@ -351,7 +351,7 @@ StatusBars.UpdateBars = function(self, event, ...)
 	local bonusShown = bonus:IsShown()
 	local showButton
 
-	local name, standingID, min, max, current, factionID = GetWatchedFactionInfo and GetWatchedFactionInfo()
+	local name, standingID, min, max, current, factionID = GetWatchedFactionInfo()
 
 	if (name and not standingID) then
 		for i = 1, GetNumFactions() do
