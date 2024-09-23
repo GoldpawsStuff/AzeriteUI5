@@ -83,6 +83,8 @@ Tracker.PrepareFrames = function(self)
 	ObjectiveTrackerFrame:SetClampedToScreen(false)
 	ObjectiveTrackerFrame:SetAlpha(.9)
 
+	self.GetFrame = function() return ObjectiveTrackerFrame end
+
 end
 
 Tracker.UpdateSettings = function(self)
