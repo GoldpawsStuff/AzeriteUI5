@@ -90,6 +90,16 @@ local GenerateOptions = function()
 		}
 	}
 
+	if (ns.IsRetail) then
+		options.args.showBlizzardWidgets = {
+			name = L["Show Blizzard widgets"],
+			order = 12,
+			type = "toggle", width = "full",
+			set = setter,
+			get = getter
+		}
+	end
+
 	return options
 end
 
