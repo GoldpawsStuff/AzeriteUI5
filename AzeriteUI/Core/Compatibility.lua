@@ -165,9 +165,132 @@ if (tocversion >= 100205) or (tocversion >= 40400 and tocversion < 50000) then
 	end
 end
 
--- Deprecated in 11.0.0
+-- Deprecated in 10.x.x, removed in 11.0.0
 if (tocversion >= 110000) then
 	for method,func in next, {
+		GetSpellCharges = function(...)
+			local numArgs = select("#", ...)
+
+			if (numArgs == 2) then
+				local index, bookType
+				local spellBank = (bookType == "spell") and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.pet
+				spellChargeInfo = C_SpellBook.GetSpellBookItemCharges(index, spellBank)
+			else
+				local spell = select(1, ...)
+				spellChargeInfo = C_Spell.GetSpellCharges(spell)
+			end
+
+			if spellChargeInfo then
+				return spellChargeInfo.currentCharges,
+					   spellChargeInfo.maxCharges,
+					   spellChargeInfo.cooldownStartTime,
+					   spellChargeInfo.cooldownDuration,
+					   spellChargeInfo.chargeModRate
+			end
+		end,
+		GetSpellCooldown = function(...)
+			local numArgs = select("#", ...)
+			local spellCooldownInfo = nil
+
+			if ((numArgs == 2)) then
+				local spellBank = (bookType == "spell") and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.pet
+				spellCooldownInfo = C_SpellBook.GetSpellBookItemCooldown(spellOrIndex, spellBank)
+			else
+				local spell = select(1, ...)
+				spellCooldownInfo = C_Spell.GetSpellCooldown(spell)
+			end
+
+			if spellCooldownInfo then
+				return spellCooldownInfo.startTime,
+					   spellCooldownInfo.duration,
+					   spellCooldownInfo.isEnabled,
+					   spellCooldownInfo.modRate
+			end
+		end,
+		GetSpellCount = function(...)
+			local numArgs = select("#", ...)
+
+			if (numArgs == 2) then
+				local index, bookType = ...
+				local spellBank = (bookType == "spell") and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.pet
+				return C_SpellBook.GetSpellBookItemCastCount(index, spellBank)
+			else
+				local spellIdentifier = select(1, ...)
+				return C_Spell.GetSpellCastCount(spellIdentifier)
+			end
+		end,
+		GetSpellLossOfControlCooldown = function(...)
+			local numArgs = select("#", ...)
+
+			if (numArgs == 2) then
+				local index, bookType = ...
+				local spellBank = (bookType == "spell") and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.pet
+				return C_SpellBook.GetSpellBookItemLossOfControlCooldown(index, spellBank)
+			else
+				local spellIdentifier = select(1, ...)
+				return C_Spell.GetSpellLossOfControlCooldown(spellIdentifier)
+			end
+		end,
+		GetSpellLossOfControlCooldown = function(...)
+			local numArgs = select("#", ...)
+
+			if (numArgs == 2) then
+				local spellSlot, bookType = ...
+				local spellBank = (bookType == "spell") and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.pet
+				return C_SpellBook.GetSpellBookItemLossOfControlCooldown(spellSlot, spellBank)
+			else
+				local spellIdentifier = select(1, ...)
+				return C_Spell.GetSpellLossOfControlCooldown(spellIdentifier)
+			end
+		end,
+		GetSpellTexture = C_Spell.GetSpellTexture,
+		IsAttackSpell = function(spell)
+			local isAutoAttack = C_Spell.IsAutoAttackSpell(spell)
+			local isRangedAutoAttack = C_Spell.IsRangedAutoAttackSpell(spell)
+
+			return isAutoAttack or isRangedAutoAttack
+		end,
+		IsAutoRepeatSpell = C_Spell.IsAutoRepeatSpell,
+		IsCurrentSpell = C_Spell.IsCurrentSpell,
+		IsSpellInRange = function(...)
+			local numArgs = select("#", ...)
+
+			if (numArgs == 3) then
+				local index, bookType, unit = ...
+				local spellBank = (bookType == "spell") and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.pet
+
+				return C_SpellBook.IsSpellBookItemInRange(index, spellBank, unit)
+			else
+				local spellName, unit = ...
+				return C_Spell.IsSpellInRange(spellName, unit)
+			end
+		end,
+		IsUsableSpell = function(...)
+			local numArgs = select("#", ...)
+
+			if (numArgs == 2) then
+				local index, bookType = ...
+				local spellBank = (bookType == "spell") and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.pet
+				return C_SpellBook.IsSpellBookItemUsable(index, spellBank)
+			else
+				local spellIdentifier = select(1, ...)
+				return C_Spell.IsSpellUsable(spellIdentifier)
+			end
+		end,
+		GetWatchedFactionInfo = function()
+			local watchedFactionData = C_Reputation.GetWatchedFactionData()
+
+			if watchedFactionData then
+				return watchedFactionData.name,
+					   watchedFactionData.reaction,
+					   watchedFactionData.currentReactionThreshold,
+					   watchedFactionData.nextReactionThreshold,
+					   watchedFactionData.currentStanding,
+					   watchedFactionData.factionID
+			else
+				return nil
+			end
+		end,
 		GetWatchedFactionInfo = function()
 			local watchedFactionData = C_Reputation.GetWatchedFactionData()
 
