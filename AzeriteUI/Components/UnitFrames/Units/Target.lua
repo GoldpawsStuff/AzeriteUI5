@@ -33,6 +33,9 @@ local next = next
 local string_gsub = string.gsub
 local type = type
 local unpack = unpack
+local Mixin = _G.Mixin
+local Enum = _G.Enum
+local UnitGUID = _G.UnitGUID
 
 -- Addon API
 local Colors = ns.Colors
@@ -749,7 +752,23 @@ local style = function(self, unit, id)
 
 	self.Portrait.Bg = portraitBg
 
-	local portraitOverlayFrame = CreateFrame("Frame", nil, self)
+	local portraitOverlayFrame = nil
+	if (ns.IsRetail) then
+		portraitOverlayFrame = CreateFrame("Frame", nil, self, "PingReceiverAttributeTemplate")
+
+		Mixin(portraitOverlayFrame, PingableTypeMixin)
+
+		portraitOverlayFrame.GetContextualPingType = function(self)
+			return PingUtil:GetContextualPingTypeForUnit(self:GetTargetPingGUID())
+		end
+
+		portraitOverlayFrame.GetTargetPingGUID = function(self)
+			return UnitGUID(unit)
+		end
+	else
+		portraitOverlayFrame = CreateFrame("Frame", nil, self)
+	end
+
 	portraitOverlayFrame:SetFrameLevel(self:GetFrameLevel() - 1)
 	portraitOverlayFrame:SetAllPoints()
 
