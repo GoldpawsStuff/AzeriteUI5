@@ -67,7 +67,6 @@ ns.Private.IsRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 ns.Private.IsClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
 ns.Private.IsTBC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 ns.Private.IsWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
---ns.Private.IsCata = WOW_PROJECT_ID == (WOW_PROJECT_CATA_CLASSIC or 99) -- NYI in first build
 ns.Private.IsCata = (version >= 40400) and (version < 50000)
 ns.Private.WoW10 = version >= 100000
 ns.Private.WoW11 = version >= 110000

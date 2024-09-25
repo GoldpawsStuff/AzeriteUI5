@@ -22,7 +22,7 @@
 	<Script file="LibMoreEvents-1.0\LibMoreEvents-1.0.lua"/>
 	@end-non-debug@-->
 	<Include file="UTF8\utf8.xml"/>
-	<Include file="LibKeyBound-1.0\lib.xml"/>
+	<!--<Include file="LibKeyBound-1.0\lib.xml"/>-->
 	<Script file="LibClassicSpellActionCount-1.0\LibClassicSpellActionCount-1.0.lua"/>
 	<Script file="LibAuraTypes\LibAuraTypes.lua"/>
 	<Script file="LibSpellLocks\LibSpellLocks.lua"/>

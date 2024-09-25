@@ -262,7 +262,7 @@ end
 
 PetButton.GetHotkey = function(self)
 	local key = GetBindingKey(format("BONUSACTIONBUTTON%d", self.id)) or GetBindingKey("CLICK "..self:GetName()..":LeftButton")
-	return key and KeyBound:ToShortKey(key)
+	return key and KeyBound and KeyBound:ToShortKey(key)
 end
 
 PetButton.GetBindings = function(self)

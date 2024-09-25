@@ -144,7 +144,7 @@ end
 
 StanceButton.GetHotkey = function(self)
 	local key = GetBindingKey(string_format("SHAPESHIFTBUTTON%d", self:GetID())) or GetBindingKey("CLICK "..self:GetName()..":LeftButton")
-	return key and KeyBound:ToShortKey(key)
+	return key and KeyBound and KeyBound:ToShortKey(key)
 end
 
 StanceButton.GetTexture = function(self)
