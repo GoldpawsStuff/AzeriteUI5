@@ -25,12 +25,16 @@
 --]]
 local _, ns = ...
 
+local L = LibStub("AceLocale-3.0"):GetLocale((...))
+
 local Info = ns:NewModule("Info", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0", "AceConsole-3.0")
 
 -- GLOBALS: CreateFrame, GameTooltip, GameTooltip_SetDefaultAnchor, InCombatLockdown, IsResting, ToggleCalendar
 -- GLOBALS: GetFramerate, GetLocalTime, GetMinimapZoneText, GetNetStats, GetServerTime, GetZonePVPInfo
+-- GLOBALS: GetAddOnMemoryUsage, GetNumAddOns, GetAddOnInfo, UpdateAddOnMemoryUsage
 -- GLOBALS: TIMEMANAGER_TITLE, TIMEMANAGER_TOOLTIP_TITLE, TUTORIAL_TITLE30, FPS_ABBR, HOME, WORLD, INFO
 -- GLOBALS: TIMEMANAGER_TOOLTIP_LOCALTIME, TIMEMANAGER_TOOLTIP_REALMTIME, GAMETIME_TOOLTIP_TOGGLE_CALENDAR
+-- GLOBALS: TOTAL_MEM_MB_ABBR, TOTAL_MEM_KB_ABBR, ADDON_MEM_MB_ABBR, ADDON_MEM_KB_ABBR
 
 -- Lua API
 local math_max = math.max
@@ -52,6 +56,9 @@ local L_RESTING = TUTORIAL_TITLE30 -- "Resting"
 local L_FPS = string_upper(string_match(FPS_ABBR, "^.")) -- "fps"
 local L_HOME = string_upper(string_match(HOME, "^.")) -- "Home"
 local L_WORLD = string_upper(string_match(WORLD, "^.")) -- "World"
+
+-- Constants
+local NUM_ADDON_MEMORY = 5
 
 local defaults = { profile = ns:Merge({
 	enabled = true,
@@ -127,6 +134,79 @@ local Time_OnClick = function(self, mouseButton)
 	end
 end
 
+local Fps_UpdateTooltip = function(self)
+	if (GameTooltip:IsForbidden()) then return end
+
+	GameTooltip_SetDefaultAnchor(GameTooltip, self)
+	GameTooltip:AddLine(L["AddOn Memory Usage"], unpack(Colors.title))
+
+	for i = 1, NUM_ADDON_MEMORY, 1 do
+		Info.addonUsage[i].value = 0
+	end
+
+	UpdateAddOnMemoryUsage()
+	local totalMemory = 0
+
+	for i = 1, GetNumAddOns(), 1 do
+		local memUsage = GetAddOnMemoryUsage(i)
+		totalMemory = totalMemory + memUsage
+
+		for j = 1, NUM_ADDON_MEMORY, 1 do
+			if (memUsage > Info.addonUsage[j].value) then
+				for k = NUM_ADDON_MEMORY, 1, -1 do
+					if (k == j) then
+						Info.addonUsage[k].name = GetAddOnInfo(i)
+						Info.addonUsage[k].value = memUsage
+						break
+					elseif (k ~= 1) then
+						Info.addonUsage[k].name = Info.addonUsage[k - 1].name
+						Info.addonUsage[k].value = Info.addonUsage[k - 1].value
+					end
+				end
+				break
+			end
+		end
+	end
+
+	if (totalMemory > 0) then
+		if (totalMemory > 1000) then
+			totalMemory = totalMemory / 1000
+			GameTooltip:AddLine(string_format(TOTAL_MEM_MB_ABBR, totalMemory), 1.0, 1.0, 1.0)
+		else
+			GameTooltip:AddLine(string_format(TOTAL_MEM_KB_ABBR, totalMemory), 1.0, 1.0, 1.0)
+		end
+
+		local size = 0
+		for i = 1, NUM_ADDON_MEMORY, 1 do
+			if (Info.addonUsage[i].value == 0) then
+				break
+			end
+
+			size = Info.addonUsage[i].value
+
+			if (size > 1000) then
+				size = size / 1000
+				GameTooltip:AddLine(string_format(ADDON_MEM_MB_ABBR, size, Info.addonUsage[i].name), 1.0, 1.0, 1.0)
+			else
+				GameTooltip:AddLine(string_format(ADDON_MEM_KB_ABBR, size, Info.addonUsage[i].name), 1.0, 1.0, 1.0)
+			end
+		end
+
+		GameTooltip:Show()
+	end
+end
+
+local Fps_OnEnter = function(self)
+	self.UpdateTooltip = Fps_UpdateTooltip
+	self:UpdateTooltip()
+end
+
+local Fps_OnLeave = function(self)
+	self.UpdateTooltip = nil
+	if (GameTooltip:IsForbidden()) then return end
+	GameTooltip:Hide()
+end
+
 Info.PrepareFrames = function(self)
 	if (self.frame) then return end
 
@@ -165,6 +245,8 @@ Info.PrepareFrames = function(self)
 	fps:SetPoint(unpack(db.FrameRatePosition))
 	fps:SetJustifyH("CENTER")
 	fps:SetJustifyV("MIDDLE")
+	fps:SetScript("OnEnter", Fps_OnEnter)
+	fps:SetScript("OnLeave", Fps_OnLeave)
 
 	self.fps = fps
 
@@ -331,6 +413,14 @@ Info.UpdateSettings = function(self)
 end
 
 Info.OnEnable = function(self)
+	self.addonUsage = {}
+
+	for i = 1, NUM_ADDON_MEMORY, 1 do
+		self.addonUsage[i] = {
+			name = "",
+			value = 0
+		}
+	end
 
 	self:PrepareFrames()
 	self:CreateAnchor(string_format("%s / %s", INFO, TIMEMANAGER_TITLE))

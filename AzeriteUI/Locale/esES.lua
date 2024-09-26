@@ -12,6 +12,7 @@ L["Action Bar %d"] = "Barra de acción %d"
 L["Action Bar Settings"] = "Configuración de la barra de acción"
 L["Action Bars"] = "Barras de acción"
 L["ActionBars are banks of hotkeys that allow you to quickly access abilities and inventory items. Here you can activate additional ActionBars and control their behaviors."] = "Son bancos de teclas que te permiten acceder a facultades y objetos del inventario con rapidez. Aquí podrás activar más Barras de acción y controlar su configuración."
+L["AddOn Memory Usage"] = true
 L["Alerts"] = true
 L["Always show unit names."] = true
 L["Always use Power Crystal"] = true

@@ -11,6 +11,7 @@ L["Action Bar %d"] = true
 L["Action Bar Settings"] = true
 L["Action Bars"] = true
 L["ActionBars are banks of hotkeys that allow you to quickly access abilities and inventory items. Here you can activate additional ActionBars and control their behaviors."] = true
+L["AddOn Memory Usage"] = true
 L["Alerts"] = true
 L["Always show unit names."] = true
 L["Always use Power Crystal"] = true
