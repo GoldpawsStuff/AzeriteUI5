@@ -512,6 +512,9 @@ end
 -- Addon Styling & Initialization
 --------------------------------------------
 MinimapMod.InitializeMBB = function(self)
+	if (self.addonCompartment) then
+		self.addonCompartment:SetParent(ns.Hider)
+	end
 
 	local button = CreateFrame("Frame", nil, Minimap)
 	button:SetFrameLevel(button:GetFrameLevel() + 10)
@@ -827,6 +830,53 @@ MinimapMod.CreateCustomElements = function(self)
 	mailFrame:SetAllPoints(mail)
 
 	self.mail = mail
+
+	-- Addon Compartment
+	if (ns.IsRetail) then
+		local addonCompartment = self.Objects.Addons
+		if (addonCompartment) then
+			local addons = CreateFrame("DropdownButton", nil, Minimap)
+			addons:SetPoint("BOTTOMRIGHT", -252, 43)
+			addons:SetSize(16, 16)
+
+			addons:SetupMenu(addonCompartment.menuGenerator)
+
+			local addonsAnchor = AnchorUtil.CreateAnchor("BOTTOMRIGHT", addons, "TOPLEFT", 0, 0)
+			addons:SetMenuAnchor(addonsAnchor)
+
+			addons:SetScript("OnEnter", function(self)
+				addons:SetAlpha(.95)
+
+				if (GameTooltip:IsForbidden()) then return end
+
+				GameTooltip_SetDefaultAnchor(GameTooltip, self)
+				GameTooltip_SetTitle(GameTooltip, ADDONS)
+				GameTooltip:Show()
+			end)
+
+			addons:SetScript("OnLeave", function(self)
+				addons:SetAlpha(.5)
+
+				if (GameTooltip:IsForbidden()) then return end
+
+				GameTooltip:Hide()
+			end)
+
+			local addonsText = addons:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+			addonsText:SetText(addonCompartment:GetText())
+			addonsText:SetPoint("CENTER")
+			addons:SetFontString(addonsText)
+			addons.text = addonsText
+
+			hooksecurefunc(addonCompartment, "UpdateDisplay", function(self)
+				addonsText:SetText(self:GetText())
+			end)
+
+			addons:SetAlpha(.5)
+
+			self.addonCompartment = addons
+		end
+	end
 
 	local dropdown = LibDD:Create_UIDropDownMenu(ns.Prefix.."MiniMapTrackingDropDown", UIParent)
 	dropdown:SetID(1)

@@ -38,6 +38,7 @@
 	<!--<Script file="EditModePresets.lua"/>-->
 	<Script file="MovableFrameManager.lua"/>
 	<Script file="MovableFrameModulePrototype.lua"/>
+	<Script file="AddonCompartment.lua"/>
 	<Script file="FixBlizzardBugs.lua"/>
 	<Script file="FixFlavorDifferences.lua"/>
 	<Script file="ExplorerMode.lua"/>
