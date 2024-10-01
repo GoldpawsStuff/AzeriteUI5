@@ -1,31 +1,25 @@
-name: Packager
-
-# we need to let GitHub know _when_ we want to release, typically only when we create a new tag.
-# this will target only tags, and not all pushes to the master branch.
-# this part can be heavily customized to your liking, like targeting only tags that match a certain word,
-# other branches or even pullrequests.
+name: Package Addon Release
+run-name: ${{ github.ref_name }} push run 🚀
 on:
   push:
+    paths-ignore:
+      - '**.md'
+    branches:
+      - custom-build
     tags:
-      - '**'
-
+      - '*'
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
+  build-addon:
+    name: Build 🧱
+    runs-on: ubuntu-24.04
     env:
-      CF_API_KEY: ${{ secrets.CF_API_KEY }}
-      GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-      WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
-
+      GITHUB_OAUTH: ${{ github.token }}
     steps:
+      - uses: actions/checkout@v4
+      - with:
+        fetch-depth: 0
 
-      - name: Clone project
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # gets git history for changelogs
-
-      - name: Package and release for Retail
-        uses: BigWigsMods/packager@v2
+      - name: Package Addon
+        uses: BigWigsMods/packager@07a3e3ce80d58f9bd79794243692f2f22630b7bb
         with:
           args: -m .pkgmeta

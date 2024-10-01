@@ -1,4 +1,4 @@
-package-as: AzeriteUI
+package-as: AzeriteUI-PTM
 enable-nolib-creation: no
 
 externals:
