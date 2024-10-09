@@ -164,3 +164,52 @@ if (tocversion >= 100205) or (tocversion >= 40400 and tocversion < 50000) then
 		end
 	end
 end
+
+-- Deprecated in 11.0.0
+if (tocversion >= 110000) then
+	for method,func in next, {
+		GetWatchedFactionInfo = function()
+			local watchedFactionData = C_Reputation.GetWatchedFactionData()
+
+			if watchedFactionData then
+				return watchedFactionData.name,
+					   watchedFactionData.reaction,
+					   watchedFactionData.currentReactionThreshold,
+					   watchedFactionData.nextReactionThreshold,
+					   watchedFactionData.currentStanding,
+					   watchedFactionData.factionID
+			else
+				return nil
+			end
+		end,
+		GetNumFactions = C_Reputation.GetNumFactions,
+		GetFactionInfo = function(index)
+			local factionData = C_Reputation.GetFactionDataByIndex(index)
+
+			if (factionData) then
+				return factionData.name,
+					   factionData.description,
+					   factionData.reaction,
+					   factionData.currentReactionThreshold,
+					   factionData.nextReactionThreshold,
+					   factionData.currentStanding,
+					   factionData.atWarWith,
+					   factionData.canToggleAtWar,
+					   factionData.isHeader,
+					   factionData.isCollapsed,
+					   factionData.isHeaderWithRep,
+					   factionData.isWatched,
+					   factionData.isChild,
+					   factionData.factionID,
+					   factionData.hasBonusRepRain,
+					   factionData.canSetInactive
+			else
+				return nil
+			end
+		end
+	} do
+		if (not _G[method]) then
+			_G[method] = func
+		end
+	end
+end
