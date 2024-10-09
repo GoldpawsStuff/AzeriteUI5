@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2024-10-09
+- Bunch of fixes for Retail written by Pat. More is coming including proper patch notes before this goes live.
+
 ## [5.2.183-Release] 2024-09-25
 - Updated for Classic Era client patch 1.15.4.
 
