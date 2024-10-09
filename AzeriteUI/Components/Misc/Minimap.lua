@@ -49,6 +49,7 @@ local unpack = unpack
 -- GLOBALS: InCombatLockdown, IsResting, HasNewMail, PlaySound, ToggleDropDownMenu
 -- GLOBALS: MinimapZoomIn, MinimapZoomOut, Minimap_OnClick
 -- GLOBALS: Minimap, MinimapBackdrop, MinimapCluster, MinimapBorder, MinimapBorderTop, MicroButtonAndBagsBar, MinimapCompassTexture, MiniMapInstanceDifficulty, MiniMapTracking
+-- GLOBALS: MenuUtil
 -- GLOBALS: SOUNDKIT, MINIMAP_LABEL, PROFESSIONS_CRAFTING
 
 -- Addon API
@@ -342,6 +343,8 @@ local Minimap_OnMouseUp = function(self, button)
 	if (button == "RightButton") then
 		if (ns.IsClassic) then
 			MinimapMod:ShowMinimapTrackingMenu()
+		elseif (ns.WoW11) then
+			MenuUtil.CreateContextMenu(self, MinimapCluster.Tracking.Button.menuGenerator)
 		else
 			ToggleDropDownMenu(1, nil, _G[ns.Prefix.."MiniMapTrackingDropDown"], "cursor")
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "SFX")
@@ -828,10 +831,17 @@ MinimapMod.CreateCustomElements = function(self)
 
 	self.mail = mail
 
-	local dropdown = LibDD:Create_UIDropDownMenu(ns.Prefix.."MiniMapTrackingDropDown", UIParent)
-	dropdown:SetID(1)
-	dropdown:SetClampedToScreen(true)
-	dropdown:Hide()
+	local dropdown = nil
+
+	if (not ns.WoW11) then
+		dropdown = LibDD:Create_UIDropDownMenu(ns.Prefix.."MiniMapTrackingDropDown", UIParent)
+		dropdown:SetID(1)
+		dropdown:SetClampedToScreen(true)
+		dropdown:Hide()
+
+		dropdown.noResize = true
+		self.dropdown = dropdown
+	end
 
 	if (ns.IsClassic) then
 		self.ShowMinimapTrackingMenu = function(self)
@@ -877,13 +887,9 @@ MinimapMod.CreateCustomElements = function(self)
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON, "SFX")
 			end
 		end
-	else
+	elseif (not ns.WoW11) then
 		LibDD:UIDropDownMenu_Initialize(dropdown, MiniMapTrackingDropDown_Initialize, "MENU")
 	end
-
-	dropdown.noResize = true
-
-	self.dropdown = dropdown
 
 	self:UpdateCustomElements()
 	self.CreateCustomElements = noop
