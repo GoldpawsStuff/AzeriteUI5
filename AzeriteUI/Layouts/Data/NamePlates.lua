@@ -167,5 +167,9 @@ ns.RegisterConfig("NamePlates", {
 	-----------------------------------------
 	ThreatPosition = { "CENTER", 0, 0 },
 	ThreatSize = { 94.315789474, 24.888888889 },
-	ThreatTexture = GetMedia("nameplate_glow")
+	ThreatTexture = GetMedia("nameplate_glow"),
+
+	-- Nameplate Widgets
+	-----------------------------------------
+	WidgetPosition = { "TOP", 0, -20 }
 })

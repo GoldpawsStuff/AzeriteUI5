@@ -196,6 +196,7 @@ L["Sets which button the zigzag pattern should begin at."] = true
 L["Show Arcane Charges (Mage)"] = true
 L["Show Auras only on current target."] = true
 L["Show Auras"] = true
+L["Show Blizzard widgets"] = true
 L["Show Chi (Monk)"] = true
 L["Show Combo Points"] = true
 L["Show Holy Power (Paladin)"] = true

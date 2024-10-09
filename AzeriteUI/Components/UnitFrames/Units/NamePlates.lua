@@ -46,6 +46,7 @@ local defaults = { profile = ns:Merge({
 	showAuras = true,
 	showAurasOnTargetOnly = false,
 	showNameAlways = false,
+	showBlizzardWidgets = false,
 	scale = 1
 }, ns.MovableModulePrototype.defaults) }
 
@@ -501,6 +502,27 @@ local NamePlate_PostUpdateElements = function(self, event, unit, ...)
 		else
 			if (self:IsElementEnabled("Auras")) then
 				self:DisableElement("Auras")
+			end
+		end
+
+		if (self.WidgetContainer) then
+			if (NamePlatesMod.db.profile.showBlizzardWidgets) then
+				self.WidgetContainer:SetIgnoreParentAlpha(true)
+				self.WidgetContainer:SetParent(self)
+				self.WidgetContainer:ClearAllPoints()
+				self.WidgetContainer:SetPoint(unpack(db.WidgetPosition))
+
+				local widgetFrames = self.WidgetContainer.widgetFrames
+
+				if (widgetFrames) then
+					for _, frame in next, widgetFrames do
+						if (frame.Label) then
+							frame.Label:SetAlpha(0)
+						end
+					end
+				end
+			else
+				self.WidgetContainer:SetParent(ns.Hider)
 			end
 		end
 
@@ -1010,7 +1032,26 @@ local callback = function(self, event, unit)
 		self.isPRD = UnitIsUnit(unit, "player")
 
 		if (self.WidgetContainer) then
-			self.WidgetContainer:SetParent(ns.Hider)
+			if (NamePlatesMod.db.profile.showBlizzardWidgets) then
+				local db = ns.GetConfig("NamePlates")
+
+				self.WidgetContainer:SetIgnoreParentAlpha(true)
+				self.WidgetContainer:SetParent(self)
+				self.WidgetContainer:ClearAllPoints()
+				self.WidgetContainer:SetPoint(unpack(db.WidgetPosition))
+
+				local widgetFrames = self.WidgetContainer.widgetFrames
+
+				if (widgetFrames) then
+					for _, frame in next, widgetFrames do
+						if (frame.Label) then
+							frame.Label:SetAlpha(0)
+						end
+					end
+				end
+			else
+				self.WidgetContainer:SetParent(ns.Hider)
+			end
 		end
 
 		if (self.SoftTargetFrame) then
@@ -1024,6 +1065,14 @@ local callback = function(self, event, unit)
 		ns.ActiveNamePlates[self] = true
 
 	elseif (event == "NAME_PLATE_UNIT_REMOVED") then
+
+		if (self.WidgetContainer) then
+			if (NamePlatesMod.db.profile.showBlizzardWidgets) then
+				self.WidgetContainer:SetIgnoreParentAlpha(false)
+				self.WidgetContainer:SetParent(self.blizzPlate)
+				self.WidgetContainer:ClearAllPoints()
+			end
+		end
 
 		if (self.SoftTargetFrame) then
 			self.SoftTargetFrame:SetIgnoreParentAlpha(false)
