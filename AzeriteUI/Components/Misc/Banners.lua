@@ -48,6 +48,7 @@ local banners = {
 	{ "Blizzard_MajorFactions", "MajorFactionsRenownToast", 128, 128, "TOP", 0, -160 },
 	{ "Blizzard_MajorFactions", "MajorFactionUnlockToast", 128, 128, "TOP", 0, -180 },
 	{ "Blizzard_ObjectiveTracker", "ObjectiveTrackerBonusBannerFrame", 128, 128, "TOP", 0, -170 },
+	{ "Blizzard_ObjectiveTracker", "ObjectiveTrackerTopBannerFrame", 128, 128, "TOP", 0, -170 },
 	{ "Blizzard_PVPUI", "PvPObjectiveBannerFrame", 128, 128, "TOP", 0, -180 }
 }
 
