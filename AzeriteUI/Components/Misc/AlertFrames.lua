@@ -30,7 +30,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale((...))
 local AlertFrames = ns:NewModule("AlertFrames", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 
 -- GLOBALS: CreateFrame
--- GLOBALS: AlertFrame, GroupLootContainer, UIParent
+-- GLOBALS: AlertFrame, GroupLootContainer, UIParent, TalkingHeadFrame
 -- GLOBALS: UIPARENT_MANAGED_FRAME_POSITIONS
 
 -- Lua API
@@ -120,6 +120,11 @@ local AlertSubSystem_AdjustAnchorsNonAlert = function(self, relativeAlert)
 	local point, relPoint, x, y = GetPoints()
 
 	local anchorFrame = self.anchorFrame
+
+	if (anchorFrame and ns.WoW11 and anchorFrame == TalkingHeadFrame) then
+		return relativeAlert
+	end
+
 	if (anchorFrame and anchorFrame:IsShown()) then
 		anchorFrame:ClearAllPoints()
 		anchorFrame:SetPoint(point, relativeAlert, relPoint, 0, config.AlertFramesPadding * y)
