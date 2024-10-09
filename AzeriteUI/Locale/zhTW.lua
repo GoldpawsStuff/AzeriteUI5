@@ -12,6 +12,7 @@ L["Action Bar %d"] = "快捷列%d"
 L["Action Bar Settings"] = "快捷列設定"
 L["Action Bars"] = "快捷列"
 L["ActionBars are banks of hotkeys that allow you to quickly access abilities and inventory items. Here you can activate additional ActionBars and control their behaviors."] = "快捷列是一個存放熱鍵的工具列，可讓你更快速地使用技能與物品欄的物品。你可以在這裡啟用額外的快捷列並控制它們的功能。"
+L["AddOn Memory Usage"] = true
 L["Alerts"] = true
 L["Always show unit names."] = true
 L["Always use Power Crystal"] = true

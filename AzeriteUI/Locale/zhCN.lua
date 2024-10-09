@@ -12,6 +12,7 @@ L["Action Bar %d"] = "动作条 %d"
 L["Action Bar Settings"] = "动作条设定"
 L["Action Bars"] = "动作条"
 L["ActionBars are banks of hotkeys that allow you to quickly access abilities and inventory items. Here you can activate additional ActionBars and control their behaviors."] = "动作条是一排用来放置快捷键的位置，可以使你快速使用技能和物品。你可以在这里开启额外的动作条并对它们进行设定。"
+L["AddOn Memory Usage"] = true
 L["Alerts"] = true
 L["Always show unit names."] = true
 L["Always use Power Crystal"] = true

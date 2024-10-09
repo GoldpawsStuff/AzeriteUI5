@@ -12,6 +12,7 @@ L["Action Bar %d"] = "행동 단축바 %d"
 L["Action Bar Settings"] = "행동 단축바 설정"
 L["Action Bars"] = "행동 단축바"
 L["ActionBars are banks of hotkeys that allow you to quickly access abilities and inventory items. Here you can activate additional ActionBars and control their behaviors."] = "행동 단축바는 능력이나 아이템을 바로 사용할 수 있도록 단축키를 모아 놓은 것입니다. 행동 단축바를 추가하거나 작동 방식을 변경합니다."
+L["AddOn Memory Usage"] = true
 L["Alerts"] = true
 L["Always show unit names."] = true
 L["Always use Power Crystal"] = true
