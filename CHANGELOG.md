@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.2.184-Release] 2024-10-18
+## [5.2.185-Release] 2024-10-18
 - Bunch of fixes for Retail written by Pat. More is coming including proper patch notes.
 
 ## [5.2.183-Release] 2024-09-25
