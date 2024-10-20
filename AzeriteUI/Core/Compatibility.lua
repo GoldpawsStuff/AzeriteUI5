@@ -240,19 +240,19 @@ if (tocversion >= 110000) then
 		end,
 		IsAutoRepeatSpell = C_Spell.IsAutoRepeatSpell,
 		IsCurrentSpell = C_Spell.IsCurrentSpell,
-		IsSpellInRange = function(...)
-			local numArgs = select("#", ...)
-
-			if (numArgs == 3) then
-				local index, bookType, unit = ...
-				local spellBank = (bookType == "spell") and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.pet
-
-				return C_SpellBook.IsSpellBookItemInRange(index, spellBank, unit)
-			else
-				local spellName, unit = ...
-				return C_Spell.IsSpellInRange(spellName, unit)
-			end
-		end,
+		--IsSpellInRange = function(...)
+		--	local numArgs = select("#", ...)
+		--
+		--	if (numArgs == 3) then
+		--		local index, bookType, unit = ...
+		--		local spellBank = (bookType == "spell") and Enum.SpellBookSpellBank.Player or Enum.SpellBookSpellBank.pet
+		--
+		--		return C_SpellBook.IsSpellBookItemInRange(index, spellBank, unit)
+		--	else
+		--		local spellName, unit = ...
+		--		return C_Spell.IsSpellInRange(spellName, unit)
+		--	end
+		--end,
 		IsUsableSpell = function(...)
 			local numArgs = select("#", ...)
 

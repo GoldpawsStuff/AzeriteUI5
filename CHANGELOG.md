@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.186-Release] 2024-10-20
+- Started updating our custom LibActionButton fork.
+
+### Removed
+- Removed the replacement of the Retail function `IsSpellInRange` as this was conflicting with other addons and Blizzard's latest changes.
+
 ## [5.2.185-Release] 2024-10-18
 - Bunch of fixes for Retail written by Pat. More is coming including proper patch notes.
 

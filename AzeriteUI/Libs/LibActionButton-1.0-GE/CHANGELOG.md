@@ -4,8 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.131-Alpha] 2024-10-20
+- Various fixes for WoW Retail 11.0.0.
+
 ## [1.0.130-Alpha] 2024-08-14
-- Updated for WoW 11.x.
+- Various fixes for WoW Retail 11.0.0.
 
 ## [1.0.128-Alpha] 2024-08-03
 ### Fixed
