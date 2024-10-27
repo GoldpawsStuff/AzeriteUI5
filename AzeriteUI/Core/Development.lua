@@ -26,6 +26,12 @@
 local _, ns = ...
 local Development = ns:NewModule("Development", "AceConsole-3.0", "LibMoreEvents-1.0")
 
+Development.UpdateFonts = function(self)
+	-- Needed as scaling information isn't available at logon like it used to be.
+	self.VersionLabel:SetIgnoreParentScale(true)
+	self.VersionLabel:SetScale(ns.API.GetEffectiveScale())
+end
+
 Development.OnInitialize = function(self)
 
 	local showVersion = ns.db.global.enableDevelopmentMode or ns.IsDevelopment or ns.IsAlpha or ns.IsBeta
@@ -47,9 +53,6 @@ Development.OnInitialize = function(self)
 		ns.db.global.enableDevelopmentMode = not ns.db.global.enableDevelopmentMode
 		ReloadUI()
 	end)
-end
 
-Development.OnEnable = function(self)
-	-- Needed as scaling information isn't available at logon like it used to be.
-	self.VersionLabel:SetScale(ns.API.GetEffectiveScale())
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFonts")
 end
