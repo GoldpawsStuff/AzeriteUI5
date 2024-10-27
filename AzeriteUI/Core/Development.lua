@@ -34,17 +34,22 @@ Development.OnInitialize = function(self)
 		local label = UIParent:CreateFontString()
 		label:SetIgnoreParentScale(true)
 		label:SetScale(ns.API.GetEffectiveScale())
-		label:SetDrawLayer("HIGHLIGHT", 1)
+		--label:SetDrawLayer("HIGHLIGHT", 1) -- conflicts with actionbars and remains invisible at all times.
 		label:SetFontObject(ns.API.GetFont(12,true))
 		label:SetTextColor(ns.Colors.offwhite[1], ns.Colors.offwhite[2], ns.Colors.offwhite[3], .85)
 		label:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 20, 10)
 		label:SetText((ns.db.global.enableDevelopmentMode and "Dev Mode|n" or "") .. (ns.IsDevelopment and "Git Version" or ns.Version))
 
-		--self.VersionLabel = label
+		self.VersionLabel = label
 	end
 
 	self:RegisterChatCommand("devmode", function(self)
 		ns.db.global.enableDevelopmentMode = not ns.db.global.enableDevelopmentMode
 		ReloadUI()
 	end)
+end
+
+Development.OnEnable = function(self)
+	-- Needed as scaling information isn't available at logon like it used to be.
+	self.VersionLabel:SetScale(ns.API.GetEffectiveScale())
 end

@@ -256,7 +256,7 @@ end
 
 local Power_PostUpdate = function(element, unit, cur, min, max)
 
-	local shouldShow = UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) and element.displayType == Enum.PowerType.Mana
+	local shouldShow = UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) --[[and element.displayType == Enum.PowerType.Mana]]
 
 	if (not shouldShow or cur == 0 or max == 0) then
 		element:SetAlpha(0)

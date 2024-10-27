@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.187-Release] 2024-10-27
+### Changed
+- All power bars should be visible on all group frames now. The exception being units completely out of range, as this appears to be a blizzard limitation of sorts.
+- The on-screen text indicating if you have an alpha or beta version, or running in dev mode, is once again forcibly visible.
+
 ## [5.2.186-Release] 2024-10-20
 - Started updating our custom LibActionButton fork.
 
