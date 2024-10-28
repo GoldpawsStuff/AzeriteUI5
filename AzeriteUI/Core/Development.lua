@@ -28,8 +28,7 @@ local Development = ns:NewModule("Development", "AceConsole-3.0", "LibMoreEvents
 
 Development.UpdateFonts = function(self)
 	-- Needed as scaling information isn't available at logon like it used to be.
-	self.VersionLabel:SetIgnoreParentScale(true)
-	self.VersionLabel:SetScale(ns.API.GetEffectiveScale())
+	self.VersionLabel:SetScale(ns.API.GetScale())
 end
 
 Development.OnInitialize = function(self)
@@ -39,7 +38,8 @@ Development.OnInitialize = function(self)
 
 		local label = UIParent:CreateFontString()
 		label:SetIgnoreParentScale(true)
-		label:SetScale(ns.API.GetEffectiveScale())
+		label:SetScale(ns.API.GetScale())
+		--label:SetScale(ns.API.GetEffectiveScale())
 		--label:SetDrawLayer("HIGHLIGHT", 1) -- conflicts with actionbars and remains invisible at all times.
 		label:SetFontObject(ns.API.GetFont(12,true))
 		label:SetTextColor(ns.Colors.offwhite[1], ns.Colors.offwhite[2], ns.Colors.offwhite[3], .85)
@@ -47,6 +47,10 @@ Development.OnInitialize = function(self)
 		label:SetText((ns.db.global.enableDevelopmentMode and "Dev Mode|n" or "") .. (ns.IsDevelopment and "Git Version" or ns.Version))
 
 		self.VersionLabel = label
+
+		-- Call these only when version label is available
+		self:UpdateFonts()
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFonts")
 	end
 
 	self:RegisterChatCommand("devmode", function(self)
@@ -54,5 +58,4 @@ Development.OnInitialize = function(self)
 		ReloadUI()
 	end)
 
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateFonts")
 end
