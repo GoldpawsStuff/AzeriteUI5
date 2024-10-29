@@ -4,9 +4,12 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2024-10-27
+## [5.2.188-Release] 2024-10-28
 ### Changed
 - Changed how the dev mode text is displayed, as it kept resetting to a huge size when leaving some instances like battlegrounds.
+
+### Fixed
+- Fixed trying to show the dev mode text when no dev mode is activated, which was causing bugs.
 
 ## [5.2.187-Release] 2024-10-27
 ### Changed
