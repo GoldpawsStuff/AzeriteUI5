@@ -49,6 +49,7 @@ local GetMedia = ns.API.GetMedia
 local GetFont = ns.API.GetFont
 
 local Units = {}
+local TESTMODE = true
 
 local defaults = { profile = ns:Merge({
 
@@ -742,6 +743,9 @@ GroupHeader.UpdateVisibilityDriver = function(self)
 
 	local db = PartyFrameMod.db.profile
 	if (db.enabled) then
+		if (TESTMODE) then
+			table_insert(driver, "show")
+		end
 		table_insert(driver, "[group:party,nogroup:raid]"..(db.useInParties and "show" or "hide"))
 		table_insert(driver, "[@raid26,exists]"..(db.useInRaid40 and "show" or "hide"))
 		table_insert(driver, "[@raid11,exists]"..(db.useInRaid25 and "show" or "hide"))
@@ -758,7 +762,11 @@ GroupHeader.UpdateVisibilityDriver = function(self)
 
 	self:SetAttribute("showRaid", db.useInRaid5 or db.useInRaid10 or db.useInRaid25 or db.useInRaid40)
 	self:SetAttribute("showParty", db.useInParties)
-	self:SetAttribute("showPlayer", db.showPlayer)
+	if (TESTMODE) then
+		self:SetAttribute("showPlayer", true)
+	else
+		self:SetAttribute("showPlayer", db.showPlayer)
+	end
 
 end
 
@@ -779,7 +787,7 @@ PartyFrameMod.GetHeaderAttributes = function(self)
 	"sortMethod", "INDEX", -- INDEX, NAME -- Member sorting within each group
 	"sortDir", "ASC", -- ASC, DESC
 	"groupFilter", "1,2,3,4,5,6,7,8", -- Group filter
-	"showSolo", false, -- show while non-grouped
+	"showSolo", TESTMODE or false, -- show while non-grouped
 	"point", db.point, -- Unit anchoring within each column
 	"xOffset", db.xOffset,
 	"yOffset", db.yOffset,

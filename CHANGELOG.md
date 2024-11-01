@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.2.189-Release] 2024-11.01
+## [5.2.190-Release] 2024-11-01
+### Changed
+- Slightly beefed up the size of the power bars on the 5p Party unitframes.
+
+## [5.2.189-Release] 2024-11-01
 ### Fixed
 - Fixed a bug that in Retail would cause all protected casts to cause an error.
 
