@@ -583,7 +583,7 @@ local style = function(self, unit)
 	castText:SetJustifyV(config.HealthValueJustifyV)
 	castText:Hide()
 	castText.color = config.CastBarTextColor
-	castText.colorProtected = Colors.CastBarTextProtectedColor
+	castText.colorProtected = config.CastBarTextProtectedColor
 
 	self.Castbar.Text = castText
 	self.Castbar.PostCastInterruptible = Cast_PostCastInterruptible
