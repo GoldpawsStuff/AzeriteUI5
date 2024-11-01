@@ -49,7 +49,7 @@ local GetMedia = ns.API.GetMedia
 local GetFont = ns.API.GetFont
 
 local Units = {}
-local TESTMODE = true
+local TESTMODE --= true
 
 local defaults = { profile = ns:Merge({
 
