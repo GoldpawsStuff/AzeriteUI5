@@ -77,11 +77,11 @@ ns.RegisterConfig("PartyFrames", {
 
 	-- Power
 	-----------------------------------------
-	PowerBarSize = { 72, 1 },
-	PowerBarPosition = { "BOTTOM", 0, -1.5 + 10 },
+	PowerBarSize = { 72, 2 },
+	PowerBarPosition = { "BOTTOM", 0, 8 },
 	PowerBarTexture = [[Interface\ChatFrame\ChatFrameBackground]],
 	PowerBarOrientation = "RIGHT",
-	PowerBackdropSize = { 74, 3 },
+	PowerBackdropSize = { 74, 4 },
 	PowerBackdropPosition = { "CENTER", 0, 0 },
 	PowerBackdropTexture = [[Interface\ChatFrame\ChatFrameBackground]],
 	PowerBackdropColor = { 0, 0, 0, .75 },
