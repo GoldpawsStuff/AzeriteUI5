@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.192-Release] 2024-12-04
+### Fixed
+- Fixed the new Group Finder Eye in Classic Era.
+
 ## [5.2.191-Release] 2024-11-01
 ### Fixed
 - The player's party unitframe is no longer always visible. I forgot to turn off a developer setting before uploading the previous fix.
