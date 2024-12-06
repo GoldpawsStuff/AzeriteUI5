@@ -135,46 +135,62 @@ local ObjectSnippets = {
 	},
 	Eye = {
 		Enable = function(object)
-			if (ns.IsCata) then
+			if (ns.IsClassic) then
+
+			elseif (ns.IsCata) then
 				object:SetFrameLevel(object:GetParent():GetFrameLevel() + 2)
 			elseif (ns.IsRetail) then
 			end
 		end,
 		Disable = function(object)
-			if (ns.IsCata) then
+			if (ns.IsClassic) then
+			elseif (ns.IsCata) then
 			elseif (ns.IsRetail) then
 			end
 		end,
 		Update = function(object)
-			if (ns.IsCata) then
+			if (ns.IsClassic) then
+			elseif (ns.IsCata) then
 			elseif (ns.IsRetail) then
 			end
 		end
 	},
-	EyeClassicPvP = {
-		Enable = function(object)
-			MiniMapBattlefieldIcon:Show()
-			MiniMapBattlefieldBorder:Show()
-			BattlegroundShine:Show()
-			if (BattlefieldIconText) then BattlefieldIconText:Show() end
-		end,
-		Disable = function(object)
-			MiniMapBattlefieldIcon:Hide()
-			MiniMapBattlefieldBorder:Hide()
-			BattlegroundShine:Hide()
-			if (BattlefieldIconText) then BattlefieldIconText:Hide() end
-		end,
-		Update = function(object)
-			if (PVPBattleground_UpdateQueueStatus) then PVPBattleground_UpdateQueueStatus() end
-			BattlefieldFrame_UpdateStatus(false)
-		end
-	},
+	--EyeClassicPvP = {
+	--	Enable = function(object)
+	--		LFGMinimapFrameBorder:Show()
+	--		LFGMinimapFrameIcon:Show()
+	--		--MiniMapBattlefieldIcon:Show()
+	--		--MiniMapBattlefieldBorder:Show()
+	--		--BattlegroundShine:Show()
+	--		--if (BattlefieldIconText) then BattlefieldIconText:Show() end
+	--	end,
+	--	Disable = function(object)
+	--		LFGMinimapFrameBorder:Hide()
+	--		LFGMinimapFrameIcon:Hide()
+	--		--MiniMapBattlefieldIcon:Hide()
+	--		--MiniMapBattlefieldBorder:Hide()
+	--		--BattlegroundShine:Hide()
+	--		--if (BattlefieldIconText) then BattlefieldIconText:Hide() end
+	--	end,
+	--	Update = function(object)
+	--		--if (PVPBattleground_UpdateQueueStatus) then PVPBattleground_UpdateQueueStatus() end
+	--		BattlefieldFrame_UpdateStatus(false)
+	--	end
+	--},
 
 	-- AzeriteUI Objects
 	------------------------------------------
 	AzeriteEye = {
 		Enable = function(object)
-			if (ns.IsCata) then
+			if (ns.IsClassic) then
+				LFGMinimapFrame:SetParent(Minimap)
+				LFGMinimapFrame:SetFrameLevel(100)
+				LFGMinimapFrame:ClearAllPoints()
+				LFGMinimapFrame:SetPoint("BOTTOMLEFT", Minimap, 4, 2)
+				LFGMinimapFrame:SetHitRectInsets(-8, -8, -8, -8)
+				LFGMinimapFrameBorder:Hide()
+				LFGMinimapFrameIconTexture:Hide()
+			elseif (ns.IsCata) then
 				MiniMapLFGFrame:SetParent(Minimap)
 				MiniMapLFGFrame:SetFrameLevel(100)
 				MiniMapLFGFrame:ClearAllPoints()
@@ -193,7 +209,15 @@ local ObjectSnippets = {
 			end
 		end,
 		Disable = function(object)
-			if (ns.IsCata) then
+			if (ns.IsClassic) then
+				LFGMinimapFrame:SetParent(_G[ObjectOwners.Eye])
+				LFGMinimapFrame:SetFrameLevel(MinimapBackdrop:GetFrameLevel() + 2)
+				LFGMinimapFrame:ClearAllPoints()
+				LFGMinimapFrame:SetPoint("TOPLEFT", 33, -4)
+				LFGMinimapFrame:SetHitRectInsets(0, 0, 0, 0)
+				LFGMinimapFrameBorder:Show()
+				LFGMinimapFrameIconTexture:Show()
+			elseif (ns.IsCata) then
 				MiniMapLFGFrame:SetParent(_G[ObjectOwners.Eye])
 				MiniMapLFGFrame:SetFrameLevel(MinimapBackdrop:GetFrameLevel() + 2)
 				MiniMapLFGFrame:ClearAllPoints()
@@ -216,32 +240,32 @@ local ObjectSnippets = {
 		Update = function(object)
 		end
 	},
-	AzeriteEyeClassicPvP = {
-		Enable = function(object)
-			MiniMapBattlefieldFrame:SetFrameStrata("MEDIUM")
-			MiniMapBattlefieldFrame:SetFrameLevel(70) -- Minimap's XP button is 60
-			MiniMapBattlefieldFrame:ClearAllPoints()
-			MiniMapBattlefieldFrame:SetPoint("BOTTOMLEFT", Minimap, 4, 2)
-			MiniMapBattlefieldFrame:SetHitRectInsets(-8, -8, -8, -8)
-			MiniMapBattlefieldIcon:Hide()
-			MiniMapBattlefieldBorder:Hide()
-			BattlegroundShine:Hide()
-			if (BattlefieldIconText) then BattlefieldIconText:Hide() end
-		end,
-		Disable = function(object)
-			MiniMapBattlefieldFrame:SetFrameStrata(Minimap:GetFrameStrata())
-			MiniMapBattlefieldFrame:SetFrameLevel(Minimap:GetFrameLevel() + 1)
-			MiniMapBattlefieldFrame:ClearAllPoints()
-			MiniMapBattlefieldFrame:SetPoint("BOTTOMLEFT", Minimap, 13, -13)
-			MiniMapBattlefieldFrame:SetHitRectInsets(0, 0, 0, 0)
-			MiniMapBattlefieldIcon:Show()
-			MiniMapBattlefieldBorder:Show()
-			BattlegroundShine:Show()
-			if (BattlefieldIconText) then BattlefieldIconText:Show() end
-		end,
-		Update = function(object)
-		end
-	}
+	--AzeriteEyeClassicPvP = {
+	--	Enable = function(object)
+	--		MiniMapBattlefieldFrame:SetFrameStrata("MEDIUM")
+	--		MiniMapBattlefieldFrame:SetFrameLevel(70) -- Minimap's XP button is 60
+	--		MiniMapBattlefieldFrame:ClearAllPoints()
+	--		MiniMapBattlefieldFrame:SetPoint("BOTTOMLEFT", Minimap, 4, 2)
+	--		MiniMapBattlefieldFrame:SetHitRectInsets(-8, -8, -8, -8)
+	--		MiniMapBattlefieldIcon:Hide()
+	--		MiniMapBattlefieldBorder:Hide()
+	--		BattlegroundShine:Hide()
+	--		if (BattlefieldIconText) then BattlefieldIconText:Hide() end
+	--	end,
+	--	Disable = function(object)
+	--		MiniMapBattlefieldFrame:SetFrameStrata(Minimap:GetFrameStrata())
+	--		MiniMapBattlefieldFrame:SetFrameLevel(Minimap:GetFrameLevel() + 1)
+	--		MiniMapBattlefieldFrame:ClearAllPoints()
+	--		MiniMapBattlefieldFrame:SetPoint("BOTTOMLEFT", Minimap, 13, -13)
+	--		MiniMapBattlefieldFrame:SetHitRectInsets(0, 0, 0, 0)
+	--		MiniMapBattlefieldIcon:Show()
+	--		MiniMapBattlefieldBorder:Show()
+	--		BattlegroundShine:Show()
+	--		if (BattlefieldIconText) then BattlefieldIconText:Show() end
+	--	end,
+	--	Update = function(object)
+	--	end
+	--}
 }
 
 -- Element type of custom elements.
@@ -249,7 +273,7 @@ local ElementTypes = {
 	Backdrop = "Texture",
 	Border = "Texture",
 	AzeriteEye = "Texture",
-	AzeriteEyeClassicPvP = "Texture"
+	--AzeriteEyeClassicPvP = "Texture"
 }
 
 -- Mask textures for the supported shapes.
@@ -310,21 +334,21 @@ local Skins = {
 				Owner = "Eye",
 				DrawLayer = "BORDER",
 				DrawLevel = 2,
-				Path = GetMedia("group-finder-eye-green"),
+				Path = GetMedia("group-finder-eye-orange"),
 				Size = { 64, 64 },
 				Point = { "CENTER", 0, 0 },
 				Color = { .90, .95, 1 }
 			},
 			-- CATA: check
-			AzeriteEyeClassicPvP = (ns.IsClassic or ns.IsCata) and {
-				Owner = "EyeClassicPvP",
-				DrawLayer = "BORDER",
-				DrawLevel = 2,
-				Path = GetMedia("group-finder-eye-orange"),
-				Size = { 64, 64 },
-				Point = { "CENTER", 0, 0 },
-				Color = { .90, .95, 1 }
-			}
+			--AzeriteEyeClassicPvP = (ns.IsClassic or ns.IsCata) and {
+			--	Owner = "EyeClassicPvP",
+			--	DrawLayer = "BORDER",
+			--	DrawLevel = 2,
+			--	Path = GetMedia("group-finder-eye-orange"),
+			--	Size = { 64, 64 },
+			--	Point = { "CENTER", 0, 0 },
+			--	Color = { .90, .95, 1 }
+			--}
 		}
 	}
 }
@@ -972,6 +996,7 @@ MinimapMod.PostUpdatePositionAndScale = function(self)
 
 	-- TODO: Figure out all the elements I should rescale.
 	for name in next,{
+		LFGMinimapFrame = true, -- New Classic (and Cata?) Group Finder Eye
 		MiniMapBattlefieldFrame = true,
 		MiniMapLFGFrame = true,
 		QueueStatusButton = true
@@ -1070,8 +1095,8 @@ MinimapMod.InitializeObjectTables = function(self)
 		Objects.Clock = TimeManagerClockButton
 		Objects.Compass = MinimapCompassTexture
 		Objects.Difficulty = MiniMapInstanceDifficulty
-		Objects.Eye = MiniMapLFGFrame
-		Objects.EyeClassicPvP = MiniMapBattlefieldFrame
+		Objects.Eye = LFGMinimapFrame or MiniMapLFGFrame
+		Objects.EyeClassicPvP = LFGMinimapFrame or MiniMapBattlefieldFrame
 		Objects.Mail = MiniMapMailFrame
 		Objects.Tracking = MiniMapTracking
 		Objects.Zone = MinimapZoneTextButton
@@ -1087,8 +1112,8 @@ MinimapMod.InitializeObjectTables = function(self)
 		Objects.Clock = TimeManagerClockButton
 		Objects.Compass = MinimapCompassTexture
 		Objects.Difficulty = MiniMapInstanceDifficulty
-		Objects.Eye = MiniMapLFGFrame
-		Objects.EyeClassicPvP = MiniMapBattlefieldFrame
+		Objects.Eye = LFGMinimapFrame -- MinimapBackdrop
+		--Objects.EyeClassicPvP = LFGMinimapFrame or MiniMapBattlefieldFrame
 		Objects.Mail = MiniMapMailFrame
 		Objects.ToggleButton = MinimapToggleButton
 		Objects.Tracking = MiniMapTrackingFrame
@@ -1116,6 +1141,8 @@ MinimapMod.InitializeObjectTables = function(self)
 		ObjectOwners.ZoomIn = Minimap
 		ObjectOwners.ZoomOut = Minimap
 	end
+
+	--[[--
 
 	-- CATA: check
 	if (ns.IsCata) then
@@ -1155,6 +1182,8 @@ MinimapMod.InitializeObjectTables = function(self)
 		ObjectOwners.WorldMap = MinimapBackdrop
 	end
 
+	--]]--
+
 end
 
 MinimapMod.OnEvent = function(self, event, ...)
@@ -1166,6 +1195,10 @@ end
 
 MinimapMod.OnEnable = function(self)
 	LoadAddOn("Blizzard_TimeManager")
+
+	if (ns.IsClassic) then
+		LoadAddOn("Blizzard_GroupFinder_VanillaStyle")
+	end
 
 	-- Clean out deprecated settings
 	self.db.profile.useHalfClock = nil
