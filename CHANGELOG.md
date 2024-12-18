@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.2.194-Release] 2024-12-17
+## [5.2.195-Release] 2024-12-18
 ### Added
 - Added zhCN localization by 6er!
 
