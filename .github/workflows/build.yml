@@ -26,6 +26,6 @@ jobs:
           fetch-depth: 0  # gets git history for changelogs
 
       - name: Package
-        uses: BigWigsMods/packager@master
+        uses: BigWigsMods/packager@svn-action
         with:
           args: -m .pkgmeta
