@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.196-Release] 2024-12-18
+### Added
+- Added zhCN localization by 6er!
+
 ## [5.2.192-Release] 2024-12-04
 ### Fixed
 - Fixed the new Group Finder Eye in Classic Era.

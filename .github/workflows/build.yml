@@ -1,4 +1,4 @@
-name: Packager
+name: Package addon
 
 # we need to let GitHub know _when_ we want to release, typically only when we create a new tag.
 # this will target only tags, and not all pushes to the master branch.
@@ -14,18 +14,18 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      CF_API_KEY: ${{ secrets.CF_API_KEY }}
-      GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-      WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
+        CF_API_KEY: ${{ secrets.CF_API_KEY }}
+        GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+        WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
 
     steps:
 
-      - name: Clone project
+      - name: Checkout addon
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # gets git history for changelogs
 
-      - name: Package and release for Retail
-        uses: BigWigsMods/packager@v2
+      - name: Package
+        uses: BigWigsMods/packager@svn-action
         with:
           args: -m .pkgmeta
