@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 131
+local MINOR_VERSION = 132
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -2141,7 +2141,10 @@ function UpdateCooldown(self)
 
 	self.cooldown:SetDrawBling(self.cooldown:GetEffectiveAlpha() > 0.5)
 
-	if (locStart + locDuration) > (start + duration) then
+	local hasLocCooldown = locStart and locDuration and locStart > 0 and locDuration > 0
+	local hasCooldown = enable and start and duration and start > 0 and duration > 0
+	if hasLocCooldown and ((not hasCooldown) or ((locStart + locDuration) > (start + duration))) then
+	--if (locStart + locDuration) > (start + duration) then
 		if self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_LOSS_OF_CONTROL then
 			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge-LoC")
 			self.cooldown:SetSwipeColor(0.17, 0, 0)

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.132-Alpha] 2025-01-30
+### Fixed
+- [Retail] Fixed a bug with the newer format of button cooldowns in most vehicles.
+
 ## [1.0.131-Alpha] 2024-10-20
 - Various fixes for WoW Retail 11.0.0.
 
