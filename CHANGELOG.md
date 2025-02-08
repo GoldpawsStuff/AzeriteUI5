@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.198-Release] 2025-01-30
+- Updated for Retail client patch 11.0.7.
+
+### Fixed
+- [Retail] Fixed a bug causing an error message while using vehicles / overridebars.
+
 ## [5.2.196-Release] 2024-12-18
 ### Added
 - Added zhCN localization by 6er!
