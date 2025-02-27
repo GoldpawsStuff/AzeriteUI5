@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 132
+local MINOR_VERSION = 133
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -45,6 +45,7 @@ local WoWRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 local WoWClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
 local WoWBCC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 local WoWWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
+local WoWCata = (WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC)
 
 -- Ugly fix for 11.0.x.
 local GetNumAddOns = GetNumAddOns or C_AddOns and C_AddOns.GetNumAddOns
@@ -69,7 +70,7 @@ local MaxDpsIsEnabled = WoWRetail and IsAddOnEnabled("MaxDps")
 local ShouldInitializeMaxDps = MaxDpsIsEnabled
 
 -- Enable custom flyouts for WoW Retail
-local UseCustomFlyout = WoWRetail
+local UseCustomFlyout = WoWRetail or FlyoutButtonMixin
 
 local KeyBound = LibStub("LibKeyBound-1.0", true)
 local CBH = LibStub("CallbackHandler-1.0")
@@ -343,6 +344,11 @@ function lib:CreateButton(id, name, header, config)
 
 	button:SetAttribute("LABUseCustomFlyout", UseCustomFlyout)
 
+	-- nil out inherited functions from the flyout mixin, we override these in a metatable
+	if UseCustomFlyout then
+		button.GetPopupDirection = nil
+		button.IsPopupOpen = nil
+	end
 	-- initialize events
 	if InitializeEvents then
 		InitializeEventHandler()
@@ -351,7 +357,7 @@ function lib:CreateButton(id, name, header, config)
 	-- somewhat of a hack for the Flyout buttons to not error.
 	button.action = 0
 
-	-- support wow10
+	-- support wow10 (still needed?)
 	button:SetAttribute("checkselfcast", true)
 	button:SetAttribute("checkfocuscast", true)
 	button:SetAttribute("checkmouseovercast", true)
@@ -2416,6 +2422,32 @@ if ActionButton_UpdateFlyout then
 			end
 		end
 		self.FlyoutArrow:Hide()
+	end
+elseif FlyoutButtonMixin and UseCustomFlyout then
+	function Generic:GetPopupDirection()
+		return self:GetAttribute("flyoutDirection") or "UP"
+	end
+
+	function Generic:IsPopupOpen()
+		return (lib.flyoutHandler and lib.flyoutHandler:IsShown() and lib.flyoutHandler:GetParent() == self)
+	end
+
+	function UpdateFlyout(self, isButtonDownOverride)
+		self.BorderShadow:Hide()
+		if self._state_type == "action" then
+			-- based on ActionButton_UpdateFlyout in ActionButton.lua
+			local actionType = GetActionInfo(self._state_action)
+			if actionType == "flyout" then
+				self.Arrow:Show()
+				self:UpdateArrowTexture()
+				self:UpdateArrowRotation()
+				self:UpdateArrowPosition()
+				-- return here, otherwise flyout is hidden
+				return
+			end
+		end
+
+		self.Arrow:Hide()
 	end
 else
 	function UpdateFlyout(self, isButtonDownOverride)
