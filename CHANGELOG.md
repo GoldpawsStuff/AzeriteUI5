@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.200-Release] 2025-03-01
+- Fixes for Retail client patch 11.1.0.
+
 ## [5.2.199-Release] 2025-02-26
 - Updated for Retail client patch 11.1.0.
 

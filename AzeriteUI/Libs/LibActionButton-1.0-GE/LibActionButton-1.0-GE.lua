@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 133
+local MINOR_VERSION = 134
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -255,7 +255,7 @@ function lib:CreateButton(id, name, header, config)
 		KeyBound = LibStub("LibKeyBound-1.0", true)
 	end
 
-	local button = setmetatable(CreateFrame("CheckButton", name, header, "SecureActionButtonTemplate, ActionButtonTemplate"), Generic_MT)
+	local button = setmetatable(CreateFrame("CheckButton", name, header, "ActionButtonTemplate, SecureActionButtonTemplate"), Generic_MT)
 	button:RegisterForDrag("LeftButton", "RightButton")
 	if WoWRetail then
 		button:RegisterForClicks("AnyDown", "AnyUp")
@@ -272,7 +272,7 @@ function lib:CreateButton(id, name, header, config)
 
 	-- Hide unused elements
 	-- *Various elements removed in 11.0.0.
-	if (button.AutoCastShine) then
+	if button.AutoCastShine then
 		button.AutoCastShine:SetParent(Hider)
 	end
 	--button.Border:SetParent(Hider)
@@ -290,6 +290,10 @@ function lib:CreateButton(id, name, header, config)
 		button.SpellCastAnimFrame:SetParent(Hider)
 		button.TargetReticleAnimFrame:SetParent(Hider)
 		button.CooldownFlash:SetParent(Hider)
+
+		if button.BorderShadow then
+			button.BorderShadow:SetParent(Hider)
+		end
 
 		-- Block BaseActionButtonMixin
 		button.SlotArt = nil
@@ -1159,14 +1163,23 @@ function Generic:OnEnter()
 	self.isMouseOver = true
 
 	UpdateUsable(self)
-	UpdateFlyout(self)
+	if FlyoutButtonMixin then
+		FlyoutButtonMixin.OnEnter(self)
+	else
+		UpdateFlyout(self)
+	end
+
 end
 
 function Generic:OnLeave()
 	self.isMouseOver = nil
 
 	UpdateUsable(self)
-	UpdateFlyout(self)
+	if FlyoutButtonMixin then
+		FlyoutButtonMixin.OnLeave(self)
+	else
+		UpdateFlyout(self)
+	end
 
 	if GameTooltip:IsForbidden() then return end
 	GameTooltip:Hide()
