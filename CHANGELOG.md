@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.201-Release] 2025-03-07
+### Added
+- Added support for the nameplate addon BetterBlizzPlates.
+
 ## [5.2.200-Release] 2025-03-01
 ### Fixed
 - Actionbars should function in Retail client patch 11.1.0 now.
