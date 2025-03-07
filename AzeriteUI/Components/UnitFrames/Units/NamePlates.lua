@@ -1146,6 +1146,7 @@ end
 
 NamePlatesMod.CheckForConflicts = function(self)
 	for i,addon in next,{
+		"BetterBlizzPlates",
 		"ClassicPlatesPlus",
 		"Kui_Nameplates",
 		"NamePlateKAI",
