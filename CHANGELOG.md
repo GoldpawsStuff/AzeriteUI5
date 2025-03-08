@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.203-Release] 2025-03-08
+### Fixed
+- Actionbuttons are no longer desaturated when driving in the Undermine.
+
 ## [5.2.202-Release] 2025-03-08
 ### Fixed
 - Actionbutton tooltips should be working again.

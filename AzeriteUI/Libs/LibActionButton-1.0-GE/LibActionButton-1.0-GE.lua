@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 134
+local MINOR_VERSION = 135
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -1991,8 +1991,8 @@ end
 
 function UpdateUsable(self)
 
-	-- Turn off the bars when dead, ghost or mounted (except when Dragonriding)
-	if UnitIsDeadOrGhost("player") or (IsMounted() and not self.isDragonRiding) then
+	-- Turn off the bars when dead, ghost or mounted (except when Dragonriding or driving in the Undermine)
+	if UnitIsDeadOrGhost("player") or (IsMounted() and not self.isDragonRiding and not self.hasOverrideBar) then
 		self.icon:SetDesaturation(1)
 		self.icon:SetVertexColor(unpack(self.config.colors.disabled))
 
