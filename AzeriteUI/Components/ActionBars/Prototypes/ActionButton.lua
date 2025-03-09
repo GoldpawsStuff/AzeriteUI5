@@ -51,13 +51,8 @@ ns.ActionButton.Create = function(id, name, header, buttonConfig)
 
 	local button = LAB:CreateButton(id, name, header, buttonConfig)
 
-	if (not button.OnEnter) then
-		button.OnEnter = button:GetScript("OnEnter")
-	end
-
-	if (not button.OnLeave) then
-		button.OnLeave = button:GetScript("OnLeave")
-	end
+	button.OnEnter = button:GetScript("OnEnter")
+	button.OnLeave = button:GetScript("OnLeave")
 
 	button:SetScript("OnEnter", onEnter)
 	button:SetScript("OnLeave", onLeave)
