@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.135-Alpha] 2025-04-17
+### Fixed
+- [Classic] Fixed bugs.
+
 ## [1.0.134-Alpha] 2025-03-01
 ### Fixed
 - [Retail] Fixed a breaking bug in 11.1.0
