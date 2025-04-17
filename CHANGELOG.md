@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.2.204-Release] 2025-04-17
+### Fixed
+- Various actionbutton fixes for Classic Era and SoD.
+
 ## [5.2.203-Release] 2025-03-08
 ### Fixed
 - Actionbuttons are no longer desaturated when driving in the Undermine.

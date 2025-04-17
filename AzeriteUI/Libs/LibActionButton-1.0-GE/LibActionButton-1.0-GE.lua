@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
 
 local MAJOR_VERSION = "LibActionButton-1.0-GE"
-local MINOR_VERSION = 135
+local MINOR_VERSION = 135 -- 121
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
@@ -47,6 +47,7 @@ local WoWBCC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 local WoWWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
 local WoWCata = (WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC)
 
+--[[-- GE Block Start --]]--
 -- Ugly fix for 11.0.x.
 local GetNumAddOns = GetNumAddOns or C_AddOns and C_AddOns.GetNumAddOns
 local GetAddOnInfo = GetAddOnInfo or C_AddOns and C_AddOns.GetAddOnInfo
@@ -63,24 +64,50 @@ local IsAddOnEnabled = function(addonName)
 	end
 end
 
+
+-----------------------------------------------------------
+--- utility
+
+local function merge(target, source, default)
+	for k,v in pairs(default) do
+		if type(v) ~= "table" then
+			if source and source[k] ~= nil then
+				target[k] = source[k]
+			else
+				target[k] = v
+			end
+		else
+			if type(target[k]) ~= "table" then target[k] = {} else wipe(target[k]) end
+			merge(target[k], type(source) == "table" and source[k], v)
+		end
+	end
+	return target
+end
+
 -- Enable integration with MaxDps(Retail)
 local MaxDpsIsEnabled = WoWRetail and IsAddOnEnabled("MaxDps")
 
 -- Set one-time flags used to prehook methods
 local ShouldInitializeMaxDps = MaxDpsIsEnabled
 
--- Enable custom flyouts for WoW Retail
-local UseCustomFlyout = WoWRetail or FlyoutButtonMixin
-
-local KeyBound = LibStub("LibKeyBound-1.0", true)
-local CBH = LibStub("CallbackHandler-1.0")
-
-lib.eventFrame = lib.eventFrame or CreateFrame("Frame")
-lib.eventFrame:UnregisterAllEvents()
+local Hider = lib.hiderFrame
+local InitializeMaxDpsIntegration, MaxDps_GetTexture, MaxDps_Glow, MaxDps_HideGlow, MaxDps_UpdateButtonGlow
 
 lib.hiderFrame = lib.hiderFrame or CreateFrame("Frame")
 lib.hiderFrame:SetAllPoints()
 lib.hiderFrame:Hide()
+--[[-- GE Block End --]]--
+
+-- Enable custom flyouts for WoW Retail
+local UseCustomFlyout = WoWRetail or (FlyoutButtonMixin and not ActionButton_UpdateFlyout)
+
+local KeyBound = LibStub("LibKeyBound-1.0", true)
+local CBH = LibStub("CallbackHandler-1.0")
+--local LBG = LibStub("LibButtonGlow-1.0", true)
+--local Masque = LibStub("Masque", true)
+
+lib.eventFrame = lib.eventFrame or CreateFrame("Frame")
+lib.eventFrame:UnregisterAllEvents()
 
 lib.buttonRegistry = lib.buttonRegistry or {}
 lib.activeButtons = lib.activeButtons or {}
@@ -92,6 +119,8 @@ lib.NumChargeCooldowns = lib.NumChargeCooldowns or 0
 
 lib.FlyoutInfo = lib.FlyoutInfo or {}
 lib.FlyoutButtons = lib.FlyoutButtons or {}
+
+--lib.ACTION_HIGHLIGHT_MARKS = lib.ACTION_HIGHLIGHT_MARKS or setmetatable({}, { __index = ACTION_HIGHLIGHT_MARKS })
 
 lib.callbacks = lib.callbacks or CBH:New(lib)
 
@@ -128,9 +157,7 @@ local type_meta_map = {
 
 local ButtonRegistry, ActiveButtons, ActionButtons, NonActionButtons = lib.buttonRegistry, lib.activeButtons, lib.actionButtons, lib.nonActionButtons
 
-local Hider = lib.hiderFrame
-
-local Update, UpdateButtonState, UpdateUsable, UpdateCount, UpdateCooldown, UpdateTooltip, UpdateSpellHighlight
+local Update, UpdateButtonState, UpdateUsable, UpdateCount, UpdateCooldown, UpdateTooltip, UpdateNewAction, UpdateSpellHighlight, ClearNewActionHighlight
 local StartFlash, StopFlash, UpdateFlash, UpdateHotkeys, UpdateRangeTimer, UpdateOverlayGlow
 local UpdateFlyout, ShowGrid, HideGrid, UpdateGrid, SetupSecureSnippets, WrapOnClick
 local ShowOverlayGlow, HideOverlayGlow
@@ -139,8 +166,6 @@ local EndChargeCooldown
 local GetFlyoutHandler
 
 local InitializeEventHandler, OnEvent, ForAllButtons, OnUpdate
-
-local InitializeMaxDpsIntegration, MaxDps_GetTexture, MaxDps_Glow, MaxDps_HideGlow, MaxDps_UpdateButtonGlow
 
 local function GameTooltip_GetOwnerForbidden()
 	if GameTooltip:IsForbidden() then
@@ -176,72 +201,53 @@ local DefaultConfig = {
 			font = {
 				font = false, -- "Fonts\\ARIALN.TTF",
 				size = 14, -- WoWRetail and 14 or 13,
-				flags = "OUTLINE"
+				flags = "OUTLINE",
 			},
 			color = { 0.75, 0.75, 0.75 },
 			position = {
 				anchor = "TOPRIGHT",
 				relAnchor = "TOPRIGHT",
 				offsetX = -2,
-				offsetY = -4
+				offsetY = -4,
 			},
-			justifyH = "RIGHT"
+			justifyH = "RIGHT",
 		},
 		count = {
 			font = {
 				font = false, -- "Fonts\\ARIALN.TTF",
 				size = 16,
-				flags = "OUTLINE"
+				flags = "OUTLINE",
 			},
 			color = { 1, 1, 1 },
 			position = {
 				anchor = "BOTTOMRIGHT",
 				relAnchor = "BOTTOMRIGHT",
 				offsetX = -2,
-				offsetY = 4
+				offsetY = 4,
 			},
-			justifyH = "RIGHT"
+			justifyH = "RIGHT",
 		},
 		macro = {
 			font = {
 				font = false, -- "Fonts\\FRIZQT__.TTF",
 				size = 10,
-				flags = "OUTLINE"
+				flags = "OUTLINE",
 			},
 			color = { 1, 1, 1 },
 			position = {
 				anchor = "BOTTOM",
 				relAnchor = "BOTTOM",
 				offsetX = 0,
-				offsetY = 2
+				offsetY = 2,
 			},
-			justifyH = "CENTER"
-		}
-	}
+			justifyH = "CENTER",
+		},
+	},
 }
 
------------------------------------------------------------
---- utility
-
-local function merge(target, source, default)
-	for k,v in pairs(default) do
-		if type(v) ~= "table" then
-			if source and source[k] ~= nil then
-				target[k] = source[k]
-			else
-				target[k] = v
-			end
-		else
-			if type(target[k]) ~= "table" then target[k] = {} else wipe(target[k]) end
-			merge(target[k], type(source) == "table" and source[k], v)
-		end
-	end
-	return target
-end
-
 --- Create a new action button.
--- @param id Internal id of the button (not used by LibActionButton-1.0-GE, only for tracking inside the calling addon)
--- @param name Name of the button frame to be created (not used by LibActionButton-1.0-GE aside from naming the frame)
+-- @param id Internal id of the button (not used by LibActionButton-1.0, only for tracking inside the calling addon)
+-- @param name Name of the button frame to be created (not used by LibActionButton-1.0 aside from naming the frame)
 -- @param header Header that drives these action buttons (if any)
 function lib:CreateButton(id, name, header, config)
 	if type(name) ~= "string" then
@@ -263,6 +269,7 @@ function lib:CreateButton(id, name, header, config)
 		button:RegisterForClicks("AnyUp")
 	end
 
+	--[[-- GE Block Start --]]--
 	-- Blizzard cross-flavor mapping
 	if not WoWRetail then
 		button.PushedTexture = button:GetPushedTexture()
@@ -302,6 +309,7 @@ function lib:CreateButton(id, name, header, config)
 		-- Remove default mask texture
 		button.icon:RemoveMaskTexture(button.IconMask)
 	end
+	--[[-- GE Block End --]]--
 
 	-- Frame Scripts
 	button:SetScript("OnEnter", Generic.OnEnter)
@@ -331,6 +339,7 @@ function lib:CreateButton(id, name, header, config)
 	-- Store the button in the registry, needed for event and OnUpdate handling
 	ButtonRegistry[button] = true
 
+	--[[-- GE Block Start --]]--
 	-- inherit header's settings
 	if header.config then
 		button.config = config or {}
@@ -338,6 +347,7 @@ function lib:CreateButton(id, name, header, config)
 		button.config.dimWhenResting = header.config.dimWhenResting
 		button.config.dimWhenInactive = header.config.dimWhenInactive
 	end
+	--[[-- GE Block End --]]--
 
 	-- setup button configuration
 	button:UpdateConfig(config)
@@ -353,6 +363,7 @@ function lib:CreateButton(id, name, header, config)
 		button.GetPopupDirection = nil
 		button.IsPopupOpen = nil
 	end
+
 	-- initialize events
 	if InitializeEvents then
 		InitializeEventHandler()
@@ -361,10 +372,12 @@ function lib:CreateButton(id, name, header, config)
 	-- somewhat of a hack for the Flyout buttons to not error.
 	button.action = 0
 
+	--[[-- GE Block Start --]]--
 	-- support wow10 (still needed?)
 	button:SetAttribute("checkselfcast", true)
 	button:SetAttribute("checkfocuscast", true)
 	button:SetAttribute("checkmouseovercast", true)
+	--[[-- GE Block End --]]--
 
 	lib.callbacks:Fire("OnButtonCreated", button)
 
@@ -748,7 +761,7 @@ end
 
 function Generic:DisableDragNDrop(flag)
 	if InCombatLockdown() then
-		error(MAJOR_VERSION..": You can only toggle DragNDrop out of combat!", 2)
+		error("LibActionButton-1.0: You can only toggle DragNDrop out of combat!", 2)
 	end
 	if flag then
 		self:SetAttribute("LABdisableDragNDrop", true)
@@ -757,11 +770,22 @@ function Generic:DisableDragNDrop(flag)
 	end
 end
 
-function Generic:AddToButtonFacade()
+function Generic:AddToButtonFacade(group)
+--	if type(group) ~= "table" or type(group.AddButton) ~= "function" then
+--		error("LibActionButton-1.0:AddToButtonFacade: You need to supply a proper group to use!", 2)
+--	end
+--	group:AddButton(self)
+--	self.LBFSkinned = true
 end
 
-function Generic:AddToMasque()
+function Generic:AddToMasque(group)
+--	if type(group) ~= "table" or type(group.AddButton) ~= "function" then
+--		error("LibActionButton-1.0:AddToMasque: You need to supply a proper group to use!", 2)
+--	end
+--	group:AddButton(self, nil, "Action")
+--	self.MasqueSkinned = true
 end
+
 
 function Generic:UpdateAlpha()
 	UpdateCooldown(self)
@@ -1160,22 +1184,30 @@ function Generic:OnEnter()
 		KeyBound:Set(self)
 	end
 
-	self.isMouseOver = true
+	--if self._state_type == "action" and self.NewActionTexture then
+	--	ClearNewActionHighlight(self._state_action, false, false)
+	--	UpdateNewAction(self)
+	--end
 
+	--[[-- GE Block Start --]]--
+	self.isMouseOver = true
 	UpdateUsable(self)
-	if FlyoutButtonMixin then
+	--[[-- GE Block End --]]--
+
+	if FlyoutButtonMixin and UseCustomFlyout then
 		FlyoutButtonMixin.OnEnter(self)
 	else
 		UpdateFlyout(self)
 	end
-
 end
 
 function Generic:OnLeave()
+	--[[-- GE Block Start --]]--
 	self.isMouseOver = nil
-
 	UpdateUsable(self)
-	if FlyoutButtonMixin then
+	--[[-- GE Block End --]]--
+
+	if FlyoutButtonMixin and UseCustomFlyout then
 		FlyoutButtonMixin.OnLeave(self)
 	else
 		UpdateFlyout(self)
@@ -1233,6 +1265,10 @@ function Generic:PostClick(button, down)
 	end
 	self._receiving_drag = nil
 
+	--if self._state_type == "action" and lib.ACTION_HIGHLIGHT_MARKS[self._state_action] then
+	--	ClearNewActionHighlight(self._state_action, false, false)
+	--end
+
 	if down and IsMouseButtonDown() then
 		self:RegisterEvent("GLOBAL_MOUSE_UP")
 	end
@@ -1274,7 +1310,7 @@ end
 
 function Generic:UpdateConfig(config)
 	if config and type(config) ~= "table" then
-		error(MAJOR_VERSION..": UpdateConfig requires a valid configuration!", 2)
+		error("LibActionButton-1.0: UpdateConfig requires a valid configuration!", 2)
 	end
 	local oldconfig = self.config
 	self.config = {}
@@ -1374,6 +1410,7 @@ function InitializeEventHandler()
 		lib.eventFrame:RegisterEvent("SPELL_FLYOUT_UPDATE")
 	end
 
+	--[[ GE Custom Start ]]--
 	lib.eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 	lib.eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 	lib.eventFrame:RegisterEvent("PLAYER_UPDATE_RESTING")
@@ -1383,6 +1420,7 @@ function InitializeEventHandler()
 	elseif MaxDpsIsEnabled then
 		lib.eventFrame:RegisterEvent("ADDON_LOADED")
 	end
+	--[[ GE Custom End ]]--
 
 	lib.eventFrame:Show()
 	lib.eventFrame:SetScript("OnUpdate", OnUpdate)
@@ -1392,6 +1430,7 @@ function InitializeEventHandler()
 	end
 end
 
+--[[ GE Custom Start ]]--
 function InitializeMaxDpsIntegration()
 
 	local MaxDps = MaxDps
@@ -1464,6 +1503,7 @@ function InitializeMaxDpsIntegration()
 
 	UpdateButtonGlowEvents(MaxDps)
 end
+--[[ GE Custom End ]]--
 
 local _lastFormUpdate = GetTime()
 function OnEvent(frame, event, arg1, ...)
@@ -1487,9 +1527,11 @@ function OnEvent(frame, event, arg1, ...)
 			end
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" or event == "UPDATE_VEHICLE_ACTIONBAR" then
+		--[[ GE Custom Start ]]--
 		lib.isresting = IsResting()
 		lib.hastarget = UnitExists("target")
 		lib.incombat = UnitAffectingCombat("player")
+		--[[ GE Custom End ]]--
 		ForAllButtons(Update)
 	elseif event == "UPDATE_SHAPESHIFT_FORM" then
 		-- XXX: throttle these updates since Blizzard broke the event and its now extremely spammy in some clients
@@ -1506,9 +1548,11 @@ function OnEvent(frame, event, arg1, ...)
 			if texture then
 				button.icon:SetTexture(texture)
 			end
+			--[[ GE Custom Start ]]--
 			if MaxDpsIsEnabled then
 				UpdateOverlayGlow(button)
 			end
+			--[[ GE Custom End ]]--
 		end
 	elseif event == "ACTIONBAR_PAGE_CHANGED" or event == "UPDATE_BONUS_ACTIONBAR" then
 		-- TODO: Are these even needed?
@@ -1516,12 +1560,12 @@ function OnEvent(frame, event, arg1, ...)
 		ShowGrid()
 	elseif event == "ACTIONBAR_HIDEGRID" then
 		HideGrid()
-	elseif event == "UPDATE_BINDINGS" then
+	elseif event == "UPDATE_BINDINGS" or event == "GAME_PAD_ACTIVE_CHANGED" then
 		ForAllButtons(UpdateHotkeys)
 	elseif event == "PLAYER_TARGET_CHANGED" then
-		lib.hastarget = UnitExists("target")
+		lib.hastarget = UnitExists("target") --[[ GE Custom ]]--
 		UpdateRangeTimer()
-		ForAllButtons(UpdateUsable)
+		ForAllButtons(UpdateUsable) --[[ GE Custom ]]--
 	elseif (event == "ACTIONBAR_UPDATE_STATE") or
 		((event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE") and (arg1 == "player")) or
 		((event == "COMPANION_UPDATE") and (arg1 == "MOUNT")) then
@@ -1650,6 +1694,7 @@ function OnEvent(frame, event, arg1, ...)
 		end
 	elseif event == "SPELL_UPDATE_ICON" then
 		ForAllButtons(Update, true)
+	--[[ GE Custom Start ]]--
 	elseif event == "PLAYER_REGEN_DISABLED" then
 		lib.incombat = true
 		ForAllButtons(UpdateUsable)
@@ -1666,6 +1711,7 @@ function OnEvent(frame, event, arg1, ...)
 		if not ShouldInitializeMaxDps then
 			lib.eventFrame:UnregisterEvent("ADDON_LOADED")
 		end
+	--[[ GE Custom End ]]--
 	end
 end
 
@@ -1697,7 +1743,7 @@ function OnUpdate(_, elapsed)
 					elseif button.config.outOfRangeColoring == "hotkey" then
 						local hotkey = button.HotKey
 						if hotkey:GetText() == RANGE_INDICATOR then
-							if inRange == false and not self.config.hideElements.hotkey then
+							if inRange == false and not self.config.hideElements.hotkey then --[[ GE Custom ]]--
 								hotkey:Show()
 							else
 								hotkey:Hide()
@@ -1741,6 +1787,7 @@ function HideGrid()
 	end
 	if gridCounter == 0 then
 		for button in next, ButtonRegistry do
+			--[[ GE Custom ]]--
 			-- Using GetTexture instead of HasAction,
 			-- as the latter fires as almost always true in vehicles,
 			-- which seriously messes with our attempts to hide empty buttons.
@@ -1754,7 +1801,7 @@ end
 function UpdateGrid(self)
 	if self.config.showGrid then
 		self:SetAlpha(1.0)
-
+	--[[ GE Custom ]]--
 	-- Using GetTexture instead of HasAction,
 	-- as the latter fires as almost always true in vehicles,
 	-- which seriously messes with our attempts to hide empty buttons.
@@ -1828,6 +1875,7 @@ function Generic:ClearBindings()
 	lib.callbacks:Fire("OnKeybindingChanged", self, nil)
 end
 
+--[[ GE Custom Start ]]--
 -----------------------------------------------------------
 --- button styling
 
@@ -1845,7 +1893,7 @@ function Generic:HideHighlightTexture()
 	self:SetHighlightTexture("")
 	self:GetHighlightTexture():Hide()
 end
-
+--[[ GE Custom End ]]--
 
 -----------------------------------------------------------
 --- button management
@@ -1865,12 +1913,11 @@ function Generic:UpdateAction(force)
 end
 
 function Update(self)
-
+	--[[ GE Custom ]]--
 	-- Using GetTexture instead of HasAction,
 	-- as the latter fires as almost always true in vehicles,
 	-- which seriously messes with our attempts to hide empty buttons.
 	local texture = self:GetTexture()
-
 	if texture then
 		ActiveButtons[self] = true
 		if self._state_type == "action" then
@@ -1904,14 +1951,22 @@ function Update(self)
 		end
 	end
 
+	-- Add a green border if button is an equipped item
+	--if self:IsEquipped() and not self.config.hideElements.equipped then
+	--	self.Border:SetVertexColor(0, 1.0, 0, 0.35)
+	--	self.Border:Show()
+	--else
+	--	self.Border:Hide()
+	--end
+
+	--[[ GE Custom Start ]]--
 	-- Show an optional equipped texture for equipped items
-	if self.Equipped then
-		if self:IsEquipped() and not self.config.hideElements.equipped then
-			self.Equipped:Show()
-		else
-			self.Equipped:Hide()
-		end
+	if self.Equipped and self:IsEquipped() and not self.config.hideElements.equipped then
+		self.Equipped:Show()
+	elseif self.Equipped then
+		self.Equipped:Hide()
 	end
+	--[[ GE Custom End ]]--
 
 	-- Update Action Text
 	if not self:IsConsumableOrStackable() then
@@ -1919,36 +1974,85 @@ function Update(self)
 	else
 		self.Name:SetText("")
 	end
+	
+	-- Update icon and hotkey
+	--local texture = self:GetTexture()
 
 	-- Zone ability button handling
 	self.zoneAbilityDisabled = false
-
-	-- This conflicts with UpdateUsable now.
-	-- Why is it here?
-	--self.icon:SetDesaturated(false)
+	--self.icon:SetDesaturated(false) --[[ GE Custom ]]--
 
 	if texture then
 		self.icon:SetTexture(texture)
 		self.icon:Show()
 		self.rangeTimer = - 1
+		--if WoWRetail then
+		--	if not self.MasqueSkinned then
+		--		self.SlotBackground:Hide()
+		--		if self.config.hideElements.border then
+		--			self.NormalTexture:SetTexture()
+		--			self.icon:RemoveMaskTexture(self.IconMask)
+		--			self.HighlightTexture:SetSize(52, 51)
+		--			self.HighlightTexture:SetPoint("TOPLEFT", self, "TOPLEFT", -2.5, 2.5)
+		--			self.CheckedTexture:SetSize(52, 51)
+		--			self.CheckedTexture:SetPoint("TOPLEFT", self, "TOPLEFT", -2.5, 2.5)
+		--			self.cooldown:ClearAllPoints()
+		--			self.cooldown:SetAllPoints()
+		--		else
+		--			self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow")
+		--			self.icon:AddMaskTexture(self.IconMask)
+		--			self.HighlightTexture:SetSize(46, 45)
+		--			self.HighlightTexture:SetPoint("TOPLEFT")
+		--			self.CheckedTexture:SetSize(46, 45)
+		--			self.CheckedTexture:SetPoint("TOPLEFT")
+		--			self.cooldown:ClearAllPoints()
+		--			self.cooldown:SetPoint("TOPLEFT", self, "TOPLEFT", 3, -2)
+		--			self.cooldown:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -3, 3)
+		--		end
+		--	end
+		--else
+		--	self:SetNormalTexture("Interface\\Buttons\\UI-Quickslot2")
+		--	if not self.LBFSkinned and not self.MasqueSkinned then
+		--		self.NormalTexture:SetTexCoord(0, 0, 0, 0)
+		--	end
+		--end
 	else
 		self.icon:Hide()
-		self.icon:SetDesaturation(0)
+		self.icon:SetDesaturation(0) --[[ GE Custom ]]--
 		self.cooldown:Hide()
 		self.rangeTimer = nil
 		if self.HotKey:GetText() == RANGE_INDICATOR then
 			self.HotKey:Hide()
-
 		else
 			self.HotKey:SetVertexColor(unpack(self.config.text.hotkey.color))
 		end
+		--if WoWRetail then
+		--	if not self.MasqueSkinned then
+		--		self.SlotBackground:Show()
+		--		if self.config.hideElements.borderIfEmpty then
+		--			self.NormalTexture:SetTexture()
+		--		else
+		--			self:SetNormalAtlas("UI-HUD-ActionBar-IconFrame-AddRow")
+		--		end
+		--	end
+		--else
+		--	self:SetNormalTexture("Interface\\Buttons\\UI-Quickslot")
+		--	if not self.LBFSkinned and not self.MasqueSkinned then
+		--		self.NormalTexture:SetTexCoord(-0.15, 1.15, -0.15, 1.17)
+		--	end
+		--end
 	end
 
 	self:UpdateLocal()
 
 	UpdateCount(self)
+
 	UpdateFlyout(self)
+
 	UpdateOverlayGlow(self)
+
+	--UpdateNewAction(self)
+
 	UpdateSpellHighlight(self)
 
 	if GameTooltip_GetOwnerForbidden() == self then
@@ -1969,9 +2073,11 @@ function Update(self)
 	lib.callbacks:Fire("OnButtonUpdate", self)
 end
 
+--[[ GE Custom Start ]]--
 function Generic:ForceUpdate()
 	Update(self)
 end
+--[[ GE Custom End ]]--
 
 function Generic:UpdateLocal()
 -- dummy function the other button types can override for special updating
@@ -1983,9 +2089,6 @@ function UpdateButtonState(self)
 	else
 		self:SetChecked(false)
 	end
-
-	--UpdateOverlayGlow(self)
-
 	lib.callbacks:Fire("OnButtonState", self)
 end
 
@@ -2068,12 +2171,12 @@ function UpdateCount(self)
 		if count > (self.maxDisplayCount or 9999) then
 			self.Count:SetText("*")
 		else
-			self.Count:SetText(count > 1 and count or "") --[[-- [GE-Fix]: Hide when there's only one item --]]--
+			self.Count:SetText(count > 1 and count or "") --[[-- GE Custom --]]--
 		end
 	else
 		local charges, maxCharges, _chargeStart, _chargeDuration = self:GetCharges()
 		if charges and maxCharges and maxCharges > 1 then
-			self.Count:SetText(charges > 0 and charges or "") --[[-- [GE-Fix]: Hide when there are zero charges --]]--
+			self.Count:SetText(charges > 0 and charges or "") --[[-- GE Custom --]]--
 		else
 			self.Count:SetText("")
 		end
@@ -2106,15 +2209,21 @@ local function StartChargeCooldown(parent, chargeStart, chargeDuration, chargeMo
 		cooldown.parent = parent
 	end
 
+	-- set cooldown
 	parent.chargeCooldown:SetDrawBling(parent.chargeCooldown:GetEffectiveAlpha() > 0.5)
 
+	--[[ GE Custom Start ]]--
 	if parent.UpdateCharge then
 		parent:UpdateCharge()
 	end
+	--[[ GE Custom End ]]--
 
-	-- set cooldown
 	CooldownFrame_Set(parent.chargeCooldown, chargeStart, chargeDuration, true, true, chargeModRate)
 
+	-- update charge cooldown skin when masque is used
+	--if Masque and Masque.UpdateCharge then
+	--	Masque:UpdateCharge(parent)
+	--end
 	if not chargeStart or chargeStart == 0 then
 		EndChargeCooldown(parent.chargeCooldown)
 	end
@@ -2163,7 +2272,6 @@ function UpdateCooldown(self)
 	local hasLocCooldown = locStart and locDuration and locStart > 0 and locDuration > 0
 	local hasCooldown = enable and start and duration and start > 0 and duration > 0
 	if hasLocCooldown and ((not hasCooldown) or ((locStart + locDuration) > (start + duration))) then
-	--if (locStart + locDuration) > (start + duration) then
 		if self.cooldown.currentCooldownType ~= COOLDOWN_TYPE_LOSS_OF_CONTROL then
 			self.cooldown:SetEdgeTexture("Interface\\Cooldown\\edge-LoC")
 			self.cooldown:SetSwipeColor(0.17, 0, 0)
@@ -2181,7 +2289,7 @@ function UpdateCooldown(self)
 			self.cooldown:SetHideCountdownNumbers(false)
 			self.cooldown.currentCooldownType = COOLDOWN_TYPE_NORMAL
 		end
-		if locStart > 0 then
+		if hasLocCooldown then
 			self.cooldown:SetScript("OnCooldownDone", OnCooldownDone)
 		end
 
@@ -2239,9 +2347,50 @@ function UpdateHotkeys(self)
 	end
 end
 
------------------------------------------------------------
---- button custom activation alerts
+function ShowOverlayGlow(self)
+	--if LBG then
+	--	LBG.ShowOverlayGlow(self)
+	--end
+	if self.customSpellActivationIsActive then
+		self.queueSpellActivationUpdate = true
+		return
+	end
+	self.queueSpellActivationUpdate = nil
+	if self.CustomSpellActivationAlert then
+		self.CustomSpellActivationAlert:SetVertexColor(249/255, 188/255, 65/255)
+		self.CustomSpellActivationAlert:Show()
+	end
+end
 
+function HideOverlayGlow(self)
+	--if LBG then
+	--	LBG.HideOverlayGlow(self)
+	--end
+	if self.customSpellActivationIsActive then
+		self.queueSpellActivationUpdate = true
+		return
+	end
+	self.queueSpellActivationUpdate = nil
+	if self.CustomSpellActivationAlert then
+		self.CustomSpellActivationAlert:Hide()
+	end
+end
+
+function UpdateOverlayGlow(self)
+	if self.customSpellActivationIsActive then
+		self.queueSpellActivationUpdate = true
+		return
+	end
+	local spellId = self:GetSpellId()
+	if spellId and IsSpellOverlayed(spellId) then
+		ShowOverlayGlow(self)
+	else
+		HideOverlayGlow(self)
+	end
+end
+
+--[[ GE Custom Start ]]--
+-----------------------------------------------------------
 function Generic:SetSpellActivationTexture(texture)
 	if self.CustomSpellActivationAlert then
 		self.CustomSpellActivationAlert:SetTexture(texture)
@@ -2271,45 +2420,6 @@ function Generic:HideSpellActivation()
 	end
 end
 
------------------------------------------------------------
---- button spell activation alerts
-
-function ShowOverlayGlow(self)
-	if self.customSpellActivationIsActive then
-		self.queueSpellActivationUpdate = true
-		return
-	end
-	self.queueSpellActivationUpdate = nil
-	if self.CustomSpellActivationAlert then
-		self.CustomSpellActivationAlert:SetVertexColor(249/255, 188/255, 65/255)
-		self.CustomSpellActivationAlert:Show()
-	end
-end
-
-function HideOverlayGlow(self)
-	if self.customSpellActivationIsActive then
-		self.queueSpellActivationUpdate = true
-		return
-	end
-	self.queueSpellActivationUpdate = nil
-	if self.CustomSpellActivationAlert then
-		self.CustomSpellActivationAlert:Hide()
-	end
-end
-
-function UpdateOverlayGlow(self)
-	if self.customSpellActivationIsActive then
-		self.queueSpellActivationUpdate = true
-		return
-	end
-	local spellId = self:GetSpellId()
-	if spellId and IsSpellOverlayed(spellId) then
-		ShowOverlayGlow(self)
-	else
-		HideOverlayGlow(self)
-	end
-end
-
 function lib.ShowOverlayGlow(...)
 	local self, button, r, g, b, a
 	if (... == lib) then
@@ -2334,26 +2444,77 @@ function lib.HideOverlayGlow(...)
 	end
 	button:HideSpellActivation()
 end
+--[[ GE Custom End ]]--
 
------------------------------------------------------------
---- button spell highlighting
+--[[--
+function ClearNewActionHighlight(action, preventIdenticalActionsFromClearing, value)
+	lib.ACTION_HIGHLIGHT_MARKS[action] = value
+
+	for button in next, ButtonRegistry do
+		if button._state_type == "action" and action == tonumber(button._state_action) then
+			UpdateNewAction(button)
+		end
+	end
+
+	if preventIdenticalActionsFromClearing then
+		return
+	end
+
+	-- iterate through actions and unmark all that are the same type
+	local unmarkedType, unmarkedID = GetActionInfo(action)
+	for actionKey, markValue in pairs(lib.ACTION_HIGHLIGHT_MARKS) do
+		if markValue then
+			local actionType, actionID = GetActionInfo(actionKey)
+			if actionType == unmarkedType and actionID == unmarkedID then
+				ClearNewActionHighlight(actionKey, true, value)
+			end
+		end
+	end
+end
+
+hooksecurefunc("MarkNewActionHighlight", function(action)
+	lib.ACTION_HIGHLIGHT_MARKS[action] = true
+	for button in next, ButtonRegistry do
+		if button._state_type == "action" and action == tonumber(button._state_action) then
+			UpdateNewAction(button)
+		end
+	end
+end)
+
+hooksecurefunc("ClearNewActionHighlight", function(action, preventIdenticalActionsFromClearing)
+	ClearNewActionHighlight(action, preventIdenticalActionsFromClearing, nil)
+end)
+
+function UpdateNewAction(self)
+	-- special handling for "New Action" markers
+	if self.NewActionTexture then
+		if self._state_type == "action" and lib.ACTION_HIGHLIGHT_MARKS[self._state_action] then
+			self.NewActionTexture:Show()
+		else
+			self.NewActionTexture:Hide()
+		end
+	end
+end
+--]]--
 
 hooksecurefunc("UpdateOnBarHighlightMarksBySpell", function(spellID)
 	lib.ON_BAR_HIGHLIGHT_MARK_TYPE = "spell"
 	lib.ON_BAR_HIGHLIGHT_MARK_ID = tonumber(spellID)
-
+	--[[ GE Custom Start ]]--
 	for button in next, ButtonRegistry do
 		UpdateSpellHighlight(button)
 	end
+	--[[ GE Custom End ]]--
 end)
 
 hooksecurefunc("UpdateOnBarHighlightMarksByFlyout", function(flyoutID)
 	lib.ON_BAR_HIGHLIGHT_MARK_TYPE = "flyout"
 	lib.ON_BAR_HIGHLIGHT_MARK_ID = tonumber(flyoutID)
-
+	--[[ GE Custom Start ]]--
 	for button in next, ButtonRegistry do
 		UpdateSpellHighlight(button)
 	end
+	--[[ GE Custom End ]]--
 end)
 
 hooksecurefunc("ClearOnBarHighlightMarks", function()
