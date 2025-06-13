@@ -44,6 +44,7 @@ local playerLevel = UnitLevel("player")
 
 local defaults = { profile = ns:Merge({
 	enabled = false,
+	useClassColor = false,
 	showAuras = true,
 	showCastbar = true,
 	showName = true,
@@ -323,7 +324,12 @@ local UnitFrame_UpdateTextures = function(self)
 	health:SetPoint(unpack(db.HealthBarPosition))
 	health:SetSize(unpack(db.HealthBarSize))
 	health:SetStatusBarTexture(db.HealthBarTexture)
-	health:SetStatusBarColor(unpack(db.HealthBarColor))
+	health.colorClass = PlayerFrameAltMod.db.profile.useClassColor
+
+	if (not PlayerFrameAltMod.db.profile.useClassColor) then
+		health:SetStatusBarColor(unpack(db.HealthBarColor))
+	end
+
 	health:SetOrientation(db.HealthBarOrientation)
 	health:SetSparkMap(db.HealthBarSparkMap)
 
@@ -474,13 +480,8 @@ local style = function(self, unit, id)
 	--------------------------------------------
 	local health = self:CreateBar()
 	health:SetFrameLevel(health:GetFrameLevel() + 2)
+	health.colorClass = PlayerFrameAltMod.db.profile.useClassColor
 	health.predictThreshold = .01
-	--health.colorDisconnected = true
-	--health.colorTapping = true
-	--health.colorThreat = true
-	--health.colorClass = true
-	--health.colorHappiness = true
-	--health.colorReaction = true
 
 	self.Health = health
 	self.Health.Override = ns.API.UpdateHealth
@@ -843,6 +844,20 @@ PlayerFrameAltMod.CreateUnitFrames = function(self)
 end
 
 PlayerFrameAltMod.Update = function(self)
+
+	self.frame.Health.colorClass = self.db.profile.useClassColor
+
+	if (self.db.profile.useClassColor) then
+		self.frame.Health:ForceUpdate()
+	else
+		-- Seems like a lot, but we stored different health colors for different frame textures,
+		-- so we need to figure out what texture set the player is using before choosing color.
+		local playerLevel = playerLevel or UnitLevel("player")
+		local key = (playerXPDisabled or IsLevelAtEffectiveMaxLevel(playerLevel)) and "Seasoned" or playerLevel < 10 and "Novice" or "Hardened"
+		local config = ns.GetConfig("PlayerFrame")
+		local db = config[key]
+		self.frame.Health:SetStatusBarColor(unpack(db.HealthBarColor))
+	end
 
 	if (self.db.profile.showAuras) then
 		self.frame:EnableElement("Auras")

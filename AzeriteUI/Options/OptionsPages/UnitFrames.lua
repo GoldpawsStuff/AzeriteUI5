@@ -135,28 +135,36 @@ local GenerateOptions = function()
 
 		suboptions.name = L["Player"]
 		suboptions.order = 100
+		suboptions.args.colorHeader = {
+			name = L["Coloring"], order = 10, type = "header", hidden = isdisabled
+		}
+		suboptions.args.useClassColor = {
+			name = L["Color by Class"],
+			desc = L["Toggle whether to color health by player class."],
+			order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+		}
 		suboptions.args.elementHeader = {
-			name = L["Elements"], order = 10, type = "header", hidden = isdisabled
+			name = L["Elements"], order = 100, type = "header", hidden = isdisabled
 		}
 		suboptions.args.showAuras = {
 			name = L["Show Auras"],
 			desc = L["Toggle whether to show auras on this unit frame."],
-			order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+			order = 200, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
 		suboptions.args.showCastbar = {
 			name = L["Show Castbar"],
 			desc = L["Toggle whether to show overlay castbars on this unit frame."],
-			order = 30, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+			order = 300, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
 		suboptions.args.alwaysUseCrystal = {
 			name = L["Always use Power Crystal"],
 			desc = L["Choose whether to always show a power crystal or dynamically switch to the orb for mana users."],
-			order = 40, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+			order = 400, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
 		suboptions.args.useWrathCrystal = {
 			name = L["Use Ice Crystal"],
 			desc = L["Toggle whether to show the ice power crystal or the regular power crystal colored by resource type."],
-			order = 45, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+			order = 450, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 		}
 		options.args.player = suboptions
 	end
@@ -193,29 +201,39 @@ local GenerateOptions = function()
 
 			suboptions.name = "Player Alternate"
 			suboptions.order = 105
+
+			suboptions.args.colorHeader = {
+			name = L["Coloring"], order = 10, type = "header", hidden = isdisabled
+			}
+			suboptions.args.useClassColor = {
+				name = L["Color by Class"],
+				desc = L["Toggle whether to color health by player class."],
+				order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+			}
+
 			suboptions.args.elementHeader = {
-				name = L["Elements"], order = 10, type = "header", hidden = isdisabled
+				name = L["Elements"], order = 100, type = "header", hidden = isdisabled
 			}
 			suboptions.args.showAuras = {
 				name = L["Show Auras"],
 				desc = L["Toggle whether to show auras on this unit frame."],
-				order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+				order = 200, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 			}
 			suboptions.args.aurasBelowFrame = {
 				name = "Auras below frame",
 				desc = "Toggle whether to show auras below or above the unit frame.",
-				order = 21, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled,
+				order = 210, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled,
 				disabled = function(info) return not getoption(info, "showAuras") end
 			}
 			suboptions.args.showCastbar = {
 				name = L["Show Castbar"],
 				desc = L["Toggle whether to show overlay castbars on this unit frame."],
-				order = 25, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+				order = 250, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 			}
 			suboptions.args.showName = {
 				name = L["Show Unit Name"],
 				desc = L["Toggle whether to show the name of the unit."],
-				order = 30, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+				order = 300, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
 			}
 
 			options.args.playerAlternate = suboptions

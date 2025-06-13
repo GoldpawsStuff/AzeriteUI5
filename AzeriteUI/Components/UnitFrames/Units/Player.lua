@@ -49,6 +49,7 @@ local SPEC_PALADIN_RETRIBUTION = SPEC_PALADIN_RETRIBUTION or 3
 local playerIsRetribution = playerClass == "PALADIN" and (ns.IsRetail and GetSpecialization() == SPEC_PALADIN_RETRIBUTION)
 
 local defaults = { profile = ns:Merge({
+	useClassColor = false,
 	showAuras = true,
 	showCastbar = true,
 	aurasBelowFrame = false,
@@ -355,7 +356,12 @@ local UnitFrame_UpdateTextures = function(self)
 	health:SetPoint(unpack(db.HealthBarPosition))
 	health:SetSize(unpack(db.HealthBarSize))
 	health:SetStatusBarTexture(db.HealthBarTexture)
-	health:SetStatusBarColor(unpack(db.HealthBarColor))
+	health.colorClass = PlayerFrameMod.db.profile.useClassColor
+
+	if (not PlayerFrameMod.db.profile.useClassColor) then
+		health:SetStatusBarColor(unpack(db.HealthBarColor))
+	end
+
 	health:SetOrientation(db.HealthBarOrientation)
 	health:SetSparkMap(db.HealthBarSparkMap)
 
@@ -526,6 +532,7 @@ local style = function(self, unit)
 	--------------------------------------------
 	local health = self:CreateBar()
 	health:SetFrameLevel(health:GetFrameLevel() + 2)
+	health.colorClass = PlayerFrameMod.db.profile.useClassColor
 	health.predictThreshold = .01
 
 	self.Health = health
@@ -895,6 +902,20 @@ PlayerFrameMod.CreateUnitFrames = function(self)
 end
 
 PlayerFrameMod.Update = function(self)
+
+	self.frame.Health.colorClass = self.db.profile.useClassColor
+
+	if (self.db.profile.useClassColor) then
+		self.frame.Health:ForceUpdate()
+	else
+		-- Seems like a lot, but we stored different health colors for different frame textures,
+		-- so we need to figure out what texture set the player is using before choosing color.
+		local playerLevel = playerLevel or UnitLevel("player")
+		local key = (playerXPDisabled or IsLevelAtEffectiveMaxLevel(playerLevel)) and "Seasoned" or playerLevel < 10 and "Novice" or "Hardened"
+		local config = ns.GetConfig("PlayerFrame")
+		local db = config[key]
+		self.frame.Health:SetStatusBarColor(unpack(db.HealthBarColor))
+	end
 
 	if (self.db.profile.showAuras) then
 		self.frame:EnableElement("Auras")
