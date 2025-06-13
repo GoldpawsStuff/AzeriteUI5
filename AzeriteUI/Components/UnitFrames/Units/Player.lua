@@ -47,6 +47,7 @@ local playerLevel = UnitLevel("player")
 local playerXPDisabled = IsXPUserDisabled()
 local SPEC_PALADIN_RETRIBUTION = SPEC_PALADIN_RETRIBUTION or 3
 local playerIsRetribution = playerClass == "PALADIN" and (ns.IsRetail and GetSpecialization() == SPEC_PALADIN_RETRIBUTION)
+local HasColorPicker = ns.API.IsAddOnEnabled("AzUI_Color_Picker")
 
 local defaults = { profile = ns:Merge({
 	useClassColor = false,
@@ -356,9 +357,9 @@ local UnitFrame_UpdateTextures = function(self)
 	health:SetPoint(unpack(db.HealthBarPosition))
 	health:SetSize(unpack(db.HealthBarSize))
 	health:SetStatusBarTexture(db.HealthBarTexture)
-	health.colorClass = PlayerFrameMod.db.profile.useClassColor
+	health.colorClass = not HasColorPicker and PlayerFrameMod.db.profile.useClassColor
 
-	if (not PlayerFrameMod.db.profile.useClassColor) then
+	if (not health.colorClass) then
 		health:SetStatusBarColor(unpack(db.HealthBarColor))
 	end
 
@@ -532,7 +533,7 @@ local style = function(self, unit)
 	--------------------------------------------
 	local health = self:CreateBar()
 	health:SetFrameLevel(health:GetFrameLevel() + 2)
-	health.colorClass = PlayerFrameMod.db.profile.useClassColor
+	health.colorClass = not HasColorPicker and PlayerFrameMod.db.profile.useClassColor
 	health.predictThreshold = .01
 
 	self.Health = health
@@ -903,18 +904,20 @@ end
 
 PlayerFrameMod.Update = function(self)
 
-	self.frame.Health.colorClass = self.db.profile.useClassColor
+	if (not HasColorPicker) then
+		self.frame.Health.colorClass = self.db.profile.useClassColor
 
-	if (self.db.profile.useClassColor) then
-		self.frame.Health:ForceUpdate()
-	else
-		-- Seems like a lot, but we stored different health colors for different frame textures,
-		-- so we need to figure out what texture set the player is using before choosing color.
-		local playerLevel = playerLevel or UnitLevel("player")
-		local key = (playerXPDisabled or IsLevelAtEffectiveMaxLevel(playerLevel)) and "Seasoned" or playerLevel < 10 and "Novice" or "Hardened"
-		local config = ns.GetConfig("PlayerFrame")
-		local db = config[key]
-		self.frame.Health:SetStatusBarColor(unpack(db.HealthBarColor))
+		if (self.db.profile.useClassColor) then
+			self.frame.Health:ForceUpdate()
+		else
+			-- Seems like a lot, but we stored different health colors for different frame textures,
+			-- so we need to figure out what texture set the player is using before choosing color.
+			local playerLevel = playerLevel or UnitLevel("player")
+			local key = (playerXPDisabled or IsLevelAtEffectiveMaxLevel(playerLevel)) and "Seasoned" or playerLevel < 10 and "Novice" or "Hardened"
+			local config = ns.GetConfig("PlayerFrame")
+			local db = config[key]
+			self.frame.Health:SetStatusBarColor(unpack(db.HealthBarColor))
+		end
 	end
 
 	if (self.db.profile.showAuras) then

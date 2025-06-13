@@ -28,6 +28,7 @@ local _, ns = ...
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
 local Options = ns:GetModule("Options")
+local HasColorPicker = ns.API.IsAddOnEnabled("AzUI_Color_Picker")
 
 local GenerateSubOptions = function(moduleName)
 	local module = ns:GetModule(moduleName, true)
@@ -135,14 +136,18 @@ local GenerateOptions = function()
 
 		suboptions.name = L["Player"]
 		suboptions.order = 100
-		suboptions.args.colorHeader = {
-			name = L["Coloring"], order = 10, type = "header", hidden = isdisabled
-		}
-		suboptions.args.useClassColor = {
-			name = L["Color by Class"],
-			desc = L["Toggle whether to color health by player class."],
-			order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
-		}
+
+		if (not HasColorPicker) then
+			suboptions.args.colorHeader = {
+				name = L["Coloring"], order = 10, type = "header", hidden = isdisabled
+			}
+			suboptions.args.useClassColor = {
+				name = L["Color by Class"],
+				desc = L["Toggle whether to color health by player class."],
+				order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+			}
+		end
+
 		suboptions.args.elementHeader = {
 			name = L["Elements"], order = 100, type = "header", hidden = isdisabled
 		}
@@ -202,14 +207,16 @@ local GenerateOptions = function()
 			suboptions.name = "Player Alternate"
 			suboptions.order = 105
 
-			suboptions.args.colorHeader = {
-			name = L["Coloring"], order = 10, type = "header", hidden = isdisabled
-			}
-			suboptions.args.useClassColor = {
-				name = L["Color by Class"],
-				desc = L["Toggle whether to color health by player class."],
-				order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
-			}
+			if (not HasColorPicker) then
+				suboptions.args.colorHeader = {
+				name = L["Coloring"], order = 10, type = "header", hidden = isdisabled
+				}
+				suboptions.args.useClassColor = {
+					name = L["Color by Class"],
+					desc = L["Toggle whether to color health by player class."],
+					order = 20, type = "toggle", width = "full", set = setter, get = getter, hidden = isdisabled
+				}
+			end
 
 			suboptions.args.elementHeader = {
 				name = L["Elements"], order = 100, type = "header", hidden = isdisabled
