@@ -1,4 +1,4 @@
----Translator ZamestoTV
+---Translator ZamestoTV под версию 5.2.205
 local L = LibStub("AceLocale-3.0"):NewLocale((...), "ruRU")
 if (not L) then return end
 
@@ -65,6 +65,8 @@ L["Class Power"] = "Классовый ресурс"
 L["Click the button below to create an EditMode preset named '%s'."] = "Нажмите кнопку ниже, чтобы создать пресет '%s' в режиме редактирования."
 L["Click the button below to reset the currently selected EditMode preset to positions matching the default layout."] = "Нажмите кнопку ниже, чтобы сбросить текущий пресет в режиме редактирования к стандартному макету."
 L["Clock Settings"] = "Настройки часов"
+L["Coloring"] = "Раскрашивание"
+L["Color by Class"] = "Цвет по классу"
 L["Combo Points"] = "Серия приёмов"
 L["Control where the tooltips appear when put in the default position. Disable to let blizzard or other addons handle this."] = "Управляйте расположением подсказок. Отключите, чтобы позволить Blizzard или другим аддонам обрабатывать это."
 L["Copy"] = "Копировать"
@@ -232,6 +234,7 @@ L["to level %s"] = "до уровня %s"
 L["to next level"] = "до следующего уровня"
 L["Toggle whether to add itemID to item tooltips or not."] = "Включить/отключить отображение ID предметов в подсказках."
 L["Toggle whether to add spellIDs and auraIDs in tooltips containing actions, spells or auras."] = "Включить/отключить отображение ID заклинаний и аур в подсказках."
+L["Toggle whether to color health by player class."] = "Переключить, следует ли раскрашивать здоровье по классу игрока."
 L["Toggle whether to enable the buttons of this action bar to fade out."] = "Включить/отключить затухание кнопок этой панели."
 L["Toggle whether to enable the player aura buttons to fade out when not moused over."] = "Включить/отключить затухание аур игрока при отсутствии наведения."
 L["Toggle whether to enable this action bar or not."] = "Включить/отключить эту панель действий."
