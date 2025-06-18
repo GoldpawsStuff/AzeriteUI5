@@ -4,13 +4,16 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.2.207-Release] 2025-06-18
+## [5.2.208-Release] 2025-06-18
 - Updated for Retail client patch 11.1.7.
 - Updated for Classic Era client patch 1.15.7.
 
 ### Added
 - Added options to use class color in both the player unit frame and the `/devmode` alternate version of the player unit frame.
 - Added support for the **AzeriteUI Healthbar Color Changer** addon by **JuNNeZ**.
+
+### Changed
+- Updated to latest version of `TaintLess.xml`.
 
 ## [5.2.204-Release] 2025-04-17
 ### Fixed
