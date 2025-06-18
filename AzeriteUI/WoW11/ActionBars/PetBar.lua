@@ -27,9 +27,9 @@ local _, ns = ...
 
 if (not ns.WoW11) then return end
 
--- Do not automatically load this,
--- let the primary actionbar module do it.
 local PetBarMod = ns:GetModule("PetBar", true)
 if (not PetBarMod) then return end
 
+-- Do not automatically load this,
+-- let the primary actionbar module do it.
 PetBarMod:SetEnabledState(false)

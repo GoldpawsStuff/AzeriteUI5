@@ -27,9 +27,9 @@ local _, ns = ...
 
 if (not ns.WoW11) then return end
 
--- Do not automatically load this,
--- let the primary actionbar module do it.
 local StanceBarMod = ns:GetModule("StanceBar", true)
 if (not StanceBarMod) then return end
 
+-- Do not automatically load this,
+-- let the primary actionbar module do it.
 StanceBarMod:SetEnabledState(false)

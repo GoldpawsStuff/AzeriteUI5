@@ -27,8 +27,6 @@ local _, ns = ...
 
 if (not ns.WoW11) then return end
 
--- Do not automatically load this,
--- let the primary actionbar module do it.
 local Tooltips = ns:GetModule("Tooltips", true)
 if (not Tooltips) then return end
 
