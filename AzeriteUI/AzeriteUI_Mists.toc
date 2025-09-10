@@ -1,4 +1,4 @@
-## Interface: 110107
+## Interface: 50500
 ## IconTexture: Interface\Addons\AzeriteUI\Assets\power-crystal-ice-icon.tga
 
 ## Title: |cff4488bbAzerite|r |cfffafafaUI|r |cffcccccc5.2|r
@@ -12,10 +12,10 @@
 ## X-License: Custom
 
 ## SavedVariables: AzeriteUI5_DB
-## OptionalDeps: TaintLess, Ace3, Clique, LibKeyBound-1.0, LibEditModeOverride, LibSharedMedia-3.0, !LibUIDropDownMenu, LibMoreEvents-1.0
+## OptionalDeps: TaintLess, Ace3, Clique, LibKeyBound-1.0, LibEditModeOverride, LibSharedMedia-3.0, !LibUIDropDownMenu, LibMoreEvents-1.0, LibClassicDurations, LibClassicSwingTimerAPI, LibHealComm-4.0
 
 # Fontstyles
-Fontstyles.xml
+Fontstyles_Classic.xml
 
 # Protect the environment
 Core\Private.lua
@@ -24,7 +24,7 @@ Core\Private.lua
 Core\Compatibility.lua
 
 # Libraries
-Libs\Libs.xml
+Libs\Libs_Mists.xml
 
 # Addon localization
 Locale\Locale.xml
@@ -43,9 +43,6 @@ Layouts\Layouts.xml
 
 # Addon components
 Components\Components.xml
-
-# For retail only
-WoW11\WoW11.xml
 
 # Resolve Conflicts
 Core\Conflicts.lua

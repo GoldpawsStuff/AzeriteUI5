@@ -28,7 +28,7 @@
 
 local Addon, ns = ...
 
-local LibDeflate = LibStub("LibDeflate")
+--local LibDeflate = LibStub("LibDeflate")
 --local LEMO = LibStub("LibEditModeOverride-1.0", true)
 
 ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "LibMoreEvents-1.0", "AceConsole-3.0", "AceComm-3.0", "AceSerializer-3.0")
@@ -197,8 +197,8 @@ end
 
 ns.Import = function(self, encoded)
 
-	local compressed = LibDeflate:DecodeForPrint(encoded)
-	local serialized = LibDeflate:DecompressDeflate(compressed)
+	--local compressed = LibDeflate:DecodeForPrint(encoded)
+	--local serialized = LibDeflate:DecompressDeflate(compressed)
 	local success, table = self:Deserialize(serialized)
 
 	if (success) then

@@ -25,7 +25,7 @@
 --]]
 local _, ns = ...
 
-local Compressor, Serializer = LibStub("LibDeflate"), LibStub("AceSerializer-3.0")
+local Compressor, Serializer -- = LibStub("LibDeflate"), LibStub("AceSerializer-3.0")
 
 -- Lua API
 local pairs = pairs

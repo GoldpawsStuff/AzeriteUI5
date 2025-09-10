@@ -98,6 +98,7 @@ Experimental.ToggleBlips = function(self)
 end
 
 Experimental.SerializeOptions = function(self)
+	do return end -- problem with loading LibDeflate
 	if (not self.SerializedOutputWindow) then
 		local frame = CreateFrame("Frame", nil, UIParent)
 		frame:Hide()
