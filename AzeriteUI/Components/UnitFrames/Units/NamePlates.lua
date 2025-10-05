@@ -2,7 +2,7 @@
 
 	The MIT License (MIT)
 
-	Copyright (c) 2025 Lars Norberg
+	Copyright (c) 2024 Lars Norberg
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -1028,6 +1028,27 @@ local cvars = {
 local callback = function(self, event, unit)
 	if (event == "PLAYER_TARGET_CHANGED") then
 	elseif (event == "NAME_PLATE_UNIT_ADDED") then
+        local frame = self
+        local guid = UnitGUID(unit)
+        local isGO = guid and guid:match("^GameObject%-")
+        local canAttack = UnitCanAttack("player", unit)
+        local healthMax = UnitHealthMax(unit) or 0
+        local isSoft = UnitIsUnit(unit, "softinteract") or UnitIsUnit(unit, "softenemy")
+
+        if isSoft or (isGO and not canAttack and healthMax == 0) then
+            if frame.SoftTargetFrame then
+                frame.SoftTargetFrame:Show()
+                frame.SoftTargetFrame:SetAlpha(1)
+            end
+            if frame.Health then frame.Health:Hide() end
+            if frame.Power then frame.Power:Hide() end
+            if frame.Castbar then frame.Castbar:Hide() end
+            if frame.Name then frame.Name:Hide() end
+            if frame.RaidTargetIndicator then frame.RaidTargetIndicator:Hide() end
+            if frame.Classification then frame.Classification:Hide() end
+            if frame.Auras then frame.Auras:Hide() end
+            if frame.TargetHighlight then frame.TargetHighlight:Hide() end
+        end
 
 		self.isPRD = UnitIsUnit(unit, "player")
 
@@ -1065,6 +1086,14 @@ local callback = function(self, event, unit)
 		ns.ActiveNamePlates[self] = true
 
 	elseif (event == "NAME_PLATE_UNIT_REMOVED") then
+        if self.Health then self.Health:Show() end
+        if self.Power then self.Power:Show() end
+        if self.Castbar then self.Castbar:Show() end
+        if self.Name then self.Name:Show() end
+        if self.RaidTargetIndicator then self.RaidTargetIndicator:Show() end
+        if self.Classification then self.Classification:Show() end
+        if self.Auras then self.Auras:Show() end
+        if self.TargetHighlight then self.TargetHighlight:Show() end
 
 		if (self.WidgetContainer) then
 			if (NamePlatesMod.db.profile.showBlizzardWidgets) then
