@@ -42,6 +42,11 @@ ns.SETTINGS_VERSION = ns.WoW11 and 25 or 22 -- use client dependant settings ver
 -- Tinkerers rejoyce!
 _G[Addon] = ns
 
+-- Temporary compatibility alias for hard-coded XML/global references
+if Addon ~= "AzeriteUI" then
+    _G["AzeriteUI"] = ns
+end
+
 -- Lua API
 local next = next
 local select = select

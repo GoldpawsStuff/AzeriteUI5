@@ -1,0 +1,20 @@
+## Interface: 20504
+## IconTexture: Interface\ICONS\Pet_Type_Mechanical
+
+## Title: Lib: MoreEvents-1.0
+## Notes: |cff666666By Lars Norberg|r|n|nEmbeddable, Libstub compatible library to register multiple event handlers for the same event on the same frame, similar to how oUF handles their events.|n|n|cff4488ffPayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/GoldpawsStuff|r|n|n|cff4488ffPatreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/GoldpawsStuff|r
+## Version: 1.0.9-Release
+## Author: Lars Norberg
+
+## X-Category: Libraries
+## X-Curse-Project-ID: 916571
+## X-Wago-ID: BNBe3eGx
+## X-License: MIT
+
+## OptionalDeps: Ace3
+
+#@non-debug@
+#libs\LibStub\LibStub.lua
+#@end-non-debug@
+
+LibMoreEvents-1.0.lua
