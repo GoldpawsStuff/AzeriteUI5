@@ -464,6 +464,7 @@ Auras.CreateBuffs = function(self)
 		-----------------------------------------
 		-- Visibility
 		-----------------------------------------
+		-- Something in here might taint in Era now
 		local visibility = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
 		visibility:SetFrameRef("buffs", buffs)
 		visibility:SetAttribute("_onstate-vis", [[ self:RunAttribute("UpdateVisibility"); ]])
@@ -513,35 +514,17 @@ Auras.CreateBuffs = function(self)
 end
 
 Auras.DisableBlizzard = function(self)
-
-	-- Not present in Wrath
-	if (BuffFrame.Update) then
-		BuffFrame:Update()
-		BuffFrame:UpdateAuras()
-		BuffFrame:UpdatePlayerBuffs()
-	end
-
 	BuffFrame:SetScript("OnLoad", nil)
 	BuffFrame:SetScript("OnUpdate", nil)
 	BuffFrame:SetScript("OnEvent", nil)
 	BuffFrame:SetParent(ns.Hider)
 	BuffFrame:UnregisterAllEvents()
 
-	-- Not present in Wrath
-	if (DebuffFrame) then
-		DebuffFrame:SetScript("OnLoad", nil)
-		DebuffFrame:SetScript("OnUpdate", nil)
-		DebuffFrame:SetScript("OnEvent", nil)
-		DebuffFrame:SetParent(ns.Hider)
-		DebuffFrame:UnregisterAllEvents()
-	end
-
-	-- Only present in Wrath
+	-- Appears to exist in Era, but not in TBC.
 	if (TemporaryEnchantFrame) then
 		TemporaryEnchantFrame:SetScript("OnUpdate", nil)
 		TemporaryEnchantFrame:SetParent(ns.Hider)
 	end
-
 end
 
 Auras.Embed = function(self, aura)
@@ -659,7 +642,6 @@ Auras.OnEvent = function(self, event, ...)
 end
 
 Auras.OnEnable = function(self)
-
 	self:DisableBlizzard()
 
 	self:CreateBuffs()

@@ -64,7 +64,7 @@ ns.Private.ClientBuild = tonumber(build)
 
 -- Simple flags for client version checks
 ns.Private.IsRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
-ns.Private.IsClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
+ns.Private.IsClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC) or (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 ns.Private.IsTBC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 ns.Private.IsWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
 ns.Private.IsCata = (WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC)

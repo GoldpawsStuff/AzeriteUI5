@@ -24,7 +24,8 @@
 
 --]]
 local _, ns = ...
-if (not ns.IsClassic) then return end
+--if (not ns.IsClassic) then return end
+do return end
 
 if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return end
 
@@ -145,7 +146,9 @@ BlizzardABDisabler.HideBlizzard = function(self)
 	hideActionBarFrame(PossessBarFrame, false, true)
 	hideActionBarFrame(MultiCastActionBarFrame, false, true)
 	hideActionBarFrame(PetActionBarFrame, true, true)
-	ShowPetActionBar = function() end
+	
+	-- This taints in Era now?
+	--ShowPetActionBar = function() end 
 
 	--BonusActionBarFrame:UnregisterAllEvents()
 	--BonusActionBarFrame:Hide()

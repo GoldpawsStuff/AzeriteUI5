@@ -6,6 +6,10 @@
 		</Attributes>
 		<Scripts>
 			<OnLoad>
+				-- Possible taint here?
+				if InCombatLockdown() then
+					return
+				end
 				AzeriteUI:GetModule("Auras"):Embed(self)
 				self:OnInitialize()
 				if (AzeriteUI.IsRetail) then

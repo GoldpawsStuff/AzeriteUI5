@@ -1,6 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
-	<Script file="AlertFrames.lua"/>
+	<!-- Tainted in Era -->
+	<!-- *Do alertframes even exist here? --> 
+	<!--<Script file="AlertFrames.lua"/>-->
+
 	<Script file="ArcheologyBar.lua"/>
 	<Script file="Banners.lua"/>
 	<Script file="ChatFrames.lua"/>

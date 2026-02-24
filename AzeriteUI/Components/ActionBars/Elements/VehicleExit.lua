@@ -90,7 +90,7 @@ VehicleExit.UpdateScale = function(self)
 		else
 			self.Button:SetScale(Minimap:GetScale() * 768/1080)
 			self.Button:ClearAllPoints()
-			self.Button:SetPoint(point, anchor, rpoint, x, y)
+			--self.Button:SetPoint(point, anchor, rpoint, x, y)
 		end
 
 	end
@@ -121,7 +121,7 @@ VehicleExit.OnEnable = function(self)
 	local button = CreateFrame("CheckButton", ns.Prefix.."VehicleExitButton", UIParent, "SecureActionButtonTemplate")
 	button:SetFrameStrata("MEDIUM")
 	button:SetFrameLevel(100)
-	button:SetPoint(unpack(config.VehicleExitButtonPosition))
+	--button:SetPoint(unpack(config.VehicleExitButtonPosition)) -- Can't anchor to Minimap anymore, protected
 	button:SetSize(unpack(config.VehicleExitButtonSize))
 	button:SetScript("OnEnter", ExitButton_OnEnter)
 	button:SetScript("OnLeave", ExitButton_OnLeave)

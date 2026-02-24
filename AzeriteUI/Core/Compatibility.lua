@@ -52,16 +52,18 @@ if (not _G.GetTimeToWellRested) then
 end
 
 local tocversion = select(4, GetBuildInfo())
+local cata = tocversion >= 40400 and tocversion < 50000
+local tbc = tocversion >= 20505 and tocversion < 30000
 
--- Deprecated in 10.1.0
-if (tocversion >= 100100) or (tocversion >= 40400 and tocversion < 50000) then
+-- Deprecated in 10.1.0, backported to Cata and TBC
+if (tocversion >= 100100 or cata or tbc) then
 	if (not _G.GetAddOnMetadata) then
 		_G.GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 	end
 end
 
--- Deprecated in 10.2.0
-if (tocversion >= 100200) or (tocversion >= 40400 and tocversion < 50000) then
+-- Deprecated in 10.2.0, backported to Cata and TBC
+if (tocversion >= 100200 or cata or tbc) then
 	local original_SetPortraitToTexture = SetPortraitToTexture
 	for method,func in next,{
 		GetCVarInfo = C_CVar.GetCVarInfo,
@@ -97,8 +99,8 @@ if (tocversion >= 100200) or (tocversion >= 40400 and tocversion < 50000) then
 	end
 end
 
--- Deprecated in 10.2.5
-if (tocversion >= 100205) or (tocversion >= 40400 and tocversion < 50000) then
+-- Deprecated in 10.2.5, backported to Cata and TBC
+if (tocversion >= 100205 or cata or tbc) then
 	for method,func in next,{
 		GetTimeToWellRested = function() return nil end,
 		FillLocalizedClassList = function(tbl, isFemale)
@@ -165,8 +167,8 @@ if (tocversion >= 100205) or (tocversion >= 40400 and tocversion < 50000) then
 	end
 end
 
--- Deprecated in 10.x.x, removed in 11.0.0
-if (tocversion >= 110000) then
+-- Deprecated in 10.x.x, removed in 11.0.0, backported to Cata and TBC
+if (tocversion >= 110000 or cata or tbc) then
 	for method,func in next, {
 		GetSpellCharges = function(...)
 			local numArgs = select("#", ...)

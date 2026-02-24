@@ -563,7 +563,7 @@ local function Enable(self, unit)
 		element:SetScript('OnUpdate', element.OnUpdate or onUpdate)
 
 		if(self.unit == 'player' and not (self.hasChildren or self.isChild or self.isNamePlate)) then
-			if (oUF.isRetail) then
+			if (oUF.isRetail or oUF.isTBC) then
 				PlayerCastingBarFrame:SetUnit(nil)
 				PetCastingBarFrame:SetUnit(nil)
 				PetCastingBarFrame:UnregisterEvent('UNIT_PET')

@@ -24,7 +24,7 @@
 
 --]]
 local _, ns = ...
-if (ns.IsClassic) then return end
+--if (ns.IsClassic) then return end
 
 if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return end
 
