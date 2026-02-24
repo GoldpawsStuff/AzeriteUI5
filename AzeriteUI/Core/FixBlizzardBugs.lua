@@ -29,16 +29,15 @@ local _, ns = ...
 
 local FixBlizzardBugs = ns:NewModule("FixBlizzardBugs")
 
--- Workaround for https://worldofwarcraft.blizzard.com/en-gb/news/24030413/hotfixes-november-16-2023
 local InCombatLockdown = _G.InCombatLockdown
 
+-- Workaround for https://worldofwarcraft.blizzard.com/en-gb/news/24030413/hotfixes-november-16-2023
 if (issecurevariable("IsItemInRange")) then
 	local IsItemInRange = _G.IsItemInRange
 	_G.IsItemInRange = function(...)
 		return InCombatLockdown() and true or IsItemInRange(...)
 	end
 end
-
 if (issecurevariable("UnitInRange")) then
 	local UnitInRange = _G.UnitInRange
 	_G.UnitInRange = function(...)
