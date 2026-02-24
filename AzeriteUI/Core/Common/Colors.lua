@@ -185,21 +185,21 @@ Colors.blizzclass = createColorGroup(RAID_CLASS_COLORS)
 Colors.class = {}
 Colors.class.DEATHKNIGHT = createColor(176/255, 31/255, 79/255)
 Colors.class.DEMONHUNTER = createColor(163/255, 48/255, 201/255)
---Colors.class.DRUID = createColor(225/255, 125/255, 35/255)
 Colors.class.DRUID = createColor(245/255, 125/255, 35/255)
 Colors.class.EVOKER = createColor(51/255, 147/255, 127/255)
 Colors.class.HUNTER = createColor(191/255, 232/255, 115/255)
 Colors.class.MAGE = createColor(105/255, 204/255, 240/255)
 Colors.class.MONK = createColor(0/255, 255/255, 150/255)
---Colors.class.PALADIN = createColor(225/255, 160/255, 226/255)
 Colors.class.PALADIN = createColor(245/255, 185/255, 226/255)
 Colors.class.PRIEST = createColor(176/255, 200/255, 225/255)
 Colors.class.ROGUE = createColor(255/255, 225/255, 95/255)
 Colors.class.SHAMAN = createColor(32/255, 122/255, 222/255)
---Colors.class.WARLOCK = createColor(148/255, 130/255, 201/255)
 Colors.class.WARLOCK = createColor(128/255, 110/255, 181/255)
 Colors.class.WARRIOR = createColor(229/255, 156/255, 110/255)
 Colors.class.UNKNOWN = createColor(195/255, 202/255, 217/255)
+
+Colors.class.ADVENTURER = createColor(255/255, 255/255, 255/255) 
+Colors.class.TRAVELER = createColor(255/255, 255/255, 255/255) 
 
 -- Power
 Colors.power = {}

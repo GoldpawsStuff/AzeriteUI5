@@ -27,6 +27,7 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local PlayerFrameMod = ns:NewModule("PlayerFrame", ns.UnitFrameModule, "LibMoreEvents-1.0")
+PlayerFrameMod:SetEnabledState(false)
 
 -- Lua API
 local next = next
@@ -952,17 +953,19 @@ PlayerFrameMod.Update = function(self)
 end
 
 PlayerFrameMod.OnEnable = function(self)
-
-	-- Disable Blizzard player alternate power bar,
-	-- as we're integrating this into the standard power crystal.
-	if (PlayerPowerBarAlt) then
-		PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_SHOW")
-		PlayerPowerBarAlt:UnregisterEvent("UNIT_POWER_BAR_HIDE")
-		PlayerPowerBarAlt:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	end
-
 	self:CreateUnitFrames()
 	self:CreateAnchor(HUD_EDIT_MODE_PLAYER_FRAME_LABEL or PLAYER)
 
 	ns.MovableModulePrototype.OnEnable(self)
+end
+
+PlayerFrameMod.OnInitialize = function(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+end
+
+PlayerFrameMod.DelayedEnable = function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+	ns.UnitFrameModule.OnInitialize(self)
+	self:Enable()
+	self.frame:UpdateAllElements("DelayedEnable")
 end

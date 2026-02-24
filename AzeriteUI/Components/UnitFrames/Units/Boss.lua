@@ -27,6 +27,7 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local BossFrameMod = ns:NewModule("BossFrames", ns.UnitFrameModule, "LibMoreEvents-1.0")
+BossFrameMod:SetEnabledState(false)
 
 -- GLOBALS: CreateFrame, InCombatLockdown, Enum
 -- GLOBALS: UnitIsUnit, UnitHasVehicleUI, UnitPowerType
@@ -496,4 +497,15 @@ BossFrameMod.OnEnable = function(self)
 	self:CreateAnchor(BOSS or BOSSES) -- check if exists in Classic Era
 
 	ns.MovableModulePrototype.OnEnable(self)
+end
+
+BossFrameMod.OnInitialize = function(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+end
+
+BossFrameMod.DelayedEnable = function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+	ns.UnitFrameModule.OnInitialize(self)
+	self:Enable()
+	self:Update()
 end

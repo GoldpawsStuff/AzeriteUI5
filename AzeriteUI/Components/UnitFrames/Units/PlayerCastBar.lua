@@ -27,6 +27,7 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local CastBarMod = ns:NewModule("PlayerCastBarFrame", ns.UnitFrameModule, "LibMoreEvents-1.0")
+CastBarMod:SetEnabledState(false)
 
 -- GLOBALS: GetNetStats, PlayerCastingBarFrame, PetCastingBarFrame
 
@@ -219,23 +220,6 @@ CastBarMod.Update = function(self)
 end
 
 CastBarMod.OnEnable = function(self)
-
-	if (ns.IsRetail) then
-
-		-- How the fuck do I get this out of the editmode?
-		PlayerCastingBarFrame:SetParent(UIHider)
-		PlayerCastingBarFrame:UnregisterAllEvents()
-		PlayerCastingBarFrame:SetUnit(nil)
-		PlayerCastingBarFrame:Hide()
-		PlayerCastingBarFrame:SetAlpha(0) -- will this do it? anchor still there?
-
-		PetCastingBarFrame:SetParent(UIHider)
-		PetCastingBarFrame:UnregisterAllEvents()
-		PetCastingBarFrame:SetUnit(nil)
-		PetCastingBarFrame:UnregisterEvent("UNIT_PET")
-		PetCastingBarFrame:Hide()
-	end
-
 	self:CreateUnitFrames()
 	self:CreateAnchor(HUD_EDIT_MODE_CAST_BAR_LABEL or SHOW_ARENA_ENEMY_CASTBAR_TEXT)
 
@@ -247,6 +231,12 @@ end
 
 CastBarMod.OnInitialize = function(self)
 	if (IsAddOnEnabled("Quartz")) then return self:Disable() end
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+end
 
-	ns.MovableModulePrototype.OnInitialize(self)
+CastBarMod.DelayedEnable = function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+	ns.UnitFrameModule.OnInitialize(self)
+	self:Enable()
+	self.frame:UpdateAllElements("DelayedEnable")
 end

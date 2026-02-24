@@ -5,11 +5,6 @@ I recommend downloading the UI from either [CurseForge](https://www.curseforge.c
 
 If you choose to download and manually install directly from GitHub, you'll have to install the following libraries as standalones in order for the UI to work. Note that the folder you should copy to the relevant WoW AddOn directory is the folder that has a .toc file in it, and the folder must be renamed to have the same name as the .toc file without its file ending:
 - [Ace3](https://www.curseforge.com/wow/addons/ace3)
-- [LibMoreEvents-1.0](https://curseforge.com/wow/addons/libmoreevents-1-0)
-- [LibSharedMedia-3.0](https://www.curseforge.com/wow/addons/libsharedmedia-3-0)
-- [LibUIDropDownMenu](https://www.curseforge.com/wow/addons/libuidropdownmenu)
-- [LibClassicDurations](https://www.curseforge.com/wow/addons/libclassicdurations) (Classic)
-- [TaintLess](https://www.townlong-yak.com/addons/taintless) *(Not on CurseForge/Wago)*
 
 ## FAQ
 - **Q:** How can I remove abilities from the action bars?

@@ -31,6 +31,7 @@ local LAB_Name = "LibActionButton-1.0-GE"
 local LAB = LibStub(LAB_Name)
 
 local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "LibFadingFrames-1.0", "AceConsole-3.0", "AceTimer-3.0")
+ActionBarMod:SetEnabledState(false)
 
 -- Lua API
 local next = next
@@ -785,6 +786,12 @@ end
 ActionBarMod.OnInitialize = function(self)
 	if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return self:Disable() end
 
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+end
+
+ActionBarMod.DelayedEnable = function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+
 	self.db = ns.db:RegisterNamespace(self:GetName(), self:GetDefaults())
 
 	if (ns.WoW10) then
@@ -794,4 +801,9 @@ ActionBarMod.OnInitialize = function(self)
 	self.bars = {}
 	self.buttons = {}
 	self.anchors = {}
+
+	self:Enable()
+
+	ns:GetModule("PetBar"):Enable()
+	ns:GetModule("StanceBar"):Enable()
 end

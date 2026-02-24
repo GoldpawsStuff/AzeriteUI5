@@ -28,6 +28,7 @@ local _, ns = ...
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
 local Tooltips = ns:NewModule("Tooltips", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
+Tooltips:SetEnabledState(false)
 
 -- Lua API
 local _G = _G
@@ -601,4 +602,16 @@ Tooltips.OnEnable = function(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateTooltipThemes")
 
 	ns.MovableModulePrototype.OnEnable(self)
+end
+
+Tooltips.OnInitialize = function(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+end
+
+Tooltips.DelayedEnable = function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+
+	ns.MovableModulePrototype.OnInitialize(self)
+
+	self:Enable()
 end

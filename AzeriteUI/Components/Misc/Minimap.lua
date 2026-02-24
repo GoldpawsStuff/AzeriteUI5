@@ -26,6 +26,7 @@
 local _, ns = ...
 
 local MinimapMod = ns:NewModule("Minimap", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0", "AceTimer-3.0", "AceConsole-3.0")
+MinimapMod:SetEnabledState(false)
 
 --local LibDD = LibStub("LibUIDropDownMenu-4.0")
 
@@ -1069,42 +1070,6 @@ MinimapMod.InitializeObjectTables = function(self)
 
 	-- Minimap objects available for restyling.
 	----------------------------------------------------
-	if (ns.WoW10) then
-		Objects.Addons = AddonCompartmentFrame
-		Objects.BorderTop = MinimapCluster.BorderTop
-		Objects.Calendar = GameTimeFrame
-		Objects.Clock = TimeManagerClockButton
-		Objects.Compass = MinimapCompassTexture
-		Objects.Crafting = MinimapCluster.IndicatorFrame.CraftingOrderFrame
-		Objects.Difficulty = MinimapCluster.InstanceDifficulty
-		Objects.Expansion = ExpansionLandingPageMinimapButton
-		Objects.Eye = QueueStatusButton
-		Objects.Mail = MinimapCluster.IndicatorFrame.MailFrame
-		Objects.Tracking = MinimapCluster.TrackingFrame
-		--Objects.Tracking = MinimapCluster.Tracking
-		Objects.Zone = MinimapCluster.ZoneTextButton
-		Objects.ZoomIn = Minimap.ZoomIn
-		Objects.ZoomOut = Minimap.ZoomOut
-	end
-
-	-- CATA: check
-	if (ns.IsCata) then
-		Objects.BorderTop = MinimapBorderTop
-		Objects.BorderClassic = MinimapBorder
-		Objects.Calendar = GameTimeFrame
-		Objects.Clock = TimeManagerClockButton
-		Objects.Compass = MinimapCompassTexture
-		Objects.Difficulty = MiniMapInstanceDifficulty
-		Objects.Eye = LFGMinimapFrame or MiniMapLFGFrame
-		Objects.EyeClassicPvP = LFGMinimapFrame or MiniMapBattlefieldFrame
-		Objects.Mail = MiniMapMailFrame
-		Objects.Tracking = MiniMapTracking
-		Objects.Zone = MinimapZoneTextButton
-		Objects.ZoomIn = MinimapZoomIn
-		Objects.ZoomOut = MinimapZoomOut
-		Objects.WorldMap = MiniMapWorldMapButton
-	end
-
 	if (ns.IsClassic) then
 		Objects.BorderTop = MinimapBorderTop
 		Objects.BorderClassic = MinimapBorder
@@ -1122,68 +1087,6 @@ MinimapMod.InitializeObjectTables = function(self)
 		Objects.ZoomOut = MinimapZoomOut
 		Objects.WorldMap = MiniMapWorldMapButton
 	end
-
-	-- Object parents when using blizzard theme.
-	----------------------------------------------------
-	if (ns.WoW10) then
-		ObjectOwners.Addons = MinimapCluster
-		ObjectOwners.BorderTop = MinimapCluster
-		ObjectOwners.Calendar = MinimapCluster
-		ObjectOwners.Clock = MinimapCluster
-		ObjectOwners.Compass = MinimapBackdrop
-		ObjectOwners.Crafting = MinimapCluster.IndicatorFrame
-		ObjectOwners.Difficulty = MinimapCluster
-		ObjectOwners.Expansion = MinimapBackdrop
-		ObjectOwners.Eye = MicroButtonAndBagsBar
-		ObjectOwners.Mail = MinimapCluster.IndicatorFrame
-		ObjectOwners.Tracking = MinimapCluster
-		ObjectOwners.Zone = MinimapCluster
-		ObjectOwners.ZoomIn = Minimap
-		ObjectOwners.ZoomOut = Minimap
-	end
-
-	--[[--
-
-	-- CATA: check
-	if (ns.IsCata) then
-		ObjectOwners.BorderTop = MinimapCluster
-		ObjectOwners.BorderClassic = MinimapBackdrop
-		ObjectOwners.Calendar = MinimapCluster
-		ObjectOwners.Clock = MinimapCluster
-		ObjectOwners.Compass = MinimapBackdrop
-		ObjectOwners.Difficulty = MinimapCluster
-		ObjectOwners.Expansion = MinimapBackdrop
-		ObjectOwners.Eye = MinimapBackdrop
-		ObjectOwners.EyeClassicPvP = Minimap
-		ObjectOwners.Mail = Minimap
-		ObjectOwners.Tracking = MinimapCluster
-		ObjectOwners.Zone = MinimapCluster
-		ObjectOwners.ZoomIn = Minimap
-		ObjectOwners.ZoomOut = Minimap
-		ObjectOwners.WorldMap = MinimapBackdrop
-	end
-
-	if (ns.IsClassic) then
-		ObjectOwners.BorderTop = MinimapCluster
-		ObjectOwners.BorderClassic = MinimapBackdrop
-		ObjectOwners.Calendar = MinimapCluster
-		ObjectOwners.Clock = MinimapCluster
-		ObjectOwners.Compass = MinimapBackdrop
-		ObjectOwners.Difficulty = MinimapCluster
-		ObjectOwners.Expansion = MinimapBackdrop
-		ObjectOwners.Eye = MinimapBackdrop
-		ObjectOwners.EyeClassicPvP = Minimap
-		ObjectOwners.Mail = Minimap
-		ObjectOwners.ToggleButton = MinimapCluster
-		ObjectOwners.Tracking = Minimap
-		ObjectOwners.Zone = MinimapCluster
-		ObjectOwners.ZoomIn = Minimap
-		ObjectOwners.ZoomOut = Minimap
-		ObjectOwners.WorldMap = MinimapBackdrop
-	end
-
-	--]]--
-
 end
 
 MinimapMod.OnEvent = function(self, event, ...)
@@ -1195,21 +1098,13 @@ end
 
 MinimapMod.OnEnable = function(self)
 	LoadAddOn("Blizzard_TimeManager")
-
-	if (ns.IsClassic) then
-		LoadAddOn("Blizzard_GroupFinder_VanillaStyle")
-	end
+	LoadAddOn("Blizzard_GroupFinder_VanillaStyle")
 
 	-- Clean out deprecated settings
 	self.db.profile.useHalfClock = nil
 	self.db.profile.useServerTime = nil
 
 	self:InitializeObjectTables()
-
-	if (ns.WoW10) then
-		MinimapCluster.HighlightSystem = ns.Noop
-		MinimapCluster.ClearHighlight = ns.Noop
-	end
 
 	MinimapCluster:EnableMouse(false)
 	MinimapCluster:SetFrameLevel(1)
@@ -1233,13 +1128,29 @@ MinimapMod.OnEnable = function(self)
 	self:RegisterEvent("CVAR_UPDATE", "UpdateTimers")
 	self:RegisterEvent("UPDATE_PENDING_MAIL", "UpdateMail")
 	self:RegisterEvent("VARIABLES_LOADED", "OnEvent")
-
-	if (ns.WoW10) then
-		self:RegisterEvent("CRAFTINGORDERS_UPDATE_PERSONAL_ORDER_COUNTS", "UpdateMail")
-	end
-
 	self:RegisterChatCommand("setminimaptheme", "SetMinimapTheme")
 
 	self:InitializeAddon("MBB")
 	self:InitializeAddon("Narcissus")
 end
+
+MinimapMod.OnInitialize = function(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+end
+
+MinimapMod.DelayedEnable = function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+
+	ns.MovableModulePrototype.OnInitialize(self)
+
+	self:Enable()
+
+	-- Manually enable the XP bars,
+	-- in case they were unable to previously load
+	-- because of the delayed Minimap module start.
+	local PlayerStatusBars = ns:GetModule("PlayerStatusBars", true)
+	if (PlayerStatusBars and not PlayerStatusBars:IsEnabled()) then
+		PlayerStatusBars:Enable()
+	end
+end
+

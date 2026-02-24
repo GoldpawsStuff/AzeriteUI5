@@ -26,6 +26,8 @@
 local _, ns = ...
 
 local Auras = ns:NewModule("Auras", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceTimer-3.0", "AceHook-3.0", "AceConsole-3.0", "LibSmoothBar-1.0")
+Auras:SetEnabledState(false)
+
 local LFF = LibStub("LibFadingFrames-1.0")
 
 -- Lua API
@@ -670,4 +672,16 @@ Auras.OnEnable = function(self)
 	ns.MovableModulePrototype.OnEnable(self)
 
 	self:UpdateSettings()
+end
+
+Auras.OnInitialize = function(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+end
+
+Auras.DelayedEnable = function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+
+	ns.MovableModulePrototype.OnInitialize(self)
+
+	self:Enable()
 end

@@ -27,6 +27,7 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local RaidFrame25Mod = ns:NewModule("RaidFrame25", ns.UnitFrameModule, "LibMoreEvents-1.0", "AceHook-3.0")
+RaidFrame25Mod:SetEnabledState(false)
 
 -- GLOBALS: UIParent, Enum
 -- GLOBALS: LoadAddOn, InCombatLockdown, RegisterAttributeDriver, UnregisterAttributeDriver
@@ -894,11 +895,6 @@ RaidFrame25Mod.CreateUnitFrames = function(self)
 		self.frame.content[method] = func
 	end
 
-	-- Sometimes some elements are wrong or "get stuck" upon exiting the editmode.
-	if (ns.WoW10) then
-		self:SecureHook(EditModeManagerFrame, "ExitEditMode", "UpdateUnits")
-	end
-
 	-- Sometimes when changing group leader, only the group leader is updated,
 	-- leaving other units with a lot of wrong information displayed.
 	-- Should think that GROUP_ROSTER_UPDATE handled this, but it doesn't.
@@ -917,4 +913,15 @@ RaidFrame25Mod.OnEnable = function(self)
 	self:CreateAnchor(RAID .. " (25)") --[[PARTYRAID_LABEL RAID_AND_PARTY]]
 
 	ns.MovableModulePrototype.OnEnable(self)
+end
+
+RaidFrame25Mod.OnInitialize = function(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+end
+
+RaidFrame25Mod.DelayedEnable = function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+	ns.UnitFrameModule.OnInitialize(self)
+	self:Enable()
+	self:Update()
 end

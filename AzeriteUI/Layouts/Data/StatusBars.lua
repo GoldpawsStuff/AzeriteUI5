@@ -30,7 +30,7 @@ local Colors = ns.Colors
 local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 
-local mapScale = ns.WoW10 and 1 or 198/140
+local mapScale = 198/140
 
 ns.RegisterConfig("StatusBars", {
 

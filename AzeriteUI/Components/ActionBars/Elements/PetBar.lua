@@ -31,6 +31,10 @@ local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
 local PetBarMod = ns:NewModule("PetBar", "LibMoreEvents-1.0", "LibFadingFrames-1.0", "AceConsole-3.0", "AceTimer-3.0")
 
+-- Do not automatically load this,
+-- let the primary actionbar module do it.
+PetBarMod:SetEnabledState(false)
+
 local LFF = LibStub("LibFadingFrames-1.0")
 
 local ButtonBar = ns.ButtonBar.prototype

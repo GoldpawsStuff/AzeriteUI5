@@ -28,16 +28,13 @@
 
 local Addon, ns = ...
 
---local LibDeflate = LibStub("LibDeflate")
---local LEMO = LibStub("LibEditModeOverride-1.0", true)
-
 ns = LibStub("AceAddon-3.0"):NewAddon(ns, Addon, "LibMoreEvents-1.0", "AceConsole-3.0", "AceComm-3.0", "AceSerializer-3.0")
 ns.callbacks = LibStub("CallbackHandler-1.0"):New(ns, nil, nil, false)
 ns.Hider = CreateFrame("Frame"); ns.Hider:Hide()
 ns.Noop = function() end
 
 -- Increasing this number forces a full settings reset.
-ns.SETTINGS_VERSION = ns.WoW11 and 25 or 22 -- use client dependant settings version to avoid resets in unaffected builds.
+ns.SETTINGS_VERSION = 23 -- use client dependant settings version to avoid resets in unaffected builds.
 
 -- Tinkerers rejoyce!
 _G[Addon] = ns
@@ -54,10 +51,7 @@ local defaults = {
 	global = {
 		version = -1
 	},
-	profile = {
-		autoLoadEditModeLayout = true,
-		editModeLayout = ns.Prefix
-	}
+	profile = {}
 }
 
 ns.exportableSettings, ns.exportableLayouts = {}, {}

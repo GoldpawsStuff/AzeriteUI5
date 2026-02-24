@@ -66,13 +66,7 @@ VehicleSeat.PrepareFrames = function(self)
 	self.frame:ClearAllPoints()
 	self.frame:SetParent(UIParent)
 	self.frame:SetFrameStrata("BACKGROUND")
-
-	-- This will prevent UIParent_ManageFramePositions() from being executed
-	-- *for some reason it's not working? Why not?
-	-- *taints the editmode in retail.
-	if (not ns.WoW10) then
-		self.frame.IsShown = function() return false end
-	end
+	self.frame.IsShown = function() return false end
 
 	self:SecureHook(self.frame, "SetPoint", "UpdatePositionAndScale")
 end

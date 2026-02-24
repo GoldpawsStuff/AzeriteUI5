@@ -1,0 +1,48 @@
+## Interface: 11508
+## IconTexture: Interface\Addons\AzeriteUI\Assets\power-crystal-ice-icon.tga
+
+## Title: |cff4488bbAzerite|r |cfffafafaUI|r |cffcccccc5.2|r
+## Notes: Custom user graphical interface.|n|nDesign by Daniel Troko and Lars Norberg.|nCode by Lars Norberg.|n|n|cff4488ffPayPal|r|cffffffff:|r |n|cffffffffwww.paypal.me/GoldpawsStuff|r|n|n|cff4488ffPatreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/GoldpawsStuff|r
+## Version: @project-version@
+## Author: Daniel Troko, Lars Norberg
+
+## X-Category: Interface Enhancements
+## X-Curse-Project-ID: 298648
+## X-Wago-ID: R4N2PZKL
+## X-License: Custom
+
+## SavedVariables: AzeriteUI5_DB
+## OptionalDeps: TaintLess, Ace3, Clique, LibKeyBound-1.0, LibEditModeOverride, LibSharedMedia-3.0, !LibUIDropDownMenu, LibMoreEvents-1.0, LibClassicDurations, LibClassicSwingTimerAPI, LibHealComm-4.0
+
+# Fontstyles
+Fontstyles_Classic.xml
+
+# Protect the environment
+Core\Private.lua
+
+# Compatibility
+Core\Compatibility.lua
+
+# Libraries
+Libs\Libs_Vanilla.xml
+
+# Addon localization
+Locale\Locale.xml
+
+# Addon core
+Core\Core.xml
+
+# Finalize the environment
+Core\Finalize.lua
+
+# Options Menu
+Options\Options.xml
+
+# Static Layouts
+Layouts\Layouts.xml
+
+# Addon components
+Components\Components.xml
+
+# Resolve Conflicts
+Core\Conflicts.lua

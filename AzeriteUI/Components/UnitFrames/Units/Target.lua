@@ -27,6 +27,7 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local TargetFrameMod = ns:NewModule("TargetFrame", ns.UnitFrameModule, "LibMoreEvents-1.0")
+TargetFrameMod:SetEnabledState(false)
 
 -- Lua API
 local next = next
@@ -1027,4 +1028,18 @@ TargetFrameMod.OnEnable = function(self)
 	self:CreateAnchor(HUD_EDIT_MODE_TARGET_FRAME_LABEL or TARGET)
 
 	ns.MovableModulePrototype.OnEnable(self)
+end
+
+TargetFrameMod.OnInitialize = function(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+end
+
+TargetFrameMod.DelayedEnable = function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+
+	ns.UnitFrameModule.OnInitialize(self)
+
+	self:Enable()
+
+	self.frame:UpdateAllElements("DelayedEnable")
 end

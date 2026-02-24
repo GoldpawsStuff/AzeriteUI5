@@ -27,6 +27,7 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local PetFrameMod = ns:NewModule("PetFrame", ns.UnitFrameModule, "LibMoreEvents-1.0")
+PetFrameMod:SetEnabledState(false)
 
 -- Lua API
 local unpack = unpack
@@ -432,7 +433,6 @@ local style = function(self, unit)
 end
 
 PetFrameMod.CreateUnitFrames = function(self)
-
 	local unit, name = "pet", "Pet"
 
 	oUF:RegisterStyle(ns.Prefix..name, style)
@@ -440,46 +440,50 @@ PetFrameMod.CreateUnitFrames = function(self)
 
 	self.frame = ns.UnitFrame.Spawn(unit, ns.Prefix.."UnitFrame"..name)
 
-	-- Vehicle switching is currently broken in Wrath.
-	--if (ns.IsCata) then
+	local enabled = true
 
-		local enabled = true
+	self.frame.Enable = function(self)
+		enabled = true
+		RegisterAttributeDriver(self, "unit", "[vehicleui]player; pet")
+		RegisterAttributeDriver(self, "state-visibility", "[@pet,exists]show;hide")
+		--self:Show()
+	end
 
-		self.frame.Enable = function(self)
-			enabled = true
-			RegisterAttributeDriver(self, "unit", "[vehicleui]player; pet")
-			RegisterAttributeDriver(self, "state-visibility", "[@pet,exists]show;hide")
-			--self:Show()
-		end
+	self.frame.Disable = function(self)
+		enabled = false
+		UnregisterAttributeDriver(self, "unit")
+		UnregisterAttributeDriver(self, "state-visibility")
+		self:Hide()
+	end
 
-		self.frame.Disable = function(self)
-			enabled = false
-			UnregisterAttributeDriver(self, "unit")
-			UnregisterAttributeDriver(self, "state-visibility")
-			self:Hide()
-		end
+	self.frame.IsEnabled = function(self)
+		return enabled
+	end
 
-		self.frame.IsEnabled = function(self)
-			return enabled
-		end
+	UnregisterUnitWatch(self.frame)
+	self.frame:SetAttribute("toggleForVehicle", false)
 
-		UnregisterUnitWatch(self.frame)
-		self.frame:SetAttribute("toggleForVehicle", false)
-
-		--if (self.db.profile.enabled) then
-		--	self.frame:Enable()
-		--else
-		--	self.frame:Disable()
-		--end
-
+	--if (self.db.profile.enabled) then
+	--	self.frame:Enable()
+	--else
+	--	self.frame:Disable()
 	--end
-
 end
 
 PetFrameMod.OnEnable = function(self)
-
 	self:CreateUnitFrames()
 	self:CreateAnchor(PET)
 
 	ns.MovableModulePrototype.OnEnable(self)
+end
+
+PetFrameMod.OnInitialize = function(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+end
+
+PetFrameMod.DelayedEnable = function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+	ns.UnitFrameModule.OnInitialize(self)
+	self:Enable()
+	self.frame:UpdateAllElements("DelayedEnable")
 end

@@ -30,28 +30,23 @@ local _, ns = ...
 local FixBlizzardBugs = ns:NewModule("FixBlizzardBugs")
 
 -- Workaround for https://worldofwarcraft.blizzard.com/en-gb/news/24030413/hotfixes-november-16-2023
-if (ns.WoW10 and ns.ClientBuild >= 52188) then
+local InCombatLockdown = _G.InCombatLockdown
 
-	local InCombatLockdown = _G.InCombatLockdown
-
-	if (issecurevariable("IsItemInRange")) then
-		local IsItemInRange = _G.IsItemInRange
-		_G.IsItemInRange = function(...)
-			return InCombatLockdown() and true or IsItemInRange(...)
-		end
+if (issecurevariable("IsItemInRange")) then
+	local IsItemInRange = _G.IsItemInRange
+	_G.IsItemInRange = function(...)
+		return InCombatLockdown() and true or IsItemInRange(...)
 	end
+end
 
-	if (issecurevariable("UnitInRange")) then
-		local UnitInRange = _G.UnitInRange
-		_G.UnitInRange = function(...)
-			return InCombatLockdown() and true or UnitInRange(...)
-		end
+if (issecurevariable("UnitInRange")) then
+	local UnitInRange = _G.UnitInRange
+	_G.UnitInRange = function(...)
+		return InCombatLockdown() and true or UnitInRange(...)
 	end
-
 end
 
 FixBlizzardBugs.OnInitialize = function(self)
-
 	-- Don't call this prior to our own addon loading,
 	-- or it'll completely mess up the loading order.
 	LoadAddOn("Blizzard_Channels")

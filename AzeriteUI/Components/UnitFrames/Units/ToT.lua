@@ -27,6 +27,7 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local ToTFrameMod = ns:NewModule("ToTFrame", ns.UnitFrameModule, "LibMoreEvents-1.0")
+ToTFrameMod:SetEnabledState(false)
 
 -- Lua API
 local unpack = unpack
@@ -439,4 +440,18 @@ ToTFrameMod.OnEnable = function(self)
 	self:CreateAnchor(SHOW_TARGET_OF_TARGET_TEXT)
 
 	ns.MovableModulePrototype.OnEnable(self)
+end
+
+ToTFrameMod.OnInitialize = function(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+end
+
+ToTFrameMod.DelayedEnable = function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "DelayedEnable")
+
+	ns.UnitFrameModule.OnInitialize(self)
+
+	self:Enable()
+
+	self.frame:UpdateAllElements("DelayedEnable")
 end

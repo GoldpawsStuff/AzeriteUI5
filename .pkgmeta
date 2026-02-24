@@ -14,11 +14,6 @@ externals:
     AzeriteUI/Libs/AceConfig-3.0: https://repos.wowace.com/wow/ace3/trunk/AceConfig-3.0
     AzeriteUI/Libs/AceSerializer-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceSerializer-3.0
     AzeriteUI/Libs/AceComm-3.0: https://repos.curseforge.com/wow/ace3/trunk/AceComm-3.0
-    AzeriteUI/Libs/LibSharedMedia-3.0: https://repos.curseforge.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
-    AzeriteUI/Libs/LibUIDropDownMenu: https://repos.wowace.com/wow/libuidropdownmenu/trunk/LibUIDropDownMenu
-    AzeriteUI/Libs/LibEditModeOverride: https://github.com/plusmouse/LibEditModeOverride.git
-    AzeriteUI/Libs/LibClassicDurations: https://repos.curseforge.com/wow/libclassicdurations
-    AzeriteUI/Libs/LibMoreEvents-1.0: https://github.com/GoldpawsStuff/LibMoreEvents-1.0
 
 move-folders:
     AzeriteUI/AzeriteUI: AzeriteUI

@@ -28,7 +28,6 @@ local _, ns = ...
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
 local MovableFramesManager = ns:NewModule("MovableFramesManager", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
-local EMP --= ns:GetModule("EditMode", true)
 
 local AceGUI = LibStub("AceGUI-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
@@ -53,7 +52,7 @@ local tostring = tostring
 local type = type
 local unpack = unpack
 
--- GLOBALS: CreateFrame, EditModeManagerFrame, UIParent, WorldFrame
+-- GLOBALS: CreateFrame, UIParent, WorldFrame
 
 -- Addon API
 local Colors = ns.Colors
@@ -1110,57 +1109,6 @@ MovableFramesManager.GenerateMFMFrame = function(self)
 	}
 	orderoffset = orderoffset + 20
 
-	-- EditMode integration
-	if (EMP) then
-		options.args.editmodeHeader = {
-			type = "header",
-			order = orderoffset + 30,
-			name = L["HUD Edit Mode"]
-		}
-		options.args.editmodeCreateDescription = {
-			type = "description",
-			order = orderoffset + 31,
-			fontSize = "medium",
-			hidden = function(info)
-				return MovableFramesManager.incombat or EMP:DoesDefaultLayoutExist()
-			end,
-			name = string_format(L["Click the button below to create an EditMode preset named '%s'."], ns.Prefix)
-		}
-		options.args.editmodeCreateButton = {
-			type = "execute",
-			order = orderoffset + 32,
-			width = "full",
-			name = L["Create EditMode Layout"],
-			hidden = function(info)
-				return MovableFramesManager.incombat or EMP:DoesDefaultLayoutExist()
-			end,
-			func = function(info)
-				EMP:ResetLayouts()
-			end
-		}
-		options.args.editmodeResetDescription = {
-			type = "description",
-			order = orderoffset + 33,
-			fontSize = "medium",
-			hidden = function(info)
-				return MovableFramesManager.incombat or not EMP:CanEditActiveLayout()
-			end,
-			name = L["Click the button below to reset the currently selected EditMode preset to positions matching the default layout."]
-		}
-		options.args.editmodeResetPreset = {
-			type = "execute",
-			order = orderoffset + 34,
-			width = "full",
-			name = L["Reset EditMode Layout"],
-			hidden = function(info)
-				return MovableFramesManager.incombat or not EMP:CanEditActiveLayout()
-			end,
-			func = function(info)
-				EMP:ApplySystems()
-			end
-		}
-	end
-
 	local colorize = function(msg)
 		msg = string.gsub(msg, "<", "|cffffd200<")
 		msg = string.gsub(msg, ">", ">|r")
@@ -1359,27 +1307,8 @@ MovableFramesManager.OnEvent = function(self, event, ...)
 			end
 		end
 
-	elseif (event == "PLAYER_LOGIN") then
-		if (EMP) then
-			return EMP:LoadLayouts()
-		end
-
 	elseif (event == "PLAYER_ENTERING_WORLD") then
-		local isInitialLogin, isReloadingUi = ...
-		if (isInitialLogin or isReloadingUi) then
-			if (EMP) then
-				self:RegisterEvent("EDIT_MODE_LAYOUTS_UPDATED", "OnEvent")
-			end
-		end
 		self.incombat = InCombatLockdown()
-
-	elseif (event == "EDIT_MODE_LAYOUTS_UPDATED") then
-		local _, fromServer = ...
-		if (fromServer) then
-			if (EMP) then
-				EMP:LoadLayouts()
-			end
-		end
 	end
 
 	if (event == "UI_SCALE_CHANGED" or event == "DISPLAY_SIZE_CHANGED") then
@@ -1439,7 +1368,6 @@ MovableFramesManager.OnInitialize = function(self)
 
 	self:RegisterChatCommand("lock", "ToggleMFMFrame")
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED", "OnEvent")
-	self:RegisterEvent("PLAYER_LOGIN", "OnEvent")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")

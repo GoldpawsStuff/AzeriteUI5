@@ -46,19 +46,6 @@ local hideActionBarFrame = function(frame, clearEvents)
 		if (clearEvents) then
 			frame:UnregisterAllEvents()
 		end
-
-		-- Remove some EditMode hooks
-		if (frame.system) then
-			-- Purge the show state to avoid any taint concerns
-			purgeKey(frame, "isShownExternal")
-		end
-
-		-- EditMode overrides the Hide function, avoid calling it as it can taint
-		if (frame.HideBase) then
-			frame:HideBase()
-		else
-			frame:Hide()
-		end
 		frame:SetParent(ns.Hider)
 	end
 end

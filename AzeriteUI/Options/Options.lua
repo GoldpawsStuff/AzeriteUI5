@@ -30,6 +30,7 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 
 local Options = ns:NewModule("Options", "LibMoreEvents-1.0", "AceConsole-3.0", "AceHook-3.0")
+Options:SetEnabledState(false)
 
 -- Lua API
 local math_max = math.max
@@ -270,13 +271,14 @@ Options.OnEvent = function(self, event, ...)
 			self:GenerateOptionsMenu()
 			self:UnregisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 		end
-		if (ns.IsRetail) and (EditModeManagerFrame and EditModeManagerFrame.accountSettings ~= nil) then
-			self:Refresh()
-		end
 
 	elseif (event == "PLAYER_TALENT_UPDATE") then
 		self:Refresh()
 	end
+end
+
+Options.OnInitialize = function(self)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ExtraDelayedEnable")
 end
 
 Options.OnEnable = function(self)
@@ -285,4 +287,9 @@ Options.OnEnable = function(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 	self:RegisterEvent("PLAYER_TALENT_UPDATE", "OnEvent")
 	ns.RegisterCallback(self, "OptionsNeedRefresh", "Refresh")
+	self:OnEvent("PLAYER_ENTERING_WORLD", true)
+end
+
+Options.ExtraDelayedEnable = function(self)
+	C_Timer.After(.1, function() Options:OnEnable() end)
 end

@@ -67,9 +67,11 @@ ns.Private.IsRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 ns.Private.IsClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
 ns.Private.IsTBC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 ns.Private.IsWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
-ns.Private.IsCata = (version >= 40400) and (version < 50000)
+ns.Private.IsCata = (WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC)
+ns.Private.IsMists = (WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC)
 ns.Private.WoW10 = version >= 100000
 ns.Private.WoW11 = version >= 110000
+ns.Private.WoW12 = version >= 120000
 
 -- Developer Mode constants
 ------------------------------------------------------
