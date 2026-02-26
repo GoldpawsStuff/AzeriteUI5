@@ -146,12 +146,6 @@ local DispelTypesBySpec = {
 		Poison = true,
 		Disease = function() return IsUsableSpell(GetSpellInfo(374251)) end,
 		Curse = function() return IsUsableSpell(GetSpellInfo(374251)) end
-	},
-	[577] = {
-		Magic = function() return GetSpellInfo(205604) end, -- Reverse Magic
-	},
-	[581] = {
-		Magic = function() return GetSpellInfo(205604) end, -- Reverse Magic
 	}
 }
 
