@@ -4,9 +4,15 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 2026-02-24
+## [Unreleased] 2026-02-26
+### Added
+- Added experimental support for TBC Anniversary. Work in progress.
+
+### Changed
 - Restyled a lot of code and folders to be Classic Era only. 
-- Removed support for Retail, as WoW patch 12.0.1 completely have broken orbs and reversed bars. If Blizzard backtracks and make things possible again, I will continue work on AzeriteUI6 for Retail only, but until then, Blizzard officially killed AzeriteUI for Retail. 
+
+### Removed
+- Removed support for Retail, as WoW patch 12.0.1 completely have broken orbs and reversed bars, amongst other things. I have another project aimed specifically at Retail in the works.
 
 ## [5.2.208-Release] 2025-06-18
 - Updated for Retail client patch 11.1.7.
