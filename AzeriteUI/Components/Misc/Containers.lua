@@ -52,15 +52,12 @@ Containers.AquireBagButtons = function(self)
 	-- Retrieve the first slot button and the backpack
 	local firstSlot = CharacterBag0Slot
 	local backpack = ContainerFrame1
-	local combined = ContainerFrameCombinedBags -- Retail
-	local reagentSlot = CharacterReagentBag0Slot -- Retail
-	local keyring = KeyRingButton -- Classic, Wrath
+	local keyring -- = KeyRingButton -- Bugs out, fix it!
 	local slots = {
 		"CharacterBag0Slot",
 		"CharacterBag1Slot",
 		"CharacterBag2Slot",
-		"CharacterBag3Slot",
-		"CharacterReagentBag0Slot" -- >= 10.0.0
+		"CharacterBag3Slot"
 	}
 
 	-- Try to avoid the potential error with anima deposit animations.
@@ -82,7 +79,7 @@ Containers.AquireBagButtons = function(self)
 
 		-- Rearrange slots
 		-- *Dragonflight features a reagent bag slot
-		local slotSize = reagentSlot and 24 or 30
+		local slotSize = 30
 		local previous
 		for i,slotName in ipairs(slots) do
 
@@ -123,42 +120,6 @@ Containers.AquireBagButtons = function(self)
 			keyring:SetPoint("RIGHT", previous, "LEFT", 0, 0)
 			previous = keyring
 		end
-	end
-
-	if (combined) then
-
-		self:HookScript(backpack, "OnShow", function()
-			firstSlot:SetParent(backpack)
-			firstSlot:ClearAllPoints()
-			firstSlot:SetPoint("TOPRIGHT", backpack, "BOTTOMRIGHT", -6, 4)
-
-			for _,slotName in ipairs(slots) do
-				-- Always check for existence,
-				-- because nothing is ever guaranteed.
-				local slot = _G[slotName]
-				if (slot) then
-					slot:SetParent(backpack)
-				end
-			end
-
-		end)
-
-		self:HookScript(combined, "OnShow", function()
-			firstSlot:SetParent(combined)
-			firstSlot:ClearAllPoints()
-			firstSlot:SetPoint("TOPRIGHT", combined, "BOTTOMRIGHT", -6, 4)
-
-			for _,slotName in ipairs(slots) do
-				-- Always check for existence,
-				-- because nothing is ever guaranteed.
-				local slot = _G[slotName]
-				if (slot) then
-					slot:SetParent(combined)
-				end
-			end
-
-		end)
-
 	end
 end
 
