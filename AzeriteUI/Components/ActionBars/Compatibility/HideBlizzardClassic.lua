@@ -24,8 +24,8 @@
 
 --]]
 local _, ns = ...
---if (not ns.IsClassic) then return end
-do return end
+
+if (not ns.IsClassic) then return end
 
 if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return end
 
@@ -72,7 +72,6 @@ BlizzardABDisabler.NPE_LoadUI = function(self)
 end
 
 BlizzardABDisabler.HideBlizzard = function(self)
-
 
 	MultiBarBottomLeft:SetParent(ns.Hider)
 	MultiBarBottomRight:SetParent(ns.Hider)
