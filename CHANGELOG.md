@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added an option in the `/az` options menu to always show chat buttons.
 
 ### Changed
-- Restyled a lot of code and folders to be Classic Era only.
+- Restyled a lot of code and folders to be Classic Era (including Season of Discovery) and TBC Anniversary only.
 
 ### Removed
 - Removed support for Retail, as WoW patch 12.0.1 completely have broken orbs and reversed bars, amongst other things. I have another project aimed specifically at Retail in the works.
