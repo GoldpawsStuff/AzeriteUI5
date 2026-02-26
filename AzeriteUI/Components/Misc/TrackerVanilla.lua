@@ -25,7 +25,7 @@
 --]]
 local _, ns = ...
 
-if (not ns.IsClassic) then return end
+if (not ns.IsClassic or not ns.IsTBC) then return end
 
 local Tracker = ns:NewModule("Tracker", ns.MovableModulePrototype, "LibMoreEvents-1.0", "AceHook-3.0")
 

@@ -129,45 +129,42 @@ FlavorDifferences.OnInitialize = function(self)
 	-- and instead will show a red warning message on the top of the screen,
 	-- directing the player to either join the bg or leave the queue
 	-- using the bg finder eye located at the border of the minimap.
-	if (ns.IsClassic) then
+	local battleground = CreateFrame("Frame", nil, UIParent)
+	battleground:SetSize(574, 40)
+	battleground:SetPoint("TOP", 0, -29)
+	battleground:Hide()
+	battleground.Text = battleground:CreateFontString(nil, "OVERLAY")
+	battleground.Text:SetFontObject(GetFont(18,true))
+	battleground.Text:SetText(L["You can now enter a new battleground, right-click the eye icon on the minimap to enter or leave!"])
+	battleground.Text:SetPoint("TOP")
+	battleground.Text:SetJustifyH("CENTER")
+	battleground.Text:SetWidth(battleground:GetWidth())
+	battleground.Text:SetTextColor(1, 0, 0)
 
-		local battleground = CreateFrame("Frame", nil, UIParent)
-		battleground:SetSize(574, 40)
-		battleground:SetPoint("TOP", 0, -29)
-		battleground:Hide()
-		battleground.Text = battleground:CreateFontString(nil, "OVERLAY")
-		battleground.Text:SetFontObject(GetFont(18,true))
-		battleground.Text:SetText(L["You can now enter a new battleground, right-click the eye icon on the minimap to enter or leave!"])
-		battleground.Text:SetPoint("TOP")
-		battleground.Text:SetJustifyH("CENTER")
-		battleground.Text:SetWidth(battleground:GetWidth())
-		battleground.Text:SetTextColor(1, 0, 0)
+	local animation = battleground:CreateAnimationGroup()
+	animation:SetLooping("BOUNCE")
 
-		local animation = battleground:CreateAnimationGroup()
-		animation:SetLooping("BOUNCE")
+	local fadeOut = animation:CreateAnimation("Alpha")
+	fadeOut:SetFromAlpha(1)
+	fadeOut:SetToAlpha(.3)
+	fadeOut:SetDuration(.5)
+	fadeOut:SetSmoothing("IN_OUT")
 
-		local fadeOut = animation:CreateAnimation("Alpha")
-		fadeOut:SetFromAlpha(1)
-		fadeOut:SetToAlpha(.3)
-		fadeOut:SetDuration(.5)
-		fadeOut:SetSmoothing("IN_OUT")
+	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS", function()
+		for i = 1, MAX_BATTLEFIELD_QUEUES do
+			local status = GetBattlefieldStatus(i)
 
-		self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS", function()
-			for i = 1, MAX_BATTLEFIELD_QUEUES do
-				local status = GetBattlefieldStatus(i)
+			if (status == "confirm") then
+				StaticPopup_Hide("CONFIRM_BATTLEFIELD_ENTRY")
 
-				if (status == "confirm") then
-					StaticPopup_Hide("CONFIRM_BATTLEFIELD_ENTRY")
+				battleground:Show()
+				animation:Play()
 
-					battleground:Show()
-					animation:Play()
-
-					return
-				end
+				return
 			end
-			battleground:Hide()
-			animation:Stop()
-		end)
-	end
+		end
+		battleground:Hide()
+		animation:Stop()
+	end)
 
 end

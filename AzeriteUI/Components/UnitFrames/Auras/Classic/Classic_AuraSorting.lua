@@ -25,8 +25,6 @@
 --]]
 local _, ns = ...
 
-if (not ns.IsClassic) then return end
-
 ns.AuraSorts = ns.AuraSorts or {}
 
 -- Lua API

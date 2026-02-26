@@ -456,21 +456,8 @@ PetBar.UpdateVisibilityDriver = function(self)
 
 	local visdriver
 	if (config.enabled) then
-
 		visdriver = "[petbattle]hide;"
-
-		if (ns.IsClassic) then
-			visdriver = visdriver.."[@pet,exists]show;"
-
-		elseif (ns.IsCata) then
-			-- UNTESTED!
-			visdriver = visdriver.."[@pet,exists,nopossessbar,nooverridebar,noshapeshift,novehicleui]show;"
-
-		elseif (ns.IsRetail) then
-			-- Experimental change to avoid duplicate bars on some world quests.
-			visdriver = visdriver.."[@pet,exists,nopossessbar,nooverridebar,noshapeshift,novehicleui]show;"
-		end
-
+		visdriver = visdriver.."[@pet,exists]show;"
 		visdriver = visdriver.."hide"
 	end
 

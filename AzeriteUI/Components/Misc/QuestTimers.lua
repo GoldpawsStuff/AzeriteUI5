@@ -25,7 +25,7 @@
 --]]
 local _, ns = ...
 
-if (not ns.IsClassic or not QuestTimerFrame) then return end
+if (not QuestTimerFrame) then return end
 
 local QuestTimers = ns:NewModule("QuestTimers", ns.MovableModulePrototype, "LibMoreEvents-1.0")
 

@@ -33,100 +33,28 @@ local GetMedia = ns.API.GetMedia
 
 MicroMenu.SpawnButtons = function(self)
 
-	-- Retail
 	local labels = {
 		CharacterMicroButton = CHARACTER_BUTTON,
-		ProfessionMicroButton = TRADE_SKILLS,
 		SpellbookMicroButton = SPELLBOOK_ABILITIES_BUTTON,
-		TalentMicroButton = TALENTS_BUTTON,
-		AchievementMicroButton = ACHIEVEMENT_BUTTON,
+		TalentMicroButton = TALENTS,
 		QuestLogMicroButton = QUESTLOG_BUTTON,
-		QuickJoinToastButton = SOCIALS,
-		GuildMicroButton = LOOKINGFORGUILD,
-		LFDMicroButton = DUNGEONS_BUTTON,
-		CollectionsMicroButton = COLLECTIONS,
-		EJMicroButton = ADVENTURE_JOURNAL or ENCOUNTER_JOURNAL,
-		StoreMicroButton = BLIZZARD_STORE,
-		MainMenuMicroButton = MAINMENU_BUTTON
+		SocialsMicroButton = SOCIAL_BUTTON,
+		WorldMapMicroButton = WORLDMAP_BUTTON,
+		LFGMicroButton = LFG_BUTTON,
+		MainMenuMicroButton = MAINMENU_BUTTON,
+		HelpMicroButton = HELP_BUTTON
 	}
 
-	-- Cata Classic
-	if (ns.IsCata) then
-		labels = {
-			CharacterMicroButton = CHARACTER_BUTTON,
-			SpellbookMicroButton = SPELLBOOK_ABILITIES_BUTTON,
-			TalentMicroButton = TALENTS_BUTTON,
-			AchievementMicroButton = ACHIEVEMENT_BUTTON,
-			QuestLogMicroButton = QUESTLOG_BUTTON,
-			SocialsMicroButton = SOCIALS,
-			PVPMicroButton = PLAYER_V_PLAYER,
-			LFGMicroButton = LFG_BUTTON,
-			MainMenuMicroButton = MAINMENU_BUTTON,
-			HelpMicroButton = HELP_BUTTON
-		}
-	end
-
-	-- Classic Era
-	if (ns.IsClassic) then
-		labels = {
-			CharacterMicroButton = CHARACTER_BUTTON,
-			SpellbookMicroButton = SPELLBOOK_ABILITIES_BUTTON,
-			TalentMicroButton = TALENTS,
-			QuestLogMicroButton = QUESTLOG_BUTTON,
-			SocialsMicroButton = SOCIAL_BUTTON,
-			WorldMapMicroButton = WORLDMAP_BUTTON,
-			LFGMicroButton = LFG_BUTTON,
-			MainMenuMicroButton = MAINMENU_BUTTON,
-			HelpMicroButton = HELP_BUTTON
-		}
-	end
-
-	-- Retail
 	local buttons = {
 		CharacterMicroButton,
-		ProfessionMicroButton,
 		SpellbookMicroButton,
 		TalentMicroButton,
-		AchievementMicroButton,
 		QuestLogMicroButton,
-		QuickJoinToastButton,
-		GuildMicroButton,
-		LFDMicroButton,
-		CollectionsMicroButton,
-		EJMicroButton,
-		StoreMicroButton,
-		MainMenuMicroButton
+		SocialsMicroButton,
+		WorldMapMicroButton,
+		MainMenuMicroButton,
+		HelpMicroButton
 	}
-
-	-- Wrath Classic
-	if (ns.IsCata) then
-		buttons = {
-			CharacterMicroButton,
-			SpellbookMicroButton,
-			TalentMicroButton,
-			AchievementMicroButton,
-			QuestLogMicroButton,
-			SocialsMicroButton,
-			PVPMicroButton,
-			LFGMicroButton,
-			MainMenuMicroButton,
-			HelpMicroButton
-		}
-	end
-
-	-- Classic
-	if (ns.IsClassic) then
-		buttons = {
-			CharacterMicroButton,
-			SpellbookMicroButton,
-			TalentMicroButton,
-			QuestLogMicroButton,
-			SocialsMicroButton,
-			WorldMapMicroButton,
-			MainMenuMicroButton,
-			HelpMicroButton
-		}
-	end
 
 	self.buttons = {}
 

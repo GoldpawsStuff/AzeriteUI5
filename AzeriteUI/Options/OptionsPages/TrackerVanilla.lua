@@ -25,8 +25,6 @@
 --]]
 local _, ns = ...
 
-if (not ns.IsClassic) then return end
-
 local L = LibStub("AceLocale-3.0"):GetLocale((...))
 
 local Options = ns:GetModule("Options")

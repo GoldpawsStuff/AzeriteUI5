@@ -99,7 +99,7 @@ local FAILED = _G.FAILED or 'Failed'
 local INTERRUPTED = _G.INTERRUPTED or 'Interrupted'
 local CASTBAR_STAGE_DURATION_INVALID = -1 -- defined in FrameXML/CastingBarFrame.lua
 
-local LCC, EventFunctions = oUF.isClassic and LibStub('LibClassicCasterino', true), {}
+local LCC, EventFunctions = LibStub('LibClassicCasterino', true), {}
 
 local UnitCastingInfo = UnitCastingInfo
 local UnitChannelInfo = UnitChannelInfo

@@ -119,48 +119,17 @@ end
 
 -- Tags
 ---------------------------------------------------------------------
-if (ns.IsRetail) then
-	Events[prefix("*:Absorb")] = "UNIT_ABSORB_AMOUNT_CHANGED"
-	Methods[prefix("*:Absorb")] = function(unit)
-		if (UnitIsDeadOrGhost(unit)) then
-			return
-		else
-			local absorb = UnitGetTotalAbsorbs(unit) or 0
-			if (absorb > 0) then
-				return c_gray.." ("..r..c_normal..absorb..r..c_gray..")"..r
-			end
-		end
-	end
-end
-
 Events[prefix("*:Classification")] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_CHANGED"
-if (oUF.isClassic or oUF.isTBC or oUF.isWrath or oUF.isCata) then
-	Methods[prefix("*:Classification")] = function(unit)
-		local l = UnitEffectiveLevel(unit)
-		local c = UnitClassification(unit)
-		if (c == "worldboss" or (not l) or (l < 1)) then
-			return
-		end
-		if (c == "elite" or c == "rareelite") then
-			return c_red.."+"..r.." "
-		end
-		return " "
+Methods[prefix("*:Classification")] = function(unit)
+	local l = UnitEffectiveLevel(unit)
+	local c = UnitClassification(unit)
+	if (c == "worldboss" or (not l) or (l < 1)) then
+		return
 	end
-else
-	Methods[prefix("*:Classification")] = function(unit)
-		local l = UnitEffectiveLevel(unit)
-		if (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
-			l = UnitBattlePetLevel(unit)
-		end
-		local c = UnitClassification(unit)
-		if (c == "worldboss" or (not l) or (l < 1)) then
-			return
-		end
-		if (c == "elite" or c == "rareelite") then
-			return c_red.."+"..r.." "
-		end
-		return " "
+	if (c == "elite" or c == "rareelite") then
+		return c_red.."+"..r.." "
 	end
+	return " "
 end
 
 Events[prefix("*:Health")] = "UNIT_HEALTH UNIT_MAXHEALTH PLAYER_FLAGS_CHANGED UNIT_CONNECTION GROUP_ROSTER_UPDATE"
@@ -334,42 +303,20 @@ Methods[prefix("*:DeadOrOffline")] = function(unit)
 end
 
 Events[prefix("*:Level")] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_CHANGED"
-if (oUF.isClassic or oUF.isTBC or oUF.isWrath or oUF.isCata) then
-	Methods[prefix("*:Level")] = function(unit, asPrefix)
-		local l = UnitEffectiveLevel(unit)
-		local c = UnitClassification(unit)
-		if (c == "worldboss" or (not l) or (l < 1)) then
-			return T_BOSS
-		end
-		local _,_,_,colorCode = GetDifficultyColorByLevel(l)
-		if (c == "elite" or c == "rareelite") then
-			return colorCode..l..r..c_red.."+"..r
-		end
-		if (asPrefix) then
-			return colorCode..l..r..c_gray..":"..r
-		else
-			return colorCode..l..r
-		end
+Methods[prefix("*:Level")] = function(unit, asPrefix)
+	local l = UnitEffectiveLevel(unit)
+	local c = UnitClassification(unit)
+	if (c == "worldboss" or (not l) or (l < 1)) then
+		return T_BOSS
 	end
-else
-	Methods[prefix("*:Level")] = function(unit, realUnit, asPrefix)
-		local l = UnitEffectiveLevel(unit)
-		if (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
-			l = UnitBattlePetLevel(unit)
-		end
-		local c = UnitClassification(unit)
-		if (c == "worldboss" or (not l) or (l < 1)) then
-			return T_BOSS
-		end
-		local _,_,_,colorCode = GetDifficultyColorByLevel(l)
-		if (c == "elite" or c == "rareelite") then
-			return colorCode..l..r..c_red.."+"..r
-		end
-		if (asPrefix) then
-			return colorCode..l..r..c_gray..":"..r
-		else
-			return colorCode..l..r
-		end
+	local _,_,_,colorCode = GetDifficultyColorByLevel(l)
+	if (c == "elite" or c == "rareelite") then
+		return colorCode..l..r..c_red.."+"..r
+	end
+	if (asPrefix) then
+		return colorCode..l..r..c_gray..":"..r
+	else
+		return colorCode..l..r
 	end
 end
 

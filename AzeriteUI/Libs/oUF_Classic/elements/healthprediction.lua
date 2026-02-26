@@ -259,19 +259,10 @@ local function Enable(self)
 
 		self:RegisterEvent('UNIT_MAXHEALTH', Path)
 		self:RegisterEvent('UNIT_HEAL_PREDICTION', Path)
+		self:RegisterEvent('UNIT_HEALTH_FREQUENT', Path)
+		--self:RegisterEvent('UNIT_HEALTH', Path)
 
-		if(oUF.isClassic) then
-			self:RegisterEvent('UNIT_HEALTH_FREQUENT', Path)
-		else
-			self:RegisterEvent('UNIT_HEALTH', Path)
-		end
-
-		if(oUF.isRetail) then
-			self:RegisterEvent('UNIT_ABSORB_AMOUNT_CHANGED', Path)
-			self:RegisterEvent('UNIT_HEAL_ABSORB_AMOUNT_CHANGED', Path)
-		else
-			element:SetUseHealComm(true)
-		end
+		element:SetUseHealComm(true)
 
 		if(not element.maxOverflow) then
 			element.maxOverflow = 1.05
@@ -348,19 +339,10 @@ local function Disable(self)
 
 		self:UnregisterEvent('UNIT_MAXHEALTH', Path)
 		self:UnregisterEvent('UNIT_HEAL_PREDICTION', Path)
+		self:UnregisterEvent('UNIT_HEALTH_FREQUENT', Path)
+		--self:UnregisterEvent('UNIT_HEALTH', Path)
 
-		if(oUF.isClassic) then
-			self:UnregisterEvent('UNIT_HEALTH_FREQUENT', Path)
-		else
-			self:UnregisterEvent('UNIT_HEALTH', Path)
-		end
-
-		if(oUF.isRetail) then
-			self:UnregisterEvent('UNIT_ABSORB_AMOUNT_CHANGED', Path)
-			self:UnregisterEvent('UNIT_HEAL_ABSORB_AMOUNT_CHANGED', Path)
-		else
-			element:SetUseHealComm(false)
-		end
+		element:SetUseHealComm(false)
 	end
 end
 

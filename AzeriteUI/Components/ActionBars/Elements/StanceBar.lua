@@ -741,11 +741,6 @@ StanceBarMod.OnEnable = function(self)
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORM", "OnEvent")
 	self:RegisterEvent("UPDATE_SHAPESHIFT_FORMS", "OnEvent")
 	self:RegisterEvent("UPDATE_SHAPESHIFT_USABLE", "OnEvent")
-	if (not ns.IsClassic) then
-		self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", "OnEvent")
-		self:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR", "OnEvent")
-		self:RegisterEvent("UPDATE_POSSESS_BAR", "OnEvent")
-	end
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnAnchorEvent")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnAnchorEvent")

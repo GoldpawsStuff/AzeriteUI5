@@ -24,6 +24,8 @@
 
 --]]
 local _, ns = ...
+
+-- Exists in TBC?
 if (ns.IsClassic) then return end
 
 local oUF = ns.oUF

@@ -396,7 +396,7 @@ ClassPowerMod.CreateUnitFrames = function(self)
 end
 
 ClassPowerMod.GetLabel = function(self)
-	return ns.IsClassic and L["Combo Points"] or L["Class Power"]
+	return L["Combo Points"] -- L["Class Power"]
 end
 
 ClassPowerMod.PostUpdateAnchor = function(self)

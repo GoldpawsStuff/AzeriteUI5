@@ -18,15 +18,11 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 assert(oUF, 'oUF not loaded')
 
---local LCD = oUF.isClassic and LibStub('LibClassicDurations', true)
 -- Add in support for LibClassicDurations.
-local LCD
-if (oUF.isClassic) then
-	LCD = LibStub and LibStub("LibClassicDurations", true)
-	if (LCD) then
-		local ADDON, Private = ...
-		LCD:RegisterFrame(Private)
-	end
+local LCD = LibStub and LibStub("LibClassicDurations", true)
+if (LCD) then
+	local ADDON, Private = ...
+	LCD:RegisterFrame(Private)
 end
 
 -- Lua API
@@ -385,15 +381,7 @@ local function UpdateDispelTypes(self, event, unit, ...)
 		if (change and change > 0) then return end -- sometimes this can be nil, for some reason.
 	end
 
-	local dispelTypes
-
-	if(oUF.isRetail) then
-		local specID = GetSpecializationInfo(GetSpecialization() or 1)
-		dispelTypes = specID and DispelTypesBySpec[specID]
-
-	elseif(oUF.isClassic or oUF.isWrath) then
-		dispelTypes = DispelTypesByClass[playerClass]
-	end
+	local dispelTypes = DispelTypesByClass[playerClass]
 
 	self.dispelTypes = dispelTypes and {} or nil
 
@@ -450,16 +438,7 @@ local function Enable(self, unit)
 		end
 
 		self:RegisterEvent('PLAYER_LOGIN', UpdateDispelTypes, true)
-
-		if(oUF.isRetail) then
-			self:RegisterEvent('PLAYER_TALENT_UPDATE', UpdateDispelTypes, true)
-			self:RegisterEvent('UNIT_SPELLCAST_SUCCEEDED', UpdateDispelTypes, true)
-		end
-
-		if(oUF.isClassic or oUF.isWrath) then
-			self:RegisterEvent('CHARACTER_POINTS_CHANGED', UpdateDispelTypes, true)
-		end
-
+		self:RegisterEvent('CHARACTER_POINTS_CHANGED', UpdateDispelTypes, true)
 		self:RegisterEvent('UNIT_AURA', Update)
 
 		return true
@@ -471,16 +450,7 @@ local function Disable(self)
 	if(element) then
 
 		self:UnregisterEvent('PLAYER_LOGIN', UpdateDispelTypes)
-
-		if(oUF.isRetail) then
-			self:UnregisterEvent('PLAYER_TALENT_UPDATE', UpdateDispelTypes)
-			self:UnregisterEvent('UNIT_SPELLCAST_SUCCEEDED', UpdateDispelTypes)
-		end
-
-		if(oUF.isClassic or oUF.isWrath) then
-			self:UnregisterEvent('CHARACTER_POINTS_CHANGED', UpdateDispelTypes)
-		end
-
+		self:UnregisterEvent('CHARACTER_POINTS_CHANGED', UpdateDispelTypes)
 		self:UnregisterEvent('UNIT_AURA', Update)
 
 		element:Hide()

@@ -25,8 +25,6 @@
 --]]
 local _, ns = ...
 
-if (not ns.IsClassic) then return end
-
 -- Speed!
 local Add = ns.AuraData.Add
 

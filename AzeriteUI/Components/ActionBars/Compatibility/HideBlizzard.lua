@@ -105,6 +105,9 @@ BlizzardABDisabler.HideBlizzard = function(self)
 	hideActionBarFrame(StatusTrackingBarManager, false)
 	hideActionBarFrame(OverrideActionBar, true)
 
+	-- TODO: Check out if this actually works
+	hideActionBarFrame(MainActionBar.ActionBarPageNumber, true)
+
 	-- these events drive visibility, we want the MainMenuBar to remain invisible
 	MainMenuBar:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	MainMenuBar:UnregisterEvent("PLAYER_REGEN_DISABLED")

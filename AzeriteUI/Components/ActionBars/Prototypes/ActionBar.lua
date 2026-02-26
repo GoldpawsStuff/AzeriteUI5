@@ -390,7 +390,6 @@ end
 ActionBar.UpdateStateDriver = function(self)
 	if (InCombatLockdown()) then return end
 
-	-- CATA: check stances and states
 	local statedriver
 	if (self.id == 1) then
 		statedriver = "[overridebar] possess; [possessbar] possess; [shapeshift] possess; [bonusbar:5] dragon; [form,noform] 0; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6"
@@ -408,15 +407,8 @@ ActionBar.UpdateStateDriver = function(self)
 				statedriver = statedriver .. "; [bonusbar:1] 7"
 			end
 
-		elseif ((ns.IsCata) and playerClass == "PRIEST") then
-			statedriver = statedriver .. "; [bonusbar:1] 7" -- Shadowform
-
 		elseif (playerClass == "WARRIOR") then
-			if (ns.IsCata) then
-				statedriver = statedriver .. "; [bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9"
-			elseif (ns.IsClassic) then
-				statedriver = statedriver .. "; [bonusbar:1] 7; [bonusbar:2] 8"
-			end
+			statedriver = statedriver .. "; [bonusbar:1] 7; [bonusbar:2] 8"
 		end
 
 		statedriver = statedriver .. "; 1"

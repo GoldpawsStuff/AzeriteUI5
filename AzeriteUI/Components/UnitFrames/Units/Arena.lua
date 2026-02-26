@@ -25,8 +25,6 @@
 --]]
 local _, ns = ...
 
-if (ns.IsClassic) then return end
-
 local oUF = ns.oUF
 
 local L = LibStub("AceLocale-3.0"):GetLocale((...))

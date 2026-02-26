@@ -71,19 +71,12 @@ button.isPlayer - indicates if the aura caster is the player or their vehicle (b
 
 local _, ns = ...
 local oUF = ns.oUF
-if (ns.oUF.isRetail) then
-	return
-end
 
---local LCD = oUF.isClassic and LibStub('LibClassicDurations', true)
 -- Add in support for LibClassicDurations.
-local LCD
-if (oUF.isClassic) then
-	LCD = LibStub and LibStub("LibClassicDurations", true)
-	if (LCD) then
-		local ADDON, Private = ...
-		LCD:RegisterFrame(Private)
-	end
+local LCD = LibStub and LibStub("LibClassicDurations", true)
+if (LCD) then
+	local ADDON, Private = ...
+	LCD:RegisterFrame(Private)
 end
 
 local VISIBLE = 1

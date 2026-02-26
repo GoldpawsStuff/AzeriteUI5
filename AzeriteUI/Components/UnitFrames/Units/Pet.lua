@@ -33,7 +33,7 @@ PetFrameMod:SetEnabledState(false)
 local unpack = unpack
 local string_gsub = string.gsub
 
-local PetHasHappiness = (ns.IsClassic and ns.PlayerClass == "HUNTER")
+local PetHasHappiness = ns.PlayerClass == "HUNTER"
 
 local defaults = { profile = ns:Merge({}, ns.MovableModulePrototype.defaults) }
 

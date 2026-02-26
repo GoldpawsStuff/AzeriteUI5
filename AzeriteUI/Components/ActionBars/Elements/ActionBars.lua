@@ -447,44 +447,6 @@ ActionBarMod.CreateBars = function(self)
 
 		self.bars[i] = bar
 	end
-
-	if (not ns.IsClassic) then
-
-		local petBattleController = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-		petBattleController:SetAttribute("_onstate-petbattle", string_format([[
-			if (newstate == "petbattle") then
-				b = b or table.new();
-				b[1], b[2], b[3], b[4], b[5], b[6] = "%s", "%s", "%s", "%s", "%s", "%s";
-				for i = 1,6 do
-					local button, vbutton = "CLICK "..b[i]..":LeftButton", "ACTIONBUTTON"..i
-					for k=1,select("#", GetBindingKey(button)) do
-						local key = select(k, GetBindingKey(button))
-						self:SetBinding(true, key, vbutton)
-					end
-					-- do the same for the default UIs bindings
-					for k=1,select("#", GetBindingKey(vbutton)) do
-						local key = select(k, GetBindingKey(vbutton))
-						self:SetBinding(true, key, vbutton)
-					end
-				end
-			else
-				self:ClearBindings()
-			end
-		]], (function(b) local t={}; for i=1,6 do t[i]=b[i]:GetName() end; return unpack(t) end)(self.bars[1].buttons)))
-
-		self.bars[1].Disable = function(self)
-			ns.ActionBar.prototype.Disable(self)
-			ClearOverrideBindings(self)
-			UnregisterStateDriver(petBattleController, "petbattle")
-		end
-
-		self.bars[1].Enable = function(self)
-			ns.ActionBar.prototype.Enable(self)
-			self:UpdateBindings()
-			RegisterStateDriver(petBattleController, "petbattle", "[petbattle]petbattle;nopetbattle")
-		end
-	end
-
 end
 
 ActionBarMod.CreateAnchors = function(self)

@@ -87,8 +87,8 @@ MinimapMod.GenerateDefaults = function(self)
 	defaults.profile.savedPosition = {
 		scale = mapScale * ns.API.GetEffectiveScale(),
 		[1] = "BOTTOMRIGHT",
-		[2] = -(40 - ((ns.IsCata or ns.IsClassic) and 10 or 0)) * (mapScale * ns.API.GetEffectiveScale()),
-		[3] = (40 - ((ns.IsCata or ns.IsClassic) and 10 or 0)) * (mapScale * ns.API.GetEffectiveScale())
+		[2] = -30 * (mapScale * ns.API.GetEffectiveScale()),
+		[3] = 30 * (mapScale * ns.API.GetEffectiveScale())
 	}
 	return defaults
 end
@@ -136,24 +136,10 @@ local ObjectSnippets = {
 	},
 	Eye = {
 		Enable = function(object)
-			if (ns.IsClassic) then
-
-			elseif (ns.IsCata) then
-				object:SetFrameLevel(object:GetParent():GetFrameLevel() + 2)
-			elseif (ns.IsRetail) then
-			end
 		end,
 		Disable = function(object)
-			if (ns.IsClassic) then
-			elseif (ns.IsCata) then
-			elseif (ns.IsRetail) then
-			end
 		end,
 		Update = function(object)
-			if (ns.IsClassic) then
-			elseif (ns.IsCata) then
-			elseif (ns.IsRetail) then
-			end
 		end
 	},
 	--EyeClassicPvP = {
@@ -183,60 +169,24 @@ local ObjectSnippets = {
 	------------------------------------------
 	AzeriteEye = {
 		Enable = function(object)
-			if (ns.IsClassic) then
-				LFGMinimapFrame:SetParent(Minimap)
-				LFGMinimapFrame:SetFrameLevel(100)
-				LFGMinimapFrame:ClearAllPoints()
-				LFGMinimapFrame:SetPoint("BOTTOMLEFT", Minimap, 4, 2)
-				LFGMinimapFrame:SetHitRectInsets(-8, -8, -8, -8)
-				LFGMinimapFrameBorder:Hide()
-				LFGMinimapFrameIconTexture:Hide()
-			elseif (ns.IsCata) then
-				MiniMapLFGFrame:SetParent(Minimap)
-				MiniMapLFGFrame:SetFrameLevel(100)
-				MiniMapLFGFrame:ClearAllPoints()
-				MiniMapLFGFrame:SetPoint("TOPRIGHT", Minimap, -4, -2)
-				MiniMapLFGFrame:SetHitRectInsets(-8, -8, -8, -8)
-				MiniMapLFGFrameBorder:Hide()
-				MiniMapLFGFrameIcon:Hide()
-			elseif (ns.IsRetail) then
-				QueueStatusButton:SetParent(Minimap)
-				QueueStatusButton:SetFrameLevel(100)
-				QueueStatusButton:ClearAllPoints()
-				QueueStatusButton:SetPoint("CENTER", Minimap, "CENTER", 82, 82)
-				QueueStatusButton:SetHitRectInsets(-8, -8, -8, -8)
-				QueueStatusButton.Eye:SetParent(UIHider)
-				QueueStatusButton.Highlight:SetParent(UIHider)
-			end
+			-- MiniMapLFGFrame from Cata and onwards
+			LFGMinimapFrame:SetParent(Minimap)
+			LFGMinimapFrame:SetFrameLevel(100)
+			LFGMinimapFrame:ClearAllPoints()
+			LFGMinimapFrame:SetPoint("BOTTOMLEFT", Minimap, 4, 2)
+			LFGMinimapFrame:SetHitRectInsets(-8, -8, -8, -8)
+			LFGMinimapFrameBorder:Hide()
+			LFGMinimapFrameIconTexture:Hide()
 		end,
 		Disable = function(object)
-			if (ns.IsClassic) then
-				LFGMinimapFrame:SetParent(_G[ObjectOwners.Eye])
-				LFGMinimapFrame:SetFrameLevel(MinimapBackdrop:GetFrameLevel() + 2)
-				LFGMinimapFrame:ClearAllPoints()
-				LFGMinimapFrame:SetPoint("TOPLEFT", 33, -4)
-				LFGMinimapFrame:SetHitRectInsets(0, 0, 0, 0)
-				LFGMinimapFrameBorder:Show()
-				LFGMinimapFrameIconTexture:Show()
-			elseif (ns.IsCata) then
-				MiniMapLFGFrame:SetParent(_G[ObjectOwners.Eye])
-				MiniMapLFGFrame:SetFrameLevel(MinimapBackdrop:GetFrameLevel() + 2)
-				MiniMapLFGFrame:ClearAllPoints()
-				MiniMapLFGFrame:SetPoint("TOPLEFT", 25, -100)
-				MiniMapLFGFrame:SetHitRectInsets(0, 0, 0, 0)
-				MiniMapLFGFrameBorder:Show()
-				MiniMapLFGFrameIcon:Show()
-			elseif (ns.IsRetail) then
-				QueueStatusButton:SetParent(_G[ObjectOwners.Eye])
-				QueueStatusButton:SetFrameLevel(_G[ObjectOwners.Eye]:GetFrameLevel() + 1)
-				QueueStatusButton:ClearQueueStatus()
-				QueueStatusButton:ClearAllPoints()
-				QueueStatusButton:SetPoint("BOTTOMLEFT", -45, 4)
-				QueueStatusButton:SetHitRectInsets(0, 0, 0, 0)
-				QueueStatusButton.Highlight:SetParent(QueueStatusButton)
-				QueueStatusButton.Eye:SetParent(QueueStatusButton)
-				QueueStatusButton.Eye:SetFrameLevel(QueueStatusButton:GetFrameLevel() - 1)
-			end
+			-- MiniMapLFGFrame from Cata and onwards
+			LFGMinimapFrame:SetParent(_G[ObjectOwners.Eye])
+			LFGMinimapFrame:SetFrameLevel(MinimapBackdrop:GetFrameLevel() + 2)
+			LFGMinimapFrame:ClearAllPoints()
+			LFGMinimapFrame:SetPoint("TOPLEFT", 33, -4)
+			LFGMinimapFrame:SetHitRectInsets(0, 0, 0, 0)
+			LFGMinimapFrameBorder:Show()
+			LFGMinimapFrameIconTexture:Show()
 		end,
 		Update = function(object)
 		end
@@ -341,7 +291,7 @@ local Skins = {
 				Color = { .90, .95, 1 }
 			},
 			-- CATA: check
-			--AzeriteEyeClassicPvP = (ns.IsClassic or ns.IsCata) and {
+			--AzeriteEyeClassicPvP = (ns.IsClassic or ns.IsTBC) and {
 			--	Owner = "EyeClassicPvP",
 			--	DrawLayer = "BORDER",
 			--	DrawLevel = 2,
@@ -366,7 +316,7 @@ end
 
 local Minimap_OnMouseUp = function(self, button)
 	if (button == "RightButton") then
-		if (ns.IsClassic) then
+		if (ns.IsClassic or ns.IsTBC) then
 			if (MinimapMod.ShowMinimapTrackingMenu) then
 				MinimapMod:ShowMinimapTrackingMenu()
 			end
@@ -919,7 +869,7 @@ MinimapMod.CreateCustomElements = function(self)
 		--	self.dropdown = dropdown
 		--end
 
-		if (ns.IsClassic) then
+		if (ns.IsClassic or ns.IsTBC) then
 
 			--[[--
 			self.ShowMinimapTrackingMenu = function(self)
@@ -1070,23 +1020,39 @@ MinimapMod.InitializeObjectTables = function(self)
 
 	-- Minimap objects available for restyling.
 	----------------------------------------------------
-	if (ns.IsClassic) then
-		Objects.BorderTop = MinimapBorderTop
-		Objects.BorderClassic = MinimapBorder
-		Objects.Calendar = GameTimeFrame
-		Objects.Clock = TimeManagerClockButton
-		Objects.Compass = MinimapCompassTexture
-		Objects.Difficulty = MiniMapInstanceDifficulty
-		Objects.Eye = LFGMinimapFrame -- MinimapBackdrop
-		--Objects.EyeClassicPvP = LFGMinimapFrame or MiniMapBattlefieldFrame
-		Objects.Mail = MiniMapMailFrame
-		Objects.ToggleButton = MinimapToggleButton
-		Objects.Tracking = MiniMapTrackingFrame
-		Objects.Zone = MinimapZoneTextButton
-		Objects.ZoomIn = MinimapZoomIn
-		Objects.ZoomOut = MinimapZoomOut
-		Objects.WorldMap = MiniMapWorldMapButton
-	end
+	Objects.BorderTop = ns.IsTBC and MinimapCluster.BorderTop or MinimapBorderTop
+	Objects.BorderClassic = MinimapBorder
+	Objects.Calendar = GameTimeFrame
+	Objects.Clock = TimeManagerClockButton
+	Objects.Compass = MinimapCompassTexture
+	Objects.Difficulty = MiniMapInstanceDifficulty
+	Objects.Eye = LFGMinimapFrame -- MinimapBackdrop
+	--Objects.EyeClassicPvP = LFGMinimapFrame or MiniMapBattlefieldFrame
+	Objects.Mail = MiniMapMailFrame
+	Objects.ToggleButton = MinimapToggleButton
+	Objects.Tracking = ns.IsTBC and MiniMapTracking or MiniMapTrackingFrame
+	Objects.Zone = MinimapZoneTextButton
+	Objects.ZoomIn = MinimapZoomIn
+	Objects.ZoomOut = MinimapZoomOut
+	Objects.WorldMap = MiniMapWorldMapButton
+
+	ObjectOwners.BorderTop = MinimapCluster
+	ObjectOwners.BorderClassic = MinimapBackdrop
+	ObjectOwners.Calendar = MinimapCluster
+	ObjectOwners.Clock = MinimapCluster
+	ObjectOwners.Compass = MinimapBackdrop
+	ObjectOwners.Difficulty = MinimapCluster
+	ObjectOwners.Expansion = MinimapBackdrop
+	ObjectOwners.Eye = MinimapBackdrop
+	--ObjectOwners.EyeClassicPvP = Minimap
+	ObjectOwners.Mail = Minimap
+	ObjectOwners.ToggleButton = MinimapCluster
+	ObjectOwners.Tracking = Minimap
+	ObjectOwners.Zone = MinimapCluster
+	ObjectOwners.ZoomIn = Minimap
+	ObjectOwners.ZoomOut = Minimap
+	ObjectOwners.WorldMap = MinimapBackdrop
+
 end
 
 MinimapMod.OnEvent = function(self, event, ...)

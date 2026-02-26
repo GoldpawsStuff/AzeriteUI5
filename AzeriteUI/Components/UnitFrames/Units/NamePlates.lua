@@ -997,7 +997,7 @@ local cvars = {
 
 	-- The max distance to show nameplates.
 	-- *this value can be set by the user, and all other values are relative to this one.
-	["nameplateMaxDistance"] = ns.IsRetail and 60 or ns.IsClassic and 20 or 41, -- Wrath and TBC have 41
+	["nameplateMaxDistance"] = 20, -- Wrath and TBC have 41
 
 	-- The maximum distance from the camera (not char) where plates will still have max scale
 	["nameplateMaxScaleDistance"] = 10,

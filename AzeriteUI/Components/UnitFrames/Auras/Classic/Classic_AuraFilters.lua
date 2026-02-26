@@ -25,8 +25,6 @@
 --]]
 local _, ns = ...
 
-if (not ns.IsClassic) then return end
-
 ns.AuraFilters = ns.AuraFilters or {}
 
 -- Data

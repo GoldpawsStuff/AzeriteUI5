@@ -66,64 +66,30 @@ end
 -- Unit difficulty coloring.
 local GetDifficultyColor = function(level, isScaling)
 	local colors = Colors.quest
+	local levelDiff = level - UnitLevel("player")
 	if (isScaling) then
-		local levelDiff = level - UnitEffectiveLevel("player")
 		if (levelDiff > 5) then
 			return colors.red[1], colors.red[2], colors.red[3], colors.red.colorCode
 		elseif (levelDiff > 3) then
 			return colors.orange[1], colors.orange[2], colors.orange[3], colors.orange.colorCode
 		elseif (levelDiff >= 0) then
 			return colors.yellow[1], colors.yellow[2], colors.yellow[3], colors.yellow.colorCode
-		elseif (-levelDiff <= -UnitQuestTrivialLevelRangeScaling("player")) then
+		elseif (-levelDiff <= GetScalingQuestGreenRange()) then
 			return colors.green[1], colors.green[2], colors.green[3], colors.green.colorCode
 		else
 			return colors.gray[1], colors.gray[2], colors.gray[3], colors.gray.colorCode
 		end
 	else
-		local levelDiff = level - UnitLevel("player")
 		if (levelDiff > 5) then
 			return colors.red[1], colors.red[2], colors.red[3], colors.red.colorCode
 		elseif (levelDiff > 3) then
 			return colors.orange[1], colors.orange[2], colors.orange[3], colors.orange.colorCode
-		elseif (levelDiff >= -4) then
+		elseif (levelDiff >= -2) then
 			return colors.yellow[1], colors.yellow[2], colors.yellow[3], colors.yellow.colorCode
-		elseif (-levelDiff <= -UnitQuestTrivialLevelRange("player")) then
+		elseif (-levelDiff <= GetQuestGreenRange()) then
 			return colors.green[1], colors.green[2], colors.green[3], colors.green.colorCode
 		else
 			return colors.gray[1], colors.gray[2], colors.gray[3], colors.gray.colorCode
-		end
-	end
-end
-
--- CATA: check this
-if (ns.IsClassic or ns.IsCata) then
-	GetDifficultyColor = function(level, isScaling)
-		local colors = Colors.quest
-		local levelDiff = level - UnitLevel("player")
-		if (isScaling) then
-			if (levelDiff > 5) then
-				return colors.red[1], colors.red[2], colors.red[3], colors.red.colorCode
-			elseif (levelDiff > 3) then
-				return colors.orange[1], colors.orange[2], colors.orange[3], colors.orange.colorCode
-			elseif (levelDiff >= 0) then
-				return colors.yellow[1], colors.yellow[2], colors.yellow[3], colors.yellow.colorCode
-			elseif (-levelDiff <= GetScalingQuestGreenRange()) then
-				return colors.green[1], colors.green[2], colors.green[3], colors.green.colorCode
-			else
-				return colors.gray[1], colors.gray[2], colors.gray[3], colors.gray.colorCode
-			end
-		else
-			if (levelDiff > 5) then
-				return colors.red[1], colors.red[2], colors.red[3], colors.red.colorCode
-			elseif (levelDiff > 3) then
-				return colors.orange[1], colors.orange[2], colors.orange[3], colors.orange.colorCode
-			elseif (levelDiff >= -2) then
-				return colors.yellow[1], colors.yellow[2], colors.yellow[3], colors.yellow.colorCode
-			elseif (-levelDiff <= GetQuestGreenRange()) then
-				return colors.green[1], colors.green[2], colors.green[3], colors.green.colorCode
-			else
-				return colors.gray[1], colors.gray[2], colors.gray[3], colors.gray.colorCode
-			end
 		end
 	end
 end

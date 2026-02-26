@@ -353,106 +353,24 @@ StatusBars.UpdateBars = function(self, event, ...)
 
 	local name, standingID, min, max, current, factionID = GetWatchedFactionInfo()
 
-	if (name and not standingID) then
-		for i = 1, GetNumFactions() do
-			local factionName, _, standingId = GetFactionInfo(i)
-			if (factionName == name) then
-				standingID = standingId
-				break
-			end
-		end
-	end
-
 	if (name and standingID) then
 
-		local forced = bar.currentType ~= "reputation"
-
-		local isMajor = C_Reputation and C_Reputation.IsMajorFaction and C_Reputation.IsMajorFaction(factionID)
-		local isParagon = C_Reputation and C_Reputation.IsFactionParagon and C_Reputation.IsFactionParagon(factionID)
-		local isFriend
 		local level, maxLevel
 		local barMax, barValue
 		local standingLabel, nextStandingLabel
 
 		local color = standingID and Colors.reaction[standingID] or Colors.reaction[#Colors.reaction]
 
-		if (isParagon) then
+		local gender = UnitSex("player")
 
-			local currentValue, threshold, _, hasRewardPending = C_Reputation.GetFactionParagonInfo(factionID)
-			barMax = threshold
-			barValue = currentValue % threshold
+		standingLabel = GetText("FACTION_STANDING_LABEL"..standingID, gender)
+		nextStandingLabel = _G["FACTION_STANDING_LABEL"..(standingID + 1)] and GetText("FACTION_STANDING_LABEL"..standingID + 1, gender)
 
-			color = Colors.reaction[#Colors.reaction]
+		level = standingID
+		maxLevel = MAX_REPUTATION_REACTION
 
-			level = nil
-			maxLevel = nil
-			isParagon = true
-
-		elseif (isMajor) then
-
-			local factionData = C_MajorFactions.GetMajorFactionData(factionID)
-			local renownLevelsInfo = C_MajorFactions.GetRenownLevels(factionID)
-			local isCapped = C_MajorFactions.HasMaximumRenown(factionID)
-
-
-			level = factionData.renownLevel
-			maxLevel = renownLevelsInfo[#renownLevelsInfo].level
-
-			barMax =  factionData.renownLevelThreshold
-			barValue = isCapped and factionData.renownLevelThreshold or factionData.renownReputationEarned or 0
-
-			color = Colors.reaction[#Colors.reaction]
-
-			standingLabel = RENOWN_LEVEL_LABEL .. factionData.renownLevel
-
-			if (level and maxLevel and level < maxLevel) then
-				nextStandingLabel = RENOWN_LEVEL_LABEL .. (factionData.renownLevel + 1)
-			end
-
-			isMajor = true
-
-		else
-
-			local reputationInfo = C_GossipInfo and C_GossipInfo.GetFriendshipReputation and C_GossipInfo.GetFriendshipReputation(factionID)
-			local friendshipID = reputationInfo and reputationInfo.friendshipFactionID
-			if (friendshipID and friendshipID > 0) then
-
-				local repRankInfo = C_GossipInfo.GetFriendshipReputationRanks(factionID)
-
-				level = standingID
-				maxLevel = repRankInfo.maxLevel
-
-				standingLabel = reputationInfo.reaction
-
-				if (reputationInfo.nextThreshold) then
-					min, max, current = reputationInfo.reactionThreshold, reputationInfo.nextThreshold, reputationInfo.standing
-				else
-					min, max, current = 0, 1, 1
-				end
-
-				barMax = max - min
-				barValue = current - min
-				isFriend = true
-
-			else
-
-				local gender = UnitSex("player")
-
-				standingLabel = GetText("FACTION_STANDING_LABEL"..standingID, gender)
-				nextStandingLabel = _G["FACTION_STANDING_LABEL"..(standingID + 1)] and GetText("FACTION_STANDING_LABEL"..standingID + 1, gender)
-
-				level = standingID
-				maxLevel = MAX_REPUTATION_REACTION
-
-				barMax = max - min
-				barValue = current - min
-
-			end
-		end
-
-		bar.isParagon = isParagon
-		bar.isMajor = isMajor
-		bar.isFriend = isFriend
+		barMax = max - min
+		barValue = current - min
 
 		if (barMax == 0) then
 			bar:SetMinMaxValues(0, 1, forced)
@@ -495,12 +413,6 @@ StatusBars.UpdateBars = function(self, event, ...)
 		bar:Show()
 
 		showButton = true
-
-		if (bonusShown) then
-			bonus:Hide()
-			bonus:SetValue(0, true)
-			bonus:SetMinMaxValues(0, 1, true)
-		end
 	else
 
 		if (IsPlayerAtEffectiveMaxLevel() or IsXPUserDisabled()) then
@@ -558,139 +470,6 @@ StatusBars.UpdateBars = function(self, event, ...)
 		self.Button:Show()
 	elseif (not showButton and self.Button:IsShown()) then
 		self.Button:Hide()
-	end
-end
-
-if (ns.IsClassic) then
-
-	StatusBars.UpdateBars = function(self, event, ...)
-		if (not self.Bar) then return end
-
-		local bar, bonus = self.Bar, self.Bonus
-		local bonusShown = bonus:IsShown()
-		local showButton
-
-		local name, standingID, min, max, current, factionID = GetWatchedFactionInfo()
-
-		if (name and standingID) then
-
-			local level, maxLevel
-			local barMax, barValue
-			local standingLabel, nextStandingLabel
-
-			local color = standingID and Colors.reaction[standingID] or Colors.reaction[#Colors.reaction]
-
-			local gender = UnitSex("player")
-
-			standingLabel = GetText("FACTION_STANDING_LABEL"..standingID, gender)
-			nextStandingLabel = _G["FACTION_STANDING_LABEL"..(standingID + 1)] and GetText("FACTION_STANDING_LABEL"..standingID + 1, gender)
-
-			level = standingID
-			maxLevel = MAX_REPUTATION_REACTION
-
-			barMax = max - min
-			barValue = current - min
-
-			if (barMax == 0) then
-				bar:SetMinMaxValues(0, 1, forced)
-				bar:SetValue(1, forced)
-			else
-				bar:SetMinMaxValues(0, barMax, forced)
-				bar:SetValue(barValue, forced)
-			end
-
-			local r, g, b = unpack(color)
-			bar:SetStatusBarColor(r, g, b)
-			bar.currentType = "reputation"
-
-			bar.name = name
-			bar.standingID, bar.standingLabel = standingID, standingLabel
-
-
-			if (nextStandingLabel) then
-				bar.Value:SetFormattedText("%s", AbbreviateNumber(barMax-barValue))
-				bar.Description:SetFormattedText(L["to %s"], nextStandingLabel)
-
-			elseif (maxLevel and level and level < maxLevel) then
-				bar.Value:SetFormattedText("%s", AbbreviateNumber(barMax-barValue))
-				bar.Description:SetText(L["to next level"])
-			else
-				bar.Value:SetFormattedText("%s", AbbreviateNumber(barValue))
-				bar.Description:SetText("")
-			end
-
-			bar.Value:SetTextColor(r, g, b)
-			bar.Percent:SetTextColor(r, g, b)
-
-			local perc = math_floor(barValue/barMax*100)
-			if (perc > 0) then
-				bar.Percent:SetFormattedText("%.0f", perc)
-			else
-				bar.Percent:SetText("*")
-			end
-
-			bar:Show()
-
-			showButton = true
-		else
-
-			if (IsPlayerAtEffectiveMaxLevel() or IsXPUserDisabled()) then
-				bar.currentType = nil
-				bar:Hide()
-				bonus:Hide()
-				bar.Value:SetText("")
-				bar.Description:SetText("")
-
-				bar.Percent:SetText("")
-			else
-
-				local forced = bar.currentType ~= "xp"
-				local restedLeft = GetXPExhaustion()
-				local min = UnitXP("player") or 0
-				local max = UnitXPMax("player") or 0
-				local r, g, b = unpack(Colors[restedLeft and "rested" or "xp"])
-
-				bar:SetMinMaxValues(0, max, forced)
-				bar:SetValue(min, forced)
-				bar:SetStatusBarColor(r, g, b)
-				bar.currentType = "xp"
-
-				if (restedLeft) then
-					bonus:SetMinMaxValues(0, max, not bonusShown)
-					bonus:SetValue(math_min(max, min + restedLeft), not bonusShown)
-					if (not bonusShown) then
-						bonus:Show()
-					end
-				elseif (bonusShown) then
-					bonus:Hide()
-					bonus:SetValue(0, true)
-					bonus:SetMinMaxValues(0, 1, true)
-				end
-
-				bar.Value:SetFormattedText("%s", AbbreviateNumber(max-min))
-				bar.Description:SetFormattedText(L["to level %s"], UnitLevel("player") + 1)
-				bar.Value:SetTextColor(r, g, b)
-				bar.Percent:SetTextColor(r, g, b)
-
-				local perc = math_floor(min/max*100)
-				if (perc > 0) then
-					bar.Percent:SetFormattedText("%.0f", perc)
-				else
-					bar.Percent:SetText(XP)
-				end
-
-				bar:Show()
-
-				showButton = true
-			end
-		end
-
-		if (showButton and not self.Button:IsShown()) then
-			self.Button:Show()
-		elseif (not showButton and self.Button:IsShown()) then
-			self.Button:Hide()
-		end
-
 	end
 
 end

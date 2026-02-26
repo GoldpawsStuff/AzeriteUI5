@@ -25,8 +25,6 @@
 --]]
 local _, ns = ...
 
-if (not ns.IsClassic) then return end
-
 ns.AuraStyles = ns.AuraStyles or {}
 
 -- Addon API
