@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [5.3.209-RC] 2026-02-26
 ### Added
 - Added experimental support for TBC Anniversary. Work in progress.
+- Added an option in the `/az` options menu to always show chat buttons.
 
 ### Changed
 - Restyled a lot of code and folders to be Classic Era only.
