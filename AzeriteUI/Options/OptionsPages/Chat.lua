@@ -83,7 +83,7 @@ local GenerateOptions = function()
 			},
 			showClutter = {
 				name = "Show Clutter",
-				desc = "Always show buttons and chat tabs.",
+				desc = "Always show chat buttons.",
 				order = 10,
 				type = "toggle", width = "full",
 				set = setter,

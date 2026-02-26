@@ -435,7 +435,7 @@ end
 
 ChatFrames.UpdateDockedChatTabs = function(self)
 	local frame = ChatFrame1
-	if (frame:IsMouseOver(30,0,-30,30)) then
+	if (self.db.profile.showClutter or frame:IsMouseOver(30,0,-30,30)) then
 		for _,frameName in pairs(_G.CHAT_FRAMES) do
 			local frame = _G[frameName]
 			if (frame) then
@@ -499,24 +499,17 @@ ChatFrames.UpdateButtons = function(self, event, ...)
 				bottom.hasFixedScript = true
 			end
 
-			if (isMouseOver) and (shown and shown ~= 0) and (not frame.minimized) then
+			if (isMouseOver or self.db.profile.showClutter) and (shown and shown ~= 0) and (not frame.minimized) then
 				if (docked or frame == ChatFrame1) then -- dock position or nil
 					atDock = true
 				end
 
 				if (not Elements[frame].isMouseOver) then
 
-					if (ns.IsRetail) then
-						if (up) then up:SetParent(buttonFrame) end
-						if (down) then down:SetParent(buttonFrame) end
-						if (bottom) then bottom:SetParent(buttonFrame) end
-						if (scrollBar) then scrollBar:SetParent(buttonFrame); scrollBar:Update() end
-					else
-						if (up) then up:SetAlpha(1) end
-						if (down) then down:SetAlpha(1) end
-						if (bottom) then bottom:SetAlpha(1) end
-						if (scrollBar) then scrollBar:SetAlpha(1); scrollBar:Update() end
-					end
+					if (up) then up:SetAlpha(1) end
+					if (down) then down:SetAlpha(1) end
+					if (bottom) then bottom:SetAlpha(1) end
+					if (scrollBar) then scrollBar:SetAlpha(1); scrollBar:Update() end
 
 					local tabText = ChatFrame.GetTabText(frame)
 					tabText:Show()
@@ -524,33 +517,43 @@ ChatFrames.UpdateButtons = function(self, event, ...)
 					if (ChatFrame.GetTab(frame):IsMouseOver()) then
 						tabText:SetAlpha(.9)
 					else
-						tabText:SetAlpha(.5)
+						--tabText:SetAlpha(.5)
 					end
 
 					Elements[frame].isMouseOver = true
 				end
 			else
 				-- Todo: check out what happens when minimized.
-				if (event == "PLAYER_ENTERING_WORLD") or (Elements[frame].isMouseOver) then
+				if (event == "PLAYER_ENTERING_WORLD" or self.db.profile.showClutter or Elements[frame].isMouseOver) then
 
 					local up = ChatFrame.GetUpButton(frame)
 					local down = ChatFrame.GetDownButton(frame)
 					local bottom = ChatFrame.GetToBottomButton(frame)
 					local scrollBar = ChatFrame.GetScrollBar(frame)
 
-					if (ns.IsRetail) then
-						if (up) then up:SetParent(UIHider) end
-						if (down) then down:SetParent(UIHider) end
-						if (bottom) then bottom:SetParent(UIHider) end
-						if (scrollBar) then scrollBar:SetParent(UIHider) end
+					local tabText = ChatFrame.GetTabText(frame)
+
+					if (self.db.profile.showClutter) then
+						if (up) then up:SetAlpha(1) end
+						if (down) then down:SetAlpha(1) end
+						if (bottom) then bottom:SetAlpha(1) end
+						if (scrollBar) then scrollBar:SetAlpha(1) end
+
+						if (ChatFrame.GetTab(frame):IsMouseOver()) then
+							tabText:SetAlpha(.9)
+						else
+							--tabText:SetAlpha(.5)
+						end
+						tabText:Show()
 					else
 						if (up) then up:SetAlpha(0) end
 						if (down) then down:SetAlpha(0) end
 						if (bottom) then bottom:SetAlpha(0) end
 						if (scrollBar) then scrollBar:SetAlpha(0) end
+	
+						tabText:Hide()
 					end
 
-					ChatFrame.GetTabText(frame):Hide()
 
 					Elements[frame].isMouseOver = false
 				end
@@ -559,7 +562,11 @@ ChatFrames.UpdateButtons = function(self, event, ...)
 	end
 
 	for button in self:GetGlobalButtons() do
-		button:SetAlpha(atDock and 1 or 0)
+		if (atDock or self.db.profile.showClutter) then
+			button:SetAlpha(1)
+		else
+			button:SetAlpha(0)
+		end
 	end
 
 end
@@ -625,7 +632,7 @@ ChatFrames.OnEvent = function(self, event, ...)
 
 			-- Not an ideal solution for this,
 			-- but mouse hover scripts are just too unreliable here.
-			self:ScheduleRepeatingTimer("UpdateClutter", 1/10)
+			self.clutterTimer = self:ScheduleRepeatingTimer("UpdateClutter", 1/10)
 
 			if (QuickJoinToastButton) then
 				QuickJoinToastButton:UnregisterAllEvents()
