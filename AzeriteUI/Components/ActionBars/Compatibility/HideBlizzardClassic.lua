@@ -25,6 +25,7 @@
 --]]
 local _, ns = ...
 
+-- This works in Classic Era, not TBC.
 if (not ns.IsClassic) then return end
 
 if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return end

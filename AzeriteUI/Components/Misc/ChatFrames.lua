@@ -633,20 +633,20 @@ ChatFrames.OnEvent = function(self, event, ...)
 				QuickJoinToastButton:Hide()
 			end
 
-			--if (self.db.profile.clearOnReload and not ns.IsVerboseMode) then
-			--	local quiettime = GetTime() + self.db.profile.timeClearing
-			--	CreateFrame("Frame"):SetScript("OnUpdate", function(self)
-			--		if (GetTime() > quiettime) then
-			--			self:Hide()
-			--			self:SetScript("OnUpdate", nil)
-			--			return
-			--		end
-			--		-- Todo:
-			--		-- Make a clear function that caches + shows guild/group chat?
-			--		-- Move this whole thing to Chat Cleaner?
-			--		ChatFrame1:Clear()
-			--	end)
-			--end
+			if (self.db.profile.clearOnReload and not ns.IsVerboseMode) then
+				local quiettime = GetTime() + self.db.profile.timeClearing
+				CreateFrame("Frame"):SetScript("OnUpdate", function(self)
+					if (GetTime() > quiettime) then
+						self:Hide()
+						self:SetScript("OnUpdate", nil)
+						return
+					end
+					-- Todo:
+					-- Make a clear function that caches + shows guild/group chat?
+					-- Move this whole thing to Chat Cleaner?
+					ChatFrame1:Clear()
+				end)
+			end
 		end
 	end
 end
