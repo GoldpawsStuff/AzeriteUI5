@@ -50,6 +50,7 @@ local UIHider = ns.Hider
 
 local defaults = { profile = ns:Merge({
 	enabled = true,
+	showClutter = false, -- always show buttons and tabs
 	fadeOnInActivity = true, -- blizz default is true
 	timeVisible = 20, -- 120, -- blizz default is 120
 	timeFading = 3,

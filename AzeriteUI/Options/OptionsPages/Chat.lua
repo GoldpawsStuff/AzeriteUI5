@@ -65,10 +65,34 @@ local GenerateOptions = function()
 		name = L["Chat Settings"],
 		type = "group",
 		args = {
+			clearOnReload = {
+				name = "Clear Chat on Reload",
+				desc = L["Keeps the chat window clear for a period after logging in or relaoding the user interface. Note that you can still show all chat if you hold down the SHIFT key while reloading or logging in."],
+				order = 1,
+				type = "toggle", width = "full",
+				set = setter,
+				get = getter
+			},
+			timeClearing = {
+				name = "Sets the time after logon or reload until chat is allowed to pass through.",
+				order = 2,
+				type = "range", width = "full", min = 1, max = 10, step = 1,
+				hidden = function(info) return isdisabled(info) or not getoption(info, "clearOnReload") end,
+				set = setter,
+				get = getter
+			},
+			showClutter = {
+				name = "Show Clutter",
+				desc = "Always show buttons and chat tabs.",
+				order = 10,
+				type = "toggle", width = "full",
+				set = setter,
+				get = getter
+			},
 			fadeOnInActivity = {
 				name = L["Fade Chat"],
 				desc = L["Fade chat after a period of inactiviy."],
-				order = 1,
+				order = 20,
 				type = "toggle", width = "full",
 				set = setter,
 				get = getter
@@ -85,23 +109,9 @@ local GenerateOptions = function()
 			timeFading = {
 				name = L["Time Fading"],
 				desc = L["Sets the time spent fading before hiding the chat."],
-				order = 51,
+				order = 52,
 				type = "range", width = "full", min = 1, max = 5, step = 1,
 				hidden = function(info) return isdisabled(info) or not getoption(info, "fadeOnInActivity") end,
-				set = setter,
-				get = getter
-			},
-			clearOnReload = {
-				name = "Clear Chat Reload",
-				desc = L["Keeps the chat window clear for a period after logging in or relaoding the user interface. Note that you can still show all chat if you hold down the SHIFT key while reloading or logging in."],
-				type = "toggle", width = "full",
-				set = setter,
-				get = getter
-			},
-			timeClearing = {
-				name = "Sets the time after logon or reload until chat is allowed to pass through.",
-				type = "range", width = "full", min = 1, max = 10, step = 1,
-				hidden = function(info) return isdisabled(info) or not getoption(info, "clearOnReload") end,
 				set = setter,
 				get = getter
 			}
