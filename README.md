@@ -1,4 +1,4 @@
-AzeriteUI 5.3 is a custom World of Warcraft user interface for Dragonflight, Wrath Classic and Classic Era including Season of Discovery.
+AzeriteUI 5.3 is a custom World of Warcraft user interface for Classic Era, Season of Discovery and TBC Anniversary.
 
 ## Downloading & Installing
 I recommend downloading the UI from either [CurseForge](https://www.curseforge.com/wow/addons/azeriteui) or [Wago](https://addons.wago.io/addons/azeriteui), or use their respective download clients which provides the same versions and installs them automatically for you. Be aware that only these download locations provide finished packaged addons with all libraries included.
