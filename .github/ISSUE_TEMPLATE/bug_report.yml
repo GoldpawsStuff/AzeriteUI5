@@ -11,9 +11,8 @@ body:
     description: What game version is this issue in?
     multiple: true
     options:
-      - Dragonflight
-      - Wrath Classic
-      - Classic Era
+      - Classic Era, Season of Discovery, etc
+      - TBC Anniversary
   validations:
     required: true
 - type: checkboxes
