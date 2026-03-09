@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.3.210-RC] 2026-03-09
+### Changed
+- Reworked a bit of how unitframes are hidden, since some frames were still showing in TBC Anniversary.
+
 ## [5.3.209-RC] 2026-02-26
 ### Added
 - Added experimental support for TBC Anniversary. Work in progress.

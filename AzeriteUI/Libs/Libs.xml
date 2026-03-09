@@ -30,7 +30,7 @@
 	<!-- Modified Libraries -->
 	<Script  file="LibActionButton-1.0-GE\LibActionButton-1.0-GE.lua"/>
 	<Include file="AceDB-3.0-GE\AceDB-3.0-GE.xml"/>
-	<Include file="oUF_Classic\oUF_Vanilla.xml"/>
+	<Include file="oUF\oUF.xml"/>
 	<Include file="oUF_Plugins\oUF_Plugins.xml"/>
 
 	<!-- Custom Libraries -->

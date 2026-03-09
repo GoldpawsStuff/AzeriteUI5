@@ -118,62 +118,62 @@ function oUF:DisableBlizzard(unit)
 	elseif(unit == 'targettarget') then
 		handleFrame(TargetFrameToT)
 	elseif(unit:match('boss%d?$')) then
-		if(oUF.isRetail) then
-			if(not isBossHooked) then
-				isBossHooked = true
+		-- retail, doesn't exist in classics
+		if(not isBossHooked) then
+			isBossHooked = true
 
-				-- it's needed because the layout manager can bring frames that are
-				-- controlled by containers back from the dead when a user chooses
-				-- to revert all changes
-				-- for now I'll just reparent it, but more might be needed in the
-				-- future, watch it
-				handleFrame(BossTargetFrameContainer)
+			-- it's needed because the layout manager can bring frames that are
+			-- controlled by containers back from the dead when a user chooses
+			-- to revert all changes
+			-- for now I'll just reparent it, but more might be needed in the
+			-- future, watch it
+			handleFrame(BossTargetFrameContainer)
 
-				-- do not reparent frames controlled by containers, the vert/horiz
-				-- layout code will go insane because it won't be able to calculate
-				-- the size properly, 0 or negative sizes in turn will break the
-				-- layout manager, fun...
-				for i = 1, MAX_BOSS_FRAMES do
-					handleFrame('Boss' .. i .. 'TargetFrame', true)
-				end
+			-- do not reparent frames controlled by containers, the vert/horiz
+			-- layout code will go insane because it won't be able to calculate
+			-- the size properly, 0 or negative sizes in turn will break the
+			-- layout manager, fun...
+			for i = 1, MAX_BOSS_FRAMES do
+				handleFrame('Boss' .. i .. 'TargetFrame', true)
 			end
+		end
+		-- classic era, possibly tbc
+		local id = unit:match('boss(%d)')
+		if(id) then
+			handleFrame('Boss' .. id .. 'TargetFrame')
 		else
-			local id = unit:match('boss(%d)')
-			if(id) then
-				handleFrame('Boss' .. id .. 'TargetFrame')
-			else
-				for i = 1, MAX_BOSS_FRAMES do
-					handleFrame('Boss' .. i .. 'TargetFrame')
-				end
+			for i = 1, MAX_BOSS_FRAMES do
+				handleFrame('Boss' .. i .. 'TargetFrame')
 			end
 		end
 	elseif(unit:match('party%d?$')) then
-		if (oUF.isRetail) then
-			if(not isPartyHooked) then
-				isPartyHooked = true
+		-- retail, possibly tbc + era
+		if(not isPartyHooked) then
+			isPartyHooked = true
 
-				PartyFrame:UnregisterAllEvents()
+			PartyFrame:UnregisterAllEvents()
 
-				for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
-					handleFrame(frame)
-				end
-
-				for i = 1, MEMBERS_PER_RAID_GROUP do
-					handleFrame('CompactPartyFrameMember' .. i)
-				end
+			for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
+				handleFrame(frame)
 			end
+
+			for i = 1, MEMBERS_PER_RAID_GROUP do
+				handleFrame('CompactPartyFrameMember' .. i)
+			end
+		end
+
+		-- classic era
+		local id = unit:match('party(%d)')
+		if(id) then
+			handleFrame('PartyMemberFrame' .. id)
 		else
-			local id = unit:match('party(%d)')
-			if(id) then
-				handleFrame('PartyMemberFrame' .. id)
-			else
-				for i = 1, MAX_PARTY_MEMBERS do
-					handleFrame(string.format('PartyMemberFrame%d', i))
-				end
+			for i = 1, MAX_PARTY_MEMBERS do
+				handleFrame(string.format('PartyMemberFrame%d', i))
 			end
 		end
 	elseif(unit:match('arena%d?$')) then
-		if (oUF.isRetail) then
+		-- retail, possibly tbc
+		if(ArenaEnemyFramesContainer) then
 			if(not isArenaHooked) then
 				isArenaHooked = true
 
@@ -191,18 +191,19 @@ function oUF:DisableBlizzard(unit)
 					handleFrame('ArenaEnemyPrepFrame' .. i)
 				end
 			end
-		else
-			local id = unit:match('arena(%d)')
-			if(id) then
-				handleFrame('ArenaEnemyFrame' .. id)
-			else
-				for i = 1, MAX_ARENA_ENEMIES do
-					handleFrame('ArenaEnemyFrame'.. i)
-				end
-			end
-			SetCVar('showArenaEnemyFrames', '0')
-			_G.Arena_LoadUI = function() end
 		end
+
+		-- who knows
+		local id = unit:match('arena(%d)')
+		if(id) then
+			handleFrame('ArenaEnemyFrame' .. id)
+		else
+			for i = 1, MAX_ARENA_ENEMIES do
+				handleFrame('ArenaEnemyFrame'.. i)
+			end
+		end
+		SetCVar('showArenaEnemyFrames', '0')
+		_G.Arena_LoadUI = function() end
 	elseif(unit:match('nameplate%d+$')) then
 		local frame = C_NamePlate.GetNamePlateForUnit(unit)
 		if(frame and frame.UnitFrame) then
