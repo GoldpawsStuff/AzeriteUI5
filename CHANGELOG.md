@@ -4,9 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [5.3.211-RC] 2026-03-30
+## [5.3.212-RC] 2026-03-30
 ### Fixed
-- Should be no more breaking errors regarding `GetLootMethod`. 
+- Redid a lot of the compatibility API code.
+- Should be no more breaking errors regarding `GetLootMethod`.
 
 ## [5.3.210-RC] 2026-03-09
 ### Changed
