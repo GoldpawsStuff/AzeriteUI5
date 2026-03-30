@@ -133,7 +133,7 @@ function oUF:DisableBlizzard(unit)
 			-- layout code will go insane because it won't be able to calculate
 			-- the size properly, 0 or negative sizes in turn will break the
 			-- layout manager, fun...
-			for i = 1, MAX_BOSS_FRAMES do
+			for i = 1, MAX_BOSS_FRAMES or 5 do
 				handleFrame('Boss' .. i .. 'TargetFrame', true)
 			end
 		end
@@ -142,7 +142,7 @@ function oUF:DisableBlizzard(unit)
 		if(id) then
 			handleFrame('Boss' .. id .. 'TargetFrame')
 		else
-			for i = 1, MAX_BOSS_FRAMES do
+			for i = 1, MAX_BOSS_FRAMES or 5 do
 				handleFrame('Boss' .. i .. 'TargetFrame')
 			end
 		end
@@ -151,13 +151,15 @@ function oUF:DisableBlizzard(unit)
 		if(not isPartyHooked) then
 			isPartyHooked = true
 
-			PartyFrame:UnregisterAllEvents()
+			if (PartyFrame) then
+				PartyFrame:UnregisterAllEvents()
 
-			for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
-				handleFrame(frame)
+				for frame in PartyFrame.PartyMemberFramePool:EnumerateActive() do
+					handleFrame(frame)
+				end
 			end
 
-			for i = 1, MEMBERS_PER_RAID_GROUP do
+			for i = 1, MEMBERS_PER_RAID_GROUP or 5 do
 				handleFrame('CompactPartyFrameMember' .. i)
 			end
 		end
@@ -198,7 +200,7 @@ function oUF:DisableBlizzard(unit)
 		if(id) then
 			handleFrame('ArenaEnemyFrame' .. id)
 		else
-			for i = 1, MAX_ARENA_ENEMIES do
+			for i = 1, MAX_ARENA_ENEMIES or 5 do
 				handleFrame('ArenaEnemyFrame'.. i)
 			end
 		end
