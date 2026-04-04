@@ -257,8 +257,8 @@ ActionBar.CreateButton = function(self, buttonConfig)
 
 	local buttonConfig = buttonConfig or button.config or {}
 	buttonConfig.clickOnDown = self.config.clickOnDown
-	buttonConfig.dimWhenResting = self.config.dimWhenResting
-	buttonConfig.dimWhenInactive = self.config.dimWhenInactive
+	--buttonConfig.dimWhenResting = self.config.dimWhenResting
+	--buttonConfig.dimWhenInactive = self.config.dimWhenInactive
 
 	local keyBoundTarget = string_format(BINDTEMPLATE_BY_ID[self.id], button.id)
 	button.keyBoundTarget = keyBoundTarget
@@ -312,7 +312,7 @@ ActionBar.UpdateFading = function(self)
 			if (button:GetTexture()) then
 				LFF:RegisterFrameForFading(button, config.fadeAlone and self:GetName() or "actionbuttons", unpack(config.hitrects))
 			else
-				button:ForceUpdate()
+				--button:ForceUpdate()
 			end
 		end
 
@@ -322,7 +322,7 @@ ActionBar.UpdateFading = function(self)
 		for id, button in next,buttons do
 			LFF:UnregisterFrameForFading(buttons[id])
 			if (not button:GetTexture()) then
-				button:ForceUpdate()
+				--button:ForceUpdate()
 			end
 		end
 	end

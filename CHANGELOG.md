@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.3.213-Release] 2026-04-04
+### Changed
+- Switched to using mainline LibActionButton-1.0 instead of custom version. Work in progress.
+
+### Fixed
+- Action Buttons in TBC Anniversary  should now be clickable with the mouse both when set to cast on button downpress and button release. 
+- The cogwheel menu which is located by default in the bottom right corner should now be usable in TBC Anniversary.
+
+### Removed
+- Removed automatic MaxDps integration. You can still manually choose the circular highlight in MaxDps and adjust it to fit out buttons. It's just not automatic anymore. 
+
 ## [5.3.212-RC] 2026-03-30
 ### Fixed
 - Redid a lot of the compatibility API code.

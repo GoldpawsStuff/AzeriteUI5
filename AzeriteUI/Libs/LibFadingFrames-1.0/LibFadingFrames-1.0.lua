@@ -24,7 +24,7 @@
 
 --]]
 local MAJOR_VERSION = "LibFadingFrames-1.0"
-local MINOR_VERSION = 40
+local MINOR_VERSION = 42
 
 assert(LibStub, MAJOR_VERSION .. " requires LibStub.")
 
@@ -80,28 +80,23 @@ local HoverCount = lib.hoverCount
 
 -- GLOBALS: CreateFrame, IsPlayerInWorld, LAB10GEFlyoutHandlerFrame, SpellFlyout
 
--- Lua API
-local getmetatable = getmetatable
-local math_floor = math.floor
-local next = next
-local pairs = pairs
-local select = select
-local tonumber = tonumber
-local unpack = unpack
-
 -- Game flavor constants
 local patch, build, date, version = GetBuildInfo()
 local isRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 local isClassic = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC)
 local isTBC = (WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC)
 local isWrath = (WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC)
---local isCata = WOW_PROJECT_ID == (WOW_PROJECT_CATA_CLASSIC or 99) -- NYI in first build
-local isCata = (version >= 40400) and (version < 50000)
+local isCata = (WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC)
+local isMists = (WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC)
 local WoW10 = version >= 100000
+local WoW11 = version >= 110000
+local WoW12 = version >= 120000
 
 -- Frame Metamethods
-local setAlpha = getmetatable(CreateFrame("Frame")).__index.SetAlpha
-local getAlpha = getmetatable(CreateFrame("Frame")).__index.GetAlpha
+local __index = getmetatable(CreateFrame("Frame")).__index
+local setAlpha = __index.SetAlpha
+local getAlpha = __index.GetAlpha
+local isVisible = __index.IsVisible
 
 -- Alpha setter that also stores the alpha in our local registry
 local setCurrentAlpha = function(frame, alpha)
@@ -135,7 +130,7 @@ end
 local updateCurrentAlpha = function(frame)
 
 	local targetAlpha = FadeFrameTargetAlpha[frame]
-	local currentAlpha = FadeFrameCurrentAlpha[frame] or math_floor((getAlpha(frame) * 100) + .5) / 100
+	local currentAlpha = FadeFrameCurrentAlpha[frame] or math.floor((getAlpha(frame) * 100) + .5) / 100
 
 	-- If we're fading out
 	if (currentAlpha > targetAlpha) then
@@ -278,7 +273,7 @@ lib.CheckHoverFrames = function(needupdate)
 
 	for frame,fadeGroup in next,FadeFrames do
 		local rects = FadeFrameHitRects[frame]
-		if (not HoverFrames[frame] and frame:IsVisible() and frame:IsMouseOver(rects[1], rects[2], rects[3], rects[4])) then
+		if (not HoverFrames[frame] and isVisible(frame) and frame:IsMouseOver(rects[1], rects[2], rects[3], rects[4])) then
 			lib:OnFadeFrameEnter(frame, fadeGroup)
 			needupdate = true
 		end
@@ -324,7 +319,7 @@ lib.RegisterFrameForFading = function(_, frame, fadeGroup, ...)
 
 		-- Keep track of the flyout handlers.
 		if (not lib.flyoutHandler) then
-			local flyoutHandler = WoW10 and LAB10GEFlyoutHandlerFrame or SpellFlyout
+			local flyoutHandler = ((WoW10 or WoW11 or WoW12) and LAB10GEFlyoutHandlerFrame) or SpellFlyout
 			if (flyoutHandler) then
 				lib:HookScript(flyoutHandler, "OnShow", "UpdateFlyout")
 				lib:HookScript(flyoutHandler, "OnHide", "UpdateFlyout")

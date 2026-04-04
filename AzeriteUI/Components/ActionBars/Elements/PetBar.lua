@@ -476,7 +476,7 @@ PetBarMod.CreateBar = function(self)
 	bar.defaults = defaults.profile
 	bar.config = self.db.profile
 
-	if (ns.WoW10) then
+	if (ns.WoW10 or ns.IsTBC) then
 		bar.config.clickOnDown = GetCVarBool("ActionButtonUseKeyDown")
 	end
 

@@ -25,7 +25,8 @@
 --]]
 local _, ns = ...
 
-local LAB = LibStub("LibActionButton-1.0-GE")
+local KeyBound = LibStub("LibKeyBound-1.0", true)
+local LAB = LibStub("LibActionButton-1.0")
 
 ns.ActionButtons = {}
 ns.ActionButton = {}
@@ -50,6 +51,11 @@ end
 ns.ActionButton.Create = function(id, name, header, buttonConfig)
 
 	local button = LAB:CreateButton(id, name, header, buttonConfig)
+
+	button.config = config or {}
+	button.config.clickOnDown = header.config.clickOnDown
+	--button.config.dimWhenResting = header.config.dimWhenResting
+	--button.config.dimWhenInactive = header.config.dimWhenInactive
 
 	button.OnEnter = button:GetScript("OnEnter")
 	button.OnLeave = button:GetScript("OnLeave")

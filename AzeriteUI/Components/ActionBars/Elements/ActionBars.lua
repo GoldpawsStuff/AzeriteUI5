@@ -27,9 +27,6 @@ local _, ns = ...
 
 if (ns.API.IsAddOnEnabled("ConsolePort_Bar")) then return end
 
-local LAB_Name = "LibActionButton-1.0-GE"
-local LAB = LibStub(LAB_Name)
-
 local ActionBarMod = ns:NewModule("ActionBars", "LibMoreEvents-1.0", "LibFadingFrames-1.0", "AceConsole-3.0", "AceTimer-3.0")
 ActionBarMod:SetEnabledState(false)
 
@@ -45,6 +42,7 @@ local unpack = unpack
 
 -- Addon API
 local Colors = ns.Colors
+local GetFont = ns.API.GetFont
 local GetMedia = ns.API.GetMedia
 local IsAddOnEnabled = ns.API.IsAddOnEnabled
 local RegisterCooldown = ns.Widgets.RegisterCooldown
@@ -71,15 +69,78 @@ for i,j in next,BAR_TO_ID do ID_TO_BAR[j] = i end
 
 -- Module defaults.
 local defaults = { profile = ns:Merge({
-	clickOnDown = false,
-	dimWhenResting = false,
-	dimWhenInactive = false,
+	outOfRangeColoring = "button", -- "button", "hotkey"
+	tooltip = "enabled", -- "enabled", "disabled", "nocombat"
+	showGrid = false, -- empty buttons should be hidden by default, only visible when moving spells
+	colors = {
+		range = { 1, .15, .15 },
+		mana = { .25, .25, 1 }
+	},
 	hideElements = {
 		macro = true,
 		hotkey = false,
-		equipped = true,
+		equipped = true, -- use brighter border?
 		border = false,
 		borderIfEmpty = true
+	},
+	keyBoundTarget = false, -- will be set by the actionbar object on each of its buttons
+	keyBoundClickButton = "LeftButton", -- just leave this as is
+	clickOnDown = false, 
+	cooldownCount = nil, -- nil: use cvar, true/false: enable/disable
+	lossOfControlCooldown = true,
+	flyoutDirection = "UP",
+	actionButtonUI = true, -- register the button with SetActionUIButton, this has some side-effects if the button changes from action type to another type, but is required for certain UI integrations. Recommended to only set on pure type=action buttons
+	assistedHighlight = true, -- requires actionButtonUI to be set to work
+	spellCastVFX = false, -- enable cast vfx
+	text = {
+		hotkey = {
+			font = {
+				fontObject = GetFont(15, "Outline", "Number"),
+				size = 17,
+				flags = "THINOUTLINE"
+			},
+			color = { 128/255, 128/255, 128/255, .75 },
+			position = {
+				anchor = "TOPLEFT",
+				relAnchor = "TOPLEFT",
+				offsetX = 3, 
+				offsetY = -3 
+			},
+			justifyH = "LEFT",
+			justifyV = "TOP"
+		},
+		count = {
+			font = {
+				fontObject = GetFont(16, "Outline", "Number"),
+				size = 18,
+				flags = "THINOUTLINE"
+			},
+			color = { 229/255, 178/255, 38/255, .85 },
+			position = {
+				anchor = "BOTTOMRIGHT",
+				relAnchor = "BOTTOMRIGHT",
+				offsetX = -3,
+				offsetY = 3 
+			},
+			justifyH = "RIGHT",
+			justifyV = "MIDDLE"
+		},
+		macro = {
+			font = {
+				fontObject = GetFont(10, "Outline", "Number"),
+				size = 10,
+				flags = "THINOUTLINE"
+			},
+			color = { 128/255, 128/255, 128/255, .75 },
+			position = {
+				anchor = "BOTTOM",
+				relAnchor = "BOTTOM",
+				offsetX = 0,
+				offsetY = 2
+			},
+			justifyH = "CENTER",
+			justifyV = "BOTTOM"
+		}
 	}
 }, ns.MovableModulePrototype.defaults) }
 
@@ -243,8 +304,21 @@ local style = function(self)
 	self:SetHitRectInsets(unpack(db.ButtonHitRects))
 	self.hitRects = { unpack(db.ButtonHitRects) }
 
-	-- New 3.4.1 checked texture keeps being reset.
-	--hooksecurefunc(self, "SetChecked", function() self:GetCheckedTexture():Hide() end)
+	self.PushedTexture = self.PushedTexture or self:GetPushedTexture()
+	self.HighlightTexture = self.HighlightTexture or self:GetHighlightTexture()
+	self.CheckedTexture = self.CheckedTexture or self:GetCheckedTexture()
+
+	-- hide unused elements
+	self.NewActionTexture:SetParent(UIHider) -- initial hiding
+	self.NewActionTexture:Hide() -- initial hiding
+	self.NewActionTexture = false -- should be enough, LAB checks for existence before running methods 
+	self.NormalTexture:SetTexture("") -- default border texture
+	self.NormalTexture:SetParent(UIHider)
+	self.SpellHighlightAnim:Stop() -- default spell highlight, we use our own
+	self.SpellHighlightTexture:SetParent(UIHider)
+
+	-- Some sort of border/normal texture I just can't get rid of
+	self:DisableDrawLayer("ARTWORK")
 
 	-- Custom slot texture
 	self.backdrop = self:CreateTexture(nil, "BACKGROUND", nil, -7)
@@ -254,14 +328,16 @@ local style = function(self)
 	self.backdrop:SetVertexColor(unpack(db.ButtonBackdropColor))
 
 	-- Icon
+	-- remove default mask texture
+	for i = 1, self.icon:GetNumMaskTextures() do
+		self.icon:RemoveMaskTexture(self.icon:GetMaskTexture(i))
+	end
+
 	self.icon:SetDrawLayer("BACKGROUND", 1)
 	self.icon:ClearAllPoints()
 	self.icon:SetPoint(unpack(db.ButtonIconPosition))
 	self.icon:SetSize(unpack(db.ButtonIconSize))
 	self.icon:SetMask(m)
-
-	-- Some crap WoW10 border I can't figure out how to remove right now.
-	--self:DisableDrawLayer("ARTWORK")
 
 	self:GetPushedTexture():SetTexture(m)
 	self:GetPushedTexture():SetVertexColor(1, 1, 1, .2)
@@ -337,6 +413,7 @@ local style = function(self)
 	self.IconBorder:SetSize(unpack(db.ButtonBorderSize))
 	self.IconBorder:SetTexture(db.ButtonBorderTexture)
 	self.IconBorder:SetVertexColor(unpack(db.ButtonBorderColor))
+	--self.IconBorder:Hide()
 
 	-- Blizzard Spell Activation / MaxDps (addon) / SpellActivationOverlay (addon for Wrath/Classic Era)
 	self.CustomSpellActivationAlert = self.OverlayFrame:CreateTexture(nil, "ARTWORK", nil, -7)
@@ -386,6 +463,76 @@ local style = function(self)
 	hooksecurefunc(self.cooldown, "SetDrawEdge", function(c,h) if h then c:SetDrawEdge(false) end end)
 	hooksecurefunc(self.cooldown, "SetHideCountdownNumbers", function(c,h) if not h then c:SetHideCountdownNumbers(true) end end)
 	hooksecurefunc(self.cooldown, "SetCooldown", function(c) c:SetAlpha(.75) end)
+
+	-- These don't exist in classics
+	--[=[
+	local button = self
+	--[[
+		AssistedCombatHighlightFrame 
+		- blue glow, next in rotation
+	--]]
+	-- assisted combat highlight (basically blizzard's own MaxDPS, sort of)
+	-- *note to self, make compatible with MaxDPS if possible
+	local ACH = button.OverlayFrame:CreateTexture(nil, "ARTWORK", nil, 1)
+	ACH:SetSize(134.295081967, 134.295081967)
+	ACH:SetPoint("CENTER", 0, 0)
+	ACH:SetTexture(GetMedia("actionbutton-spellhighlight"))
+	ACH:SetVertexColor(136/255, 189/255, 249/255, .75) -- AzeriteUI6 blue, closer to Blizz defaults
+	--ACH:SetVertexColor(190/255, 119/255, 238/255, .75) -- AzeriteUI5 purple
+	ACH:Hide()
+
+	-- create a dummy object to safely take control of the assisted combat highlights
+	-- *this objects contain everything LAB calls or references.
+	button.AssistedCombatHighlightFrame = {
+		Show = function() ACH:Show() end,
+		Hide = function() ACH:Hide() end,
+		Flipbook = { Anim = { Play = function() end, Stop = function() end } }
+	}
+
+	--[[
+		SpellActivationAlert 
+		- yellow bright glow, activated spell
+		- uses LBG
+			- LBG.ShowOverlayGlow(button)
+			- LBG.HideOverlayGlow(button)
+	--]]
+	-- spell highlight
+	local spellActivationAlert = button.OverlayFrame:CreateTexture(nil, "ARTWORK", nil, -7)
+	--spellActivationAlert:SetSize(134.295081967, 134.295081967)
+	spellActivationAlert:SetSize(110, 110)
+	spellActivationAlert:SetPoint("CENTER", 0, 0)
+	spellActivationAlert:SetTexture(GetMedia("actionbutton-spellhighlight"))
+	spellActivationAlert:SetVertexColor(249/255, 234/255, 137/255, .75) -- bright yellow tinted white
+	spellActivationAlert:Hide()
+
+	-- fully faking this one.
+	-- *can NOT guarantee it works with anything else than our buttons and Bartender,
+	--  will look into it and replace more frame methods if a problem occurs.
+	button.__LBGoverlay = {
+		-- We don't really do any anims out, we simply hide
+		animOut = {
+			IsPlaying = function() return not spellActivationAlert:IsShown() end, -- it won't show unless it's hidden. doh.
+			Play = function() spellActivationAlert:Hide() end, 
+			Stop = function() spellActivationAlert:Hide() end 
+		},
+		-- This is when the activation alerts are shown
+		animIn = {
+			IsPlaying = function() return not spellActivationAlert:IsShown() end, -- it won't show unless it's hidden. 
+			Play = function() spellActivationAlert:Show() end, -- this is pretty much the only time we want it shown, we don't animate
+			Stop = function() spellActivationAlert:Hide() end 
+		}
+	}
+
+	-- This could break some functionality in other parts of the addon, 
+	-- so I should make a habit out of calling the :__IsVisible() original instead.
+	button.__IsVisible = button.IsVisible
+	button.IsVisible = function() return true end 
+	--]=]
+
+	-- Stop button skinners from messing with it
+	self.MasqueSkinned = true -- disables LAB from changing a few textures
+	self.AddToButtonFacade = function() end -- disables LAB from overriding it
+	self.AddToMasque = function() end -- disables LAB from overriding it
 
 	local buttonConfig = self.config or {}
 
@@ -558,7 +705,7 @@ ActionBarMod.UpdateBarButtonCounts = function(self)
 	for i,bar in next,self.bars do
 		for j,button in next,bar.buttons do
 			if j > bar.config.numbuttons then break end
-			button:ForceUpdate()
+			--button:ForceUpdate()
 		end
 	end
 end
@@ -631,7 +778,7 @@ ActionBarMod.UpdateSettings = function(self, event)
 	end
 
 	-- Follow the global click on down settings in WoW10 and above.
-	if (ns.WoW10) then
+	if (ns.WoW10 or ns.IsTBC) then
 		SetCVar("ActionButtonUseKeyDown", self.db.profile.clickOnDown)
 	end
 
@@ -639,15 +786,15 @@ ActionBarMod.UpdateSettings = function(self, event)
 	-- We do not grant user access to these settings per bar.
 	for i,bar in next,self.bars do
 		bar.config.clickOnDown = self.db.profile.clickOnDown
-		bar.config.dimWhenResting = self.db.profile.dimWhenResting
-		bar.config.dimWhenInactive = self.db.profile.dimWhenInactive
+		--bar.config.dimWhenResting = self.db.profile.dimWhenResting
+		--bar.config.dimWhenInactive = self.db.profile.dimWhenInactive
 		bar.config.hideElements = self.db.profile.hideElements
 
 		-- Copy select settings into each button's config table.
 		for id,button in pairs(bar.buttons) do
 			button.config.clickOnDown = bar.config.clickOnDown
-			button.config.dimWhenResting = bar.config.dimWhenResting
-			button.config.dimWhenInactive = bar.config.dimWhenInactive
+			--button.config.dimWhenResting = bar.config.dimWhenResting
+			--button.config.dimWhenInactive = bar.config.dimWhenInactive
 			button.config.hideElements = bar.config.hideElements
 			button:UpdateConfig(button.config)
 			--button:ForceUpdate()
@@ -756,7 +903,7 @@ ActionBarMod.DelayedEnable = function(self)
 
 	self.db = ns.db:RegisterNamespace(self:GetName(), self:GetDefaults())
 
-	if (ns.WoW10) then
+	if (ns.WoW10 or ns.IsTBC) then
 		self.db.profile.clickOnDown = GetCVarBool("ActionButtonUseKeyDown")
 	end
 

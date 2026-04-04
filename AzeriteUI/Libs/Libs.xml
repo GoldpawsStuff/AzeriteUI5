@@ -18,7 +18,7 @@
 	<Include  file="AceSerializer-3.0\AceSerializer-3.0.xml"/>
 	@end-non-debug@-->
 	<Include  file="UTF8\utf8.xml"/>
-	<!--<Include  file="LibKeyBound-1.0\lib.xml"/>-->
+	<Include  file="LibKeyBound-1.0\lib.xml"/>
 	<Script  file="LibAuraTypes\LibAuraTypes.lua"/>
 	<Script  file="LibClassicCasterino\LibClassicCasterino.lua"/>
 	<Include file="LibClassicDurations\LibClassicDurations.xml"/>
@@ -26,9 +26,10 @@
 	<Include file="LibSharedMedia-3.0\lib.xml"/>
 	<Script  file="LibSpellLocks\LibSpellLocks.lua"/>
 	<Include file="LibUIDropDownMenu\LibUIDropDownMenu.xml"/>
+	<Script  file="LibButtonGlow-1.0\LibButtonGlow-1.0.lua"/>
+	<Script  file="LibActionButton-1.0\LibActionButton-1.0.lua"/>
 
 	<!-- Modified Libraries -->
-	<Script  file="LibActionButton-1.0-GE\LibActionButton-1.0-GE.lua"/>
 	<Include file="AceDB-3.0-GE\AceDB-3.0-GE.xml"/>
 	<Include file="oUF\oUF.xml"/>
 	<Include file="oUF_Plugins\oUF_Plugins.xml"/>

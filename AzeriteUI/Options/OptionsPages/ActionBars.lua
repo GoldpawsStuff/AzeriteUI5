@@ -594,24 +594,24 @@ local GenerateOptions = function()
 					end
 				end,
 				get = getter
-			},
-			dimWhenInactive = {
-				name = L["Dim the actionbuttons when inactive"],
-				desc = L["Dim down and desaturate your action buttons when not engaged in combat and not currently targeting anything."],
-				order = 5,
-				type = "toggle", width = "full",
-				set = setter,
-				get = getter
-			},
-			dimWhenResting = {
-				name = L["Only dim the actionbuttons when resting"],
-				desc = L["This restricts the dimming to when the player is resting."],
-				order = 6,
-				type = "toggle", width = "full",
-				hidden = function(info) return not getsetting(info, "dimWhenInactive") end,
-				set = setter,
-				get = getter
-			}
+			}--,
+			--dimWhenInactive = {
+			--	name = L["Dim the actionbuttons when inactive"],
+			--	desc = L["Dim down and desaturate your action buttons when not engaged in combat and not currently targeting anything."],
+			--	order = 5,
+			--	type = "toggle", width = "full",
+			--	set = setter,
+			--	get = getter
+			--},
+			--dimWhenResting = {
+			--	name = L["Only dim the actionbuttons when resting"],
+			--	desc = L["This restricts the dimming to when the player is resting."],
+			--	order = 6,
+			--	type = "toggle", width = "full",
+			--	hidden = function(info) return not getsetting(info, "dimWhenInactive") end,
+			--	set = setter,
+			--	get = getter
+			--}
 		}
 	}
 
