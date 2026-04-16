@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. Be aware th
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] 2026-04-16
+### Changed
+- Now always imports latest version of LibActionButton-1.0 when packaging new releases.
+
 ## [5.3.213-Release] 2026-04-04
 ### Changed
 - Switched to using mainline LibActionButton-1.0 instead of custom version. Work in progress.
