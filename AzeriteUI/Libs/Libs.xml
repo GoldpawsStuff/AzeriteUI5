@@ -27,7 +27,9 @@
 	<Script  file="LibSpellLocks\LibSpellLocks.lua"/>
 	<Include file="LibUIDropDownMenu\LibUIDropDownMenu.xml"/>
 	<Script  file="LibButtonGlow-1.0\LibButtonGlow-1.0.lua"/>
-	<Script  file="LibActionButton-1.0\LibActionButton-1.0.lua"/>
+	<!--@non-debug@
+	<Script file="LibActionButton-1.0\LibActionButton-1.0.lua"/>
+	@end-non-debug@-->
 
 	<!-- Modified Libraries -->
 	<Include file="AceDB-3.0-GE\AceDB-3.0-GE.xml"/>
