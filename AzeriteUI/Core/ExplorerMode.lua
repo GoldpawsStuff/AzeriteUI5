@@ -46,7 +46,7 @@ local defaults = { profile = ns:Merge({
 	-- How long to wait before initiating
 	-- Explorer Mode after a loading screen.
 	delayOnLogin = 15,
-	delayOnReload = 0,
+	delayOnReload = 5,
 	delayOnZoning = 0,
 	delayOnCombatEnd = 0,
 
@@ -290,8 +290,8 @@ ExplorerMode.CheckForForcedState = function(self)
 	or (self.isDragonRiding and not db.fadeInVehicles)
 	or (self.inVehicle and not db.fadeInVehicles)
 	or (self.inInstance and not db.fadeInInstances)
-	or (self.lowHealth and not db.fadeWithLowMana)
-	or (self.lowPower and not db.fadeWithLowHealth)
+	or (self.lowHealth and not db.fadeWithLowHealth)
+	or (self.lowPower and not db.fadeWithLowMana)
 	--or (self.badAura)
 	or (self.busyCursor) then
 		return true
